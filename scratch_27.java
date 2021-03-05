@@ -3,21 +3,266 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.intervalIntersection(new int[][]{{0, 2}, {5, 10}, {13, 23}, {24, 25}},
-                new int[][]{{1, 5}, {8, 12}, {15, 24}, {25, 26}}));
+        System.err.println(s.maxEnvelopes(new int[][]{{4, 5}, {4, 6}, {6, 7}, {2, 3}, {1, 1}}));
+    }
+
+    // Definition for a binary tree node.
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    public List<List<Integer>> levelOrderFromBottom(TreeNode root){
+        List<List<Integer>> levelOrder = new LinkedList<List<Integer>>();
+        if (root == null) {
+            return levelOrder;
+        }
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            List<Integer> level = new ArrayList<Integer>();
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                level.add(node.val);
+                TreeNode left = node.left, right = node.right;
+                if (left != null) {
+                    queue.offer(left);
+                }
+                if (right != null) {
+                    queue.offer(right);
+                }
+            }
+            levelOrder.add(0, level);
+        }
+        return levelOrder;
+    }
+
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> ans = new LinkedList<>();
+        if (root == null) {
+            return ans;
+        }
+
+        Queue<TreeNode> nodeQueue = new LinkedList<>();
+        nodeQueue.offer(root);
+        boolean isOrderLeft = true;
+
+        while (!nodeQueue.isEmpty()) {
+            Deque<Integer> levelList = new LinkedList<>();
+            int size = nodeQueue.size();
+            for (int i = 0; i < size; ++i) {
+                TreeNode curNode = nodeQueue.poll();
+                if (isOrderLeft) {
+                    levelList.offerLast(curNode.val);
+                } else {
+                    levelList.offerFirst(curNode.val);
+                }
+                if (curNode.left != null) {
+                    nodeQueue.offer(curNode.left);
+                }
+                if (curNode.right != null) {
+                    nodeQueue.offer(curNode.right);
+                }
+            }
+            ans.add(new LinkedList<Integer>(levelList));
+            isOrderLeft = !isOrderLeft;
+        }
+
+        return ans;
+    }
+
+
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+
+        Queue<TreeNode> working = new LinkedList<>();
+        working.offer(root);
+
+        while (!working.isEmpty()) {
+            int size = working.size();
+            List<Integer> thisLayer = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode tmp = working.poll();
+                if (tmp != null) {
+                    thisLayer.add(tmp.val);
+                    working.offer(tmp.left);
+                    working.offer(tmp.right);
+                }
+            }
+            result.add(thisLayer);
+        }
+
+        result.remove(result.size() - 1);
+        return result;
+    }
+
+    class ListNode {
+        int val;
+        ListNode next;
+
+        public ListNode(int n) {
+            this.val = n;
+        }
+    }
+
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null) return null;
+
+        ListNode traversal = head;
+        int ctr = 0;
+        while (traversal != null) {
+            traversal = traversal.next;
+            ctr++;
+        }
+
+        ctr -= ctr % k;
+        while (ctr != 0) {
+            head = reverseBetween(head, ctr - k + 1, ctr);
+            ctr -= k;
+        }
+        return head;
+
+    }
+
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        if (head == null) return null;
+
+        ListNode cur = head, prev = null;
+        while (left > 1) {
+            prev = cur;
+            cur = cur.next;
+            left--;
+            right--;
+        }
+
+        ListNode tail = cur, concierge = prev;
+
+        ListNode origNext = null;
+        while (right > 0) {
+            origNext = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = origNext;
+            right--;
+        }
+
+        if (concierge != null) {
+            concierge.next = prev;
+        } else {
+            head = prev;
+        }
+
+        tail.next = cur;
+        return head;
+    }
+
+
+    public ListNode reverseBetweenLC(ListNode head, int left, int right) {
+
+        // Empty list
+        if (head == null) {
+            return null;
+        }
+
+        // original:
+        // 1->2->3->4->5->6
+        // left = 1, right = 3
+        // target:
+        // 3->2->1->4->5->6
+
+
+        // Move the two pointers until they reach the proper starting point
+        // in the list.
+        ListNode cur = head, prev = null;
+        while (left > 1) {
+            prev = cur;
+            cur = cur.next;
+            left--;
+            right--;
+        }
+
+
+        // The two pointers that will fix the final connections.
+        ListNode con = prev, tail = cur;  // prev = null, cur = 1, con=null, tail=1
+
+        // Iteratively reverse the nodes until n becomes 0.
+        ListNode third = null;
+        while (right > 0) {
+            third = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = third;
+            right--;
+        }
+
+        // Adjust the final connections as explained in the algorithm
+        if (con != null) {
+            con.next = prev;
+        } else {
+            head = prev;
+        }
+
+        tail.next = cur;
+        return head;
+    }
+
+    public ListNode reverseLinkedTreeNodes(ListNode head) {
+        ListNode prev = null;
+        ListNode cur = head;
+        while (cur != null) {
+            ListNode next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        return prev;
+    }
+
+    public int maxEnvelopes(int[][] env) {
+        if (env.length <= 1) return env.length;
+        // (长, 宽), 先按长排序
+        Arrays.sort(env, (a, b) -> {
+            if (a[0] == b[0]) return b[1] - a[1];
+            return a[0] - b[0];
+        });
+        int dp[] = new int[env.length];
+        Arrays.fill(dp, 1);
+        // dp[i] 存储当前坐标的信封最多可以装下多少个信封
+        // dp[i] = 0<=k<=i-1中, 宽小于env[i]且dp[k]最大的 +1
+
+
+        for (int i = 1; i < env.length; i++) {
+//            int m = env[i][1];
+            int tmpMax = 0;
+            for (int j = i; j >= 0; j--) {
+                if (env[j][1] < env[i][1]) {
+                    tmpMax = Math.max(tmpMax, dp[j]);
+                }
+            }
+            dp[i] = tmpMax + 1;
+        }
+        return Arrays.stream(dp).max().getAsInt();
     }
 
     public List<Integer> findDuplicates(int[] nums) {
         List<Integer> result = new ArrayList<>(nums.length / 2);
         int n = nums.length;
-        for (int i = 0; i < n; i++) {
-            if(nums[ Math.abs(nums[i]-1) ]<0){
-                result.add(Math.abs(nums[i] - 1));
+        for (int i : nums) {
+            int absI = Math.abs(i);
+            if (nums[absI - 1] < 0) {
+                result.add(absI);
             } else {
-                nums[Math.abs(nums[i] - 1)] *= -1;
+                nums[absI - 1] *= -1;
             }
         }
         return result;
+
     }
 
     public int findDuplicate(int[] nums) {
