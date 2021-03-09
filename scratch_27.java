@@ -1,10 +1,129 @@
+import com.sun.javafx.image.IntPixelGetter;
+
 import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.maxEnvelopes(new int[][]{{4, 5}, {4, 6}, {6, 7}, {2, 3}, {1, 1}}));
+        System.err.println(s.nextGreaterElement(new int[]{4, 1, 2}, new int[]{1, 3, 4, 2}));
     }
+
+    int pathSumIiiResult;
+
+    public int pathSumIiiHelper(TreeNode root, int sum) {
+        if (root == null) return 0;
+        sum -= root.val;
+        return (sum == 0 ? 1 : 0) + pathSumIiiHelper(root.left, sum) + pathSumIiiHelper(root.right, sum);
+    }
+
+    public int pathSumIii(TreeNode root, int sum) {
+        if (root == null) return 0;
+        return pathSumIiiHelper(root, sum) + pathSumIii(root.left, sum) + pathSumIii(root.right, sum);
+    }
+
+    List<List<Integer>> pathSumResult = new ArrayList<>();
+
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        pathSumHelper(root, targetSum, new ArrayList<>());
+        return pathSumResult;
+    }
+
+    public void pathSumHelper(TreeNode root, int sum, List<Integer> l) {
+        if (root == null) return;
+        l.add(root.val);
+        if (root.val - sum == 0 && root.left == null && root.right == null) {
+            pathSumResult.add(l);
+            return;
+        }
+        pathSumHelper(root.left, sum - root.val, new ArrayList<>(l));
+        pathSumHelper(root.right, sum - root.val, new ArrayList<>(l));
+    }
+
+
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if (root == null) return false;
+        if (root.val - sum == 0 && root.left == null && root.right == null) return true;
+        return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
+    }
+
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        int[] m2 = simpleNGE(nums2);
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < m2.length; i++) {
+            map.put(nums2[i], m2[i]);
+        }
+        int[] result = new int[nums1.length];
+        for (int i = 0; i < nums1.length; i++) {
+            result[i] = map.getOrDefault(nums1[i], -1);
+        }
+        return result;
+    }
+
+    public int[] simpleNGE(int[] nums) {
+        int n = nums.length;
+        Deque<Integer> stack = new LinkedList<>();
+//        int[] dummy = new int[n + 1];
+        int[] result = new int[n];
+        Arrays.fill(result, -1);
+//        for (int i = 0; i < n; i++) {
+//            dummy[i] = nums[i];
+//        }
+//        dummy[n] = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {
+                result[stack.pop()] = nums[i];
+            }
+            stack.push(i);
+        }
+
+        return result;
+
+    }
+
+
+    // 给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），输出每个元素的下一个更大元素。
+    // 数字 x 的下一个更大的元素是按数组遍历顺序，这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
+    //
+
+    public int[] nextGreaterElements(int[] nums) {
+        int[] doubleNums = new int[nums.length * 2 + 1];
+        int[] result = new int[nums.length];
+        Arrays.fill(result, -1);
+        for (int i = 0; i < nums.length * 2 + 1; i++) {
+            doubleNums[i] = nums[i % nums.length];
+        }
+        doubleNums[nums.length * 2] = Integer.MAX_VALUE;
+        Deque<Integer> stack = new ArrayDeque<>(); // 效率优于LinkedList
+
+        for (int i = 0; i < nums.length * 2 + 1; i++) {
+            if (!stack.isEmpty()) {
+                // 队首 == 栈底
+                // 队尾 == 栈顶
+                if (nums[i % nums.length] < stack.peekLast()) {
+                    stack.offer(nums[i % nums.length]);
+                } else {
+                    int ctr = 1;
+                    // 注意此时i指向较大的元素
+                    while (!stack.isEmpty() && nums[i % nums.length] > stack.peekLast()) {
+
+                        result[(i - ctr) % nums.length] = nums[i % nums.length];
+                        stack.pollLast();
+                        ctr++;
+                    }
+//                    if (stack.isEmpty() || nums[i % nums.length] != stack.peekLast()){
+//                    if (stack.isEmpty()) {
+                    stack.offer(nums[i % nums.length]);
+//                    }
+                }
+            } else {
+                stack.offer(nums[i % nums.length]);
+            }
+        }
+
+        return result;
+
+    }
+
 
     // Definition for a binary tree node.
     public class TreeNode {
@@ -17,7 +136,64 @@ class Scratch {
         }
     }
 
-    public List<List<Integer>> levelOrderFromBottom(TreeNode root){
+    int maxSum = Integer.MIN_VALUE;
+
+    public int maxSum(TreeNode root) {
+        maxGain(root);
+        return maxSum;
+    }
+
+    public int maxGain(TreeNode root) {
+        if (root == null) return 0;
+        int leftGain = Math.max(maxGain(root.left), 0);
+        int rightGain = Math.max(maxGain(root.right), 0);
+
+        int currentSum = leftGain + rightGain + root.val;
+        maxSum = Math.max(maxSum, currentSum);
+
+        return root.val + Math.max(leftGain, rightGain);
+    }
+
+    public int minDepth(TreeNode root) {
+        if (root == null) return 0;
+        if (root.left == null && root.right == null) return 1;
+        int layerCtr = 0;
+        Queue<TreeNode> working = new LinkedList<>();
+
+        working.offer(root);
+        while (working != null) {
+            int size = working.size();
+            layerCtr++;
+            for (int i = 0; i < size; i++) {
+                TreeNode tmp = working.poll();
+                if (tmp.left == null && tmp.right == null) return layerCtr++;
+                if (tmp.left != null) working.add(tmp.left);
+                if (tmp.right != null) working.add(tmp.right);
+            }
+        }
+        return layerCtr;
+    }
+
+    public List<Double> averageOfLevels(TreeNode root) {
+        List<Double> result = new LinkedList<>();
+        Queue<TreeNode> working = new LinkedList<>();
+        working.offer(root);
+        while (!working.isEmpty()) {
+            int size = working.size();
+            double tmpAverage = 0;
+            for (int i = 0; i < size; i++) {
+                TreeNode tmp = working.poll();
+                tmpAverage += tmp.val;
+                if (tmp.left != null) working.offer(tmp.left);
+                if (tmp.right != null) working.offer(tmp.right);
+            }
+            tmpAverage /= size;
+            result.add(tmpAverage);
+        }
+        return result;
+    }
+
+    public List<List<Integer>> levelOrderFromBottom(TreeNode root) {
         List<List<Integer>> levelOrder = new LinkedList<List<Integer>>();
         if (root == null) {
             return levelOrder;
