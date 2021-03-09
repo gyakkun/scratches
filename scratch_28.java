@@ -6,6 +6,32 @@ class Scratch {
         System.err.println(s.partition("abb"));
     }
 
+    public int findMaximizedCapital(int k, int W, int[] pureProfits, int[] capital) {
+        int n = pureProfits.length;
+        Set<Integer> tmp = new HashSet<>();
+        PriorityQueue<Integer> q = new PriorityQueue<>((o1, o2) -> pureProfits[o2] - pureProfits[o1]);
+        for (int i = 0; i < n; i++) {
+            q.add(i);
+        }
+
+        // greedy strategy: select the project with maximum profit within the feasible project ( W>=capital )
+        while (k != 0) {
+            if (!q.isEmpty()) {
+                while (!q.isEmpty() && capital[q.peek()] > W) {
+                    tmp.add(q.poll());
+                }
+                if (q.isEmpty()) return W;
+                W += pureProfits[q.poll()];
+                for (int i : tmp) {
+                    q.add(i);
+                }
+                tmp.clear();
+            }
+            k--;
+        }
+        return W;
+    }
+
     public int pathSum(TreeNode root, int sum) {
         Map<Integer, Integer> prefixSumCount = new HashMap<>();
         prefixSumCount.put(0, 1);
@@ -168,4 +194,39 @@ class Scratch {
         return sb.toString();
     }
 
+}
+
+class MedianFinder {
+
+    PriorityQueue<Integer> maxHeap;
+    PriorityQueue<Integer> minHeap;
+
+    public MedianFinder() {
+        maxHeap = new PriorityQueue<>((o1, o2) -> o2 - o1);
+        minHeap = new PriorityQueue<>((o1, o2) -> o1 - o2);
+    }
+
+    public void addNum(int num) {
+        if (maxHeap.isEmpty() || num < maxHeap.peek()) {
+            maxHeap.offer(num);
+        } else {
+            minHeap.offer(num);
+        }
+
+        if (maxHeap.size() == minHeap.size() + 2) {
+            minHeap.offer(maxHeap.poll());
+        }
+        if (minHeap.size() == maxHeap.size() + 1) {
+            maxHeap.offer(minHeap.poll());
+        }
+
+    }
+
+    public double findMedian() {
+        if (maxHeap.size() == minHeap.size()) {
+            double median = (maxHeap.peek() + minHeap.peek()) / 2d;
+            return median;
+        }
+        return maxHeap.peek();
+    }
 }
