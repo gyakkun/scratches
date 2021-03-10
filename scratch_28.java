@@ -3,30 +3,156 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.partition("abb"));
+        System.err.println(s.permute(new int[]{}));
+    }
+
+    class Solution {
+        public List<String> letterCasePermutation(String S) {
+            List<StringBuilder> ans = new ArrayList();
+            ans.add(new StringBuilder());
+
+            for (char c: S.toCharArray()) {
+                int n = ans.size();
+                if (Character.isLetter(c)) {
+                    for (int i = 0; i < n; i++) {
+                        ans.add(new StringBuilder(ans.get(i)));
+                        ans.get(i).append(Character.toLowerCase(c));
+                        ans.get(n+i).append(Character.toUpperCase(c));
+                    }
+                } else {
+                    for (int i = 0; i < n; ++i)
+                        ans.get(i).append(c);
+                }
+            }
+
+            List<String> finalans = new ArrayList();
+            for (StringBuilder sb: ans)
+                finalans.add(sb.toString());
+            return finalans;
+        }
+    }
+
+
+
+
+    List<List<Integer>> permuteResult;
+
+    public List<List<Integer>> permute(int[] nums) {
+        permuteResult = new ArrayList<>();
+        permuteBacktrack(nums, 0, nums.length);
+        return permuteResult;
+    }
+
+    public void permuteBacktrack(int[] nums, int curIdx, int fin) {
+        if (curIdx == fin) {
+            List<Integer> result = new ArrayList<>();
+            for (int i = 0; i < fin; i++) {
+                result.add(nums[i]);
+            }
+            permuteResult.add(result);
+        }
+        for (int i = curIdx; i < fin; i++) {
+            // 交换
+            int tmp = nums[i];
+            nums[i] = nums[curIdx];
+            nums[curIdx] = tmp;
+
+            // 回溯
+            permuteBacktrack(nums, curIdx + 1, fin);
+
+            // 复原
+            tmp = nums[i];
+            nums[i] = nums[curIdx];
+            nums[curIdx] = tmp;
+        }
+    }
+
+
+    public List<List<Integer>> subsets(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> subsetsResult = new ArrayList<>();
+        int n = nums.length;
+        long maxBin = 1l << n;
+        for (long i = 0l; i < maxBin; i++) {
+            List<Integer> tmp = new ArrayList<>();
+            boolean illegal = false;
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1l) == 1) {
+                    if (j > 0 && nums[j] == nums[j - 1] && (((i >> (j - 1)) & 1l) == 0)) {
+                        illegal = true;
+                        break;
+                    } else {
+                        tmp.add(nums[j]);
+                    }
+                }
+            }
+            if (!illegal) {
+                subsetsResult.add(tmp);
+            }
+        }
+        return subsetsResult;
+    }
+
+    public int calculate(String s) {
+        // 用1/-1来控制拆括号后的正负, 存在栈中
+        Deque<Integer> ops = new LinkedList<Integer>();
+        ops.push(1);
+        int sign = 1;
+
+        int result = 0;
+        int n = s.length();
+        int i = 0;
+        while (i < n) {
+            if (s.charAt(i) == ' ') {
+                i++;
+            } else if (s.charAt(i) == '+') {
+                sign = ops.peek();
+                i++;
+            } else if (s.charAt(i) == '-') {
+                sign = -ops.peek();
+                i++;
+            } else if (s.charAt(i) == '(') {
+                ops.push(sign);
+                i++;
+            } else if (s.charAt(i) == ')') {
+                ops.pop();
+                i++;
+            } else {
+                long num = 0;
+                while (i < n && Character.isDigit(s.charAt(i))) {
+                    num = num * 10 + s.charAt(i) - '0';
+                    i++;
+                }
+                result += sign * num;
+            }
+        }
+        return result;
     }
 
     public int findMaximizedCapital(int k, int W, int[] pureProfits, int[] capital) {
         int n = pureProfits.length;
         Set<Integer> tmp = new HashSet<>();
-        PriorityQueue<Integer> q = new PriorityQueue<>((o1, o2) -> pureProfits[o2] - pureProfits[o1]);
+        PriorityQueue<Integer> q = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return pureProfits[o2] - pureProfits[o1];
+            }
+        });
         for (int i = 0; i < n; i++) {
             q.add(i);
         }
 
         // greedy strategy: select the project with maximum profit within the feasible project ( W>=capital )
         while (k != 0) {
-            if (!q.isEmpty()) {
-                while (!q.isEmpty() && capital[q.peek()] > W) {
-                    tmp.add(q.poll());
-                }
-                if (q.isEmpty()) return W;
-                W += pureProfits[q.poll()];
-                for (int i : tmp) {
-                    q.add(i);
-                }
-                tmp.clear();
+            while (!q.isEmpty() && capital[q.peek()] > W) {
+                tmp.add(q.poll());
             }
+            if (q.isEmpty()) return W;
+            W += pureProfits[q.poll()];
+            for (int i : tmp) {
+                q.add(i);
+            }
+            tmp.clear();
             k--;
         }
         return W;
@@ -230,3 +356,4 @@ class MedianFinder {
         return maxHeap.peek();
     }
 }
+
