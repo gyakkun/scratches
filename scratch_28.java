@@ -3,14 +3,122 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.generateAbbreviations("word"));
+        System.err.println(s.reachNumber(-1000000000));
+    }
+
+    // LC754
+
+    public int reachNumber(int target) {
+        double absTarget = Math.abs(target);
+        double root = (Math.sqrt(1 + 8 * absTarget) - 1d) / 2d;
+        int min = (int) Math.ceil(root);
+
+        int sum = ((1 + min) * min) / 2;
+        if (sum == absTarget) return min;
+
+        int diff = sum - (int) absTarget;
+        if (diff % 2 == 0) return min;
+
+        if (((1 + min) * (2 + min) / 2 - (int) absTarget) % 2 == 0) return min + 1;
+        return min + 2;
+    }
+
+    public int maxFreq(String s, int maxLetters, int minSize, int maxSize) {
+        int n = s.length();
+        Map<String, Integer> occ = new HashMap<>();
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            Set<Character> exist = new HashSet<>();
+            String cur = "";
+            for (int j = i; j < Math.min(n, i + maxSize); j++) {
+                exist.add(s.charAt(j));
+                if (exist.size() > maxLetters) {
+                    break;
+                }
+                cur += s.charAt(j);
+                if (j - i + 1 >= minSize) {
+                    occ.put(cur, occ.getOrDefault(cur, 0) + 1);
+                    ans = Math.max(ans, occ.get(cur));
+                }
+            }
+        }
+        return ans;
+    }
+
+    public int maxFreqTLE(String s, int maxLetters, int minSize, int maxSize) {
+        int result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = i; j < s.length(); j++) {
+                int length = j - i + 1;
+                if (length >= minSize && length <= maxSize) {
+                    String sub = s.substring(i, j + 1);
+                    if (!judgeExceedDistinctChar(sub, maxLetters)) {
+                        result = Math.max(result, countSubArray(s, sub));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private int countSubArray(String m, String s) {
+        int strPtr = 0;
+        int ctr = 0;
+
+        while (strPtr < m.length()) {
+            int sPtr = 0;
+            int mPtr = strPtr;
+            while (sPtr < s.length() && mPtr < m.length()) {
+                if (m.charAt(mPtr) == s.charAt(sPtr)) {
+                    mPtr++;
+                    sPtr++;
+                } else {
+                    break;
+                }
+            }
+            if (sPtr == s.length()) {
+                ctr++;
+            }
+            strPtr++;
+        }
+        return ctr;
+    }
+
+    private boolean judgeExceedDistinctChar(String s, int maxLetters) {
+        int[] ctr = new int[26];
+        int num = 0;
+        for (char c : s.toCharArray()) {
+            ctr[c - 'a']++;
+        }
+        for (int i : ctr) {
+            if (i > 0) num++;
+        }
+        return num > maxLetters;
+    }
+
+
+    private void generateAbbreviationsDfs(char[] wa, int from, int last, String abbr, List<String> result) {
+        if (from == wa.length) {
+            result.add(abbr);
+            return;
+        }
+        for (int i = 0; i <= wa.length - from; i++) {
+            generateAbbreviationsDfs(wa, from + Math.max(1, i), i, (i == 0 ? abbr + wa[from] : abbr + i), result);
+            if (last > 0) break;
+        }
+    }
+
+    public List<String> generateAbbreviations(String word) {
+        List<String> result = new ArrayList<>();
+        generateAbbreviationsDfs(word.toCharArray(), 0, 0, "", result);
+        return result;
     }
 
     // LC320
     // Given word = "word", return the following list (order does not matter):
     // ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
 
-    public List<String> generateAbbreviations(String word) {
+    public List<String> generateAbbreviationsBinaryMask(String word) {
         List<String> result = new ArrayList<>();
         int n = word.length();
         long maxMask = 1 << n;
@@ -81,7 +189,7 @@ class Scratch {
                 // 且当前选课A 与 A子集a的前置课程集 的交集 等于 子集a的前置课程集
                 // <=> 子集a前置课程集是当前选课A的一个子集, 即可以在某个学期上完了(A-a), 再在下一个学期上a
                 // 则有转移方程 dp[A] = Min(dp[A], dp[A-a]+1), A-a为集合减法, 实际运算中用掩码的亦或运算表达
-                // (注意仅当a为A的子集才能用亦或表达集合减法)
+                // (注意仅当a为A的子集才能用亦或表达集合减法), 否则应该是 (mask ^ subset) & mask
                 if (valid[subset] && ((mask & setPrereq[subset]) == setPrereq[subset])) {
                     dp[mask] = Math.min(dp[mask], dp[mask ^ subset] + 1);
                 }
