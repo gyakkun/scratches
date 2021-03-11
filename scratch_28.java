@@ -3,7 +3,73 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.rangeBitwiseAnd(6, 7));
+        System.err.println(s.reorganizeString("zrhmhyevkojpsegvwolkpystdnkyhcjrdvqtyhucxdcwm"));
+
+        PriorityQueue<Integer> integers;
+    }
+
+    // LC767
+
+    class Pair {
+        char left;
+        int right;
+
+        public Pair(char left, int right) {
+            this.left = left;
+            this.right = right;
+        }
+    }
+
+    char[] result;
+
+    public String reorganizeString(String s) {
+        int n = s.length();
+        char[] ca = s.toCharArray();
+        int[] ctr = new int[26];
+        for (char c : ca) {
+            ctr[c - 'a']++;
+        }
+        int maxIdx = 0;
+        for (int i = 0; i < 26; i++) {
+            if (ctr[i] > ctr[maxIdx]) {
+                maxIdx = i;
+            }
+        }
+        if ((ctr[maxIdx] - 1) * 2 + 1 > n) return "";
+        int gapLength = (int) Math.ceil((double) n / (double) ctr[maxIdx]);
+        int gapNum = (int) Math.ceil((double) n / (double) gapLength);
+        List<Pair> pairList = new ArrayList<>(26);
+        for (int i = 0; i < 26; i++) {
+            pairList.add(new Pair((char) (i + 'a'), ctr[i]));
+        }
+        Collections.sort(pairList, Comparator.comparingInt(o -> -o.right));
+        int tmpCtr = 0;
+        for (Pair p : pairList) {
+            for (int i = 0; i < p.right; i++) {
+                ca[tmpCtr + i] = p.left;
+            }
+            tmpCtr += p.right;
+        }
+        result = new char[n];
+        for (int i = 0; i < n; i++) {
+            int idx = getIdx(i, n, gapLength, gapNum);
+            result[idx] = ca[i];
+        }
+        return new String(result);
+    }
+
+    public int getIdx(int current, int length, int gapLength, int gapNum) {
+
+        int round = current / gapNum;
+        int whichGap = current % gapNum;
+        int result = round + whichGap * gapLength;
+        if (result >= length) {
+            return getIdx(current + 1, length, gapLength, gapNum);
+        }
+        if (this.result[result] != 0) {
+            return getIdx(current + 1, length, gapLength, gapNum);
+        }
+        return result;
     }
 
     public List<List<Integer>> minimumAbsDifference(int[] arr) {
