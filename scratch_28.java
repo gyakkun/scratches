@@ -3,37 +3,61 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.permute(new int[]{}));
+        System.err.println(s.minNumberOfSemesters(4,
+                new int[][]{{2, 1}, {3, 1}, {1, 4}},
+                2));
     }
 
-    class Solution {
-        public List<String> letterCasePermutation(String S) {
-            List<StringBuilder> ans = new ArrayList();
-            ans.add(new StringBuilder());
+    public int minNumberOfSemesters(int n, int[][] dependencies, int k) {
 
-            for (char c: S.toCharArray()) {
-                int n = ans.size();
-                if (Character.isLetter(c)) {
-                    for (int i = 0; i < n; i++) {
-                        ans.add(new StringBuilder(ans.get(i)));
-                        ans.get(i).append(Character.toLowerCase(c));
-                        ans.get(n+i).append(Character.toUpperCase(c));
+        // 前置课程约束: 不能在同一个学期, 既选择一门课程C有选择C的前置课程(如C有前置课程)
+
+        int[] prereq = new int[n];
+
+        for (int[] dep : dependencies) {
+            // 每门课程编号的前置课程掩码
+            prereq[dep[1] - 1] |= (1 << (dep[0] - 1));
+        }
+
+        int[] setPrereq = new int[1 << n];
+
+        boolean[] valid = new boolean[1 << n];
+
+        // 用掩码表示一个学期的一种选课组合, setPrereq[A]表示当前掩码表示的课程组合A的前置课程组合preA。
+        // 只有当A与preA没有交集, 即A不会同时包含A中任意课程及其前置课程
+        // 即不违反前置课程约束, valid[mask]才为真
+        for (int mask = 0; mask < (1 << n); mask++) {
+            // 另一个约束: A不能超过k门
+            if (Integer.bitCount(mask) <= k) {
+                for (int i = 0; i < n; i++) {
+//                    if ((mask & (1 << i)) != 0) {
+                    if (((mask >> i) & 1) == 1) {
+                        setPrereq[mask] |= prereq[i];
                     }
-                } else {
-                    for (int i = 0; i < n; ++i)
-                        ans.get(i).append(c);
+                }
+                valid[mask] = ((setPrereq[mask] & mask) == 0);
+            }
+        }
+        // dp[mask] 表示选课组合为mask时候的最少上课学期
+        // 初始化为dp[0]=0, 表示什么课都不选的时候只需要上0学期, 为边界条件
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            // 构造mask的二进制位子集
+            for (int subset = mask; subset > 0; subset = (subset - 1) & mask) {
+                // 如果当前的子集不违反前置课程约束
+                // 且当前选课A 与 A子集a的前置课程集 的交集 等于 子集a的前置课程集
+                // <=> 子集a前置课程集是当前选课A的一个子集, 即可以在某个学期上完了(A-a), 再在下一个学期上a
+                // 则有转移方程 dp[A] = Min(dp[A], dp[A-a]+1), A-a为集合减法, 实际运算中用掩码的亦或运算表达
+                // (注意仅当a为A的子集才能用亦或表达集合减法)
+                if (valid[subset] && ((mask & setPrereq[subset]) == setPrereq[subset])) {
+                    dp[mask] = Math.min(dp[mask], dp[mask ^ subset] + 1);
                 }
             }
-
-            List<String> finalans = new ArrayList();
-            for (StringBuilder sb: ans)
-                finalans.add(sb.toString());
-            return finalans;
         }
+        return dp[(1 << n) - 1];
     }
-
-
-
 
     List<List<Integer>> permuteResult;
 
