@@ -3,10 +3,41 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.minNumberOfSemesters(4,
-                new int[][]{{2, 1}, {3, 1}, {1, 4}},
-                2));
+        System.err.println(s.generateAbbreviations("word"));
     }
+
+    // LC320
+    // Given word = "word", return the following list (order does not matter):
+    // ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+
+    public List<String> generateAbbreviations(String word) {
+        List<String> result = new ArrayList<>();
+        int n = word.length();
+        long maxMask = 1 << n;
+        for (long mask = 0; mask < maxMask; mask++) {
+            StringBuffer sb = new StringBuffer();
+            int tmpOneCtr = 0;
+            // 掩码为1表示当前待缩写的字符 (用0也一样)
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 1) {
+                    tmpOneCtr++;
+                    continue;
+                } else {
+                    if (tmpOneCtr != 0) {
+                        sb.append(tmpOneCtr);
+                    }
+                    sb.append(word.charAt(i));
+                    tmpOneCtr = 0;
+                }
+            }
+            if (tmpOneCtr != 0) {
+                sb.append(tmpOneCtr);
+            }
+            result.add(sb.toString());
+        }
+        return result;
+    }
+
 
     public int minNumberOfSemesters(int n, int[][] dependencies, int k) {
 
