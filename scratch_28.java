@@ -3,7 +3,40 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.reachNumber(-1000000000));
+        System.err.println(s.rangeBitwiseAnd(6, 7));
+    }
+
+    public List<List<Integer>> minimumAbsDifference(int[] arr) {
+        Set<Integer> s = new HashSet<>();
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i : arr)
+            s.add(i);
+        Arrays.sort(arr);
+        int min = Integer.MAX_VALUE;
+        for (int i = 1; i < arr.length; i++) {
+            min = Math.min(min, arr[i] - arr[i - 1]);
+        }
+        for (int i : arr) {
+            if (i + min > arr[arr.length]) break;
+
+            if (s.contains(i + min)) {
+                List<Integer> tmp = new ArrayList<>(2);
+                tmp.add(i);
+                tmp.add(i + min);
+                result.add(tmp);
+            }
+        }
+        return result;
+    }
+
+    public int rangeBitwiseAnd(int left, int right) {
+        int shift = 0;
+        while (left < right) {
+            left = left >> 1;
+            right = right >> 1;
+            shift++;
+        }
+        return left << shift;
     }
 
     // LC754
