@@ -6,7 +6,84 @@ class Scratch {
         Scratch s = new Scratch();
 //        System.err.println(s.countRangeSum(new int[]{-2, 5, -1}, -2, 2));
         int[] ia = new int[]{9, 4, 2, 10, 100};
-        System.err.println(s.maxDistinctNum(new int[]{1, 2, 2, 2}, 1));
+        System.err.println(s.findKthLargest(new int[]{3, 2, 1, 5, 6, 4}, 2));
+    }
+
+    public int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int n = nums.length;
+        for (int i = 0; i < k; i++) {
+            pq.add(nums[i]);
+        }
+        for (int i = k; i < n; i++) {
+            if (nums[i] < pq.peek()) continue;
+            else {
+                pq.poll();
+                pq.add(nums[i]);
+            }
+        }
+        return pq.peek();
+    }
+
+    public int[] topKFrequent(int[] nums, int k) {
+        int[] result = new int[k];
+        Map<Integer, Integer> m = new HashMap<>();
+        List<int[]> l = new ArrayList<>();
+        for (int i : nums) {
+            m.put(i, m.getOrDefault(i, 0) + 1);
+        }
+        for (int i : m.keySet()) {
+            l.add(new int[]{i, m.get(i)});
+        }
+        l.sort((o1, o2) -> (m.get(o2) - m.get(o1)));
+        for (int i = 0; i < k; i++) {
+            result[i] = l.get(i)[0];
+        }
+        return result;
+    }
+
+    public String frequencySort(String s) {
+        Map<Character, Integer> m = new HashMap<>();
+        List<int[]> l = new ArrayList<>();
+        for (char c : s.toCharArray()) {
+            m.put(c, m.getOrDefault(c, 0) + 1);
+        }
+        for (char c : m.keySet()) {
+            l.add(new int[]{c - 'a', m.get(c)});
+        }
+        l.sort(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o2[1] - o1[1];
+            }
+        });
+        StringBuffer sb = new StringBuffer();
+        for (int[] ia : l) {
+            for (int i = 0; i < ia[1]; i++) {
+                sb.append((char) (ia[0] + 'a'));
+            }
+        }
+        return sb.toString();
+    }
+
+    // LC658
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                int diff = Math.abs(o1 - x) - Math.abs(o2 - x);
+                return diff == 0 ? o1 - o2 : diff;
+            }
+        });
+        List<Integer> result = new LinkedList<>();
+        for (int i : arr) {
+            minHeap.add(i);
+        }
+        while (k-- != 0) {
+            result.add(minHeap.poll());
+        }
+        Collections.sort(result);
+        return result;
     }
 
     // https://www.geeksforgeeks.org/maximum-distinct-elements-removing-k-elements/
