@@ -3,20 +3,13 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.isValidSerialization(
-                "9,9,91,#,#,9,#,49,#,#,#"));
+        System.err.println(
+                s.isValidSerialization(
+                        "9,9,91,#,#,9,#,49,#,#,#"
+                )
+        );
     }
 
-    // LC297
-    public class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode(int x) {
-            val = x;
-        }
-    }
 
     public class Codec {
 
@@ -704,8 +697,8 @@ class MedianFinder {
     PriorityQueue<Integer> minHeap;
 
     public MedianFinder() {
-        maxHeap = new PriorityQueue<>((o1, o2) -> o2 - o1);
-        minHeap = new PriorityQueue<>((o1, o2) -> o1 - o2);
+        maxHeap = new PriorityQueue<>(Comparator.comparingInt(o -> -o));
+        minHeap = new PriorityQueue<>(Comparator.comparingInt(o -> o));
     }
 
     public void addNum(int num) {
