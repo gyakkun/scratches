@@ -9,6 +9,36 @@ class Scratch {
         System.err.println(s.findKthLargest(new int[]{3, 2, 1, 5, 6, 4}, 2));
     }
 
+    public int[][] kClosest(int[][] points, int k) {
+        int[][] result = new int[k][2];
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o2[1] - o1[1];
+            }
+        });
+
+        for (int i = 0; i < k; i++) {
+            pq.add(new int[]{i, points[i][0] * points[i][0] + points[i][1] * points[i][1]});
+        }
+
+        for (int i = k; i < points.length; i++) {
+            int tmpDistance = points[i][0] * points[i][0] + points[i][1] * points[i][1];
+            if (tmpDistance > pq.peek()[1]) continue;
+            else {
+                pq.poll();
+                pq.add(new int[]{i, tmpDistance});
+            }
+        }
+
+        int i = 0;
+        while(!pq.isEmpty()){
+            result[i++] = points[pq.poll()[0]];
+        }
+        return result;
+
+    }
+
     public int findKthLargest(int[] nums, int k) {
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         int n = nums.length;
