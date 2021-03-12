@@ -3,13 +3,128 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.reorganizeString("zrhmhyevkojpsegvwolkpystdnkyhcjrdvqtyhucxdcwm"));
+        System.err.println(s.isValidSerialization(
+                "9,9,91,#,#,9,#,49,#,#,#"));
+    }
 
-        PriorityQueue<Integer> integers;
+    // LC297
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    public class Codec {
+
+        // Encodes a tree to a single string.
+        public String serialize(TreeNode root) {
+            StringBuffer sb = new StringBuffer();
+            dfs(root, sb);
+            sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
+        }
+
+        private void dfs(TreeNode root, StringBuffer sb) {
+            if (root == null) {
+                sb.append("#,");
+                return;
+            } else {
+                sb.append(root.val);
+                sb.append(',');
+                dfs(root.left, sb);
+                dfs(root.right, sb);
+            }
+        }
+
+        private TreeNode dfsDes(List<String> l) {
+            if (l.get(0).equals("#")) {
+                l.remove(0);
+                return null;
+            }
+            TreeNode root = new TreeNode(Integer.valueOf(l.get(0)));
+            l.remove(0);
+            root.left = dfsDes(l);
+            root.right = dfsDes(l);
+            return root;
+        }
+
+        // Decodes your encoded data to tree.
+        public TreeNode deserialize(String data) {
+            //     _9_
+            //    /   \
+            //   3     2
+            //  / \   / \
+            // 4   1  #  6
+            /// \ / \   / \
+            //# # # #   # #
+            //
+            // "9,3,4,#,#,1,#,#,2,#,6,#,#"
+            if (!isValidSerializationCtr(data)) return null;
+            String[] list = data.split(",");
+            if (list.length == 1 && list[0].equals("#")) return null;
+            TreeNode root = new TreeNode(Integer.valueOf(list[0]));
+            List<String> l = new LinkedList<>(Arrays.asList(list));
+            return dfsDes(l);
+        }
+
+        private boolean isValidSerializationCtr(String preorder) {
+            String[] list = preorder.split(",");
+            if (list.length > 1 && list[0].equals("#")) return false;
+            int ctr = 1;
+            int i;
+            for (i = 0; i < list.length; i++) {
+                if (ctr == 0) return false;
+                if (list[i].equals("#")) ctr--;
+                else ctr++;
+            }
+            if (ctr != 0) return false;
+            return true;
+        }
+    }
+
+    public boolean isValidSerialization(String preorder) {
+        String[] list = preorder.split(",");
+        Deque<Integer> stack = new LinkedList<Integer>();
+        stack.push(1);
+        for (String s : list) {
+            if (stack.isEmpty()) {
+                return false;
+            }
+            if (s.equals("#")) {
+                int top = stack.pop() - 1;
+                if (top > 0) {
+                    stack.push(top);
+                }
+            } else {
+                int top = stack.pop() - 1;
+                if (top > 0) {
+                    stack.push(top);
+                }
+                stack.push(2);
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public boolean isValidSerializationCtr(String preorder) {
+        String[] list = preorder.split(",");
+        if (list.length > 0 && list[0].equals("#")) return false;
+        int ctr = 1;
+        int i;
+        for (i = 0; i < list.length; i++) {
+            if (ctr == 0) return false;
+            if (list[i].equals("#")) ctr--;
+            else ctr++;
+        }
+        if (ctr != 0) return false;
+        return true;
     }
 
     // LC767
-
     class Pair {
         char left;
         int right;
@@ -59,7 +174,6 @@ class Scratch {
     }
 
     public int getIdx(int current, int length, int gapLength, int gapNum) {
-
         int round = current / gapNum;
         int whichGap = current % gapNum;
         int result = round + whichGap * gapLength;
