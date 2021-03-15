@@ -7,30 +7,59 @@ class Scratch {
 //        System.err.println(s.countRangeSum(new int[]{-2, 5, -1}, -2, 2));
         int[] ia = new int[]{9, 4, 2, 10, 100};
 
-
-        // [[1,4,5],[1,3,4],[2,6]]
-
-        ListNode one = new ListNode(1);
-        ListNode one2 = new ListNode(1);
-        ListNode two = new ListNode(2);
-        ListNode three = new ListNode(3);
-        ListNode four = new ListNode(4);
-        ListNode four2 = new ListNode(4);
-        ListNode five = new ListNode(5);
-        ListNode six = new ListNode(6);
-        one.next = four;
-        four.next = five;
-        one2.next = three;
-        three.next = four2;
-        two.next = six;
-        ListNode[] l = new ListNode[]{one, one2, two};
-        s.mergeKLists(l);
+        int[] i = new int[]{4, 10, 15, 24, 26};
+        int[] j = new int[]{0, 9, 12, 20};
+        int[] k = new int[]{5, 18, 22, 30};
+        List<Integer> ii = new LinkedList<>(Arrays.stream(i).boxed().collect(Collectors.toList()));
+        List<Integer> jj = new LinkedList<>(Arrays.stream(j).boxed().collect(Collectors.toList()));
+        List<Integer> kk = new LinkedList<>(Arrays.stream(k).boxed().collect(Collectors.toList()));
+        List<List<Integer>> l = new LinkedList<>();
+        l.add(ii);
+        l.add(jj);
+        l.add(kk);
+        s.smallestRange(l);
 
     }
 
-    // LC632
+
+    // LC632, hard
     public int[] smallestRange(List<List<Integer>> nums) {
-        return new int[]{0, 0}
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        int[] result = new int[2];
+        PriorityQueue<List<Integer>> pq = new PriorityQueue<>(new Comparator<List<Integer>>() {
+            @Override
+            public int compare(List<Integer> o1, List<Integer> o2) {
+                return o1.get(0) - o2.get(0);
+            }
+        });
+
+        for (List<Integer> num : nums) {
+            pq.add(num);
+            max = Math.max(num.get(0), max);
+            min = Math.min(num.get(0), min);
+        }
+        result[0] = min;
+        result[1] = max;
+
+        // 1       5
+        //   2 3   5
+        //       4   6
+        //         5
+        while (true) {
+            List<Integer> tmp = pq.poll();
+            if (tmp.size() == 1) break;
+            tmp.remove(0);
+            pq.offer(tmp);
+
+            min = pq.peek().get(0);
+            max = Math.max(max, tmp.get(0));
+            if (max - min < result[1] - result[0]) {
+                result[0] = min;
+                result[1] = max;
+            }
+        }
+        return result;
     }
 
 
