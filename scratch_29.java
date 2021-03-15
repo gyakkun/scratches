@@ -7,9 +7,9 @@ class Scratch {
 //        System.err.println(s.countRangeSum(new int[]{-2, 5, -1}, -2, 2));
         int[] ia = new int[]{9, 4, 2, 10, 100};
 
-        int[] i = new int[]{4, 10, 15, 24, 26};
-        int[] j = new int[]{0, 9, 12, 20};
-        int[] k = new int[]{5, 18, 22, 30};
+        int[] i = new int[]{1, 5};
+        int[] j = new int[]{2, 3, 5};
+        int[] k = new int[]{4, 6};
         List<Integer> ii = new LinkedList<>(Arrays.stream(i).boxed().collect(Collectors.toList()));
         List<Integer> jj = new LinkedList<>(Arrays.stream(j).boxed().collect(Collectors.toList()));
         List<Integer> kk = new LinkedList<>(Arrays.stream(k).boxed().collect(Collectors.toList()));
@@ -46,6 +46,7 @@ class Scratch {
         //   2 3   5
         //       4   6
         //         5
+        //
         while (true) {
             List<Integer> tmp = pq.poll();
             if (tmp.size() == 1) break;
@@ -61,6 +62,32 @@ class Scratch {
         }
         return result;
     }
+
+    // LC474 m zero , n one
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[] zeroCounts = new int[strs.length];
+        int[] oneCounts = new int[strs.length];
+        for (int i = 0; i < strs.length; i++) {
+            for (char c : strs[i].toCharArray()) {
+                if (c == '0') {
+                    zeroCounts[i]++;
+                }
+            }
+            oneCounts[i] = strs[i].length() - zeroCounts[i];
+        }
+
+
+
+        return -1;
+    }
+
+    // 经典背包
+//    public int findMaxValue(int[] weight, int[] value, int maxWeight){
+//        // dp[i][j] 表示将前i件物品装进限重为j的背包中能获取的最大价值
+//        // dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-weight]+value[i])
+//
+//
+//    }
 
 
     //  Definition for singly-linked list.
