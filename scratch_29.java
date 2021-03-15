@@ -6,7 +6,141 @@ class Scratch {
         Scratch s = new Scratch();
 //        System.err.println(s.countRangeSum(new int[]{-2, 5, -1}, -2, 2));
         int[] ia = new int[]{9, 4, 2, 10, 100};
-        System.err.println(s.findKthLargest(new int[]{3, 2, 1, 5, 6, 4}, 2));
+
+
+        // [[1,4,5],[1,3,4],[2,6]]
+
+        ListNode one = new ListNode(1);
+        ListNode one2 = new ListNode(1);
+        ListNode two = new ListNode(2);
+        ListNode three = new ListNode(3);
+        ListNode four = new ListNode(4);
+        ListNode four2 = new ListNode(4);
+        ListNode five = new ListNode(5);
+        ListNode six = new ListNode(6);
+        one.next = four;
+        four.next = five;
+        one2.next = three;
+        three.next = four2;
+        two.next = six;
+        ListNode[] l = new ListNode[]{one, one2, two};
+        s.mergeKLists(l);
+
+    }
+
+    // LC632
+    public int[] smallestRange(List<List<Integer>> nums) {
+        return new int[]{0, 0}
+    }
+
+
+    //  Definition for singly-linked list.
+    public static class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode() {
+        }
+
+        ListNode(int val) {
+            this.val = val;
+        }
+
+        ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
+        }
+    }
+
+    public int kthSmallest(int[][] matrix, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o));
+        for (int[] i : matrix) {
+            for (int j : i) {
+                if (pq.size() < k) {
+                    pq.offer(j);
+                } else {
+                    if (j > pq.peek()) {
+                        break;
+                    } else {
+                        pq.poll();
+                        pq.offer(j);
+                    }
+                }
+            }
+        }
+        return pq.peek();
+    }
+
+    public ListNode mergeKLists(ListNode[] lists) {
+        return merge(lists, 0, lists.length - 1);
+    }
+
+    public ListNode merge(ListNode[] lists, int l, int r) {
+        if (l == r) {
+            return lists[l];
+        }
+        if (l > r) {
+            return null;
+        }
+        int mid = (l + r) >> 1;
+        return mergeTwoLists(merge(lists, l, mid), merge(lists, mid + 1, r));
+    }
+
+    public static ListNode mergeTwoLists(ListNode first, ListNode second) {
+        ListNode newHead;
+        ListNode firstHead = first;
+        ListNode secondHead = second;
+        ListNode head;
+
+        if (first != null && second != null) {
+            newHead = first.val < second.val ? first : second;
+        } else if (first == null) {
+            return second;
+        } else if (second == null) {
+            return first;
+        } else {
+            return null;
+        }
+        head = newHead;
+
+        while (firstHead != null && secondHead != null) {
+            if (firstHead.val < secondHead.val) {
+                ListNode tmpNext = firstHead.next;
+                head.next = firstHead;
+                head = head.next;
+                firstHead = tmpNext;
+            } else {
+                ListNode tmpNext = secondHead.next;
+                head.next = secondHead;
+                head = head.next;
+                secondHead = tmpNext;
+            }
+        }
+
+        if (firstHead == null) {
+            while (secondHead != null) {
+                ListNode tmpNext = secondHead.next;
+                head.next = secondHead;
+                head = head.next;
+                secondHead = tmpNext;
+            }
+        }
+        if (secondHead == null) {
+            while (firstHead != null) {
+                ListNode tmpNext = firstHead.next;
+                head.next = firstHead;
+                head = head.next;
+                firstHead = tmpNext;
+            }
+        }
+
+        // first  1 4 5
+        // second 1 3 4
+        //
+        // target 1 1 3 4 4 5
+
+
+        return newHead;
     }
 
     public int[][] kClosest(int[][] points, int k) {
@@ -32,7 +166,7 @@ class Scratch {
         }
 
         int i = 0;
-        while(!pq.isEmpty()){
+        while (!pq.isEmpty()) {
             result[i++] = points[pq.poll()[0]];
         }
         return result;
