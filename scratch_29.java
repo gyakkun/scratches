@@ -7,6 +7,48 @@ class Scratch {
         System.err.println(s.canPartitionKSubsets(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, 8));
     }
 
+    // LC210
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        // 朴素的拓扑排序算法, 判断是否有环
+        int[] inDegree = new int[numCourses];
+        Set<Integer> zeroInDegree = new HashSet<>();
+        List<int[]> preRequisitesList = new LinkedList<>();
+        List<Integer> result = new ArrayList<>(numCourses);
+        // 零入度集合
+        for (int i = 0; i < numCourses; i++) {
+            zeroInDegree.add(i);
+        }
+        for (int[] i : prerequisites) {
+            inDegree[i[0]]++;
+            zeroInDegree.remove(i[0]);
+            preRequisitesList.add(i);
+        }
+        // 判断成环
+        while (!zeroInDegree.isEmpty()) {
+            Iterator<Integer> outerIt = zeroInDegree.iterator();
+            if (outerIt.hasNext()) {
+                int i = outerIt.next();
+                result.add(i);
+                zeroInDegree.remove(i);
+                Iterator<int[]> it = preRequisitesList.iterator();
+                while (it.hasNext()) {
+                    int[] j = it.next();
+                    if (j[1] == i) {
+                        inDegree[j[0]]--;
+                        if (inDegree[j[0]] == 0) {
+                            zeroInDegree.add(j[0]);
+                        }
+                        it.remove();
+                    }
+                }
+            }
+        }
+        if (!preRequisitesList.isEmpty()) {
+            return new int[0];
+        }
+        return result.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
     // LC207
     public boolean canFinish(int numCourses, int[][] prerequisites) {
         // 朴素的拓扑排序算法, 判断是否有环
@@ -39,7 +81,6 @@ class Scratch {
                         it.remove();
                     }
                 }
-                zeroInDegree.remove(i);
             }
         }
         return preRequisitesList.isEmpty();
