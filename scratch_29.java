@@ -4,10 +4,47 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-//        System.err.println(s.countRangeSum(new int[]{-2, 5, -1}, -2, 2));
-        s.findMaxForm(new String[]{"10", "0001", "111001", "1", "0"}, 5, 3);
-
+        System.err.println(s.canPartition(new int[]{6, 4, 8, 7, 4, 6, 1, 5, 8}));
     }
+
+    // LC416
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+        }
+        if (sum % 2 != 0) return false;
+        int halfSum = sum / 2;
+        // dp[i][j] 表示 数组的前i项中, 在背包限制和大小为j的情况下能达到的最大和
+        // 当j==halfSum 且 dp[i][j]==halfSum时候返回真
+//        int[][] dp = new int[nums.length + 1][halfSum + 1];
+//        for (int i = 1; i <= nums.length; i++) {
+//            for (int j = 1; j <= halfSum; j++) {
+//                dp[i][j] = dp[i - 1][j];
+//                if (j - nums[i - 1] >= 0 && dp[i - 1][j - nums[i - 1]] + nums[i - 1] <= halfSum) {
+//                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - nums[i - 1]] + nums[i - 1]);
+//                }
+//            }
+//            if (dp[i][halfSum] == halfSum) {
+//                return true;
+//            }
+//        }
+        int[] dp = new int[halfSum + 1];
+        for (int i = 1; i <= nums.length; i++) {
+            for (int j = halfSum; j >= 0; j--) {
+//                dp[j] = dp[j];
+                if (j - nums[i - 1] >= 0 && dp[j - nums[i - 1]] + nums[i - 1] <= halfSum) {
+                    dp[j] = Math.max(dp[j], dp[j - nums[i - 1]] + nums[i - 1]);
+                }
+            }
+            if (dp[halfSum] == halfSum) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     // LC474 m zero , n one
     public int findMaxForm(String[] strs, int m, int n) {
@@ -37,7 +74,7 @@ class Scratch {
         for (int i = 1; i <= strs.length; i++) {
             int zeros = zeroCounts[i - 1];
             int ones = oneCounts[i - 1];
-            for (int j = 0; j <=m; j++) {
+            for (int j = 0; j <= m; j++) {
                 for (int k = 0; k <= n; k++) {
                     dp[i][j][k] = dp[i - 1][j][k];
                     if (j >= zeros && k >= ones) {
