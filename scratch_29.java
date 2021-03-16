@@ -5,21 +5,90 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
 //        System.err.println(s.countRangeSum(new int[]{-2, 5, -1}, -2, 2));
-        int[] ia = new int[]{9, 4, 2, 10, 100};
-
-        int[] i = new int[]{1, 5};
-        int[] j = new int[]{2, 3, 5};
-        int[] k = new int[]{4, 6};
-        List<Integer> ii = new LinkedList<>(Arrays.stream(i).boxed().collect(Collectors.toList()));
-        List<Integer> jj = new LinkedList<>(Arrays.stream(j).boxed().collect(Collectors.toList()));
-        List<Integer> kk = new LinkedList<>(Arrays.stream(k).boxed().collect(Collectors.toList()));
-        List<List<Integer>> l = new LinkedList<>();
-        l.add(ii);
-        l.add(jj);
-        l.add(kk);
-        s.smallestRange(l);
+        s.findMaxForm(new String[]{"10", "0001", "111001", "1", "0"}, 5, 3);
 
     }
+
+    // LC474 m zero , n one
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[] zeroCounts = new int[strs.length];
+        int[] oneCounts = new int[strs.length];
+        for (int i = 0; i < strs.length; i++) {
+            for (char c : strs[i].toCharArray()) {
+                if (c == '0') {
+                    zeroCounts[i]++;
+                }
+            }
+            oneCounts[i] = strs[i].length() - zeroCounts[i];
+        }
+
+        // dp[i][j]表示将前i个字符串放到限制零个数为j的背包种能得到的最多的1的个数, 0<=j<=m
+        // dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-zeroCounts[i]]+oneCounts[i])
+
+        int[][][] dp = new int[strs.length + 1][m + 1][n + 1];
+
+        for (int i = 0; i <= m; i++) {
+            dp[0][i][0] = 0;
+        }
+        for (int i = 0; i <= n; i++) {
+            dp[0][0][i] = 0;
+        }
+
+        for (int i = 1; i <= strs.length; i++) {
+            int zeros = zeroCounts[i - 1];
+            int ones = oneCounts[i - 1];
+            for (int j = 0; j <=m; j++) {
+                for (int k = 0; k <= n; k++) {
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    if (j >= zeros && k >= ones) {
+                        dp[i][j][k] = Math.max(dp[i - 1][j][k], dp[i - 1][j - zeros][k - ones] + 1);
+                    }
+                }
+            }
+        }
+
+
+        return dp[strs.length][m][n];
+    }
+
+    public int findMaxFormLC(String[] strs, int m, int n) {
+        int len = strs.length;
+        int[][][] dp = new int[len + 1][m + 1][n + 1];
+
+        for (int i = 1; i <= len; i++) {
+            // 注意：有一位偏移
+            int[] count = countZeroAndOne(strs[i - 1]);
+            for (int j = 0; j <= m; j++) {
+                for (int k = 0; k <= n; k++) {
+                    // 先把上一行抄下来
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    int zeros = count[0];
+                    int ones = count[1];
+                    if (j >= zeros && k >= ones) {
+                        dp[i][j][k] = Math.max(dp[i - 1][j][k], dp[i - 1][j - zeros][k - ones] + 1);
+                    }
+                }
+            }
+        }
+        return dp[len][m][n];
+    }
+
+    private int[] countZeroAndOne(String str) {
+        int[] cnt = new int[2];
+        for (char c : str.toCharArray()) {
+            cnt[c - '0']++;
+        }
+        return cnt;
+    }
+
+
+    // 经典背包
+//    public int findMaxValue(int[] weight, int[] value, int maxWeight){
+//        // dp[i][j] 表示将前i件物品装进限重为j的背包中能获取的最大价值
+//        // dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-weight]+value[i])
+//
+//
+//    }
 
 
     // LC632, hard
@@ -62,32 +131,6 @@ class Scratch {
         }
         return result;
     }
-
-    // LC474 m zero , n one
-    public int findMaxForm(String[] strs, int m, int n) {
-        int[] zeroCounts = new int[strs.length];
-        int[] oneCounts = new int[strs.length];
-        for (int i = 0; i < strs.length; i++) {
-            for (char c : strs[i].toCharArray()) {
-                if (c == '0') {
-                    zeroCounts[i]++;
-                }
-            }
-            oneCounts[i] = strs[i].length() - zeroCounts[i];
-        }
-
-
-
-        return -1;
-    }
-
-    // 经典背包
-//    public int findMaxValue(int[] weight, int[] value, int maxWeight){
-//        // dp[i][j] 表示将前i件物品装进限重为j的背包中能获取的最大价值
-//        // dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-weight]+value[i])
-//
-//
-//    }
 
 
     //  Definition for singly-linked list.
