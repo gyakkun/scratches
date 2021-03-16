@@ -4,8 +4,69 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.canPartition(new int[]{6, 4, 8, 7, 4, 6, 1, 5, 8}));
+        System.err.println(s.canPartitionKSubsets(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, 8));
     }
+
+    // LC698
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+//        sum = Arrays.stream(nums).sum();
+        for (int i : nums) {
+            sum += i;
+        }
+        if (sum % k != 0) return false;
+        int target = sum / k;
+        int[] sums = new int[1 << nums.length];
+        Arrays.fill(sums, -1);
+//        Arrays.sort(nums);
+        // 从空集的补集(全集)开始(11111) > 产生子集(10101) > 如果和为k > (选择)产生补集(01010) > 对补集使用backtrack函数 > 取消选择
+        // 开一个数组存和值, 初始化为-1, 按需求和
+        return canPartitionKSubsetsBacktrack(nums, sums, new ArrayList<>(k), (1 << nums.length) - 1, target, k);
+    }
+
+    public boolean canPartitionKSubsetsBacktrack(int[] nums, int[] sums, List<Integer> addedSet, int currentSupSetBitmask, int target, int k) {
+        if (addedSet.size() == k) {
+            return true;
+        }
+        if (currentSupSetBitmask == 0) {
+            return false;
+        }
+        // 产生子集的算法
+        int subset = currentSupSetBitmask;
+        while ((subset & currentSupSetBitmask) != 0) {
+            subset = subset & currentSupSetBitmask;
+
+            if (sums[subset] == -1) {
+                sums[subset] = 0;
+                for (int i = 0; i < nums.length; i++) {
+                    if ((subset & (1 << i)) != 0) {
+                        sums[subset] += nums[i];
+                    }
+                }
+            }
+
+            // 通过判断和是否为target剪枝(不是剪枝, 是必须条件)
+            if (sums[subset] == target) {
+                // 做选择
+                addedSet.add(subset);
+                // 从所有已选择的集合产生合集
+                int all = 0;
+                for (int i : addedSet) {
+                    all |= i;
+                }
+                int sup = (1 << nums.length) - 1;
+                sup ^= all;
+                if (canPartitionKSubsetsBacktrack(nums, sums, addedSet, sup, target, k)) {
+                    return true;
+                }
+                // 取消选择
+                addedSet.remove(addedSet.size() - 1);
+            }
+            subset = subset - 1;
+        }
+        return false;
+    }
+
 
     // LC416
     public boolean canPartition(int[] nums) {
@@ -15,24 +76,9 @@ class Scratch {
         }
         if (sum % 2 != 0) return false;
         int halfSum = sum / 2;
-        // dp[i][j] 表示 数组的前i项中, 在背包限制和大小为j的情况下能达到的最大和
-        // 当j==halfSum 且 dp[i][j]==halfSum时候返回真
-//        int[][] dp = new int[nums.length + 1][halfSum + 1];
-//        for (int i = 1; i <= nums.length; i++) {
-//            for (int j = 1; j <= halfSum; j++) {
-//                dp[i][j] = dp[i - 1][j];
-//                if (j - nums[i - 1] >= 0 && dp[i - 1][j - nums[i - 1]] + nums[i - 1] <= halfSum) {
-//                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - nums[i - 1]] + nums[i - 1]);
-//                }
-//            }
-//            if (dp[i][halfSum] == halfSum) {
-//                return true;
-//            }
-//        }
         int[] dp = new int[halfSum + 1];
         for (int i = 1; i <= nums.length; i++) {
             for (int j = halfSum; j >= 0; j--) {
-//                dp[j] = dp[j];
                 if (j - nums[i - 1] >= 0 && dp[j - nums[i - 1]] + nums[i - 1] <= halfSum) {
                     dp[j] = Math.max(dp[j], dp[j - nums[i - 1]] + nums[i - 1]);
                 }
