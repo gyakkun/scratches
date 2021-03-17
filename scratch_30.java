@@ -4,10 +4,26 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.findTargetSumWaysBruteForce(new int[]{43, 1, 49, 22, 41, 1, 11, 1, 24, 10, 26, 49, 33, 4, 20, 19, 44, 42, 2, 37}, 17));
+        System.err.println(s.findTargetSumWaysLC(new int[]{43, 1, 49, 22, 41, 1, 11, 1, 24, 10, 26, 49, 33, 4, 20, 19, 44, 42, 2, 37}, 17));
         timing = System.currentTimeMillis() - timing;
         System.err.println("Timing: " + timing + "ms");
     }
+
+    // LC494, DP 题解
+    public int findTargetSumWaysLC(int[] array, int target) {
+        int[][] dp = new int[array.length][2001];
+        dp[0][array[0] + 1000] = 1;
+        dp[0][-array[0] + 1000] += 1;
+        for (int i = 1; i < array.length; i++) {
+            for (int sum = -1000; sum <= 1000; sum++) {
+                if (sum + 1000 - array[i] > 0 && sum + 1000 + array[i] < 2001) {
+                    dp[i][sum + 1000] = dp[i - 1][sum + 1000 - array[i]] + dp[i - 1][sum + 1000 + array[i]];
+                }
+            }
+        }
+        return target > 1000 ? 0 : dp[array.length - 1][target + 1000];
+    }
+
 
     // Subset Sum, DP, Top Down
     public boolean existSubsetSumDP(int[] array, int target) {
