@@ -3,7 +3,27 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.existSubsetSum(new int[]{1, 2, 3}, 5));
+        long timing = System.currentTimeMillis();
+        System.err.println(s.findTargetSumWays(new int[]{43, 1, 49, 22, 41, 1, 11, 1, 24, 10, 26, 49, 33, 4, 20, 19, 44, 42, 2, 37}, 17));
+        timing = System.currentTimeMillis() - timing;
+        System.err.println("Timing: " + timing + "ms");
+    }
+
+    // LC494, 相当于遍历了决策树的暴力法
+    public int findTargetSumWays(int[] array, int target) {
+        int result = 0;
+        int n = array.length;
+        int fullSet = (1 << n) - 1;
+        int[] sums = new int[1 << n];
+        Arrays.fill(sums, Integer.MIN_VALUE);
+        for (int subset = fullSet; subset >= 0; subset--) {
+            // 补集
+            int sup = subset ^ fullSet;
+            if (sumsSubset(array, subset, sums) - sumsSubset(array, sup, sums) == target) {
+                result++;
+            }
+        }
+        return result;
     }
 
     // Subset sum
@@ -23,20 +43,47 @@ class Scratch {
         return false;
     }
 
+    // LC39, 同一个元素可以取不止一次, 待解决
+
+    public List<List<Integer>> combinationSum(int[] array, int target) {
+        int n = array.length;
+        int[] sums = new int[1 << n];
+        Arrays.fill(sums, -1);
+        int fullSet = (1 << n) - 1;
+        List<List<Integer>> result = new LinkedList<>();
+        for (int subset = fullSet; subset != 0; subset--) {
+            if (sumsSubset(array, subset, sums) == target) {
+                List<Integer> tmp = new ArrayList<>();
+                for (int j = 0; j < array.length; j++) {
+                    if (((subset >> j) & 1) == 1) {
+                        tmp.add(array[j]);
+                    }
+                }
+                result.add(tmp);
+            }
+        }
+        return result;
+    }
+
+
+    // 求所有子集和的递归方法, 带记忆, 较快
     private int sumsSubset(int[] array, int subsetBitmask, int[] sums) {
+        if (sums[subsetBitmask] != Integer.MIN_VALUE) {
+            return sums[subsetBitmask];
+        }
         if (subsetBitmask == 0) {
+            sums[0] = 0;
             return 0;
         }
         if (Integer.bitCount(subsetBitmask) == 1) {
             for (int i = 0; i < array.length; i++) {
                 if (subsetBitmask >> i == 1) {
-                    return array[i];
+                    sums[subsetBitmask] = array[i];
+                    return sums[subsetBitmask];
                 }
             }
         }
-        if (sums[subsetBitmask] != -1) {
-            return sums[subsetBitmask];
-        }
+
         int A = subsetBitmask;
         // 求集合A所有元素的和
         // <=> 集合A的真子集a的元素的和 + a关于A的补集b的元素的和
