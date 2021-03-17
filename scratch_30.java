@@ -4,13 +4,36 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.findTargetSumWays(new int[]{43, 1, 49, 22, 41, 1, 11, 1, 24, 10, 26, 49, 33, 4, 20, 19, 44, 42, 2, 37}, 17));
+        System.err.println(s.findTargetSumWaysBruteForce(new int[]{43, 1, 49, 22, 41, 1, 11, 1, 24, 10, 26, 49, 33, 4, 20, 19, 44, 42, 2, 37}, 17));
         timing = System.currentTimeMillis() - timing;
         System.err.println("Timing: " + timing + "ms");
     }
 
+    // Subset Sum, DP, Top Down
+    public boolean existSubsetSumDP(int[] array, int target) {
+        // dp[i][j]表示数组中 前i个数组成的全集 中是否有 和为j的子集
+        // 状态转移:
+        //  1) if(dp[i-1][j]) dp[i][j]=true
+        //  2) else dp[i][j] = dp[i-1][j-array[i-1]]
+        // 边界条件: 空集, 即dp[0][j] = false, dp[i][0]=true
+        boolean[][] dp = new boolean[array.length + 1][target + 1];
+        for (int i = 0; i <= array.length; i++) {
+            dp[i][0] = true;
+        }
+        for (int i = 0; i <= array.length; i++) {
+            for (int j = 0; j <= target; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j >= array[i - 1]) { // 保证不越界
+                    dp[i][j] = dp[i - 1][j] | dp[i - 1][j - array[i - 1]];
+                }
+            }
+            if (dp[i][target] == true) return true;
+        }
+        return false;
+    }
+
     // LC494, 相当于遍历了决策树的暴力法
-    public int findTargetSumWays(int[] array, int target) {
+    public int findTargetSumWaysBruteForce(int[] array, int target) {
         int result = 0;
         int n = array.length;
         int fullSet = (1 << n) - 1;
