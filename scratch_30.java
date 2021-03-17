@@ -4,10 +4,69 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.coinChange(new int[]{1}, 2));
+        System.err.println(s.minCostTickets(new int[]{1, 4, 6, 7, 8, 20}, new int[]{2, 7, 15}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("Timing: " + timing + "ms");
     }
+
+    // LC983 Top down
+    public int minCostTicketsTopDown(int[] days, int[] costs) {
+        int len = days[days.length - 1];
+        int[] dp = new int[len + 1];
+        int a, b, c;
+        for (int i = 0; i < days.length; i++) {
+            dp[days[i]] = -1;//标记当天要去旅行
+        }
+        for (int i = 1; i <= len; i++) {
+            if (dp[i] == 0) {
+                dp[i] = dp[i - 1];
+            } else {
+                a = dp[i - 1] + costs[0];//当天旅行
+                //买7天的
+                if (i - 7 >= 0) {
+                    b = dp[i - 7] + costs[1];
+                } else {
+                    b = costs[1];
+                }
+                //买30天的
+                if (i - 30 >= 0) {
+                    c = dp[i - 30] + costs[2];
+                } else {
+                    c = costs[2];
+                }
+                dp[i] = Math.min(a, Math.min(b, c));
+            }
+        }
+        return dp[len];
+    }
+
+    // LC983
+    public int minCostTickets(int[] days, int[] costs) {
+        Integer[] memo = new Integer[366];
+        Set<Integer> set = new HashSet<>();
+        for (int d : days) {
+            set.add(d);
+        }
+        return minCostTicketsRecursive(1, memo, set, costs);
+    }
+
+    private int minCostTicketsRecursive(int day, Integer[] memo, Set<Integer> daySet, int[] costs) {
+        if (day > 365) {
+            return 0;
+        }
+        if (memo[day] != null) {
+            return memo[day];
+        }
+        if (daySet.contains(day)) {
+            memo[day] = Math.min(Math.min(minCostTicketsRecursive(day + 1, memo, daySet, costs) + costs[0],
+                    minCostTicketsRecursive(day + 7, memo, daySet, costs) + costs[1]),
+                    minCostTicketsRecursive(day + 30, memo, daySet, costs) + costs[2]);
+        } else {
+            memo[day] = minCostTicketsRecursive(day + 1, memo, daySet, costs);
+        }
+        return memo[day];
+    }
+
 
     // LC322
     public int coinChange(int[] coins, int amount) {
