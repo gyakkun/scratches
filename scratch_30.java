@@ -42,9 +42,35 @@ class Scratch {
     //	return helper(sLen-1, tLen-1) //从开头到s[sLen-1]的子串中，出现『从开头到t[tLen-1]的子串』的次数
     //}
 
-    // LC115
+    // LC115 top down
 
-    public int numDistinct(String s, String t) {
+    public int numDistinctTopDown(String s, String t) {
+        int[][] dp = new int[s.length() + 1][t.length() + 1];
+        // dp[i][j] 表示 在s的前i个字符中, 出现的(t的前j个字符的子序列)的个数
+        // dp[i][j] =
+        //  1) s[i] == t[j], dp[i][j] = dp[i-1][j] + dp[i-1][j-1]
+        //  2) s[i] != t[j], dp[i][j] = dp[i-1][j]
+        //
+        // dp[i][0] = 1
+        // dp[0][j] = 0
+        for (int i = 0; i <= s.length(); i++) {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 1; j <= t.length(); j++) {
+                if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j] + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[s.length()][t.length()];
+    }
+
+    // LC115 bottom up
+
+    public int numDistinctBottomUp(String s, String t) {
         int[][] memo = new int[s.length()][t.length()];
         for (int i = 0; i < s.length(); i++) {
             for (int j = 0; j < t.length(); j++) {
