@@ -6,6 +6,71 @@ class Scratch {
         System.err.println(s.subarraySum(new int[]{1, 1, 1}, 2));
     }
 
+    // LC115
+
+    // bottom up with memory search
+
+    // func numDistinct(s string, t string) int {
+    //	sLen, tLen := len(s), len(t)
+    //
+    //	memo := make([][]int, sLen) // 创建一个memo数组存储计算过的子问题
+    //	for i := range memo {
+    //		memo[i] = make([]int, tLen)
+    //		for j := 0; j < tLen; j++ {
+    //			memo[i][j] = -1
+    //		}
+    //	}
+    //	var helper func(i, j int) int
+    //	helper = func(i, j int) int { // 从开头到s[i]的子串中，出现『从开头到t[i]的子串』的 次数
+    //		if j < 0 { // base case 当j指针越界，此时t为空串，s不管是不是空串，匹配方式数都是1
+    //			return 1
+    //		}
+    //		if i < 0 { // base case i指针越界，此时s为空串，t不是，s怎么也匹配不了t，方式数0
+    //			return 0
+    //		}
+    //		if memo[i][j] != -1 { // 计算过的子问题的解，直接从memo中拿出来返回
+    //			return memo[i][j]
+    //		}
+    //		if s[i] == t[j] { // t[j]被匹配掉，对应helper(i-1, j-1)，不被匹配掉对应helper(i-1, j)
+    //			memo[i][j] = helper(i-1, j) + helper(i-1, j-1)
+    //		} else {
+    //			memo[i][j] = helper(i-1, j) //
+    //		}
+    //		return memo[i][j] // 返回当前递归子问题的解
+    //	}
+    //
+    //	return helper(sLen-1, tLen-1) //从开头到s[sLen-1]的子串中，出现『从开头到t[tLen-1]的子串』的次数
+    //}
+
+    // LC115
+
+    public int numDistinct(String s, String t) {
+        int[][] memo = new int[s.length()][t.length()];
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j < t.length(); j++) {
+                memo[i][j] = -1;
+            }
+        }
+        return numDistinctRecursive(s.length() - 1, t.length() - 1, memo, s, t);
+    }
+
+    private int numDistinctRecursive(int i, int j, int[][] memo, String s, String t) {
+        // 目标: 返回s从0到i中, 出现(t从0到j的子序列)的次数
+        if (j < 0) {
+            return 1;
+        }
+        if (i < 0) {
+            return 0;
+        }
+        if (memo[i][j] != -1) return memo[i][j];
+        if (s.charAt(i) == t.charAt(j)) {
+            memo[i][j] = numDistinctRecursive(i - 1, j - 1, memo, s, t) + numDistinctRecursive(i - 1, j, memo, s, t);
+        } else {
+            memo[i][j] = numDistinctRecursive(i - 1, j, memo, s, t);
+        }
+        return memo[i][j];
+    }
+
     // LC560
     public int subarraySum(int[] nums, int k) {
         int[] prefix = new int[nums.length + 1];
@@ -18,10 +83,6 @@ class Scratch {
             // 目标 : prefix[i] - prefix[j] = k , j<i
             // <=>   prefix[i] - k = prefix[j]
             // 考虑 i 的递增性, 每次判断完后往合集里加入i即可
-
-//            if (m.containsKey(prefix[i] - k)) {
-//                result+= m.get(prefix[i]-k);
-//            }
             result += m.getOrDefault(prefix[i] - k, 0);
             m.put(prefix[i], m.getOrDefault(prefix[i], 0) + 1);
         }
