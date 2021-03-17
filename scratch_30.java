@@ -25,7 +25,7 @@ class Scratch {
 
         for (int i = 1; i <= rodLength; i++) {
             for (int j = 0; j < prices.length; j++) {
-                if (i - j > 0) {
+                if (i - (j + 1) > 0) {
                     // 如果dp单纯存利润
                     // dp[i] = Math.max(dp[i-j]+prices[j], dp[i])
                     if (dp[i].revenue < (dp[i - (j + 1)].revenue + prices[j])) {
