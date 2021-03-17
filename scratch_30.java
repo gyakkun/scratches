@@ -9,6 +9,46 @@ class Scratch {
         System.err.println("Timing: " + timing + "ms");
     }
 
+
+    // Rod Cutting, 要存状态(切法), 思路和找硬币类似。暂未知道对错
+    public List<Integer> rodCutting(int[] prices, int rodLength) {
+        // 定义: price[i]表示长度为i+1的钢条的价格
+        RCStatus[] dp = new RCStatus[rodLength + 1];
+        // 初始化
+        for (int i = 0; i <= rodLength; i++) {
+            List<Integer> tmp = new ArrayList<>(i);
+            for (int j = 0; j < i; j++) {
+                tmp.add(1);
+            }
+            dp[i] = new RCStatus(tmp, prices[0] * i);
+        }
+
+        for (int i = 1; i <= rodLength; i++) {
+            for (int j = 0; j < prices.length; j++) {
+                if (i - j > 0) {
+                    // 如果dp单纯存利润
+                    // dp[i] = Math.max(dp[i-j]+prices[j], dp[i])
+                    if (dp[i].revenue < (dp[i - (j + 1)].revenue + prices[j])) {
+                        List<Integer> list = new LinkedList<>(dp[i - (j + 1)].howToCut);
+                        list.add(j + 1);
+                        dp[i] = new RCStatus(list, dp[i - (j + 1)].revenue + prices[j]);
+                    }
+                }
+            }
+        }
+        return dp[rodLength].howToCut;
+    }
+
+    class RCStatus {
+        List<Integer> howToCut;
+        int revenue;
+
+        RCStatus(List<Integer> list, int i) {
+            this.howToCut = list;
+            this.revenue = i;
+        }
+    }
+
     // LC983 Top down
     public int minCostTicketsTopDown(int[] days, int[] costs) {
         int len = days[days.length - 1];
