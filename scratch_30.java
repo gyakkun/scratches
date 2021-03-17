@@ -3,44 +3,52 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.subarraySum(new int[]{1, 1, 1}, 2));
+        System.err.println(s.existSubsetSum(new int[]{1, 2, 3}, 5));
     }
 
-    // LC115
+    // Subset sum
 
-    // bottom up with memory search
+    public boolean existSubsetSum(int[] array, int target) {
 
-    // func numDistinct(s string, t string) int {
-    //	sLen, tLen := len(s), len(t)
-    //
-    //	memo := make([][]int, sLen) // 创建一个memo数组存储计算过的子问题
-    //	for i := range memo {
-    //		memo[i] = make([]int, tLen)
-    //		for j := 0; j < tLen; j++ {
-    //			memo[i][j] = -1
-    //		}
-    //	}
-    //	var helper func(i, j int) int
-    //	helper = func(i, j int) int { // 从开头到s[i]的子串中，出现『从开头到t[i]的子串』的 次数
-    //		if j < 0 { // base case 当j指针越界，此时t为空串，s不管是不是空串，匹配方式数都是1
-    //			return 1
-    //		}
-    //		if i < 0 { // base case i指针越界，此时s为空串，t不是，s怎么也匹配不了t，方式数0
-    //			return 0
-    //		}
-    //		if memo[i][j] != -1 { // 计算过的子问题的解，直接从memo中拿出来返回
-    //			return memo[i][j]
-    //		}
-    //		if s[i] == t[j] { // t[j]被匹配掉，对应helper(i-1, j-1)，不被匹配掉对应helper(i-1, j)
-    //			memo[i][j] = helper(i-1, j) + helper(i-1, j-1)
-    //		} else {
-    //			memo[i][j] = helper(i-1, j) //
-    //		}
-    //		return memo[i][j] // 返回当前递归子问题的解
-    //	}
-    //
-    //	return helper(sLen-1, tLen-1) //从开头到s[sLen-1]的子串中，出现『从开头到t[tLen-1]的子串』的次数
-    //}
+        int n = array.length;
+        int[] sums = new int[1 << n];
+        Arrays.fill(sums, -1);
+        int subset = (1 << n) - 1;
+        for (int i = subset; i != 0; i--) {
+            if (sumsSubset(array, i, sums) == target) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int sumsSubset(int[] array, int subsetBitmask, int[] sums) {
+        if (subsetBitmask == 0) {
+            return 0;
+        }
+        if (Integer.bitCount(subsetBitmask) == 1) {
+            for (int i = 0; i < array.length; i++) {
+                if (subsetBitmask >> i == 1) {
+                    return array[i];
+                }
+            }
+        }
+        if (sums[subsetBitmask] != -1) {
+            return sums[subsetBitmask];
+        }
+        int A = subsetBitmask;
+        // 求集合A所有元素的和
+        // <=> 集合A的真子集a的元素的和 + a关于A的补集b的元素的和
+
+        // 产生一个真子集a:
+        int a = (A - 1) & A;
+        // a关于A的补集b
+        int b = a ^ A;
+        sums[subsetBitmask] = sumsSubset(array, a, sums) + sumsSubset(array, b, sums);
+
+        return sums[subsetBitmask];
+    }
 
     // LC115 top down
 
