@@ -4,9 +4,30 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.findTargetSumWaysLC(new int[]{43, 1, 49, 22, 41, 1, 11, 1, 24, 10, 26, 49, 33, 4, 20, 19, 44, 42, 2, 37}, 17));
+        System.err.println(s.coinChange(new int[]{1}, 2));
         timing = System.currentTimeMillis() - timing;
         System.err.println("Timing: " + timing + "ms");
+    }
+
+    // LC322
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        for (int i : coins) {
+            if (i <= amount)
+                dp[i] = 1;
+        }
+        // dp[i] = Math.min(dp[i-coins[j]]+1, dp[i])
+        for (int i = 1; i <= amount; i++) {
+            for (int coin : coins) {
+                if (i - coin > 0) {
+                    dp[i] = Math.min(dp[i - coin] + 1, dp[i]);
+                }
+            }
+        }
+
+        return dp[amount] == (Integer.MAX_VALUE / 2) ? -1 : dp[amount];
     }
 
     // LC494, DP 题解
