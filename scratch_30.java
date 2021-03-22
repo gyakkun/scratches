@@ -7,6 +7,29 @@ class Scratch {
         System.err.println(s.numberOfFactors(12));
     }
 
+    // Minimum jumps to reach the end，蛙跳最小步数问题, 动态规划
+    public int minJumpsDP(int[] arr) {
+        int n = arr.length;
+        if (arr[0] == 0 || arr.length == 0) return -1;
+        int[] dp = new int[n+1];
+        dp[0] = 0;
+        // dp[i] 表示到数组坐标i的最小步数
+        // 转移方程: 对于每一个i, 遍历 0 < j < i, 如果可从j抵达i, 动态更新抵达i的最小步数
+        // dp[i] = Math.min(dp[i], dp[j]+1)
+
+        for (int i = 1; i < n; i++) {
+            dp[i] = Integer.MAX_VALUE / 2;
+            for (int j = 0; j < i; j++) {
+                if (i <= j + arr[i] && dp[j] != Integer.MAX_VALUE / 2) {
+                    dp[i] = Math.min(dp[i], dp[j] + 1);
+                    break;
+                }
+            }
+        }
+
+        return dp[n - 1];
+    }
+
     // Minimum jumps to reach the end，蛙跳最小步数问题, 递归
     // https://www.geeksforgeeks.org/minimum-number-of-jumps-to-reach-end-of-a-given-array
     public int minJumps(int[] arr) {
