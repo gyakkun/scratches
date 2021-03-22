@@ -7,8 +7,31 @@ class Scratch {
         System.err.println(s.numberOfFactors(12));
     }
 
-    // Minimum jumps to reach the end，蛙跳最小步数问题
+    // Minimum jumps to reach the end，蛙跳最小步数问题, 递归
     // https://www.geeksforgeeks.org/minimum-number-of-jumps-to-reach-end-of-a-given-array
+    public int minJumps(int[] arr) {
+        return minJumpsRecursive(0, arr.length - 1, arr);
+    }
+
+    private int minJumpsRecursive(int l, int h, int[] arr) throws IndexOutOfBoundsException {
+        if (l < 0 || h > arr.length || l > h) {
+            throw new IndexOutOfBoundsException("out of bound");
+        }
+        if (l == h) {
+            return 0;
+        }
+        if (arr[l] == 0) {
+            return Integer.MAX_VALUE / 2;
+        }
+        int min = Integer.MAX_VALUE / 2;
+        for (int i = l + 1; i <= h && i <= arr[l] + l; i++) {
+            int jump = minJumpsRecursive(i, h, arr);
+            if (jump != Integer.MAX_VALUE / 2 && jump + 1 < min) {
+                min = jump + 1;
+            }
+        }
+        return min;
+    }
 
     // Number factors，分解因子问题, 递归+记忆数组
     // https://blog.csdn.net/qq_42898536/article/details/109523993
