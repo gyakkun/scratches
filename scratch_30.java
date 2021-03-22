@@ -4,7 +4,30 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.numberOfFactors(12));
+        System.err.println(s.maxLoot(new int[]{5, 3, 4, 11, 2}));
+    }
+
+    // Find maximum possible stolen value from houses, House thief, 偷房子
+    public int maxLoot(int[] houseVal) {
+        int n = houseVal.length;
+
+        if (n == 0) return 0;
+        if (n == 1) return houseVal[1];
+        if (n == 2) return Math.max(houseVal[0], houseVal[1]);
+
+        int[][] dp = new int[n][2];
+        // dp[i][0] 表示偷前i(i从0开始)个房子时候能得到的最大价值, 此时从最后一个房间没被偷
+        // dp[i][1] 此时最后一个房间被偷
+        dp[0][0] = 0;
+        dp[0][1] = houseVal[0];
+        dp[1][0] = houseVal[0];
+        dp[1][1] = houseVal[1];
+        for (int i = 2; i < n; i++) {
+            dp[i][1] = Math.max(dp[i - 2][1] + houseVal[i], dp[i - 2][0] + houseVal[i]);
+            dp[i][0] = Math.max(dp[i - 1][1], dp[i - 1][0]);
+        }
+
+        return Math.max(dp[n - 1][0], dp[n - 1][1]);
     }
 
     // Minimum jumps to reach the end，蛙跳最小步数问题, 动态规划
