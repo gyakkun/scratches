@@ -4,7 +4,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.maxLoot(new int[]{5, 3, 4, 11, 2}));
+        System.err.println(s.rodCutting(new int[]{1, 5, 8, 9, 10, 17, 17, 20, 24, 30}, 7));
     }
 
     // Find maximum possible stolen value from houses, House thief, 偷房子
