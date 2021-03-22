@@ -4,9 +4,39 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.minCostTickets(new int[]{1, 4, 6, 7, 8, 20}, new int[]{2, 7, 15}));
-        timing = System.currentTimeMillis() - timing;
-        System.err.println("Timing: " + timing + "ms");
+        System.err.println(s.numberOfFactors(12));
+    }
+
+    // Minimum jumps to reach the end，蛙跳最小步数问题
+    // https://www.geeksforgeeks.org/minimum-number-of-jumps-to-reach-end-of-a-given-array
+
+    // Number factors，分解因子问题, 递归+记忆数组
+    // https://blog.csdn.net/qq_42898536/article/details/109523993
+    public int numberOfFactors(int n) {
+        int[] memo = new int[n + 1];
+        return numberOfFactorsRecursive(n, n, memo);
+    }
+
+    public int numberOfFactorsRecursive(int n, int target, int[] memo) {
+        if (n > target) {
+            return 0;
+        }
+        if (memo[n] != 0) {
+            return memo[n];
+        }
+        int i = 2; // 从2开始
+        memo[n] = 1; // 初始为1, 即1*n = n 这种情况, 否则1会重复计算
+        for (; i * i < n; i++) {
+            if (n % i == 0) {
+                memo[n] += numberOfFactorsRecursive(i, target, memo) + numberOfFactorsRecursive(n / i, target, memo);
+            }
+        }
+        if (i * i == n) memo[n] += numberOfFactorsRecursive(i, target, memo);
+        return memo[n];
+    }
+
+    public int hammingWeight(int n) {
+        return Integer.bitCount(n);
     }
 
 
