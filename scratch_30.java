@@ -11,7 +11,7 @@ class Scratch {
     public int minJumpsDP(int[] arr) {
         int n = arr.length;
         if (arr[0] == 0 || arr.length == 0) return -1;
-        int[] dp = new int[n+1];
+        int[] dp = new int[n + 1];
         dp[0] = 0;
         // dp[i] 表示到数组坐标i的最小步数
         // 转移方程: 对于每一个i, 遍历 0 < j < i, 如果可从j抵达i, 动态更新抵达i的最小步数
@@ -31,13 +31,14 @@ class Scratch {
         return dp[n - 1];
     }
 
-    // Minimum jumps to reach the end，蛙跳最小步数问题, 递归
+    // Minimum jumps to reach the end，蛙跳最小步数问题, 递归, 加记忆数组
     // https://www.geeksforgeeks.org/minimum-number-of-jumps-to-reach-end-of-a-given-array
     public int minJumps(int[] arr) {
-        return minJumpsRecursive(0, arr.length - 1, arr);
+        Integer[][] memo = new Integer[arr.length + 1][arr.length + 1];
+        return minJumpsRecursive(0, arr.length - 1, arr, memo);
     }
 
-    private int minJumpsRecursive(int l, int h, int[] arr) throws IndexOutOfBoundsException {
+    private int minJumpsRecursive(int l, int h, int[] arr, Integer[][] memo) throws IndexOutOfBoundsException {
         if (l < 0 || h > arr.length || l > h) {
             throw new IndexOutOfBoundsException("out of bound");
         }
@@ -49,7 +50,13 @@ class Scratch {
         }
         int min = Integer.MAX_VALUE / 2;
         for (int i = l + 1; i <= h && i <= arr[l] + l; i++) {
-            int jump = minJumpsRecursive(i, h, arr);
+            int jump;
+            if (memo[l][h] != null) {
+                jump = memo[l][h];
+            } else {
+                jump = minJumpsRecursive(i, h, arr, memo);
+                memo[i][h] = jump;
+            }
             if (jump != Integer.MAX_VALUE / 2 && jump + 1 < min) {
                 min = jump + 1;
             }
