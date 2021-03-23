@@ -1,24 +1,27 @@
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.numTrees(3));
+        Long timing = System.currentTimeMillis();
+        System.err.println(s.numTrees(1000));
+        timing = System.currentTimeMillis() - timing;
+        System.err.print("TIMING : " + timing + "ms");
 
     }
 
     // LC96: 推导卡特兰数
-    public int numTrees(int n) {
-        Integer[] memo = new Integer[n + 1];
-        memo[0] = 1;
-        memo[1] = 1;
+    public long numTrees(int n) {
+        Long[] memo = new Long[n + 1];
+        memo[0] = 1l;
+        memo[1] = 1l;
 
         return numTreesRecursive(n, memo);
     }
 
-    private int numTreesRecursive(int n, Integer[] memo) {
+    private long numTreesRecursive(int n, Long[] memo) {
         if (memo[n] != null) {
             return memo[n];
         }
-        int res = 0;
+        long res = 0;
         for (int i = 1; i <= n; i++) {
             res += numTreesRecursive(i - 1, memo) * numTreesRecursive(n - i, memo);
         }
