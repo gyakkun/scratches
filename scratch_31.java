@@ -1,8 +1,29 @@
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.minDelToMakePalindrome("ababab"));
+        System.err.println(s.numTrees(3));
 
+    }
+
+    // LC96: 推导卡特兰数
+    public int numTrees(int n) {
+        Integer[] memo = new Integer[n + 1];
+        memo[0] = 1;
+        memo[1] = 1;
+
+        return numTreesRecursive(n, memo);
+    }
+
+    private int numTreesRecursive(int n, Integer[] memo) {
+        if (memo[n] != null) {
+            return memo[n];
+        }
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            res += numTreesRecursive(i - 1, memo) * numTreesRecursive(n - i, memo);
+        }
+        memo[n] = res;
+        return res;
     }
 
     // Minimum Deletions in a String to make it a Palindrome，怎么删掉最少字符构成回文
