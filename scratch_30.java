@@ -6,39 +6,66 @@ class Scratch {
         long timing = System.currentTimeMillis();
 //        int[][] zeroes = new int[][]{{0, 1, 2, 0}, {3, 4, 5, 2}, {1, 3, 1, 5}};
 //        s.setZeroes(zeroes);
-        System.err.println(s.longestPalindrome("abb"));
+        System.err.println(s.tripleBottle(8, 5, 3));
     }
 
     // 三壶问题,
     public int tripleBottle(int n, int a, int b) {
         if (n % 2 == 1 || (n / 2) % gcd(a, b) != 0) return -1;
-        int[] three = new int[3];
+
         int half = n / 2;
+
+        boolean[][][] visited = new boolean[n + 1][a + 1][b + 1];
+
+        int[] origin = new int[3];
+        origin[0] = n;
+        origin[1] = a;
+        origin[2] = b;
+
+
+        int[] three = new int[3];
         three[0] = n;
-        int layer = 0;
         Deque<int[]> q = new LinkedList<>();
         q.offer(three);
+
+        int layer = -1;
+
+        //        visited[n][0][0] = true;
         while (!q.isEmpty()) {
             layer++;
             int qSize = q.size();
             for (int i = 0; i < qSize; i++) {
                 int[] tmp = q.poll();
                 int nn = tmp[0], aa = tmp[1], bb = tmp[2];
+
+                if ((nn == half && aa == half) || (nn == half && bb == half) || (aa == half && bb == half))
+                    return layer;
+
+                // 剪枝
+                if (visited[nn][aa][bb]) continue;
+                visited[nn][aa][bb] = true;
+
                 // 总共有多少种操作?
                 // TODO
                 // N->A, N->B, A->N, A->B, B->N, B->A
                 // N->A
-                int[] na = new int[3];
-                if (aa + nn > a){
-                    na[0] = aa + nn - a;
-                    na[1] = a;
-                    na[2] = bb;
-                } else {
-                    na[0] = 0;
-                    na[1] = aa + nn;
-                    na[2] = bb;
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        if (j == k) continue;
+                        // j->k
+                        int[] newDecision = new int[3];
+
+                        if (tmp[j] + tmp[k] > origin[k]) {
+                            newDecision[j] = tmp[j] + tmp[k] - origin[k];
+                            newDecision[k] = origin[k];
+                        } else {
+                            newDecision[j] = 0;
+                            newDecision[k] = tmp[j] + tmp[k];
+                        }
+                        newDecision[3 - j - k] = tmp[3 - j - k];
+                        q.offer(newDecision);
+                    }
                 }
-                q.offer(na);
             }
         }
 
