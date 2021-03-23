@@ -6,12 +6,13 @@ class Scratch {
         long timing = System.currentTimeMillis();
 //        int[][] zeroes = new int[][]{{0, 1, 2, 0}, {3, 4, 5, 2}, {1, 3, 1, 5}};
 //        s.setZeroes(zeroes);
-        System.err.println(s.tripleBottle(8, 5, 3));
+        System.err.println(s.tripleBottle(32, 18, 14));
     }
 
-    // 三壶问题,
+    // 三壶问题 BFS
     public int tripleBottle(int n, int a, int b) {
-        if (n % 2 == 1 || (n / 2) % gcd(a, b) != 0) return -1;
+        // n为偶数 / 贝祖定理无解情况 / 没有第二个瓶子能装得下一半n
+        if (n % 2 == 1 || (n / 2) % gcd(a, b) != 0 || (a < (n / 2) && (b < (n / 2)))) return -1;
 
         int half = n / 2;
 
@@ -22,7 +23,6 @@ class Scratch {
         origin[1] = a;
         origin[2] = b;
 
-
         int[] three = new int[3];
         three[0] = n;
         Deque<int[]> q = new LinkedList<>();
@@ -30,7 +30,6 @@ class Scratch {
 
         int layer = -1;
 
-        //        visited[n][0][0] = true;
         while (!q.isEmpty()) {
             layer++;
             int qSize = q.size();
@@ -38,17 +37,18 @@ class Scratch {
                 int[] tmp = q.poll();
                 int nn = tmp[0], aa = tmp[1], bb = tmp[2];
 
-                if ((nn == half && aa == half) || (nn == half && bb == half) || (aa == half && bb == half))
+                if ((nn == half && aa == half) || (nn == half && bb == half) || (aa == half && bb == half)) {
                     return layer;
+                }
 
-                // 剪枝
-                if (visited[nn][aa][bb]) continue;
+                // 标记已经遍历的选项
+                if (visited[nn][aa][bb]) {
+                    continue;
+                }
                 visited[nn][aa][bb] = true;
 
                 // 总共有多少种操作?
-                // TODO
                 // N->A, N->B, A->N, A->B, B->N, B->A
-                // N->A
                 for (int j = 0; j < 3; j++) {
                     for (int k = 0; k < 3; k++) {
                         if (j == k) continue;
