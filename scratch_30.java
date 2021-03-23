@@ -9,6 +9,8 @@ class Scratch {
         System.err.println(s.longestPalindrome("abb"));
     }
 
+
+
     // LC5 最长回文子串, 递归, 记忆, 慢
 
     private int longestLeft;
