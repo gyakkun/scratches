@@ -4,17 +4,35 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[][] zeroes = new int[][]{{0, 1, 2, 0}, {3, 4, 5, 2}, {1, 3, 1, 5}};
-        s.setZeroes(zeroes);
-        System.err.println(zeroes);
+//        int[][] zeroes = new int[][]{{0, 1, 2, 0}, {3, 4, 5, 2}, {1, 3, 1, 5}};
+//        s.setZeroes(zeroes);
+        System.err.println(s.longestPalindromeSubseq("bbbab"));
     }
 
-    // LC516 最长回文子序列, TBD
+    // LC516 最长回文子序列
     public int longestPalindromeSubseq(String s) {
         int n = s.length();
-        int[][] dp = new int[n + 1][n + 1];
+        // 用memo[l][h]记录[l,h]的最大回文子序列长度
+        Integer[][] memo = new Integer[n + 1][n + 1];
 
-        return -1;
+        return longestPalindromeSubseqRecursive(s, memo, 0, n - 1);
+    }
+
+    private int longestPalindromeSubseqRecursive(String s, Integer[][] memo, int l, int h) {
+        if (l == h) return 1;
+        if (l > h) return 0;
+        if (memo[l][h] != null) {
+            return memo[l][h];
+        }
+        int res = 0;
+        if (s.charAt(l) == s.charAt(h)) {
+            res = Math.max(res, longestPalindromeSubseqRecursive(s, memo, l + 1, h - 1) + 2);
+        } else {
+            res = Math.max(res, longestPalindromeSubseqRecursive(s, memo, l + 1, h));
+            res = Math.max(res, longestPalindromeSubseqRecursive(s, memo, l, h - 1));
+        }
+        memo[l][h] = res;
+        return memo[l][h];
     }
 
     // LC341
@@ -58,7 +76,7 @@ class Scratch {
                     continue;
                 }
                 NestedInteger ni = it.next();
-                if(ni.isInteger()){
+                if (ni.isInteger()) {
                     List<NestedInteger> list = new ArrayList<>(1);
                     list.add(ni);
                     stack.push(list.iterator());
