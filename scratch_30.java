@@ -24,14 +24,14 @@ class Scratch {
         if (memo[l][h] != null) {
             return memo[l][h];
         }
-        int res = 0;
+        int res = 0; // 使用临时变量 避免赋值为null的问题
         if (s.charAt(l) == s.charAt(h)) {
-            res = Math.max(res, longestPalindromeSubseqRecursive(s, memo, l + 1, h - 1) + 2);
+            res = longestPalindromeSubseqRecursive(s, memo, l + 1, h - 1) + 2;
         } else {
             res = Math.max(res, longestPalindromeSubseqRecursive(s, memo, l + 1, h));
             res = Math.max(res, longestPalindromeSubseqRecursive(s, memo, l, h - 1));
         }
-        memo[l][h] = res;
+        memo[l][h] = res; // 避免赋值为null的问题
         return memo[l][h];
     }
 
