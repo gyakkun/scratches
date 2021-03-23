@@ -19,9 +19,13 @@ class Scratch {
         Deque<int[]> q = new LinkedList<>();
         q.offer(three);
         while (!q.isEmpty()) {
+            layer++;
             int qSize = q.size();
             for (int i = 0; i < qSize; i++) {
-
+                int[] tmp = q.poll();
+                int nn = tmp[0], aa = tmp[1], bb = tmp[2];
+                // 总共有多少种操作?
+                // TODO
             }
         }
 
