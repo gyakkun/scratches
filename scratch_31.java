@@ -1,7 +1,7 @@
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.minDelToMakePalindrome("abababa"));
+        System.err.println(s.minDelToMakePalindrome("ababab"));
 
     }
 
@@ -9,7 +9,33 @@ class Scratch {
     // https://www.geeksforgeeks.org/minimum-number-deletions-make-string-palindrome/
     public int minDelToMakePalindrome(String s) {
         int n = s.length();
+        // 搜索最长回文子序列的长度, 然后用总长度减去即可
 
-        return n - 1;
+        Integer[][] memo = new Integer[n + 1][n + 1];
+        int longestPalindromeSubArrayLength = longestPalindromeSubArray(s, memo, 0, n - 1);
+
+        return n - longestPalindromeSubArrayLength;
+    }
+
+    private int longestPalindromeSubArray(String s, Integer[][] memo, int l, int h) {
+        if (l == h) {
+            memo[l][h] = 1;
+            return 1;
+        }
+        if (l > h) {
+            return 0;
+        }
+        if (memo[l][h] != null) {
+            return memo[l][h];
+        }
+        int res = 0;
+        if (s.charAt(l) == s.charAt(h)) {
+            res = longestPalindromeSubArray(s, memo, l + 1, h - 1) + 2;
+        } else {
+            res = Math.max(res, longestPalindromeSubArray(s, memo, l + 1, h));
+            res = Math.max(res, longestPalindromeSubArray(s, memo, l, h - 1));
+        }
+        memo[l][h] = res;
+        return res;
     }
 }
