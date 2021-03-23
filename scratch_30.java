@@ -6,7 +6,59 @@ class Scratch {
         long timing = System.currentTimeMillis();
 //        int[][] zeroes = new int[][]{{0, 1, 2, 0}, {3, 4, 5, 2}, {1, 3, 1, 5}};
 //        s.setZeroes(zeroes);
-        System.err.println(s.longestPalindromeSubseq("bbbab"));
+        System.err.println(s.longestPalindrome("abb"));
+    }
+
+    // LC5 最长回文子串, 递归, 记忆, 慢
+
+    private int longestLeft;
+    private int longestRight;
+    private int longestPalindromeLength;
+
+    public String longestPalindrome(String s) {
+        int n = s.length();
+        longestPalindromeLength = 0;
+        Boolean[][] judge = new Boolean[n + 1][n + 1];
+        longestPalindromeJudgeRecursive(s, judge, 0, n - 1);
+        return s.substring(longestLeft, longestRight + 1);
+    }
+
+    private boolean longestPalindromeJudgeRecursive(String s, Boolean[][] matrix, int l, int h) {
+        if (l == h) {
+            matrix[l][h] = true;
+            if (longestPalindromeLength == 0) {
+                longestPalindromeLength = 1;
+                longestLeft = l;
+                longestRight = h;
+            }
+            return true;
+        }
+        if (l > h) {
+            return false;
+        }
+        if (matrix[l][h] != null) {
+            return matrix[l][h];
+        }
+        if (l + 1 == h) {
+            matrix[l][h] = s.charAt(l) == s.charAt(h);
+            if (matrix[l][h] && longestPalindromeLength < 2) {
+                longestPalindromeLength = 2;
+                longestLeft = l;
+                longestRight = h;
+            }
+            return matrix[l][h];
+        } else {
+            longestPalindromeJudgeRecursive(s, matrix, l, h - 1);
+            longestPalindromeJudgeRecursive(s, matrix, l + 1, h);
+            longestPalindromeJudgeRecursive(s, matrix, l + 1, h - 1);
+            matrix[l][h] = s.charAt(l) == s.charAt(h) && matrix[l + 1][h - 1];
+            if (matrix[l][h] && longestPalindromeLength < (h - l + 1)) {
+                longestPalindromeLength = h - l + 1;
+                longestLeft = l;
+                longestRight = h;
+            }
+            return matrix[l][h];
+        }
     }
 
     // LC516 最长回文子序列
