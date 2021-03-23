@@ -2,7 +2,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.numTrees(1000));
+        System.err.println(s.numTrees(100));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
@@ -14,7 +14,8 @@ class Scratch {
         memo[0] = 1l;
         memo[1] = 1l;
 
-        return numTreesRecursive(n, memo);
+        long result = numTreesRecursive(n, memo);
+        return result;
     }
 
     private long numTreesRecursive(int n, Long[] memo) {

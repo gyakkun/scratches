@@ -9,7 +9,28 @@ class Scratch {
         System.err.println(s.longestPalindrome("abb"));
     }
 
+    // 三壶问题,
+    public int tripleBottle(int n, int a, int b) {
+        if (n % 2 == 1 || (n / 2) % gcd(a, b) != 0) return -1;
+        int[] three = new int[3];
+        int half = n / 2;
+        three[0] = n;
+        int layer = 0;
+        Deque<int[]> q = new LinkedList<>();
+        q.offer(three);
+        while (!q.isEmpty()) {
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
 
+            }
+        }
+
+        return -1;
+    }
+
+    public int gcd(int a, int b) {
+        return a % b != 0 ? gcd(b, a % b) : b;
+    }
 
     // LC5 最长回文子串, 递归, 记忆, 慢
 
