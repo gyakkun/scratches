@@ -26,6 +26,19 @@ class Scratch {
                 int nn = tmp[0], aa = tmp[1], bb = tmp[2];
                 // 总共有多少种操作?
                 // TODO
+                // N->A, N->B, A->N, A->B, B->N, B->A
+                // N->A
+                int[] na = new int[3];
+                if (aa + nn > a){
+                    na[0] = aa + nn - a;
+                    na[1] = a;
+                    na[2] = bb;
+                } else {
+                    na[0] = 0;
+                    na[1] = aa + nn;
+                    na[2] = bb;
+                }
+                q.offer(na);
             }
         }
 
