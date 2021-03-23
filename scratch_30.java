@@ -4,8 +4,137 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.rodCutting(new int[]{1, 5, 8, 9, 10, 17, 17, 20, 24, 30}, 7));
+        int[][] zeroes = new int[][]{{0, 1, 2, 0}, {3, 4, 5, 2}, {1, 3, 1, 5}};
+        s.setZeroes(zeroes);
+        System.err.println(zeroes);
     }
+
+    // LC516 最长回文子序列, TBD
+    public int longestPalindromeSubseq(String s) {
+        int n = s.length();
+        int[][] dp = new int[n + 1][n + 1];
+
+        return -1;
+    }
+
+    // LC341
+
+    // This is the interface that allows for creating nested lists.
+    // You should not implement it, or speculate about its implementation
+    public interface NestedInteger {
+
+        // @return true if this NestedInteger holds a single integer, rather than a nested list.
+        public boolean isInteger();
+
+        // @return the single integer that this NestedInteger holds, if it holds a single integer
+        // Return null if this NestedInteger holds a nested list
+        public Integer getInteger();
+
+        // @return the nested list that this NestedInteger holds, if it holds a nested list
+        // Return null if this NestedInteger holds a single integer
+        public List<NestedInteger> getList();
+    }
+
+    public class NestedIterator implements Iterator<Integer> {
+
+        Deque<Iterator<NestedInteger>> stack;
+
+        public NestedIterator(List<NestedInteger> nestedList) {
+            stack = new LinkedList<>();
+            stack.push(nestedList.iterator());
+        }
+
+        @Override
+        public Integer next() {
+            return stack.peek().next().getInteger();
+        }
+
+        @Override
+        public boolean hasNext() {
+            while (!stack.isEmpty()) {
+                Iterator<NestedInteger> it = stack.peek();
+                if (!it.hasNext()) {
+                    stack.pop();
+                    continue;
+                }
+                NestedInteger ni = it.next();
+                if(ni.isInteger()){
+                    List<NestedInteger> list = new ArrayList<>(1);
+                    list.add(ni);
+                    stack.push(list.iterator());
+                    return true;
+                }
+                stack.push(ni.getList().iterator());
+            }
+            return false;
+        }
+    }
+
+
+    // LC73, O(1)空间
+    public void setZeroes(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        if (m == 0 || n == 0) return;
+        // matrix[0][0] == 0
+
+        boolean zeroFirstRow = false;
+        boolean zeroFirstColumn = false;
+
+        // 处理第0列
+        for (int i = 0; i < m; i++) {
+            if (matrix[i][0] == 0) {
+                zeroFirstColumn = true;
+                break;
+            }
+        }
+
+        // 处理第0行
+        for (int j = 0; j < n; j++) {
+            if (matrix[0][j] == 0) {
+                zeroFirstRow = true;
+                break;
+            }
+        }
+
+        // 非首行、首列判断
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[0][j] = 0;
+                    matrix[i][0] = 0;
+                }
+            }
+        }
+        // 非首列操作
+        for (int i = 1; i < m; i++) {
+            if (matrix[i][0] == 0) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        // 非首行操作
+        for (int j = 1; j < n; j++) {
+            if (matrix[0][j] == 0) {
+                for (int i = 0; i < m; i++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        // 首行操作
+        if (zeroFirstRow) {
+            for (int j = 0; j < n; j++) {
+                matrix[0][j] = 0;
+            }
+        }
+        if (zeroFirstColumn) {
+            for (int i = 0; i < m; i++) {
+                matrix[i][0] = 0;
+            }
+        }
+    }
+
 
     // Find maximum possible stolen value from houses, House thief, 偷房子
     public int maxLoot(int[] houseVal) {
