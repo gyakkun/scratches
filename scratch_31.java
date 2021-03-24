@@ -8,11 +8,62 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.longestCommonSubsequence("horse", "ros"));
+        System.err.println(s.shortestCommonSupersequence("aabbabaa",
+                "aabbbbbbaa"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
     }
+
+    // LC1092
+
+
+    public String shortestCommonSupersequence(String str1, String str2) {
+        //   a c d b a c
+        // c a e   b
+        String[] strs = new String[]{str1, str2};
+        // 思路: 先找最长公共子序列, 用数对标记这些坐标, 然后再将这些坐标之间的字符填充进去
+        String lcs = longestCommonSubsequenceIntervalResults(str1, str2);
+        StringBuffer answer = new StringBuffer();
+        int i = 0, j = 0;
+        for (char c : lcs.toCharArray()) {
+            while (i < str1.length() && str1.charAt(i) != c) {
+                answer.append(str1.charAt(i));
+                i++;
+            }
+            while (j < str2.length() && str2.charAt(j) != c) {
+                answer.append(str2.charAt(j));
+                j++;
+            }
+            answer.append(c);
+            i++;
+            j++;
+        }
+        if (i <= str1.length())
+            answer.append(str1.substring(i));
+        if (j <= str2.length())
+            answer.append(str2.substring(j));
+        return answer.toString();
+    }
+
+    // 返回各区间的最长子序列数组
+    public String longestCommonSubsequenceIntervalResults(String text1, String text2) {
+        String[][] dp = new String[text1.length() + 1][text2.length() + 1];
+        for (String[] sa : dp) {
+            Arrays.fill(sa, "");
+        }
+        for (int i = 1; i <= text1.length(); i++) {
+            for (int j = 1; j <= text2.length(); j++) {
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + text1.charAt(i - 1);
+                } else {
+                    dp[i][j] = dp[i - 1][j].length() > dp[i][j - 1].length() ? dp[i - 1][j] : dp[i][j - 1];
+                }
+            }
+        }
+        return dp[text1.length()][text2.length()];
+    }
+
 
     // LC491
 
@@ -145,29 +196,18 @@ class Scratch {
     }
 
     // LC1143 最长相同子序列长度
-    public String longestCommonSubsequence(String text1, String text2) {
+    public int longestCommonSubsequence(String text1, String text2) {
         int[][] dp = new int[text1.length() + 1][text2.length() + 1];
-        List<Character> result = new LinkedList<>();
-        int maxLen = 0;
         for (int i = 1; i <= text1.length(); i++) {
             for (int j = 1; j <= text2.length(); j++) {
                 if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
                     dp[i][j] = dp[i - 1][j - 1] + 1;
-                    if (dp[i][j] > maxLen) {
-                        maxLen = dp[i][j];
-                        result.add(text1.charAt(i - 1));
-                    }
                 } else {
                     dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
                 }
             }
         }
-        StringBuffer sb = new StringBuffer();
-        for (char c : result) {
-            sb.append(c);
-        }
-        return sb.toString();
-//        return result.stream().map(String::valueOf).collect(Collectors.joining());
+        return dp[text1.length()][text2.length()];
     }
 
     // Longest Common Substring 最长相同子串
