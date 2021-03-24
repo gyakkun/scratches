@@ -2,10 +2,25 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.longestCommonSubstring("abcdefg", "def"));
+        System.err.println(s.longestCommonSubsequence("abcde", "ace"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
+    }
+
+    // LC1143 最长相同子序列长度
+    public int longestCommonSubsequence(String text1, String text2) {
+        int[][] dp = new int[text1.length() + 1][text2.length() + 1];
+        for (int i = 1; i <= text1.length(); i++) {
+            for (int j = 1; j <= text2.length(); j++) {
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[text1.length()][text2.length()];
     }
 
     // Longest Common Substring 最长相同子串
@@ -18,7 +33,6 @@ class Scratch {
         int[][] dp = new int[a.length() + 1][b.length() + 1];
         int maxLength = 0;
         int start = -1;
-        String result = "";
 
         for (int i = 1; i <= a.length(); i++) {
             for (int j = 1; j <= b.length(); j++) {
