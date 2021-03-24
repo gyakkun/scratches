@@ -6,10 +6,20 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.longestCommonSubsequence("zoologicoarchaeologist", "zoogeologist"));
+        System.err.println(s.longestCommonSubsequence("horse", "ros"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
+    }
+
+    // LC72 Edit Distance 编辑距离, 无法参考下面方法
+    // 因为根据编辑距离的定义, 替换(==删除+插入各一次)也是一次操作
+    // 以下方法求出的是最少的插入、删除次数
+    public int minDelAndInsert(String a, String b) {
+        String longestCommonSubsequence = longestCommonSubsequence(a, b);
+        int minDel = a.length() - longestCommonSubsequence.length();
+        int minInsert = b.length() - longestCommonSubsequence.length();
+        return minDel + minInsert;
     }
 
     // LC1143 最长相同子序列长度
