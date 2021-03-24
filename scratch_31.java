@@ -14,6 +14,54 @@ class Scratch {
 
     }
 
+    // LC491
+
+    List<Integer> temp;
+    List<List<Integer>> findSubsequencesResult;
+
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        findSubsequencesResult = new ArrayList<>();
+        temp = new ArrayList<>();
+        findSubsequencesRecursive(0, Integer.MIN_VALUE, nums);
+        return findSubsequencesResult;
+    }
+
+    // 选择列表: 当前元素选或不选
+    private void findSubsequencesRecursive(int cur, int last, int[] nums) {
+        if (cur == nums.length) {
+            if (temp.size() >= 2) {
+                findSubsequencesResult.add(new ArrayList<>(temp));
+            }
+            return;
+        }
+
+        // 1. 做选择, 当前坐标元素大于等于上一个加入的元素, 则选择当前元素坐标的元素加入候选答案, idx指向下一个元素进行迭代
+        if (nums[cur] >= last) {
+            temp.add(nums[cur]);
+            findSubsequencesRecursive(cur + 1, nums[cur], nums);
+            // 2. 取消选择, 考虑不选择当前元素
+            temp.remove(temp.size() - 1);
+        }
+
+        // 3. 什么情况不选择当前元素, 又不进入下一轮迭代?
+        // 如果当前元素等于上一个加入的元素, 则不选当前元素入temp序列, 也不进入下一次迭代
+
+        // 因为面对两个相同的元素(last==nums[cur]), 有4种情况:
+        // （前者为last, 后者为nums[cur])
+        // 1) 选择两者 (即1. 做选择)
+        // 2) 选择前者, 不选择后者 (即保持last不变, 绕过cur, 进入下一次迭代(cur+1))
+        // 3) 不选择前者, 选择后者 (即更新last, 选择cur, 进入下一次迭代, 但语义上和本轮迭代是完全一致的, 所以无法进行???)
+        // 4) 不选择两者 (即既不选择当前元素, 也不进入下一次迭代, 直接return的情况)
+
+        if (nums[cur] == last) {
+            return;
+        } else {
+            findSubsequencesRecursive(cur + 1, last, nums);
+        }
+        // 1 2 2 2 3 4 5 6
+
+    }
+
     // LC300 Greedy + Binary Search
     public int lengthOfLISGreedyBinarySearch(int[] nums) {
         int n = nums.length;
