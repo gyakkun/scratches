@@ -6,7 +6,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 //        int[][] zeroes = new int[][]{{0, 1, 2, 0}, {3, 4, 5, 2}, {1, 3, 1, 5}};
 //        s.setZeroes(zeroes);
-        System.err.println(s.tripleBottle(32, 18, 14));
+        System.err.println(s.tripleBottle(32, 64, 17));
     }
 
     // 三壶问题 BFS
