@@ -1,18 +1,132 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.shortestCommonSupersequence("atdznrqfwlfbcqkezrltzyeqvqemikzgghxkzenhtapwrmrovwtpzzsyiwongllqmvptwammerobtgmkpowndejvbuwbporfyroknrjoekdgqqlgzxiisweeegxajqlradgcciavbpgqjzwtdetmtallzyukdztoxysggrqkliixnagwzmassthjecvfzmyonglocmvjnxkcwqqvgrzpsswnigjthtkuawirecfuzrbifgwolpnhcapzxwmfhvpfmqapdxgmddsdlhteugqoyepbztspgojbrmpjmwmhnldunskpvwprzrudbmtwdvgyghgprqcdgqjjbyfsujnnssfqvjhnvcotynidziswpzhkdszbblustoxwtlhkowpatbypvkmajumsxqqunlxxvfezayrolwezfzfyzmmneepwshpemynwzyunsxgjflnqmfghsvwpknqhclhrlmnrljwabwpxomwhuhffpfinhnairblcayygghzqmotwrywqayvvgohmujneqlzurxcpnwdipldofyvfdurbsoxdurlofkqnrjomszjimrxbqzyazakkizojwkuzcacnbdifesoiesmkbyffcxhqgqyhwyubtsrqarqagogrnaxuzyggknksrfdrmnoxrctntngdxxechxrsbyhtlbmzgmcqopyixdomhnmvnsafphpkdgndcscbwyhueytaeodlhlzczmpqqmnilliydwtxtpedbncvsqauopbvygqdtcwehffagxmyoalogetacehnbfxlqhklvxfzmrjqofaesvuzfczeuqegwpcmahhpzodsmpvrvkzxxtsdsxwixiraphjlqawxinlwfspdlscdswtgjpoiixbvmpzilxrnpdvigpccnngxmlzoentslzyjjpkxemyiemoluhqifyonbnizcjrlmuylezdkkztcphlmwhnkdguhelqzjgvjtrzofmtpuhifoqnokonhqtzxmimp",
-                "xjtuwbmvsdeogmnzorndhmjoqnqjnhmfueifqwleggctttilmfokpgotfykyzdhfafiervrsyuiseumzmymtvsdsowmovagekhevyqhifwevpepgmyhnagjtsciaecswebcuvxoavfgejqrxuvnhvkmolclecqsnsrjmxyokbkesaugbydfsupuqanetgunlqmundxvduqmzidatemaqmzzzfjpgmhyoktbdgpgbmjkhmfjtsxjqbfspedhzrxavhngtnuykpapwluameeqlutkyzyeffmqdsjyklmrxtioawcrvmsthbebdqqrpphncthosljfaeidboyekxezqtzlizqcvvxehrcskstshupglzgmbretpyehtavxegmbtznhpbczdjlzibnouxlxkeiedzoohoxhnhzqqaxdwetyudhyqvdhrggrszqeqkqqnunxqyyagyoptfkolieayokryidtctemtesuhbzczzvhlbbhnufjjocporuzuevofbuevuxhgexmckifntngaohfwqdakyobcooubdvypxjjxeugzdmapyamuwqtnqspsznyszhwqdqjxsmhdlkwkvlkdbjngvdmhvbllqqlcemkqxxdlldcfthjdqkyjrrjqqqpnmmelrwhtyugieuppqqtwychtpjmloxsckhzyitomjzypisxzztdwxhddvtvpleqdwamfnhhkszsfgfcdvakyqmmusdvihobdktesudmgmuaoovskvcapucntotdqxkrovzrtrrfvoczkfexwxujizcfiqflpbuuoyfuoovypstrtrxjuuecpjimbutnvqtiqvesaxrvzyxcwslttrgknbdcvvtkfqfzwudspeposxrfkkeqmdvlpazzjnywxjyaquirqpinaennweuobqvxnomuejansapnsrqivcateqngychblywxtdwntancarldwnloqyywrxrganyehkglbdeyshpodpmdchbcc"));
+        System.err.println(s.trap(new int[]{5, 5, 1, 7, 1, 1, 5, 2, 7, 6}));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
+    }
+
+    // LC42 接雨水 TBD
+    public int trap(int[] height) {
+        if (height.length == 0) return 0;
+
+        int result = 0;
+
+        Map<Integer, Integer> firstIndexOf = new HashMap<>();
+
+        // firstIndexOf表
+        for (int i = 0; i < height.length; i++) {
+            firstIndexOf.putIfAbsent(height[i], i);
+        }
+
+        int n = height.length;
+        List<Integer> lisFirstDup = LISGreedyBS(height);
+        int topEle = lisFirstDup.get(lisFirstDup.size() - 1);
+        List<Integer> lisFirst = lisFirstDup.stream().distinct().collect(Collectors.toList());
+
+        int firstIdxOfTopEle = firstIndexOf.get(topEle);
+        int lastIdxOfTopEle = -1;
+        for (int i = height.length - 1; i >= 0; i--) {
+            if (height[i] == topEle) {
+                lastIdxOfTopEle = i;
+                break;
+            }
+        }
+
+        // 优先处理两个top之间的值
+        if (firstIdxOfTopEle != lastIdxOfTopEle && lastIdxOfTopEle - firstIdxOfTopEle > 1) {
+            for (int i = firstIdxOfTopEle + 1; i < lastIdxOfTopEle; i++) {
+                result += topEle - height[i];
+            }
+        }
+
+        if (lisFirst.size() > 1) {
+            // 处理上升序列
+            for (int i = 1; i < lisFirst.size(); i++) {
+                int left = lisFirst.get(i - 1);
+                int right = lisFirst.get(i);
+                int firstIdxOfLeft = firstIndexOf.get(left);
+                int firstIdxOfRight = firstIndexOf.get(right);
+                if (firstIdxOfRight - firstIdxOfLeft > 1) {
+                    for (int j = firstIdxOfLeft + 1; j < firstIdxOfRight; j++) {
+                        result += left - height[j];
+                    }
+                }
+            }
+        }
+
+        int[] secondHalf = new int[height.length - lastIdxOfTopEle];
+
+        // 处理下降序列
+        for (int i = height.length - 1; i >= lastIdxOfTopEle; i--) {
+            secondHalf[height.length - 1 - i] = height[i];
+        }
+
+        firstIndexOf.clear();
+        for (int i = 0; i < secondHalf.length; i++) {
+            firstIndexOf.putIfAbsent(secondHalf[i], i);
+        }
+
+        List<Integer> lisSecond = LISGreedyBS(secondHalf);
+
+        if (lisSecond.size() > 1) {
+            // 处理上升序列
+            for (int i = 1; i < lisSecond.size(); i++) {
+                int left = lisSecond.get(i - 1);
+                int right = lisSecond.get(i);
+                int firstIdxOfLeft = firstIndexOf.get(left);
+                int firstIdxOfRight = firstIndexOf.get(right);
+                if (firstIdxOfRight - firstIdxOfLeft > 1) {
+                    for (int j = firstIdxOfLeft + 1; j < firstIdxOfRight; j++) {
+                        result += left - secondHalf[j];
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // LC300 Greedy + Binary Search
+    public List<Integer> LISGreedyBS(int[] nums) {
+        int n = nums.length;
+        List<Integer> tail = new ArrayList<>(n);
+        tail.add(nums[0]);
+        for (int i = 1; i < n; i++) {
+            if (nums[i] >= tail.get(tail.size() - 1)) {
+                tail.add(nums[i]);
+            } else {
+                int idx = binarySearchInList(tail, nums[i]);
+//                if (idx != 0) {
+                    tail.set(idx, nums[i]);
+//                }
+            }
+        }
+        return tail;
+    }
+
+    private int binarySearchInListModForLC42(List<Integer> list, int target) {
+        // 找出大于等于target的最小值的坐标
+        int n = list.size();
+        int l = 0, h = n - 1;
+        while (l < h) {
+            int mid = l + (h - l) / 2; // 取低位
+            if (list.get(mid) < target) {
+                l = mid + 1;
+            } else {
+                h = mid;
+            }
+        }
+        if (list.get(h) >= target) {
+            return h;
+        } else {
+            return -1;
+        }
     }
 
     // LC1092
