@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +12,40 @@ class Scratch {
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
+    }
+
+    // LC300 Greedy + Binary Search
+    public int lengthOfLISGreedyBinarySearch(int[] nums) {
+        int n = nums.length;
+        List<Integer> tail = new ArrayList<>(n);
+        tail.add(nums[0]);
+        for (int i = 1; i < n; i++) {
+            if (nums[i] > tail.get(tail.size() - 1)) {
+                tail.add(nums[i]);
+            } else {
+                tail.set(binarySearchInList(tail, nums[i]), nums[i]);
+            }
+        }
+        return tail.size();
+    }
+
+    private int binarySearchInList(List<Integer> list, int target) {
+        // 找出大于等于target的最小值的坐标
+        int n = list.size();
+        int l = 0, h = n - 1;
+        while (l < h) {
+            int mid = l + (h - l) / 2; // 取低位
+            if (list.get(mid) < target) {
+                l = mid + 1;
+            } else {
+                h = mid;
+            }
+        }
+        if (list.get(h) >= target) {
+            return h;
+        } else {
+            return -1;
+        }
     }
 
     // LC300 DP
