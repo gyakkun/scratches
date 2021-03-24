@@ -25,9 +25,9 @@ class Scratch {
         }
 
         int n = height.length;
-        List<Integer> lisFirstDup = LISGreedyBS(height);
-        int topEle = lisFirstDup.get(lisFirstDup.size() - 1);
-        List<Integer> lisFirst = lisFirstDup.stream().distinct().collect(Collectors.toList());
+        List<Integer> lisFirst = simpleIncreasingSubsequence(height);
+        int topEle = lisFirst.get(lisFirst.size() - 1);
+//        List<Integer> lisFirst = lisFirstDup.stream().distinct().collect(Collectors.toList());
 
         int firstIdxOfTopEle = firstIndexOf.get(topEle);
         int lastIdxOfTopEle = -1;
@@ -72,7 +72,7 @@ class Scratch {
             firstIndexOf.putIfAbsent(secondHalf[i], i);
         }
 
-        List<Integer> lisSecond = LISGreedyBS(secondHalf);
+        List<Integer> lisSecond = simpleIncreasingSubsequence(secondHalf);
 
         if (lisSecond.size() > 1) {
             // 处理上升序列
@@ -89,6 +89,20 @@ class Scratch {
             }
         }
 
+        return result;
+    }
+
+    // Simple Increasing Subsequence from start
+    private List<Integer> simpleIncreasingSubsequence(int[] nums) {
+        List<Integer> result = new ArrayList<>();
+        if(nums.length==0) return result;
+        result.add(nums[0]);
+        if(nums.length==1) return result;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > result.get(result.size() - 1)) {
+                result.add(nums[i]);
+            }
+        }
         return result;
     }
 
