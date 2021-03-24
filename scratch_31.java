@@ -8,22 +8,20 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.shortestCommonSupersequence("aabbabaa",
-                "aabbbbbbaa"));
+        System.err.println(s.shortestCommonSupersequence("atdznrqfwlfbcqkezrltzyeqvqemikzgghxkzenhtapwrmrovwtpzzsyiwongllqmvptwammerobtgmkpowndejvbuwbporfyroknrjoekdgqqlgzxiisweeegxajqlradgcciavbpgqjzwtdetmtallzyukdztoxysggrqkliixnagwzmassthjecvfzmyonglocmvjnxkcwqqvgrzpsswnigjthtkuawirecfuzrbifgwolpnhcapzxwmfhvpfmqapdxgmddsdlhteugqoyepbztspgojbrmpjmwmhnldunskpvwprzrudbmtwdvgyghgprqcdgqjjbyfsujnnssfqvjhnvcotynidziswpzhkdszbblustoxwtlhkowpatbypvkmajumsxqqunlxxvfezayrolwezfzfyzmmneepwshpemynwzyunsxgjflnqmfghsvwpknqhclhrlmnrljwabwpxomwhuhffpfinhnairblcayygghzqmotwrywqayvvgohmujneqlzurxcpnwdipldofyvfdurbsoxdurlofkqnrjomszjimrxbqzyazakkizojwkuzcacnbdifesoiesmkbyffcxhqgqyhwyubtsrqarqagogrnaxuzyggknksrfdrmnoxrctntngdxxechxrsbyhtlbmzgmcqopyixdomhnmvnsafphpkdgndcscbwyhueytaeodlhlzczmpqqmnilliydwtxtpedbncvsqauopbvygqdtcwehffagxmyoalogetacehnbfxlqhklvxfzmrjqofaesvuzfczeuqegwpcmahhpzodsmpvrvkzxxtsdsxwixiraphjlqawxinlwfspdlscdswtgjpoiixbvmpzilxrnpdvigpccnngxmlzoentslzyjjpkxemyiemoluhqifyonbnizcjrlmuylezdkkztcphlmwhnkdguhelqzjgvjtrzofmtpuhifoqnokonhqtzxmimp",
+                "xjtuwbmvsdeogmnzorndhmjoqnqjnhmfueifqwleggctttilmfokpgotfykyzdhfafiervrsyuiseumzmymtvsdsowmovagekhevyqhifwevpepgmyhnagjtsciaecswebcuvxoavfgejqrxuvnhvkmolclecqsnsrjmxyokbkesaugbydfsupuqanetgunlqmundxvduqmzidatemaqmzzzfjpgmhyoktbdgpgbmjkhmfjtsxjqbfspedhzrxavhngtnuykpapwluameeqlutkyzyeffmqdsjyklmrxtioawcrvmsthbebdqqrpphncthosljfaeidboyekxezqtzlizqcvvxehrcskstshupglzgmbretpyehtavxegmbtznhpbczdjlzibnouxlxkeiedzoohoxhnhzqqaxdwetyudhyqvdhrggrszqeqkqqnunxqyyagyoptfkolieayokryidtctemtesuhbzczzvhlbbhnufjjocporuzuevofbuevuxhgexmckifntngaohfwqdakyobcooubdvypxjjxeugzdmapyamuwqtnqspsznyszhwqdqjxsmhdlkwkvlkdbjngvdmhvbllqqlcemkqxxdlldcfthjdqkyjrrjqqqpnmmelrwhtyugieuppqqtwychtpjmloxsckhzyitomjzypisxzztdwxhddvtvpleqdwamfnhhkszsfgfcdvakyqmmusdvihobdktesudmgmuaoovskvcapucntotdqxkrovzrtrrfvoczkfexwxujizcfiqflpbuuoyfuoovypstrtrxjuuecpjimbutnvqtiqvesaxrvzyxcwslttrgknbdcvvtkfqfzwudspeposxrfkkeqmdvlpazzjnywxjyaquirqpinaennweuobqvxnomuejansapnsrqivcateqngychblywxtdwntancarldwnloqyywrxrganyehkglbdeyshpodpmdchbcc"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
     }
 
     // LC1092
-
-
     public String shortestCommonSupersequence(String str1, String str2) {
         //   a c d b a c
         // c a e   b
         String[] strs = new String[]{str1, str2};
         // 思路: 先找最长公共子序列, 用数对标记这些坐标, 然后再将这些坐标之间的字符填充进去
-        String lcs = longestCommonSubsequenceIntervalResults(str1, str2);
+        String lcs = longestCommonSubsequenceString(str1, str2);
         StringBuffer answer = new StringBuffer();
         int i = 0, j = 0;
         for (char c : lcs.toCharArray()) {
@@ -46,8 +44,8 @@ class Scratch {
         return answer.toString();
     }
 
-    // 返回各区间的最长子序列数组
-    public String longestCommonSubsequenceIntervalResults(String text1, String text2) {
+    // 返回最终结果LCS
+    public String longestCommonSubsequenceString(String text1, String text2) {
         String[][] dp = new String[text1.length() + 1][text2.length() + 1];
         for (String[] sa : dp) {
             Arrays.fill(sa, "");
@@ -189,7 +187,7 @@ class Scratch {
     // 因为根据编辑距离的定义, 替换(==删除+插入各一次)也是一次操作
     // 以下方法求出的是最少的插入、删除次数
     public int minDelAndInsert(String a, String b) {
-        String lcs = longestCommonSubsequence(a, b);
+        String lcs = longestCommonSubsequenceString(a, b);
         int minDel = a.length() - lcs.length();
         int minInsert = b.length() - lcs.length();
         return minDel + minInsert;
