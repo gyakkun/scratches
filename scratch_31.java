@@ -19,8 +19,7 @@ class Scratch {
     public String shortestCommonSupersequence(String str1, String str2) {
         //   a c d b a c
         // c a e   b
-        String[] strs = new String[]{str1, str2};
-        // 思路: 先找最长公共子序列, 用数对标记这些坐标, 然后再将这些坐标之间的字符填充进去
+        // 思路: 先找最长公共子序列, 然后逐个比较, 右移指针, 逐个填充
         String lcs = longestCommonSubsequenceString(str1, str2);
         StringBuffer answer = new StringBuffer();
         int i = 0, j = 0;
@@ -37,9 +36,9 @@ class Scratch {
             i++;
             j++;
         }
-        if (i <= str1.length())
+        if (i < str1.length())
             answer.append(str1.substring(i));
-        if (j <= str2.length())
+        if (j < str2.length())
             answer.append(str2.substring(j));
         return answer.toString();
     }
