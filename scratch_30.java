@@ -16,7 +16,7 @@ class Scratch {
 
         int half = n / 2;
 
-        boolean[][][] visited = new boolean[n + 1][a + 1][b + 1];
+        boolean[][] visited = new boolean[a + 1][b + 1];
 
         int[] origin = new int[3];
         origin[0] = n;
@@ -42,10 +42,10 @@ class Scratch {
                 }
 
                 // 标记已经遍历的选项
-                if (visited[nn][aa][bb]) {
+                if (visited[aa][bb]) {
                     continue;
                 }
-                visited[nn][aa][bb] = true;
+                visited[aa][bb] = true;
 
                 // 总共有多少种操作?
                 // N->A, N->B, A->N, A->B, B->N, B->A
