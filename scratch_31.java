@@ -2,10 +2,39 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.numTrees(100));
+        System.err.println(s.longestCommonSubstring("abcdefg", "def"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
+    }
+
+    // Longest Common Substring 最长相同子串
+    public String longestCommonSubstring(String a, String b) {
+
+        // dp[i][j] 表示a前i个字符与b前j个字符中最长相同子串的长度
+        // 转移方程:
+        //  1) 如果a[i] == b[j], dp[i][j] = dp[i-1][j-1] + 1
+        //  2) 否则, dp[i][j] = 0
+        int[][] dp = new int[a.length() + 1][b.length() + 1];
+        int maxLength = 0;
+        int start = -1;
+        String result = "";
+
+        for (int i = 1; i <= a.length(); i++) {
+            for (int j = 1; j <= b.length(); j++) {
+                if (a.charAt(i - 1) == b.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                    if (dp[i][j] > maxLength) {
+                        maxLength = dp[i][j];
+                        start = i - maxLength; // 留意怎么取坐标
+                    }
+                } else {
+                    dp[i][j] = 0;
+                }
+            }
+        }
+
+        return a.substring(start, start + maxLength);
     }
 
     // LC96: 推导卡特兰数
