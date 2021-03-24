@@ -12,13 +12,36 @@ class Scratch {
 
     }
 
+    // LC300 最长上升子序列, 递归+记忆数组
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        Integer[][] memo = new Integer[n + 1][n + 1];
+        return lengthOfLISRecursive(-1, 0, nums, memo);
+    }
+
+    // 比较罕见的前向递归
+    private int lengthOfLISRecursive(int pre, int cur, int[] nums, Integer[][] memo) {
+        if (cur == nums.length) return 0;
+        // 注意向右平移pre一位
+        if (memo[pre + 1][cur] != null) return memo[pre + 1][cur];
+        int stepOne = 0;
+        // 初始状态, pre为-1
+        if (pre < 0 || nums[pre] < nums[cur]) {
+            stepOne = lengthOfLISRecursive(cur, cur + 1, nums, memo) + 1;
+        }
+        int stepTwo = lengthOfLISRecursive(pre, cur + 1, nums, memo);
+
+        memo[pre + 1][cur] = Math.max(stepOne, stepTwo);
+        return memo[pre + 1][cur];
+    }
+
     // LC72 Edit Distance 编辑距离, 无法参考下面方法
     // 因为根据编辑距离的定义, 替换(==删除+插入各一次)也是一次操作
     // 以下方法求出的是最少的插入、删除次数
     public int minDelAndInsert(String a, String b) {
-        String longestCommonSubsequence = longestCommonSubsequence(a, b);
-        int minDel = a.length() - longestCommonSubsequence.length();
-        int minInsert = b.length() - longestCommonSubsequence.length();
+        String lcs = longestCommonSubsequence(a, b);
+        int minDel = a.length() - lcs.length();
+        int minInsert = b.length() - lcs.length();
         return minDel + minInsert;
     }
 
