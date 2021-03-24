@@ -1,3 +1,7 @@
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
@@ -9,18 +13,25 @@ class Scratch {
     }
 
     // LC1143 最长相同子序列长度
-    public int longestCommonSubsequence(String text1, String text2) {
+    public String longestCommonSubsequence(String text1, String text2) {
         int[][] dp = new int[text1.length() + 1][text2.length() + 1];
+        List<Character> result = new LinkedList<>();
         for (int i = 1; i <= text1.length(); i++) {
             for (int j = 1; j <= text2.length(); j++) {
                 if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
                     dp[i][j] = dp[i - 1][j - 1] + 1;
+                    result.add(text1.charAt(i - 1));
                 } else {
                     dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
                 }
             }
         }
-        return dp[text1.length()][text2.length()];
+        StringBuffer sb = new StringBuffer();
+        for (char c : result) {
+            sb.append(c);
+        }
+        return sb.toString();
+//        return result.stream().map(String::valueOf).collect(Collectors.joining());
     }
 
     // Longest Common Substring 最长相同子串
