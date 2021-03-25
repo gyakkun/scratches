@@ -5,14 +5,37 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.numMatchingSubseqBucket("abcde", new String[]{"a", "bb", "acd", "ace"}));
+        System.err.println(s.isInterleave("aabcc", "dbbca", "aadbbcbcac"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
     }
 
-    // LC792, 子序列匹配, 桶
+    // LC97 交错字符串 DP
+    public boolean isInterleave(String s1, String s2, String s3) {
+        int s1l = s1.length(), s2l = s2.length(), s3l = s3.length();
+        if (s1l + s2l != s3l) {
+            return false;
+        }
+        boolean[][] dp = new boolean[s1l + 1][s2l + 1];
+        dp[0][0] = true;
+        // dp[i][j] 表示 s1的前i个字符和s2的前j个字符能否组成s3的前i+j个字符
+        for (int i = 0; i <= s1l; i++) {
+            for (int j = 0; j <= s2l; j++) {
+                int s3p = i + j - 1;
+                if (i > 0) {
+                    dp[i][j] = dp[i][j] || dp[i - 1][j] && s3.charAt(s3p) == s1.charAt(i - 1);
+                }
+                if (j > 0) {
+                    dp[i][j] = dp[i][j] || dp[i][j - 1] && s3.charAt(s3p) == s2.charAt(j - 1);
+                }
+            }
+        }
 
+        return dp[s1l][s2l];
+    }
+
+    // LC792, 子序列匹配, 桶
     public int numMatchingSubseqBucket(String s, String[] words) {
         int result = 0;
         Map<Character, List<List<Character>>> bucket = new HashMap<>();
