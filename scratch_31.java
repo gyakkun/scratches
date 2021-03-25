@@ -5,12 +5,36 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.isInterleave(
-                "aabc",
-                "abad",
-                "aabcabad"));
+        System.err.println(s.editDistance(
+                "zoogeologist",
+                "zoologicoarchaeologist"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
+    }
+
+    // LC72 编辑距离
+    public int editDistance(String s1, String s2) {
+        int s1l = s1.length(), s2l = s2.length();
+        int[][] dp = new int[s1l + 1][s2l + 1];
+        // 初始化, 从0个字符变为i个字符, 至少需要i步插入操作
+        for (int i = 0; i <= s1l; i++) {
+            dp[i][0] = i;
+        }
+        for (int i = 0; i <= s2l; i++) {
+            dp[0][i] = i;
+        }
+
+        for (int i = 1; i <= s1l; i++) {
+            for (int j = 1; j <= s2l; j++) {
+                int min = Math.min(dp[i - 1][j], dp[i][j - 1]) + 1; // 从dp[i-1][j]删除 或者从dp[i][j-1]替换???
+                if (s1.charAt(i - 1) != s2.charAt(j - 1)) {
+                    dp[i][j] = Math.min(min, dp[i - 1][j - 1] + 1); // 从dp[i-1][j-1]插入一个
+                } else {
+                    dp[i][j] = Math.min(min, dp[i - 1][j - 1]); // 否则不用操作
+                }
+            }
+        }
+        return dp[s1l][s2l];
     }
 
     // LC97 交错字符串 递归 记忆数组
