@@ -44,28 +44,28 @@ class Scratch {
     }
 
 
-    // LC97 交错字符串 DP
+    // LC97 交错字符串 DP 滚动数组
     public boolean isInterleaveDP(String s1, String s2, String s3) {
         int s1l = s1.length(), s2l = s2.length(), s3l = s3.length();
         if (s1l + s2l != s3l) {
             return false;
         }
-        boolean[][] dp = new boolean[s1l + 1][s2l + 1];
-        dp[0][0] = true;
+        boolean[] dp = new boolean[s2l + 1];
+        dp[0] = true;
         // dp[i][j] 表示 s1的前i个字符和s2的前j个字符能否组成s3的前i+j个字符
         for (int i = 0; i <= s1l; i++) {
             for (int j = 0; j <= s2l; j++) {
                 int s3p = i + j - 1;
                 if (i > 0) {
-                    dp[i][j] = dp[i][j] || dp[i - 1][j] && s3.charAt(s3p) == s1.charAt(i - 1);
+                    dp[j] = dp[j] && s3.charAt(s3p) == s1.charAt(i - 1);
                 }
                 if (j > 0) {
-                    dp[i][j] = dp[i][j] || dp[i][j - 1] && s3.charAt(s3p) == s2.charAt(j - 1);
+                    dp[j] = dp[j] || dp[j - 1] && s3.charAt(s3p) == s2.charAt(j - 1);
                 }
             }
         }
 
-        return dp[s1l][s2l];
+        return dp[s2l];
     }
 
     // LC792, 子序列匹配, 桶
