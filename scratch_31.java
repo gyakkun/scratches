@@ -31,7 +31,7 @@ class Scratch {
                     List<List<Character>> thisBucket = bucket.get(key);
                     ListIterator<List<Character>> it = thisBucket.listIterator();
                     while (it.hasNext()) {
-                        List<Character> bucketItem = new LinkedList<>(it.next());
+                        List<Character> bucketItem = it.next();
                         it.remove();
                         bucketItem.remove(0);
                         if (bucketItem.size() == 0) {
