@@ -46,6 +46,9 @@ class Scratch {
                         }
                     }
                 }
+                if (bucket.get(key).size() == 0) {
+                    bucket.remove(key);
+                }
             }
         }
         return result;
