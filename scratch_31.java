@@ -5,14 +5,54 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.numMatchingSubseq("abcde", new String[]{"a", "bb", "acd", "ace"}));
+        System.err.println(s.numMatchingSubseqBucket("abcde", new String[]{"a", "bb", "acd", "ace"}));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
     }
 
+    // LC792, 子序列匹配, 桶
+
+    public int numMatchingSubseqBucket(String s, String[] words) {
+        int result = 0;
+        Map<Character, List<List<Character>>> bucket = new HashMap<>();
+        for (String word : words) {
+            bucket.putIfAbsent(word.charAt(0), new LinkedList<>());
+            List<Character> tmpBucketItem = new LinkedList<>();
+            for (char c : word.toCharArray()) {
+                tmpBucketItem.add(c);
+            }
+            bucket.get(word.charAt(0)).add(tmpBucketItem);
+        }
+        for (char c : s.toCharArray()) {
+            Set<Character> set = new HashSet<>(bucket.keySet());
+            for (char key : set) {
+                if (c == key) {
+                    List<List<Character>> thisBucket = bucket.get(key);
+                    ListIterator<List<Character>> it = thisBucket.listIterator();
+                    while (it.hasNext()) {
+                        List<Character> bucketItem = new LinkedList<>(it.next());
+                        it.remove();
+                        bucketItem.remove(0);
+                        if (bucketItem.size() == 0) {
+                            result++;
+                        } else {
+                            bucket.putIfAbsent(bucketItem.get(0), new LinkedList<>());
+                            if (bucketItem.get(0) != key) {
+                                bucket.get(bucketItem.get(0)).add(bucketItem);
+                            } else {
+                                it.add(bucketItem);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     // LC792, 子序列匹配, 暴力TLE
-    public int numMatchingSubseq(String s, String[] words) {
+    public int numMatchingSubseqTLE(String s, String[] words) {
         int result = 0;
         for (String word : words) {
             int wPtr = 0;
