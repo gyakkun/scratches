@@ -5,14 +5,47 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.isInterleave("aabcc", "dbbca", "aadbbcbcac"));
+        System.err.println(s.isInterleave(
+                "aabc",
+                "abad",
+                "aabcabad"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
-
     }
 
-    // LC97 交错字符串 DP
+    // LC97 交错字符串 递归 记忆数组
     public boolean isInterleave(String s1, String s2, String s3) {
+        int s1l = s1.length(), s2l = s2.length(), s3l = s3.length();
+        if (s1l + s2l != s3l) {
+            return false;
+        }
+        Boolean[][] memo = new Boolean[s1l + 1][s2l + 1];
+        return isInterleaveRecursive(s1, s2, s3, 0, 0, 0, memo);
+    }
+
+    private boolean isInterleaveRecursive(String a, String b, String c, int i, int j, int k, Boolean[][] memo) {
+        if (k == c.length()) {
+            memo[i][j] = true;
+            return memo[i][j];
+        }
+        if (memo[i][j] != null) {
+            return memo[i][j];
+        }
+        boolean result = false;
+        if (i < a.length() && a.charAt(i) == c.charAt(k)) {
+            result = isInterleaveRecursive(a, b, c, i + 1, j, k + 1, memo);
+        }
+        if (j < b.length() && b.charAt(j) == c.charAt(k)) {
+            // 注意短路前面为真的结果, 不用进入这次匹配
+            result |= isInterleaveRecursive(a, b, c, i, j + 1, k + 1, memo);
+        }
+        memo[i][j] = result;
+        return memo[i][j];
+    }
+
+
+    // LC97 交错字符串 DP
+    public boolean isInterleaveDP(String s1, String s2, String s3) {
         int s1l = s1.length(), s2l = s2.length(), s3l = s3.length();
         if (s1l + s2l != s3l) {
             return false;
