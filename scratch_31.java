@@ -5,11 +5,34 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.editDistance(
-                "zoogeologist",
-                "zoologicoarchaeologist"));
+        System.err.println(s.simplifyPath("/home//foo/"));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
+    }
+
+    // LC71 简化Unix路径
+    public String simplifyPath(String path) {
+        String[] list = path.split("/");
+        Set<String> set = new HashSet<>();
+        set.add(".");
+        set.add("..");
+        set.add("");
+        Deque<String> stack = new LinkedList<>();
+        for (String s : list) {
+            if (!set.contains(s)) {
+                stack.push(s);
+            } else if (s.equals("..")) {
+                stack.pop();
+            }
+        }
+        StringBuffer sb = new StringBuffer();
+        sb.append('/');
+        while (!stack.isEmpty()) {
+            sb.append(stack.pollLast());
+            sb.append('/');
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString().equals("") ? "/" : sb.toString();
     }
 
     // LC72 编辑距离
