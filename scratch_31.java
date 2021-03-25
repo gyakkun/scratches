@@ -5,13 +5,33 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.trap(new int[]{5, 5, 1, 7, 1, 1, 5, 2, 7, 6}));
+        System.err.println(s.numMatchingSubseq("abcde", new String[]{"a", "bb", "acd", "ace"}));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
 
     }
 
-    // LC42 接雨水 TBD
+    // LC792, 子序列匹配, 暴力TLE
+    public int numMatchingSubseq(String s, String[] words) {
+        int result = 0;
+        for (String word : words) {
+            int wPtr = 0;
+            int sPtr = 0;
+            while (wPtr < word.length() && sPtr < s.length()) {
+                if (s.charAt(sPtr++) == word.charAt(wPtr)) {
+                    wPtr++;
+                    if (wPtr == word.length()) {
+                        result++;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    // LC42 接雨水, 比较朴素的解法
+    // 思路: 先得到从头/尾开始的递增/递减序列, 再处理中间最高柱子之间的部分
     public int trap(int[] height) {
         if (height.length == 0) return 0;
 
@@ -95,9 +115,9 @@ class Scratch {
     // Simple Increasing Subsequence from start
     private List<Integer> simpleIncreasingSubsequence(int[] nums) {
         List<Integer> result = new ArrayList<>();
-        if(nums.length==0) return result;
+        if (nums.length == 0) return result;
         result.add(nums[0]);
-        if(nums.length==1) return result;
+        if (nums.length == 1) return result;
         for (int i = 1; i < nums.length; i++) {
             if (nums[i] > result.get(result.size() - 1)) {
                 result.add(nums[i]);
@@ -117,7 +137,7 @@ class Scratch {
             } else {
                 int idx = binarySearchInList(tail, nums[i]);
 //                if (idx != 0) {
-                    tail.set(idx, nums[i]);
+                tail.set(idx, nums[i]);
 //                }
             }
         }
