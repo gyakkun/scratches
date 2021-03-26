@@ -1,14 +1,48 @@
+import sun.text.resources.cldr.es.FormatData_es_419;
+
 import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.romanToInt("MCMXCIV"));
+        System.err.println(s.letterCombinations("2"));
         // 6-8-7+(1+6)
         // 6 8 - 7 - 1 6 + +
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC17
+    public List<String> letterCombinations(String digits) {
+        Map<Character, Character[]> m = new HashMap<>();
+        m.put('2', new Character[]{'a', 'b', 'c'});
+        m.put('3', new Character[]{'d', 'e', 'f'});
+        m.put('4', new Character[]{'g', 'h', 'i'});
+        m.put('5', new Character[]{'j', 'k', 'l'});
+        m.put('6', new Character[]{'m', 'n', 'o'});
+        m.put('7', new Character[]{'p', 'q', 'r', 's'});
+        m.put('8', new Character[]{'t', 'u', 'v'});
+        m.put('9', new Character[]{'w', 'x', 'y', 'z'});
+        List<String> result = new LinkedList<>();
+        for (char c : digits.toCharArray()) {
+            int size = result.size();
+            if (size != 0) {
+                for (int i = 0; i < size; i++) {
+                    for (char innerC : m.get(c)) {
+                        result.add(result.get(i) + innerC);
+                    }
+                }
+                for (int i = 0; i < size; i++) {
+                    result.remove(0);
+                }
+            } else {
+                for (char innerC : m.get(c)) {
+                    result.add(String.valueOf(innerC));
+                }
+            }
+        }
+        return result;
     }
 
     // LC13
