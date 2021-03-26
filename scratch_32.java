@@ -6,9 +6,30 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.findMedianSortedArrays(new int[]{0, 0}, new int[]{0, 0}));
+        System.err.println(s.reverse(-123));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC7, 不能使用long, 注意溢出判断
+    public int reverse(int x) {
+        if (x == 0) return 0;
+        boolean negFlag = x < 0;
+        if (x < 0) x = -x;
+        int result = 0;
+        while (x != 0) {
+            // 溢出判断
+            if (result > Integer.MAX_VALUE / 10) {
+                return 0;
+            }
+            if (result * 10 > Integer.MAX_VALUE - x % 10) {
+                return 0;
+            }
+
+            result = result * 10 + x % 10;
+            x /= 10;
+        }
+        return negFlag ? -result : result;
     }
 
     // LC4
