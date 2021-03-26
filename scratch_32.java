@@ -4,14 +4,94 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.evalRPN(new String[]{"4", "13", "5", "/", "+"}));
+        System.err.println(s.evalRPN(s.toRPN(s.decodeExpression("(1+(4+5+2)-3)+(6+8)"))));
+        // 6-8-7+(1+6)
+        // 6 8 - 7 - 1 6 + +
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC150 逆波兰表达式
-    public int evalRPN(String[] tokens) {
+    // My Eval
+    public double myEval(String expression) {
+        return evalRPN(toRPN(decodeExpression(expression)));
+    }
+
+    public List<String> toRPN(List<String> express) {
+        List<String> rpn = new LinkedList<>();
         Deque<String> stack = new LinkedList<>();
+        Set<String> notNumber = new HashSet<String>() {{
+            add("+");
+            add("-");
+            add("/");
+            add("*");
+            add("(");
+            add(")");
+        }};
+        String tmp;
+        for (String token : express) {
+            if (!notNumber.contains(token)) {
+                rpn.add(token);
+            } else if (token.equals("(")) {
+                stack.push(token);
+            } else if (token.equals(")")) {
+                while (!(tmp = stack.pop()).equals("(")) {
+                    rpn.add(tmp);
+                }
+
+            } else {
+                while (!stack.isEmpty() && getOperPriority(stack.peek()) >= getOperPriority(token)) {
+                    rpn.add(stack.pop());
+                }
+                stack.push(token);
+            }
+        }
+        while (!stack.isEmpty()) {
+            rpn.add(stack.pop());
+        }
+        return rpn;
+    }
+
+    private List<String> decodeExpression(String express) {
+        express = express.replaceAll("\\ ", "");
+        express = express.replaceAll("\\(\\+", "(0+");
+        express = express.replaceAll("\\(\\-", "(0-");
+        express = express.replaceAll("\\((\\d+\\.?\\d*)\\)", "$1");
+        List<String> result = new LinkedList<>();
+        int i = 0;
+        StringBuffer sb;
+        do {
+            if ((express.charAt(i) < '0' || express.charAt(i) > '9') && express.charAt(i) != '.') {
+                result.add(express.charAt(i) + "");
+                i++;
+            } else {
+                sb = new StringBuffer();
+                while (i < express.length() && ((express.charAt(i) >= '0' && express.charAt(i) <= '9') || express.charAt(i) == '.')) {
+                    sb.append(express.charAt(i));
+                    i++;
+                }
+                result.add(sb.toString());
+            }
+        } while (i < express.length());
+        return result;
+    }
+
+    private int getOperPriority(String oper) {
+        switch (oper) {
+            case "+":
+            case "-":
+                return 1;
+            case "*":
+            case "/":
+                return 2;
+            default:
+                return -1;
+        }
+    }
+
+    // LC150 逆波兰表达式
+    public double evalRPN(List<String> tokens) {
+        Deque<String> stack = new LinkedList<>();
+        stack.push("0");
         Set<String> oper = new HashSet<String>() {{
             add("+");
             add("-");
@@ -20,9 +100,9 @@ class Scratch {
         }};
         for (String token : tokens) {
             if (oper.contains(token)) {
-                int a = Integer.parseInt(stack.pop());
-                int b = Integer.parseInt(stack.pop());
-                int tmp;
+                double a = Double.parseDouble(stack.pop());
+                double b = Double.parseDouble(stack.pop());
+                double tmp;
                 switch (token) {
                     case "+":
                         tmp = a + b;
@@ -44,7 +124,7 @@ class Scratch {
                 stack.push(token);
             }
         }
-        return stack.isEmpty() ? 0 : Integer.parseInt(stack.pop());
+        return stack.isEmpty() ? 0d : Double.parseDouble(stack.pop());
     }
 
     // LC14
