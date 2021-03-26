@@ -4,11 +4,53 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.evalRPN(s.toRPN(s.decodeExpression("(1+(4+584380+24538)-32339)+(6+8)"))));
+        System.err.println(s.romanToInt("MCMXCIV"));
         // 6-8-7+(1+6)
         // 6 8 - 7 - 1 6 + +
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC13
+    public int romanToInt(String s) {
+
+        // 字符          数值
+        //  I             1
+        //  V             5
+        //  X             10
+        //  L             50
+        //  C             100
+        //  D             500
+        //  M             1000
+
+        // I可以放在V(5) 和X(10) 的左边，来表示 4 和 9。
+        // X可以放在L(50) 和C(100) 的左边，来表示 40 和90。
+        // C可以放在D(500) 和M(1000) 的左边，来表示400 和900。
+
+        Map<Character, Integer> m = new HashMap<Character, Integer>() {{
+            put('I', 1);
+            put('V', 5);
+            put('X', 10);
+            put('L', 50);
+            put('C', 100);
+            put('D', 500);
+            put('M', 1000);
+        }};
+
+        int pre = m.get(s.charAt(0));
+        int sum = 0;
+        int i = 1;
+        while (i < s.length()) {
+            int cur = m.get(s.charAt(i++));
+            if (pre < cur) {
+                sum -= pre;
+            } else {
+                sum += pre;
+            }
+            pre = cur;
+        }
+        sum += pre;
+        return sum;
     }
 
     // LC11
