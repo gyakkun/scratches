@@ -13,6 +13,40 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC61
+    public ListNode rotateRight(ListNode head, int k) {
+        int len = 0;
+        ListNode dummy = new ListNode();
+        dummy.next = head;
+
+        ListNode cur = head;
+
+        while (cur != null) {
+            cur = cur.next;
+            len++;
+        }
+        if (len == 0) return null;
+        if (len == 1) return head;
+        k = k % len;
+        if (k == 0) return head;
+
+        cur = head;
+        ListNode pre = dummy;
+
+        for (int i = 0; i < len - k; i++) {
+            cur = cur.next;
+            pre = pre.next;
+        }
+        pre.next = null;
+        dummy.next = cur;
+        while (cur.next != null) {
+            cur = cur.next;
+        }
+        cur.next = head;
+
+        return dummy.next;
+    }
+
     // LC17
     public List<String> letterCombinations(String digits) {
         Map<Character, Character[]> m = new HashMap<>();
