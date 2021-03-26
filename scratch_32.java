@@ -52,10 +52,10 @@ class Scratch {
     }
 
     private List<String> decodeExpression(String express) {
-        express = express.replaceAll("\\ ", "");
-        express = express.replaceAll("\\(\\+", "(0+");
-        express = express.replaceAll("\\(\\-", "(0-");
-        express = express.replaceAll("\\((\\d+\\.?\\d*)\\)", "$1");
+        express = express.replaceAll(" ", "")
+                .replaceAll("\\(\\+", "(0+")
+                .replaceAll("\\(-", "(0-")
+                .replaceAll("\\((\\d+(\\.\\d+)?)\\)", "$1");
         List<String> result = new LinkedList<>();
         int i = 0;
         StringBuffer sb;
