@@ -1,19 +1,55 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.longestCommonPrefix(new String[]{"ab", "a"}));
+        System.err.println(s.evalRPN(new String[]{"4", "13", "5", "/", "+"}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC150 逆波兰表达式
+    public int evalRPN(String[] tokens) {
+        Deque<String> stack = new LinkedList<>();
+        Set<String> oper = new HashSet<String>() {{
+            add("+");
+            add("-");
+            add("/");
+            add("*");
+        }};
+        for (String token : tokens) {
+            if (oper.contains(token)) {
+                int a = Integer.parseInt(stack.pop());
+                int b = Integer.parseInt(stack.pop());
+                int tmp;
+                switch (token) {
+                    case "+":
+                        tmp = a + b;
+                        break;
+                    case "-":
+                        tmp = b - a;
+                        break;
+                    case "/":
+                        tmp = b / a;
+                        break;
+                    case "*":
+                        tmp = a * b;
+                        break;
+                    default:
+                        tmp = 0;
+                }
+                stack.push(String.valueOf(tmp));
+            } else {
+                stack.push(token);
+            }
+        }
+        return stack.isEmpty() ? 0 : Integer.parseInt(stack.pop());
+    }
+
     // LC14
     public String longestCommonPrefix(String[] strs) {
-        if(strs.length==0) return "";
+        if (strs.length == 0) return "";
         StringBuffer sb = new StringBuffer();
         sb.append(strs[0]);
         for (int i = 1; i < strs.length; i++) {
