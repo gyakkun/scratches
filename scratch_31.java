@@ -5,9 +5,31 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.simplifyPath("/home//foo/"));
+        System.err.println(s.find132pattern(new int[]{1,0,1,-4,-3}));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
+    }
+
+    // LC456 132模式, 单调栈, 题解
+    public boolean find132pattern(int[] nums) {
+        int n = nums.length;
+        Deque<Integer> possibleTop = new LinkedList<Integer>();
+        possibleTop.push(nums[n - 1]);
+        int maxK = Integer.MIN_VALUE;
+
+        for (int i = n - 2; i >= 0; i--) {
+            if (nums[i] < maxK) {
+                return true;
+            }
+            while (!possibleTop.isEmpty() && nums[i] > possibleTop.peek()) {
+                maxK = possibleTop.pop();
+            }
+            // 如果等于, 则没必要push, 当然也可以不做这步判断
+            if (nums[i] > maxK) {
+                possibleTop.push(nums[i]);
+            }
+        }
+        return false;
     }
 
     // LC71 简化Unix路径
