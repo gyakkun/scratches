@@ -6,9 +6,27 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.reverse(-123));
+        System.err.println(s.longestCommonPrefix(new String[]{"ab", "a"}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC14
+    public String longestCommonPrefix(String[] strs) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(strs[0]);
+        for (int i = 1; i < strs.length; i++) {
+            if (sb.length() == 0) return "";
+            if (sb.length() > strs[i].length()) sb.delete(strs[i].length(), sb.length());
+            for (int j = 0; j < strs[i].length(); j++) {
+                if (j + 1 > sb.length()) break;
+                if (strs[i].charAt(j) != sb.charAt(j)) {
+                    sb.delete(j, sb.length());
+                    break;
+                }
+            }
+        }
+        return sb.toString();
     }
 
     // LC7, 不能使用long, 注意溢出判断
