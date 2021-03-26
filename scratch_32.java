@@ -4,7 +4,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.evalRPN(s.toRPN(s.decodeExpression("(1+(4+5+2)-3)+(6+8)"))));
+        System.err.println(s.evalRPN(s.toRPN(s.decodeExpression("(1+(4+584380+24538)-32339)+(6+8)"))));
         // 6-8-7+(1+6)
         // 6 8 - 7 - 1 6 + +
         timing = System.currentTimeMillis() - timing;
@@ -34,8 +34,16 @@ class Scratch {
             } else if (token.equals("(")) {
                 stack.push(token);
             } else if (token.equals(")")) {
-                while (!(tmp = stack.pop()).equals("(")) {
-                    rpn.add(tmp);
+//                while (!(tmp = stack.pop()).equals("(")) {
+//                    rpn.add(tmp);
+//                }
+                while(!stack.isEmpty()){
+                    tmp = stack.pop();
+                    if(tmp.equals("(")){
+                        break;
+                    } else {
+                        rpn.add(tmp);
+                    }
                 }
 
             } else {
