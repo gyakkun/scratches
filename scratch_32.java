@@ -11,6 +11,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC11
+    public int maxArea(int[] height) {
+        int result = Integer.MIN_VALUE;
+        int left = 0, right = height.length - 1;
+        while (left < right) {
+            result = Math.max(result, (right - left) * Math.min(height[right], height[left]));
+            if (height[left] <= height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return result;
+    }
+
     // My Eval
     public double myEval(String expression) {
         return evalRPN(toRPN(decodeExpression(expression)));
@@ -37,9 +52,9 @@ class Scratch {
 //                while (!(tmp = stack.pop()).equals("(")) {
 //                    rpn.add(tmp);
 //                }
-                while(!stack.isEmpty()){
+                while (!stack.isEmpty()) {
                     tmp = stack.pop();
-                    if(tmp.equals("(")){
+                    if (tmp.equals("(")) {
                         break;
                     } else {
                         rpn.add(tmp);
