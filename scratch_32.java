@@ -22,6 +22,12 @@ class Scratch {
             } else {
                 right--;
             }
+            // 假设两侧高度x<=y, 宽为t 面积min(x,y)*t = xt
+            // 移动y -> y1
+            // 面积min(x,y1)*(t-1)
+            //  1) if y1<=y, min(x,y1) <= min(x,y) -> 面积必定更小
+            //  2) if y1>y , min(x,y1) = x, 又因为t-1<t, 面积必定更小
+            // 因此无论如何, 小的一端(x) 已经无法再作为一端边界取得更大的面积, 只能相向移动
         }
         return result;
     }
