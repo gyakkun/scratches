@@ -13,6 +13,7 @@ class Scratch {
 
     // LC14
     public String longestCommonPrefix(String[] strs) {
+        if(strs.length==0) return "";
         StringBuffer sb = new StringBuffer();
         sb.append(strs[0]);
         for (int i = 1; i < strs.length; i++) {
