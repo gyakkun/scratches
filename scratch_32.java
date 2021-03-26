@@ -7,8 +7,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC82
+    // LC83
     public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) return head;
+
+        ListNode dummy = new ListNode();
+        dummy.next = head;
+
+        ListNode cur = dummy;
+        while (cur.next != null && cur.next.next != null) {
+            if (cur.next.val == cur.next.next.val) {
+                int val = cur.next.val;
+                cur = cur.next;
+                // 注意短路的始末
+                while (cur.next != null && cur.next.val == val) {
+                    cur.next = cur.next.next;
+                }
+            } else {
+                cur = cur.next;
+            }
+        }
+        return dummy.next;
+    }
+
+
+        // LC82
+    public ListNode deleteDuplicatesLC82(ListNode head) {
         if (head == null || head.next == null) return head;
 
         ListNode dummy = new ListNode();
