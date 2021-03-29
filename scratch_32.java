@@ -13,6 +13,36 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC19
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if (n <= 0) return head;
+
+        ListNode fast = head;
+        ListNode slow = head;
+        ListNode dummy = new ListNode();
+        dummy.val = 0;
+        dummy.next = head;
+        ListNode fastPre = dummy;
+        ListNode slowPre = dummy;
+
+
+        for (int i = 0; i < n; i++) {
+            fast = fast.next;
+
+        }
+
+        // if(fast==null) return
+
+        while (fast != null) {
+            slowPre = slowPre.next;
+            fast = fast.next;
+        }
+
+        slowPre.next = slowPre.next.next;
+
+        return dummy.next;
+    }
+
     // LC61
     public ListNode rotateRight(ListNode head, int k) {
         int len = 0;
