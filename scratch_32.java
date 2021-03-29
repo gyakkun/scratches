@@ -6,7 +6,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.letterCombinations("2"));
+        System.err.println(s.reverseBits(2));
         // 6-8-7+(1+6)
         // 6 8 - 7 - 1 6 + +
         timing = System.currentTimeMillis() - timing;
@@ -45,6 +45,19 @@ class Scratch {
         cur.next = head;
 
         return dummy.next;
+    }
+
+    // LC190
+    public int reverseBits(int n) {
+        int result = 0;
+        int i = 0;
+        while (i != 31) {
+            result += (n >> i) & 1;
+            result = result << 1;
+            i++;
+        }
+        result += (n >> 31) & 1;
+        return result;
     }
 
     // LC17
