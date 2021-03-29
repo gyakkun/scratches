@@ -54,7 +54,7 @@ class Scratch {
             sb.append('/');
         }
         sb.deleteCharAt(sb.length() - 1);
-        return sb.toString().equals("") ? "/" : sb.toString();
+        return sb.equals("") ? "/" : sb.toString();
     }
 
     // LC72 编辑距离
