@@ -6,11 +6,34 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.reverseBits(2));
+        System.err.println(s.isValidPar("()[]{}"));
         // 6-8-7+(1+6)
         // 6 8 - 7 - 1 6 + +
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC20
+    public boolean isValidPar(String s) {
+        HashMap<Character, Character> matchPair = new HashMap<Character, Character>() {{
+            put('(', ')');
+            put('[', ']');
+            put('{', '}');
+        }};
+        Deque<Character> stack = new LinkedList<>();
+
+        for (char c : s.toCharArray()) {
+            if (matchPair.containsKey(c)) {
+                stack.push(c);
+            } else {
+                if (!stack.isEmpty() && c == matchPair.get(stack.peek())) {
+                    stack.pop();
+                } else {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
     }
 
     // LC19
