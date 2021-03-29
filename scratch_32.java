@@ -41,20 +41,15 @@ class Scratch {
         if (n <= 0) return head;
 
         ListNode fast = head;
-        ListNode slow = head;
         ListNode dummy = new ListNode();
         dummy.val = 0;
         dummy.next = head;
-        ListNode fastPre = dummy;
         ListNode slowPre = dummy;
-
 
         for (int i = 0; i < n; i++) {
             fast = fast.next;
 
         }
-
-        // if(fast==null) return
 
         while (fast != null) {
             slowPre = slowPre.next;
