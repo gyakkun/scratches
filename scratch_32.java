@@ -6,11 +6,37 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.isValidPar("()[]{}"));
+        System.err.println(s.generateParenthesis(3));
         // 6-8-7+(1+6)
         // 6 8 - 7 - 1 6 + +
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC22
+    public List<String> generateParenthesis(int n) {
+        List<String> result = new LinkedList<>();
+
+        generateParenthesisBacktrack(result, n, new StringBuffer(), 0, 0);
+
+        return result;
+    }
+
+    private void generateParenthesisBacktrack(List<String> result, int max, StringBuffer sb, int open, int close) {
+        if (sb.length() == max * 2) {
+            result.add(sb.toString());
+            return;
+        }
+        if (open < max) {
+            sb.append('(');
+            generateParenthesisBacktrack(result, max, sb, open + 1, close);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if (close < open) {
+            sb.append(')');
+            generateParenthesisBacktrack(result, max, sb, open, close+1);
+            sb.deleteCharAt(sb.length() - 1);
+        }
     }
 
     // LC20
