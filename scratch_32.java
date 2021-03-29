@@ -6,11 +6,45 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.generateParenthesis(3));
-        // 6-8-7+(1+6)
-        // 6 8 - 7 - 1 6 + +
+        String m = "mississippi";
+        String p = "issip";
+        System.err.println(s.strStr(m, p));
+        System.err.println(m.indexOf(p));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC28, String.indexOf(), Sunday 算法
+    public int strStr(String mainString, String patternString) {
+        Map<Character, Integer> firstOccurIdx = new HashMap<>();
+        for (int i = 0; i < patternString.length(); i++) {
+            firstOccurIdx.put(patternString.charAt(i), i); // 最右出现的位置
+        }
+        int i = 0, j;
+        // i -> 主串上的指针
+        // j -> 模式串上的指针
+        while (i < mainString.length() - patternString.length() + 1) {
+            for (j = 0; j < patternString.length(); j++) {
+                if (mainString.charAt(i + j) != patternString.charAt(j)) {
+                    // main:   i s p d f g
+                    // patt:     s d f
+
+                    // 对主串: j==1, i==3, i现在是d, 回归s( idx(s)==1, 减几? ), 跳到f(+3), 找f有没有在patt中出现过
+                    int tmpIdx = i + patternString.length();
+
+                    // 如果主串在匹配串后一位的f在模式串中出现过
+                    if (tmpIdx < mainString.length() && firstOccurIdx.containsKey(mainString.charAt(tmpIdx))) {
+                        // 移动主串指针i
+                        i += (patternString.length() - firstOccurIdx.get(mainString.charAt(tmpIdx)));
+                    } else {
+                        i += patternString.length();
+                    }
+                    break;
+                }
+            }
+            if (j == patternString.length()) return i;
+        }
+        return -1;
     }
 
     // LC22
@@ -34,7 +68,7 @@ class Scratch {
         }
         if (close < open) {
             sb.append(')');
-            generateParenthesisBacktrack(result, max, sb, open, close+1);
+            generateParenthesisBacktrack(result, max, sb, open, close + 1);
             sb.deleteCharAt(sb.length() - 1);
         }
     }
