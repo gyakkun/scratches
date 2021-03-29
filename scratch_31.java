@@ -126,9 +126,11 @@ class Scratch {
             for (int j = 0; j <= s2l; j++) {
                 int s3p = i + j - 1;
                 if (i > 0) {
+                    // dp[i][j] = dp[i-1][j] && s3.charAt(s3p) == s1.charAt(i - 1);
                     dp[j] = dp[j] && s3.charAt(s3p) == s1.charAt(i - 1);
                 }
                 if (j > 0) {
+                    // dp[i][j] |= dp[j-1][i] && && s3.charAt(s3p) == s2.charAt(j - 1);
                     dp[j] = dp[j] || dp[j - 1] && s3.charAt(s3p) == s2.charAt(j - 1);
                 }
             }
