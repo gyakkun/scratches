@@ -6,12 +6,33 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        String m = "mississippi";
-        String p = "issip";
-        System.err.println(s.strStr(m, p));
-        System.err.println(m.indexOf(p));
+        System.err.println(s.divide(4, 2));
+        System.err.println(4 / 2);
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC29
+    public int divide(int dividend, int divisor) {
+        if (dividend == Integer.MIN_VALUE && divisor == -1)
+            return Integer.MAX_VALUE;
+
+        boolean posFlag = (dividend > 0 && divisor > 0) || (dividend < 0 && divisor < 0);
+        int result = 0;
+        // 转换为负数处理, 避免abs(Min_Value)还是它本身导致的越界
+        dividend = -Math.abs(dividend);
+        divisor = -Math.abs(divisor);
+        while (dividend <= divisor) {
+            int temp = divisor;
+            int ctr = 1; // 移位计数器
+            while (dividend - temp <= temp) {
+                temp = temp << 1;
+                ctr = ctr << 1;
+            }
+            dividend -= temp;
+            result += ctr;
+        }
+        return posFlag ? result : -result;
     }
 
     // LC28, String.indexOf(), Sunday 算法
