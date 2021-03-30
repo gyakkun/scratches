@@ -6,10 +6,45 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.divide(4, 2));
-        System.err.println(4 / 2);
+        System.err.println(s.searchMatrix(new int[][]{{1, 1}}, 2));
+//        System.err.println(4 / 2);
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC74 搜索升序矩阵, 考虑扁平化+二分
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int totalEle = m * n;
+        return binarySearchInSortedMatrix(matrix, target, m, n) != -1;
+    }
+
+    private int binarySearchInSortedMatrix(int[][] matrix, int target, int m, int n) {
+        int l = 0;
+        int h = m * n - 1;
+        while (l <= h) {
+            int mid = l + (h - l) / 2;
+            int midEle = flatMatrix(mid, matrix, m, n);
+            if (midEle == target) {
+                return mid;
+            }
+            if (midEle > target) {
+                h = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return -1;
+    }
+
+    private int flatMatrix(int nth, int[][] matrix, int m, int n) {
+        return matrix[nth / n][nth % n];
+    }
+
+    // LC99 恢复二叉搜索树(左小右大) Hard
+    public void recoverTree(TreeNode root) {
+        ;
     }
 
     // LC33 旋转后的数组的二分查找
@@ -566,6 +601,25 @@ class Scratch {
         ListNode(int val, ListNode next) {
             this.val = val;
             this.next = next;
+        }
+    }
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
         }
     }
 
