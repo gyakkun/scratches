@@ -1,16 +1,76 @@
-import sun.text.resources.cldr.es.FormatData_es_419;
-
 import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.searchMatrix(new int[][]{{1, 1}}, 2));
+        System.err.println(s.searchRange(new int[]{5, 7, 7, 8, 8, 10}, 7));
 //        System.err.println(4 / 2);
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC99 恢复二叉搜索树(左小右大) Hard
+    public void recoverTree(TreeNode root) {
+        ;
+    }
+
+    // LC34
+    public int[] searchRange(int[] nums, int target) {
+        int[] result = new int[]{-1, -1};
+        if (nums.length == 0) return result;
+        if (nums.length == 1) return nums[0] == target ? new int[]{0, 0} : result;
+        // 二分-1 找是否存在
+        int l = 0, h = nums.length - 1;
+        int mid = -1;
+        boolean exist = false;
+        while (l <= h) {
+            mid = l + (h - l) / 2;
+            if (nums[mid] == target) {
+                exist = true;
+                break;
+            } else if (nums[mid] > target) {
+                h = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+        if (!exist) return result;
+        int possibleIdx = mid;
+
+        // 二分-2 找第一个比target小的坐标
+        int smallerIdx = -1;
+        l = 0;
+        h = nums.length - 1;
+        while (l <= h) {
+            mid = l + (h - l) / 2;
+            if (nums[mid] < target) {
+                smallerIdx = mid;
+                l = mid + 1;
+            } else {
+                h = mid - 1;
+            }
+        }
+        result[0] = smallerIdx + 1;
+
+        // 二分-3 找第一个比target大的坐标
+        int biggerIdx = nums.length;
+        l = 0;
+        h = nums.length - 1;
+        while (l <= h) {
+            mid = l + (h - l) / 2;
+            if (nums[mid] > target) {
+                biggerIdx = mid;
+                h = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+        result[1] = biggerIdx - 1;
+
+        return result;
+    }
+
 
     // LC74 搜索升序矩阵, 考虑扁平化+二分
     public boolean searchMatrix(int[][] matrix, int target) {
@@ -40,11 +100,6 @@ class Scratch {
 
     private int flatMatrix(int nth, int[][] matrix, int m, int n) {
         return matrix[nth / n][nth % n];
-    }
-
-    // LC99 恢复二叉搜索树(左小右大) Hard
-    public void recoverTree(TreeNode root) {
-        ;
     }
 
     // LC33 旋转后的数组的二分查找
