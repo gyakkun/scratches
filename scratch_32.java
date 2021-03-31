@@ -4,11 +4,67 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.searchRange(new int[]{5, 7, 7, 8, 8, 10}, 7));
+        System.err.println(s.alienDict(new String[]{"a", "addition", "also", "also", "am", "and", "are", "basketball", "best", "carrots", "class", "family", "father", "favorite", "food", "friends", "from", "girlboy", "hope", "i", "i", "i", "i", "im", "im", "in", "in", "including", "interested", "is", "like", "like", "make", "me", "meet", "mother", "my", "my", "my", "nice", "of", "sincerely", "snacks", "table", "tennis", "these", "to", "to", "very", "with", "xxx", "you", "you"}));
 //        System.err.println(4 / 2);
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC269 火星字典 , 拓扑排序 (LOCKED题目)
+    public String alienDict(String[] words) {
+        Set<Character> charSet = new HashSet<>();
+        Set<String> pairSet = new HashSet<>();
+        Deque<Character> q = new LinkedList<>();
+        Map<Character, Integer> inDeg = new HashMap<>();
+        StringBuffer result = new StringBuffer();
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                charSet.add(c);
+            }
+        }
+        for (int i = 1; i < words.length; i++) {
+            String wordA = words[i - 1];
+            String wordB = words[i];
+            int minLen = Math.min(wordA.length(), wordB.length());
+            wordA = wordA.length() == minLen ? wordA : wordA.substring(0, minLen);
+            wordB = wordB.length() == minLen ? wordB : wordB.substring(0, minLen);
+            for (int j = 0; j < minLen; j++) {
+                if (wordA.charAt(j) != wordB.charAt(j)) {
+                    pairSet.add("" + wordA.charAt(j) + wordB.charAt(j));
+                    break;
+                }
+            }
+        }
+        for (String s : pairSet) {
+            inDeg.put(s.charAt(1), inDeg.getOrDefault(s.charAt(1), 0) + 1);
+        }
+        // 入度为0的
+        for (char c : charSet) {
+            if (!inDeg.containsKey(c)) {
+                q.offer(c);
+            }
+        }
+
+        while (!q.isEmpty()) {
+            char c = q.poll();
+            result.append(c);
+            Iterator<String> it = pairSet.iterator();
+            while (it.hasNext()) {
+                String s = it.next();
+                if (s.charAt(0) == c) {
+                    inDeg.put(s.charAt(1), inDeg.get(s.charAt(1)) - 1);
+                    if (inDeg.get(s.charAt(1)) == 0) {
+                        inDeg.remove(s.charAt(1));
+                        q.offer(s.charAt(1));
+                    }
+                    it.remove();
+                }
+            }
+        }
+        return result.length() == charSet.size() ? result.toString() : "";
+
+    }
+
 
     // LC99 恢复二叉搜索树(左小右大) Hard
     public void recoverTree(TreeNode root) {
