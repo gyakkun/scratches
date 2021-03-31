@@ -15,6 +15,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1 TWO SUM BINARY SEARCH
+    public int[] twoSum(int[] nums, int target) {
+        int[][] idxPair = new int[nums.length][2];
+        for (int i = 0; i < nums.length; i++) {
+            idxPair[i] = new int[]{nums[i], i};
+        }
+        Arrays.sort(idxPair, Comparator.comparingInt(o -> o[0]));
+        for (int i = 0; i < nums.length; i++) {
+            int l = 0, h = nums.length - 1;
+            while (l <= h) {
+                int mid = l + (h - l) / 2;
+                if (idxPair[mid][0] == target - nums[i] && idxPair[mid][1] != i) {
+                    return new int[]{i, idxPair[mid][1]};
+                } else if (idxPair[mid][0] < target - nums[i]) {
+                    l = mid + 1;
+                } else {
+                    h = mid - 1;
+                }
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    // LC1 TWO SUM hashmap
+    public int[] twoSumHashMap(int[] nums, int target) {
+        Map<Integer, Integer> idxMap = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            idxMap.put(nums[i], i);
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (idxMap.containsKey(target - nums[i]) && idxMap.get(target - nums[i]) != i) {
+                return new int[]{i, idxMap.get(target - nums[i])};
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
     // LC99 恢复二叉搜索树(左小右大) Hard
     public void recoverTree(TreeNode root) {
         List<Integer> l = new LinkedList<>();
