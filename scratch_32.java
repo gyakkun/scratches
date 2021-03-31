@@ -73,8 +73,6 @@ class Scratch {
             String wordA = words[i - 1];
             String wordB = words[i];
             int minLen = Math.min(wordA.length(), wordB.length());
-            wordA = wordA.length() == minLen ? wordA : wordA.substring(0, minLen);
-            wordB = wordB.length() == minLen ? wordB : wordB.substring(0, minLen);
             for (int j = 0; j < minLen; j++) {
                 if (wordA.charAt(j) != wordB.charAt(j)) {
                     pairSet.add("" + wordA.charAt(j) + wordB.charAt(j));
