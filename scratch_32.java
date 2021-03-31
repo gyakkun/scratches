@@ -4,10 +4,57 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.alienDict(new String[]{"a", "addition", "also", "also", "am", "and", "are", "basketball", "best", "carrots", "class", "family", "father", "favorite", "food", "friends", "from", "girlboy", "hope", "i", "i", "i", "i", "im", "im", "in", "in", "including", "interested", "is", "like", "like", "make", "me", "meet", "mother", "my", "my", "my", "nice", "of", "sincerely", "snacks", "table", "tennis", "these", "to", "to", "very", "with", "xxx", "you", "you"}));
+        TreeNode one = new TreeNode(1);
+        TreeNode two = new TreeNode(2);
+        TreeNode three = new TreeNode(3);
+        one.right = three;
+        three.right = two;
+        s.recoverTree(one);
 //        System.err.println(4 / 2);
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC99 恢复二叉搜索树(左小右大) Hard
+    public void recoverTree(TreeNode root) {
+        List<Integer> l = new LinkedList<>();
+        inOrder(root, l);
+        int[] toRecover = new int[2];
+        Arrays.fill(toRecover, -1);
+        for (int i = 0; i < l.size() - 1; i++) {
+            if (l.get(i) > l.get(i + 1)) {
+                toRecover[1] = l.get(i + 1);
+                if (toRecover[0] == -1) {
+                    toRecover[0] = l.get(i);
+                } else {
+                    break;
+                }
+            }
+        }
+        doRecoverTree(root, 2, toRecover);
+        return;
+
+    }
+
+    private void doRecoverTree(TreeNode root, int count, int[] vals) {
+        if (root != null) {
+            if (root.val == vals[0] || root.val == vals[1]) {
+                root.val = root.val == vals[0] ? vals[1] : vals[0];
+                count--;
+                if (count == 0) {
+                    return;
+                }
+            }
+            doRecoverTree(root.left, count, vals);
+            doRecoverTree(root.right, count, vals);
+        }
+    }
+
+    private void inOrder(TreeNode root, List<Integer> list) {
+        if (root == null) return;
+        inOrder(root.left, list);
+        list.add(root.val);
+        inOrder(root.right, list);
     }
 
     // LC269 火星字典 , 拓扑排序 (LOCKED题目)
@@ -65,11 +112,6 @@ class Scratch {
 
     }
 
-
-    // LC99 恢复二叉搜索树(左小右大) Hard
-    public void recoverTree(TreeNode root) {
-        ;
-    }
 
     // LC34
     public int[] searchRange(int[] nums, int target) {
@@ -715,7 +757,7 @@ class Scratch {
         }
     }
 
-    public class TreeNode {
+    public static class TreeNode {
         int val;
         TreeNode left;
         TreeNode right;
