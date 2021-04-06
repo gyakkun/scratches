@@ -4,9 +4,26 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.myPow(2, -1));
+        System.err.println(s.removeDuplicates(new int[]{0, 0, 0, 1, 2, 2, 3, 4, 4, 5}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC80
+    public int removeDuplicates(int[] nums) {
+        int i = 1;
+        int ctr = 1;
+        for (int j = 1; j < nums.length; j++) {
+            if (nums[j] == nums[j - 1]) {
+                ctr++;
+            } else {
+                ctr = 1;
+            }
+            if (ctr <= 2) {
+                nums[i++] = nums[j];
+            }
+        }
+        return i;
     }
 
     // LC50 快速幂 迭代
