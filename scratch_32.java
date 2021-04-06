@@ -4,20 +4,38 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        s.rotate(new int[][]{{5, 1, 9, 11}, {2, 4, 8, 10}, {13, 3, 6, 7}, {15, 14, 12, 16}});
+        System.err.println(s.myPow(2, -1));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC50 快速幂
+    // LC50 快速幂 迭代
     public double myPow(double x, int n) {
-        long target = n;
-        return n >= 0 ? quickMul(x, target) : 1d / quickMul(x, -target);
+        if (n == 0) return 1d;
+        return n > 0 ? quickMul(x, n) : 1d / quickMul(x, -n);
     }
 
-    public double quickMul(double x, long target) {
+    private double quickMul(double x, int n) {
+        double result = 1d;
+        double xCon = x;
+        for (int i = 0; i < 32; i++) {
+            if (((n >> i) & 1) == 1) {
+                result *= xCon;
+            }
+            xCon *= xCon;
+        }
+        return result;
+    }
+
+    // LC50 快速幂 递归
+    public double myPowRecursive(double x, int n) {
+        long target = n;
+        return n >= 0 ? quickMulReverse(x, target) : 1d / quickMulReverse(x, -target);
+    }
+
+    public double quickMulReverse(double x, long target) {
         if (target == 0) return 1d;
-        double result = quickMul(x, target / 2);
+        double result = quickMulReverse(x, target / 2);
         return target % 2 == 1 ? result * result * x : result * result;
 
     }
