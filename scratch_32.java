@@ -4,15 +4,76 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        TreeNode one = new TreeNode(1);
-        TreeNode two = new TreeNode(2);
-        TreeNode three = new TreeNode(3);
-        one.right = three;
-        three.right = two;
-        s.recoverTree(one);
-//        System.err.println(4 / 2);
+        s.rotate(new int[][]{{5, 1, 9, 11}, {2, 4, 8, 10}, {13, 3, 6, 7}, {15, 14, 12, 16}});
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC48 ROTATE 90 DEGREE CLOCKWISE, O(1) SPACE
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        int rounds = (n + 1) / 2;
+        for (int i = 0; i < rounds; i++) {
+            int sideLen = n - i * 2;
+            if (sideLen == 1) break;
+            int sideLenMinusOne = sideLen - 1;
+            reverseAround(matrix, sideLen, 0, 3 * sideLenMinusOne - 1);
+            reverseAround(matrix, sideLen, 3 * sideLenMinusOne, 4 * sideLenMinusOne - 1);
+            reverseAround(matrix, sideLen, 0, 4 * sideLenMinusOne - 1);
+        }
+        return;
+    }
+
+    private void reverseAround(int[][] matrix, int sideLen, int begin, int end) {
+        int mid = (end - begin) / 2;
+        for (int i = 0; i <= mid; i++) {
+            int aFlatIdx = begin + i;
+            int bFlatIdx = end - i;
+            Pair a = idxFlatten(matrix.length, sideLen, aFlatIdx);
+            Pair b = idxFlatten(matrix.length, sideLen, bFlatIdx);
+            int tmp = matrix[b.row][b.col];
+            matrix[b.row][b.col] = matrix[a.row][a.col];
+            matrix[a.row][a.col] = tmp;
+        }
+        return;
+    }
+
+    // 上右下左, idx从0计
+    private Pair idxFlatten(int n, int sideLen, int idx) {
+        int sideLenMinusOne = sideLen - 1;
+        int offset = (n - sideLen) / 2;
+        if (idx < sideLenMinusOne) {
+            return new Pair(offset, offset + idx);
+        } else if (idx < sideLenMinusOne * 2) {
+            return new Pair(offset + idx - sideLenMinusOne, offset + sideLenMinusOne);
+        } else if (idx < sideLenMinusOne * 3) {
+            return new Pair(offset + sideLenMinusOne, offset + sideLenMinusOne - (idx - 2 * sideLenMinusOne));
+        } else {
+            return new Pair(offset + sideLenMinusOne - (idx - 3 * sideLenMinusOne), offset);
+        }
+    }
+
+
+    class Pair {
+        int col, row;
+
+        public Pair() {
+        }
+
+        public Pair(int row, int col) {
+            this.col = col;
+            this.row = row;
+        }
+    }
+
+    private void reverseFlat(int[] arr, int begin, int end) {
+        int mid = (end - begin) / 2;
+        for (int i = 0; i <= mid; i++) {
+            int tmp = arr[end - i];
+            arr[end - i] = arr[begin + i];
+            arr[begin + i] = tmp;
+        }
+        return;
     }
 
     // LC1 TWO SUM BINARY SEARCH
