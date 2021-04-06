@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.*;
 
 class Scratch {
@@ -7,6 +8,36 @@ class Scratch {
         TreeNode root = s.recoverBinaryTreeFromInOrderAndPostOrder(new int[]{4, 2, 1, 5, 3}, new int[]{4, 2, 5, 3, 1});
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC36 依次遍历 注意boxIdx的求法
+    public boolean isValidSudoku(char[][] board) {
+        HashMap<Integer, Integer>[] row = new HashMap[9];
+        HashMap<Integer, Integer>[] col = new HashMap[9];
+        HashMap<Integer, Integer>[] box = new HashMap[9];
+        for (int i = 0; i < 9; i++) {
+            row[i] = new HashMap<>();
+            col[i] = new HashMap<>();
+            box[i] = new HashMap<>();
+        }
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                char num = board[i][j];
+                if (num != '.') {
+                    int n = num - '0';
+                    int boxIdx = (i / 3) * 3 + j / 3;
+
+                    row[i].put(n, row[i].getOrDefault(n, 0) + 1);
+                    col[j].put(n, col[j].getOrDefault(n, 0) + 1);
+                    box[boxIdx].put(n, box[boxIdx].getOrDefault(n, 0) + 1);
+
+                    if (row[i].get(n) > 1 || col[j].get(n) > 1 || box[boxIdx].get(n) > 1) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     // recover binary tree 根据中序+后序恢复二叉树, 并输出前序遍历结果, 确保数组值唯一
