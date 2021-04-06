@@ -4,12 +4,22 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] nums1 = new int[]{1, 2, 3, 0, 0, 0};
-        int[] nums2 = new int[]{2, 4, 6, 0, 0, 0};
-        s.merge(nums1, 3, nums2, 3);
-        System.err.println(s.removeDuplicates(new int[]{0, 0, 0, 1, 2, 2, 3, 4, 4, 5}));
+        System.err.println(s.numRabbits(new int[]{0, 0, 1, 1, 1}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC781
+    public int numRabbits(int[] answers) {
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i : answers) {
+            m.put(i + 1, m.getOrDefault(i + 1, 0) + 1);
+        }
+        int result = 0;
+        for (Map.Entry<Integer, Integer> e : m.entrySet()) {
+            result += (int) Math.ceil((double) e.getValue() / (double) e.getKey()) * e.getKey();
+        }
+        return Math.max(result, answers.length);
     }
 
     // LC88 二路归并
