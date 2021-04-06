@@ -4,9 +4,38 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
+        int[] nums1 = new int[]{1, 2, 3, 0, 0, 0};
+        int[] nums2 = new int[]{2, 4, 6, 0, 0, 0};
+        s.merge(nums1, 3, nums2, 3);
         System.err.println(s.removeDuplicates(new int[]{0, 0, 0, 1, 2, 2, 3, 4, 4, 5}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC88 二路归并
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int i = 0, j = 0;
+        int k = 0;
+        int[] sorted = new int[m + n];
+        while (i != m && j != n) {
+            if (nums1[i] < nums2[j]) {
+                sorted[k++] = nums1[i++];
+            } else {
+                sorted[k++] = nums2[j++];
+            }
+        }
+        if (i == m) {
+            while (k != m + n) {
+                sorted[k++] = nums2[j++];
+            }
+        } else if (j == n) {
+            while (k != m + n) {
+                sorted[k++] = nums1[i++];
+            }
+        }
+        for (int t = 0; t < m + n; t++) {
+            nums1[t] = sorted[t];
+        }
     }
 
     // LC80
