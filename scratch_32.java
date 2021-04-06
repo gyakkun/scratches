@@ -20,12 +20,14 @@ class Scratch {
             col[i] = new HashMap<>();
             box[i] = new HashMap<>();
         }
+        // 朴素一点求boxIdx
+        int[][] boxMap = new int[][]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 char num = board[i][j];
                 if (num != '.') {
                     int n = num - '0';
-                    int boxIdx = (i / 3) * 3 + j / 3;
+                    int boxIdx = boxMap[i / 3][j / 3];
 
                     row[i].put(n, row[i].getOrDefault(n, 0) + 1);
                     col[j].put(n, col[j].getOrDefault(n, 0) + 1);
