@@ -11,16 +11,7 @@ class Scratch {
 
     // recover binary tree 根据中序+后序恢复二叉树, 并输出前序遍历结果, 确保数组值唯一
     public TreeNode recoverBinaryTreeFromInOrderAndPostOrder(int[] inOrder, int[] postOrder) {
-        TreeNode root = new TreeNode(postOrder[postOrder.length - 1]);
-        int i;
-        for (i = 0; i < inOrder.length; i++) {
-            if (inOrder[i] == postOrder[postOrder.length - 1]) {
-                break;
-            }
-        }
-        root.left = recoverBinaryTreeFromInOrderAndPostOrderRecursive(inOrder, postOrder, i, 0, 0);
-        root.right = recoverBinaryTreeFromInOrderAndPostOrderRecursive(inOrder, postOrder, inOrder.length - i - 1, i + 1, i);
-        return root;
+        return recoverBinaryTreeFromInOrderAndPostOrderRecursive(inOrder, postOrder, inOrder.length, 0, 0);
     }
 
     private TreeNode recoverBinaryTreeFromInOrderAndPostOrderRecursive(int[] inOrder, int[] postOrder, int subTreeLength, int inOrderBeginIdx, int postOrderBeginIdx) {
@@ -42,28 +33,7 @@ class Scratch {
 
     // recover binary tree 根据中序+前序恢复二叉树, 并输出后序遍历结果, 确保数组值唯一
     public TreeNode recoverBinaryTreeFromInOrderAndPreOrder(int[] inOrder, int[] preOrder) {
-
-        // 1. 根据前序序列的第一个元素建立根结点；
-        // 2. 在中序序列中找到该元素，确定根结点的左右子树的中序序列；
-        // 3. 在前序序列中确定左右子树的前序序列；
-        // 4. 由左子树的前序序列和中序序列建立左子树；
-        // 5. 由右子树的前序序列和中序序列建立右子树。
-
-        TreeNode root = new TreeNode(preOrder[0]);
-        int i;
-        for (i = 0; i < inOrder.length; i++) {
-            if (inOrder[i] == preOrder[0]) {
-                break;
-            }
-        }
-        // left subtree inorder: [0,i-1], length:i
-        // right subtree inorder: [i+1, inOrder.length-1], length: inOrder.length-1 - (i+1) +1 = inOrder.length-i-1
-
-        // left subtree preorder: [1,i]
-        // right subtree preorder: [i+1, inOrder.length-1]
-        root.left = recoverBinaryTreeFromInOrderAndPreOrderRecursive(inOrder, preOrder, i, 0, 1);
-        root.right = recoverBinaryTreeFromInOrderAndPreOrderRecursive(inOrder, preOrder, inOrder.length - i - 1, i + 1, i + 1);
-        return root;
+        return recoverBinaryTreeFromInOrderAndPreOrderRecursive(inOrder, preOrder, inOrder.length, 0, 0);
     }
 
     private TreeNode recoverBinaryTreeFromInOrderAndPreOrderRecursive(int[] inOrder, int[] preOrder,
