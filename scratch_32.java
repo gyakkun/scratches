@@ -5,9 +5,23 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.countAndSay(30));
+        System.err.println(s.maxSubArray(new int[]{-2, 1}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+
+    // LC53
+    public int maxSubArray(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        // dp[i] 表示第i个数结尾的最长子序列和
+        // dp[i] = Math.max(dp[i-1]+nums[i], nums[i])
+        dp[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.max(dp[i - 1] + nums[i], nums[i]);
+        }
+        return Arrays.stream(dp).max().getAsInt();
     }
 
     // LC38
@@ -75,7 +89,8 @@ class Scratch {
         return recoverBinaryTreeFromInOrderAndPostOrderRecursive(inOrder, postOrder, inOrder.length, 0, 0);
     }
 
-    private TreeNode recoverBinaryTreeFromInOrderAndPostOrderRecursive(int[] inOrder, int[] postOrder, int subTreeLength, int inOrderBeginIdx, int postOrderBeginIdx) {
+    private TreeNode recoverBinaryTreeFromInOrderAndPostOrderRecursive(int[] inOrder, int[] postOrder,
+                                                                       int subTreeLength, int inOrderBeginIdx, int postOrderBeginIdx) {
         if (subTreeLength == 0) return null;
         if (subTreeLength == 1) return new TreeNode(postOrder[postOrderBeginIdx]);
         TreeNode root = new TreeNode(postOrder[postOrderBeginIdx + subTreeLength - 1]);
