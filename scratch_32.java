@@ -4,10 +4,54 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.numRabbits(new int[]{0, 0, 1, 1, 1}));
+        TreeNode root = s.recoverBinaryTreeFromInOrderAndPreOrder(new int[]{4, 2, 1, 5, 3}, new int[]{1, 2, 4, 3, 5});
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // recover binary tree 根据中序+前序恢复二叉树, 并输出后续遍历结果, 确保数组值唯一
+    public TreeNode recoverBinaryTreeFromInOrderAndPreOrder(int[] inOrder, int[] preOrder) {
+        // 1. 根据前序序列的第一个元素建立根结点；
+        // 2. 在中序序列中找到该元素，确定根结点的左右子树的中序序列；
+        // 3. 在前序序列中确定左右子树的前序序列；
+        // 4. 由左子树的前序序列和中序序列建立左子树；
+        // 5. 由右子树的前序序列和中序序列建立右子树。
+
+        TreeNode root = new TreeNode(preOrder[0]);
+        int i;
+        for (i = 0; i < inOrder.length; i++) {
+            if (inOrder[i] == preOrder[0]) {
+                break;
+            }
+        }
+        // left subtree inorder: [0,i-1], length:i
+        // right subtree inorder: [i+1, inOrder.length-1], length: inOrder.length-1 - (i+1) +1 = inOrder.length-i-1
+
+        // left subtree preorder: [1,i]
+        // right subtree preorder: [i+1, inOrder.length-1]
+        root.left = recoverBinaryTreeFromInOrderAndPreOrderRecursive(inOrder, preOrder, i, 0, 1);
+        root.right = recoverBinaryTreeFromInOrderAndPreOrderRecursive(inOrder, preOrder, inOrder.length - i - 1, i + 1, i + 1);
+        return root;
+    }
+
+    private TreeNode recoverBinaryTreeFromInOrderAndPreOrderRecursive(int[] inOrder, int[] preOrder,
+                                                                      int subTreeLength, int inOrderBeginIdx, int preOrderBeginIdx) {
+        if (subTreeLength == 0) return null;
+        if (subTreeLength == 1) return new TreeNode(preOrder[preOrderBeginIdx]);
+        TreeNode root = new TreeNode(preOrder[preOrderBeginIdx]);
+        int i;
+        for (i = 0; i < subTreeLength; i++) {
+            if (inOrder[i + inOrderBeginIdx] == preOrder[preOrderBeginIdx]) {
+                break;
+            }
+        }
+        int nextLeftSubTreeLength = i;
+        int nextRightSubTreeLength = subTreeLength - i - 1;
+        root.left = recoverBinaryTreeFromInOrderAndPreOrderRecursive(inOrder, preOrder, nextLeftSubTreeLength, inOrderBeginIdx, preOrderBeginIdx + 1);
+        root.right = recoverBinaryTreeFromInOrderAndPreOrderRecursive(inOrder, preOrder, nextRightSubTreeLength, i + 1, i + 1);
+        return root;
+    }
+
 
     // LC1143
     public int longestCommonSubsequence(String text1, String text2) {
