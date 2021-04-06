@@ -9,6 +9,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC50 快速幂
+    public double myPow(double x, int n) {
+        long target = n;
+        return n >= 0 ? quickMul(x, target) : 1d / quickMul(x, -target);
+    }
+
+    public double quickMul(double x, long target) {
+        if (target == 0) return 1d;
+        double result = quickMul(x, target / 2);
+        return target % 2 == 1 ? result * result * x : result * result;
+
+    }
+
     // LC48 ROTATE 90 DEGREE CLOCKWISE, O(1) SPACE
     public void rotate(int[][] matrix) {
         int n = matrix.length;
