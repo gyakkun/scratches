@@ -4,13 +4,45 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        TreeNode root = s.recoverBinaryTreeFromInOrderAndPreOrder(new int[]{4, 2, 1, 5, 3}, new int[]{1, 2, 4, 3, 5});
+        TreeNode root = s.recoverBinaryTreeFromInOrderAndPostOrder(new int[]{4, 2, 1, 5, 3}, new int[]{4, 2, 5, 3, 1});
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // recover binary tree 根据中序+前序恢复二叉树, 并输出后续遍历结果, 确保数组值唯一
+    // recover binary tree 根据中序+后序恢复二叉树, 并输出前序遍历结果, 确保数组值唯一
+    public TreeNode recoverBinaryTreeFromInOrderAndPostOrder(int[] inOrder, int[] postOrder) {
+        TreeNode root = new TreeNode(postOrder[postOrder.length - 1]);
+        int i;
+        for (i = 0; i < inOrder.length; i++) {
+            if (inOrder[i] == postOrder[postOrder.length - 1]) {
+                break;
+            }
+        }
+        root.left = recoverBinaryTreeFromInOrderAndPostOrderRecursive(inOrder, postOrder, i, 0, 0);
+        root.right = recoverBinaryTreeFromInOrderAndPostOrderRecursive(inOrder, postOrder, inOrder.length - i - 1, i + 1, i);
+        return root;
+    }
+
+    private TreeNode recoverBinaryTreeFromInOrderAndPostOrderRecursive(int[] inOrder, int[] postOrder, int subTreeLength, int inOrderBeginIdx, int postOrderBeginIdx) {
+        if (subTreeLength == 0) return null;
+        if (subTreeLength == 1) return new TreeNode(postOrder[postOrderBeginIdx]);
+        TreeNode root = new TreeNode(postOrder[postOrderBeginIdx + subTreeLength - 1]);
+        int i;
+        for (i = 0; i < subTreeLength; i++) {
+            if (inOrder[i + inOrderBeginIdx] == postOrder[postOrderBeginIdx + subTreeLength - 1]) {
+                break;
+            }
+        }
+        int nextLeftSubTreeLength = i;
+        int nextRightSubTreeLength = subTreeLength - i - 1;
+        root.left = recoverBinaryTreeFromInOrderAndPostOrderRecursive(inOrder, postOrder, nextLeftSubTreeLength, inOrderBeginIdx, postOrderBeginIdx);
+        root.right = recoverBinaryTreeFromInOrderAndPostOrderRecursive(inOrder, postOrder, nextRightSubTreeLength, i + 1, i);
+        return root;
+    }
+
+    // recover binary tree 根据中序+前序恢复二叉树, 并输出后序遍历结果, 确保数组值唯一
     public TreeNode recoverBinaryTreeFromInOrderAndPreOrder(int[] inOrder, int[] preOrder) {
+
         // 1. 根据前序序列的第一个元素建立根结点；
         // 2. 在中序序列中找到该元素，确定根结点的左右子树的中序序列；
         // 3. 在前序序列中确定左右子树的前序序列；
