@@ -18,7 +18,7 @@ class Scratch {
     private double quickMul(double x, int n) {
         double result = 1d;
         double xCon = x;
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < Integer.SIZE; i++) {
             if (((n >> i) & 1) == 1) {
                 result *= xCon;
             }
