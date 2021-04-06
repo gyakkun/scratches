@@ -5,9 +5,37 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        TreeNode root = s.recoverBinaryTreeFromInOrderAndPostOrder(new int[]{4, 2, 1, 5, 3}, new int[]{4, 2, 5, 3, 1});
+        System.err.println(s.countAndSay(30));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC38
+    public String countAndSay(int n) {
+        if (n == 0) return "";
+        String toSay = "1";
+        for (int i = 1; i < n; i++) {
+            toSay = countAndSayRecursive(toSay);
+        }
+        return toSay;
+    }
+
+    private String countAndSayRecursive(String toSay) {
+        int i;
+        int ctr = 1;
+        StringBuffer sb = new StringBuffer();
+        for (i = 1; i < toSay.length(); i++) {
+            if (toSay.charAt(i - 1) == toSay.charAt(i)) {
+                ctr++;
+            } else {
+                sb.append(ctr);
+                sb.append(toSay.charAt(i - 1));
+                ctr = 1;
+            }
+        }
+        sb.append(ctr);
+        sb.append(toSay.charAt(i - 1));
+        return sb.toString();
     }
 
     // LC36 依次遍历 注意boxIdx的求法
