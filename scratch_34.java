@@ -4,7 +4,33 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.canJump(new int[]{3, 2, 1, 0, 4}));
+        System.err.println(s.plusOne(new int[]{9}));
+    }
+
+    // LC66
+    public int[] plusOne(int[] digits) {
+        int carry = 0;
+        for (int i = digits.length - 1; i >= 0; i--) {
+            if (i == digits.length - 1) {
+                digits[i] += 1;
+            } else {
+                digits[i] += carry;
+                carry = 0;
+            }
+            if (digits[i] >= 10) {
+                carry = 1;
+                digits[i] -= 10;
+            }
+        }
+        if (carry == 1) {
+            int[] result = new int[digits.length + 1];
+            for (int i = 0; i < digits.length; i++) {
+                result[i + 1] = digits[i];
+            }
+            result[0] = 1;
+            return result;
+        }
+        return digits;
     }
 
     // LC55
