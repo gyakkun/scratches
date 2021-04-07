@@ -1,10 +1,87 @@
-import javax.xml.ws.Endpoint;
 import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.mySqrt(Integer.MAX_VALUE - 1000));
+        long timing = System.currentTimeMillis();
+        System.err.println(s.minWindow("a",
+                "aa"));
+        timing = System.currentTimeMillis() - timing;
+        System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC76
+    public String minWindow(String s, String t) {
+        int l = -1, r = Integer.MAX_VALUE;
+        int minLen;
+        Map<Character, Integer> m = new HashMap<>();
+        Map<Character, Integer> tMap = new HashMap<>();
+        Map<Character, Integer> tCount;
+
+        for (char c : t.toCharArray()) {
+            tMap.put(c, tMap.getOrDefault(c, 0) + 1);
+        }
+        tCount = new HashMap<>(tMap);
+
+        for (int i = 0; i < 26; i++) {
+            m.put((char) ('a' + i), 0);
+            m.put((char) ('A' + i), 0);
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            if (l == -1 && tCount.containsKey(s.charAt(i))) {
+                l = i;
+            }
+            if (tCount.size() == 1 && tCount.get(tCount.keySet().iterator().next()) == 1 && tCount.containsKey(s.charAt(i))) {
+                r = i;
+                break;
+            }
+            if (tCount.containsKey(s.charAt(i))) {
+                tCount.put(s.charAt(i), tCount.get(s.charAt(i)) - 1);
+                if (tCount.get(s.charAt(i)) == 0) {
+                    tCount.remove(s.charAt(i));
+                }
+            }
+        }
+        if (l == -1 || r == Integer.MAX_VALUE) return "";
+
+        minLen = r - l + 1;
+        String result = s.substring(l, r + 1);
+        if (t.length() == 1) return t;
+
+        for (int i = l; i <= r; i++) {
+            m.put(s.charAt(i), m.get(s.charAt(i)) + 1);
+        }
+        if (!checkLC76(m, tMap)) return ""; // 没必要这里check?
+
+        while (l < r && l < s.length()) {
+            m.put(s.charAt(l), m.get(s.charAt(l)) - 1);
+            if (checkLC76(m, tMap)) {
+                l++;
+                if (r - l + 1 < minLen) {
+                    result = s.substring(l, r + 1);
+                    minLen = r - l + 1;
+                }
+            } else {
+                m.put(s.charAt(l), m.get(s.charAt(l)) + 1);
+                if (r + 1 < s.length()) {
+                    m.put(s.charAt(r + 1), m.get(s.charAt(r + 1)) + 1);
+                    r++;
+                } else {
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean checkLC76(Map<Character, Integer> m, Map<Character, Integer> tMap) {
+        for (char c : tMap.keySet()) {
+            if (m.get(c) < tMap.get(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // LC69 二分
