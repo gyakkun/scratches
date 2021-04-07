@@ -4,7 +4,22 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.plusOne(new int[]{9}));
+        System.err.println(s.mySqrt(Integer.MAX_VALUE - 1000));
+    }
+
+    // LC69 二分
+    public int mySqrt(int x) {
+        int r = 46340; // == sqrt(Integer.MAX_VALUE)
+        int l = 0;
+        while (l < r) {
+            int mid = (l + r + 1) / 2;
+            if (mid * mid <= x) {
+                l = mid;
+            } else {
+                r = mid - 1;
+            }
+        }
+        return l;
     }
 
     // LC66
