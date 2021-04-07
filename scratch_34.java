@@ -7,11 +7,18 @@ class Scratch {
 
     }
 
+    // LC81
+    public boolean search(int[] nums, int target) {
+        for (int i : nums)
+            if (i == target) return true;
+        return false;
+    }
+
     // LC1006
     public int clumsy(int N) {
         char[] ops = new char[]{'*', '/', '+', '-'};
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i <N; i++) {
+        for (int i = 0; i < N; i++) {
             sb.append(N - i);
             sb.append(ops[i % 4]);
         }
