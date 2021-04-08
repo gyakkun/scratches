@@ -15,6 +15,7 @@ class Scratch {
     public boolean exist(char[][] board, String word) {
         boolean[][] firstVisited = new boolean[board.length][board[0].length];
         boolean[][] visited = new boolean[board.length][board[0].length];
+        if (("" + board[0][0]).equals(word)) return true;
         lc79Backtrack(board, word, 0, 0, "", visited, firstVisited);
         return lc79Result;
     }
@@ -29,8 +30,11 @@ class Scratch {
 
         if (lc79Result == true) return;
         if (curRow >= board.length || curCol >= board[0].length) return;
-        if (curWord.equals("") && firstVisited[curRow][curCol]) return;
+        if (visited[curRow][curCol]) return;
+        visited[curRow][curCol] = true;
 
+
+        if (curWord.equals("") && firstVisited[curRow][curCol]) return;
         if (curWord.equals("")) firstVisited[curRow][curCol] = true;
 
         String origCurWord = curWord;
