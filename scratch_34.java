@@ -4,7 +4,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.findMin(new int[]{3}));
+        System.err.println(s.exist(new char[][]{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}}, "SEE"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -13,41 +13,46 @@ class Scratch {
 
     // LC79 TBD
     public boolean exist(char[][] board, String word) {
-        boolean[][] firstVisited = new boolean[board.length][board[0].length];
-        boolean[][] visited = new boolean[board.length][board[0].length];
-        if (("" + board[0][0]).equals(word)) return true;
-        lc79Backtrack(board, word, 0, 0, "", visited, firstVisited);
-        return lc79Result;
+        boolean[][] visited;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                visited = new boolean[board.length][board[0].length];
+                if (lc79Backtrack(board, word, i, j, "", visited, 5)) return true;
+            }
+        }
+        return false;
     }
 
-    private void lc79Backtrack(char[][] board, String word, int curRow, int curCol,
-                               String curWord, boolean[][] visited, boolean[][] firstVisited) { // direct 0,1,2,3 - 上, 下, 左, 右
-        // 几种选择?
-        // 1. 选择当前块
-        //   1) 上下左右挑一个不是来的方向的 -> 下一层
-        // 2. 不选择当前块
-        //   1) 上下左右挑一个不是来的方向的 -> 下一层, 注意提前判断是否已经访问过
+    private boolean lc79Backtrack(char[][] board, String word, int curRow, int curCol,
+                                  String curWord, boolean[][] visited, int direct) { // 0123 - 上下左右
 
-        if (lc79Result == true) return;
-        if (curRow >= board.length || curCol >= board[0].length) return;
-        if (visited[curRow][curCol]) return;
-        visited[curRow][curCol] = true;
-
-
-        if (curWord.equals("") && firstVisited[curRow][curCol]) return;
-        if (curWord.equals("")) firstVisited[curRow][curCol] = true;
-
-        String origCurWord = curWord;
-
-        curWord += board[curRow][curCol];
-        if (curWord.equals(word)) {
-            lc79Result = true;
-            return;
+        if (visited[curRow][curRow]) {
+            return false;
         }
+        visited[curRow][curCol] = true;
+        String nowWord = curWord + board[curRow][curCol];
+        if (nowWord.equals(word)) return true;
+        StringBuffer sb = new StringBuffer(nowWord);
+        if (sb.reverse().equals(word)) return true;
 
-        // 向上
-
-
+        // 上下左右
+        if (curRow - 1 >= 0 && direct != 1) {
+            if (lc79Backtrack(board, word, curRow - 1, curCol, nowWord, visited, 0)) return true;
+            visited[curRow - 1][curCol] = false;
+        }
+        if (curRow + 1 < board.length && direct != 0) {
+            if (lc79Backtrack(board, word, curRow + 1, curCol, nowWord, visited, 1)) return true;
+            visited[curRow + 1][curCol] = false;
+        }
+        if (curCol - 1 >= 0 && direct != 3) {
+            if (lc79Backtrack(board, word, curRow, curCol - 1, nowWord, visited, 2)) return true;
+            visited[curRow][curCol - 1] = false;
+        }
+        if (curCol + 1 < board[0].length && direct != 2) {
+            if (lc79Backtrack(board, word, curRow, curCol + 1, nowWord, visited, 3)) return true;
+            visited[curRow][curCol + 1] = false;
+        }
+        return false;
     }
 
     // LC153
