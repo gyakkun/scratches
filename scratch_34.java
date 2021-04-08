@@ -9,6 +9,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    private boolean lc79Result = false;
+
+    // LC79 TBD
+    public boolean exist(char[][] board, String word) {
+        boolean[][] firstVisited = new boolean[board.length][board[0].length];
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        lc79Backtrack(board, word, 0, 0, "", visited, firstVisited);
+        return lc79Result;
+    }
+
+    private void lc79Backtrack(char[][] board, String word, int curRow, int curCol,
+                               String curWord, boolean[][] visited, boolean[][] firstVisited) { // direct 0,1,2,3 - 上, 下, 左, 右
+        // 几种选择?
+        // 1. 选择当前块
+        //   1) 上下左右挑一个不是来的方向的 -> 下一层
+        // 2. 不选择当前块
+        //   1) 上下左右挑一个不是来的方向的 -> 下一层, 注意提前判断是否已经访问过
+
+        if (lc79Result == true) return;
+        if (curRow >= board.length || curCol >= board[0].length) return;
+        if (curWord.equals("") && firstVisited[curRow][curCol]) return;
+
+        if (curWord.equals("")) firstVisited[curRow][curCol] = true;
+
+        String origCurWord = curWord;
+
+        curWord += board[curRow][curCol];
+        if (curWord.equals(word)) {
+            lc79Result = true;
+            return;
+        }
+
+        // 向上
+
+
+    }
+
     // LC153
     public int findMin(int[] nums) {
         int l = 0, r = nums.length - 1;
