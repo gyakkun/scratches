@@ -4,10 +4,30 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.minWindow("a",
-                "aa"));
+        System.err.println(s.findMin(new int[]{3}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC153
+    public int findMin(int[] nums) {
+        int l = 0, r = nums.length - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            boolean leftAscFlag = false, rightAscFlag = false; // [l,mid] [mid,r]
+            if (nums[l] < nums[mid]) leftAscFlag = true;
+            if (nums[mid] < nums[r]) rightAscFlag = true;
+
+            if (leftAscFlag && rightAscFlag) return nums[l];
+            else if (leftAscFlag) {
+                l = mid;
+            } else if (rightAscFlag) {
+                r = mid;
+            } else {
+                break;
+            }
+        }
+        return Math.min(nums[l], nums[r]);
     }
 
     // LC76
