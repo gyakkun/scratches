@@ -4,20 +4,24 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.exist(new char[][]{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}}, "SEE"));
+        System.err.println(s.exist(new char[][]
+                {{'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a'}}, "aaaaaaaaaaaaa"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
     private boolean lc79Result = false;
 
-    // LC79 TBD
+    // LC79 可优化的地方: 回溯函数传target的目标下标, 避免字符串直接比较
     public boolean exist(char[][] board, String word) {
         boolean[][] visited;
+        if (word.length() > (board.length * board[0].length)) return false;
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
+            for (int j = 0; j < board[0].length; j++) {
                 visited = new boolean[board.length][board[0].length];
-                if (lc79Backtrack(board, word, i, j, "", visited, 5)) return true;
+                visited[i][j] = true;
+                if (("" + board[i][j]).equals(word)) return true;
+                if (lc79Backtrack(board, word, i, j, "" + board[i][j], visited, -1)) return true;
             }
         }
         return false;
@@ -25,32 +29,54 @@ class Scratch {
 
     private boolean lc79Backtrack(char[][] board, String word, int curRow, int curCol,
                                   String curWord, boolean[][] visited, int direct) { // 0123 - 上下左右
-
-        if (visited[curRow][curRow]) {
+        if (curWord.length() > word.length()) {
             return false;
         }
-        visited[curRow][curCol] = true;
-        String nowWord = curWord + board[curRow][curCol];
-        if (nowWord.equals(word)) return true;
-        StringBuffer sb = new StringBuffer(nowWord);
-        if (sb.reverse().equals(word)) return true;
-
+        StringBuffer sb = new StringBuffer(curWord);
         // 上下左右
-        if (curRow - 1 >= 0 && direct != 1) {
-            if (lc79Backtrack(board, word, curRow - 1, curCol, nowWord, visited, 0)) return true;
+        if (curRow - 1 >= 0 && !visited[curRow - 1][curCol] && direct != 1) {
+            if (sb.append(board[curRow - 1][curCol]).toString().equals(word)) {
+                return true;
+            }
+            visited[curRow - 1][curCol] = true;
+            if (lc79Backtrack(board, word, curRow - 1, curCol, sb.toString(), visited, 0)) {
+                return true;
+            }
             visited[curRow - 1][curCol] = false;
+            sb.deleteCharAt(sb.length() - 1);
         }
-        if (curRow + 1 < board.length && direct != 0) {
-            if (lc79Backtrack(board, word, curRow + 1, curCol, nowWord, visited, 1)) return true;
+        if (curRow + 1 < board.length && !visited[curRow + 1][curCol] && direct != 0) {
+            if (sb.append(board[curRow + 1][curCol]).toString().equals(word)) {
+                return true;
+            }
+            visited[curRow + 1][curCol] = true;
+            if (lc79Backtrack(board, word, curRow + 1, curCol, sb.toString(), visited, 1)) {
+                return true;
+            }
             visited[curRow + 1][curCol] = false;
+            sb.deleteCharAt(sb.length() - 1);
         }
-        if (curCol - 1 >= 0 && direct != 3) {
-            if (lc79Backtrack(board, word, curRow, curCol - 1, nowWord, visited, 2)) return true;
+        if (curCol - 1 >= 0 && !visited[curRow][curCol - 1] && direct != 3) {
+            if (sb.append(board[curRow][curCol - 1]).toString().equals(word)) {
+                return true;
+            }
+            visited[curRow][curCol - 1] = true;
+            if (lc79Backtrack(board, word, curRow, curCol - 1, sb.toString(), visited, 2)) {
+                return true;
+            }
             visited[curRow][curCol - 1] = false;
+            sb.deleteCharAt(sb.length() - 1);
         }
-        if (curCol + 1 < board[0].length && direct != 2) {
-            if (lc79Backtrack(board, word, curRow, curCol + 1, nowWord, visited, 3)) return true;
+        if (curCol + 1 < board[0].length && !visited[curRow][curCol + 1] && direct != 2) {
+            if (sb.append(board[curRow][curCol + 1]).toString().equals(word)) {
+                return true;
+            }
+            visited[curRow][curCol + 1] = true;
+            if (lc79Backtrack(board, word, curRow, curCol + 1, sb.toString(), visited, 3)) {
+                return true;
+            }
             visited[curRow][curCol + 1] = false;
+            sb.deleteCharAt(sb.length() - 1);
         }
         return false;
     }
