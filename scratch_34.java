@@ -4,9 +4,40 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.largestRectangleArea(new int[]{99,99,99,99,99,99,99,99,99,1,88,88,88,88,88,88,10,20,30,40}));
+        System.err.println(s.findSubstring("wordgoodgoodgoodbestword", new String[]{"word","good","best","word"}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC30
+    public List<Integer> findSubstring(String s, String[] words) {
+        List<Integer> result = new LinkedList<>();
+        Map<String, Integer> wordCount = new HashMap<>();
+        int oneWordLen = words[0].length();
+        int allWordLen = oneWordLen * words.length;
+        for (String word : words) {
+            wordCount.put(word, wordCount.getOrDefault(word, 0) + 1);
+        }
+        for (int i = 0; i < s.length() - allWordLen + 1; i++) {
+            String clip = s.substring(i, i + allWordLen);
+            Map<String, Integer> tmpCount = new HashMap<>();
+            boolean fastBreak = false;
+            for (int j = 0; j < allWordLen; j += oneWordLen) {
+                String clipWord = clip.substring(j, j + oneWordLen);
+                if (!wordCount.containsKey(clipWord)) {
+                    fastBreak = true;
+                    break;
+                }
+                tmpCount.put(clipWord, tmpCount.getOrDefault(clipWord, 0) + 1);
+            }
+            if (fastBreak) {
+                continue;
+            }
+            if (wordCount.equals(tmpCount)) {
+                result.add(i);
+            }
+        }
+        return result;
     }
 
     // LC84 找到下一个比自己小的数,以及前一个比自己小的数 类似NGE问题
