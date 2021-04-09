@@ -4,9 +4,54 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.findSubstring("wordgoodgoodgoodbestword", new String[]{"word","good","best","word"}));
+        System.err.println(s.numDecodingsBottomUp("226"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC91 TBD
+    public int numDecodingsTopDown(String s) {
+        int[] dp = new int[s.length() + 1];
+        return -1;
+    }
+
+    public int numDecodingsBottomUp(String s) {
+        if (s.charAt(0) == '0') return 0;
+        Integer[] memo = new Integer[s.length() + 1];
+        return numDecodingBottomUpRecursive(s, 0, memo);
+    }
+
+    public int numDecodingBottomUpRecursive(String s, int cur, Integer[] memo) {
+
+        // 到达终点，返回1
+        if (cur >= s.length()) {
+            return 1;
+        }
+
+        // 当前为0，无法继续，返回0
+        if (s.charAt(cur) == '0') return 0;
+
+        // 边界情况处理
+        if (cur + 1 == s.length()) {
+            return numDecodingBottomUpRecursive(s, cur + 1, memo);
+        }
+
+        // 记忆检查
+        if (memo[cur] != null) {
+            return memo[cur];
+        }
+
+        // 继续DFS
+        int one = numDecodingBottomUpRecursive(s, cur + 1, memo);
+        int two = 0;
+
+        if (s.substring(cur, cur + 2).compareTo("26") <= 0) {
+            two = numDecodingBottomUpRecursive(s, cur + 2, memo);
+        }
+
+        // 记忆
+        memo[cur] = one + two;
+        return one + two;
     }
 
     // LC30
