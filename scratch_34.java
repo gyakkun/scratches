@@ -4,13 +4,59 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.exist(new char[][]
-                {{'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a'}}, "aaaaaaaaaaaaa"));
+        System.err.println(s.largestRectangleArea(new int[]{99,99,99,99,99,99,99,99,99,1,88,88,88,88,88,88,10,20,30,40}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    private boolean lc79Result = false;
+    // LC84 找到下一个比自己小的数,以及前一个比自己小的数 类似NGE问题
+    public int largestRectangleArea(int[] heights) {
+        int n = heights.length;
+        // 找到下一个比自己小的数的下标, 更新nleIdx数组
+        int[] nleIdx = new int[n];
+        // 找到前一个比自己小的数的下标, 更新pleIdx数组
+        int[] pleIdx = new int[n];
+        for (int i = 0; i < n; i++) {
+            nleIdx[i] = n;
+            pleIdx[i] = -1;
+        }
+        Deque<Integer> stack1 = new LinkedList<>(); // 栈里存的应该是下标
+        Deque<Integer> stack2 = new LinkedList<>(); // 栈里存的应该是下标
+        for (int i = 0; i < n; i++) {
+            while (!stack1.isEmpty() && heights[i] < heights[stack1.peek()]) {
+                nleIdx[stack1.pop()] = i;
+            }
+            while (!stack2.isEmpty() && heights[n - i - 1] < heights[stack2.peek()]) {
+                pleIdx[stack2.pop()] = n - i - 1;
+            }
+            stack2.push(n - i - 1);
+            stack1.push(i);
+        }
+        int result = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            nleIdx[i] = heights[i] * (nleIdx[i] - pleIdx[i] - 1);
+            result = Math.max(result, nleIdx[i]);
+        }
+        return result;
+    }
+
+    public int[] simpleNGE(int[] nums) {
+        int n = nums.length;
+        Deque<Integer> stack = new LinkedList<>();
+
+        int[] result = new int[n];
+        Arrays.fill(result, -1);
+
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {
+                result[stack.pop()] = nums[i];
+            }
+            stack.push(i);
+        }
+
+        return result;
+
+    }
 
     // LC79 可优化的地方: 回溯函数传target的目标下标, 避免字符串直接比较
     public boolean exist(char[][] board, String word) {
