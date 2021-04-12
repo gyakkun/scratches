@@ -4,7 +4,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.numDecodingsBottomUp("1201234"));
+        System.err.println(s.findSubStringLC("wordgoodgoodgoodbestword", new String[]{"word", "good", "best", "word"}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -73,6 +73,37 @@ class Scratch {
         // 记忆
         memo[cur] = one + two;
         return one + two;
+    }
+
+    // LC30 Solution
+    public List<Integer> findSubStringLC(String s, String[] words) {
+        List<Integer> result = new ArrayList<>();
+        if (s == null || s.length() == 0 || words == null || words.length == 0) return result;
+        HashMap<String, Integer> wordCountMap = new HashMap<>();
+        int oneWordLen = words[0].length();
+        int wordCount = words.length;
+        int allWordLen = oneWordLen * wordCount;
+        for (String word : words) {
+            wordCountMap.put(word, wordCountMap.getOrDefault(word, 0) + 1);
+        }
+        for (int i = 0; i < oneWordLen; i++) {
+            int left = i, right = i, count = 0;
+            HashMap<String, Integer> tmpCount = new HashMap<>();
+            while (right + oneWordLen <= s.length()) {
+                String w = s.substring(right, right + oneWordLen);
+                tmpCount.put(w, tmpCount.getOrDefault(w, 0) + 1);
+                right += oneWordLen;
+                count++;
+                while (tmpCount.getOrDefault(w, 0) > wordCountMap.getOrDefault(w, 0)) {
+                    String tmpWord = s.substring(left, left + oneWordLen);
+                    count--;
+                    tmpCount.put(tmpWord, tmpCount.getOrDefault(tmpWord, 0) - 1);
+                    left += oneWordLen;
+                }
+                if (count == wordCount) result.add(left);
+            }
+        }
+        return result;
     }
 
     // LC30
