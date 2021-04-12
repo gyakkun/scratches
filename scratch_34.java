@@ -1,3 +1,5 @@
+import org.apache.poi.ss.formula.functions.T;
+
 import java.util.*;
 
 class Scratch {
@@ -5,9 +7,25 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         System.err.println(s.largestNumber(new int[]{
-                3,30,34,5,9}));
+                3, 30, 34, 5, 9}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC94 Solution
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        Deque<TreeNode> stack = new LinkedList<>();
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            result.add(root.val);
+            root = root.right;
+        }
+        return result;
     }
 
     // LC179
@@ -30,7 +48,7 @@ class Scratch {
                 return -(String.valueOf(o1) + String.valueOf(o2)).compareTo(String.valueOf(o2) + String.valueOf(o1));
             }
         });
-        if(boxed[0]==0) return "0";
+        if (boxed[0] == 0) return "0";
         StringBuffer sb = new StringBuffer();
         for (Integer i : boxed) {
             sb.append(i);
@@ -808,4 +826,23 @@ class DisjointSetUnion {
         return s.size();
     }
 
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
 }
