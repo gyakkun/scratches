@@ -4,9 +4,57 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.findSubStringLC("wordgoodgoodgoodbestword", new String[]{"word", "good", "best", "word"}));
+        System.err.println(s.largestNumber(new int[]{
+                3,30,34,5,9}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC179
+    public String largestNumber(int[] nums) {
+        Integer[] boxed = Arrays.stream(nums).boxed().toArray(Integer[]::new);
+        Arrays.sort(boxed, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) { // o1-o2 : 升序
+                int nO1 = numOfDigit(o1);
+                int nO2 = numOfDigit(o2);
+                if (nO1 == nO2) return o2 - o1;
+                int numOfDigit = Math.min(nO1, nO2);
+                int i;
+                for (i = 1; i <= numOfDigit; i++) {
+                    if (nthDigit(o1, i, nO1) > nthDigit(o2, i, nO2)) return -1;
+                    else if (nthDigit(o1, i, nO1) < nthDigit(o2, i, nO2)) return 1;
+                }
+//                return nO2 - nO1;
+                // 说明拥有相同前缀
+                return -(String.valueOf(o1) + String.valueOf(o2)).compareTo(String.valueOf(o2) + String.valueOf(o1));
+            }
+        });
+        if(boxed[0]==0) return "0";
+        StringBuffer sb = new StringBuffer();
+        for (Integer i : boxed) {
+            sb.append(i);
+        }
+        return sb.toString();
+    }
+
+    public int numOfDigit(int num) {
+        if (num == 0) return 1;
+        int result = 0;
+        while (num != 0) {
+            num /= 10;
+            result++;
+        }
+        return result;
+    }
+
+    public int nthDigit(int num, int nth, int numOfDigit) {
+        int fromLeft = numOfDigit - nth;
+        while (fromLeft > 0) {
+            fromLeft--;
+            num /= 10;
+        }
+        return num % 10;
     }
 
     // LC264 TBD heap set LC Solution
