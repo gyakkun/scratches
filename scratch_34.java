@@ -4,24 +4,45 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.numDecodingsBottomUp("226"));
+        System.err.println(s.numDecodingsBottomUp("1201234"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC91 TBD
-    public int numDecodingsTopDown(String s) {
-        int[] dp = new int[s.length() + 1];
-        return -1;
-    }
+    // LC264 TBD heap set LC Solution
 
+    // LC91 TBD wrong answer
     public int numDecodingsBottomUp(String s) {
         if (s.charAt(0) == '0') return 0;
-        Integer[] memo = new Integer[s.length() + 1];
-        return numDecodingBottomUpRecursive(s, 0, memo);
+        Integer[] memo = new Integer[s.length()];
+        memo[0] = 1;
+        return lc91BottomUp(s, s.length() - 1, memo);
     }
 
-    public int numDecodingBottomUpRecursive(String s, int cur, Integer[] memo) {
+    private int lc91BottomUp(String s, int idx, Integer[] memo) {
+        if (idx < 0) return 0;
+        if (memo[idx] != null) return memo[idx];
+        int result = s.charAt(idx) == '0' ? 0 : 1;
+        if (s.charAt(idx) == '0') {
+            if (s.charAt(idx - 1) == '1' || s.charAt(idx) == '2') {
+                result = lc91BottomUp(s, idx - 2, memo);
+            }
+        } else if (s.charAt(idx - 1) == '1' || (s.charAt(idx - 1) == '2' && s.charAt(idx) >= '1' && s.charAt(idx) <= '6')) {
+            result = lc91BottomUp(s, idx - 1, memo) + lc91BottomUp(s, idx - 2, memo);
+        } else {
+            result += lc91BottomUp(s, idx - 1, memo);
+        }
+        memo[idx] = result;
+        return memo[idx];
+    }
+
+    public int numDecodingsDfs(String s) {
+        if (s.charAt(0) == '0') return 0;
+        Integer[] memo = new Integer[s.length() + 1];
+        return lc91dfs(s, 0, memo);
+    }
+
+    public int lc91dfs(String s, int cur, Integer[] memo) {
 
         // 到达终点，返回1
         if (cur >= s.length()) {
@@ -33,7 +54,7 @@ class Scratch {
 
         // 边界情况处理
         if (cur + 1 == s.length()) {
-            return numDecodingBottomUpRecursive(s, cur + 1, memo);
+            return lc91dfs(s, cur + 1, memo);
         }
 
         // 记忆检查
@@ -42,11 +63,11 @@ class Scratch {
         }
 
         // 继续DFS
-        int one = numDecodingBottomUpRecursive(s, cur + 1, memo);
+        int one = lc91dfs(s, cur + 1, memo);
         int two = 0;
 
         if (s.substring(cur, cur + 2).compareTo("26") <= 0) {
-            two = numDecodingBottomUpRecursive(s, cur + 2, memo);
+            two = lc91dfs(s, cur + 2, memo);
         }
 
         // 记忆
