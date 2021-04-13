@@ -10,16 +10,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC783 LC530
+    // LC98
+    public boolean isValidBST(TreeNode root) {
+        return isValidBstHelper(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    public boolean isValidBstHelper(TreeNode root, long lo, long hi) {
+        if (root == null) return true;
+        if (root.val >= hi || root.val <= lo) return false;
+        return isValidBstHelper(root.left, lo, root.val) && isValidBstHelper(root.right, root.val, hi);
+    }
+
+    // LC783 LC530 TBD: 利用二叉搜索树中序遍历即为升序排列的性质
     public int minDiffInBST(TreeNode root) {
 //        PriorityQueue<Integer> pq = new PriorityQueue<>();
         List<Integer> pq = new LinkedList<>();
         Deque<TreeNode> q = new LinkedList<>();
         q.offer(root);
-        while(!q.isEmpty()){
+        while (!q.isEmpty()) {
 //            q.offer(q.peek());
-            if(q.peek().left!=null) q.offer(q.peek().left);
-            if(q.peek().right!=null) q.offer(q.peek().right);
+            if (q.peek().left != null) q.offer(q.peek().left);
+            if (q.peek().right != null) q.offer(q.peek().right);
             pq.add(q.peek().val);
             q.poll();
         }
