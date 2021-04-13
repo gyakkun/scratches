@@ -12,6 +12,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC783 LC530
+    public int minDiffInBST(TreeNode root) {
+//        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        List<Integer> pq = new LinkedList<>();
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while(!q.isEmpty()){
+//            q.offer(q.peek());
+            if(q.peek().left!=null) q.offer(q.peek().left);
+            if(q.peek().right!=null) q.offer(q.peek().right);
+            pq.add(q.peek().val);
+            q.poll();
+        }
+        int result = Integer.MAX_VALUE;
+        Collections.sort(pq);
+        for (int i = 1; i < pq.size(); i++) {
+            result = Math.min(result, Math.abs(pq.get(i - 1) - pq.get(i)));
+        }
+        return result;
+    }
+
     // LC94 Solution
     public List<Integer> inorderTraversal(TreeNode root) {
         List<Integer> result = new ArrayList<>();
