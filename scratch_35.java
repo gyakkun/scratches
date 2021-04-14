@@ -3,17 +3,15 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Trie t = new Trie();
-        t.insert("ben");
-        System.err.println(t.search("ben"));
-        t.insert("beneficiation");
-        System.err.println(t.search("beneficiation"));
-        System.err.println(t.search("ben"));
-
+        t.insert("nemathelminth");
+        t.insert("entracte");
+        t.search("nemathelminth");
+        t.search("entracte");
         return;
     }
 }
 
-// LC208 二叉树实现, 最后10000个操作的大算例 有两个会不一致??? "no", "ben"
+// LC208 二叉树实现
 class Trie {
     TrieNode root;
 
@@ -34,14 +32,13 @@ class Trie {
 
             if (former.val == '#') former.val = word.charAt(i);
 
-            TrieNode possibleSibling = former.searchSibling(word.charAt(i));
-            if (possibleSibling.val != word.charAt(i)) {
-                possibleSibling.sibling = new TrieNode(word.charAt(i));
-                possibleSibling = possibleSibling.sibling;
-                former = possibleSibling;
+            former = former.searchSibling(word.charAt(i));
+            if (former.val != word.charAt(i)) {
+                former.sibling = new TrieNode(word.charAt(i));
+                former = former.sibling;
             }
-            if (possibleSibling.child == null) possibleSibling.child = new TrieNode();
-            if (i != word.length() - 1) former = possibleSibling.child;
+            if (former.child == null) former.child = new TrieNode();
+            if (i != word.length() - 1) former = former.child;
         }
         former.isEnd = true;
     }
