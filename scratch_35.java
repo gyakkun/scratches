@@ -28,7 +28,7 @@ class Trie {
     public void insert(String word) {
         TrieNode former = root;
         int i;
-        for (i = 0; i < word.length(); i++) {
+        for (i = 0; i < word.length() - 1; i++) {
 
             if (former.val == '#') former.val = word.charAt(i);
 
@@ -38,8 +38,17 @@ class Trie {
                 former = former.sibling;
             }
             if (former.child == null) former.child = new TrieNode();
-            if (i != word.length() - 1) former = former.child;
+            former = former.child;
         }
+
+        if (former.val == '#') former.val = word.charAt(i);
+
+        former = former.searchSibling(word.charAt(i));
+        if (former.val != word.charAt(i)) {
+            former.sibling = new TrieNode(word.charAt(i));
+            former = former.sibling;
+        }
+        if (former.child == null) former.child = new TrieNode();
         former.isEnd = true;
     }
 
