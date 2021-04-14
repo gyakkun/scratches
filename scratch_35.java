@@ -48,13 +48,15 @@ class Trie {
      */
     public boolean search(String word) {
         TrieNode former = root;
-        for (int i = 0; i < word.length(); i++) {
-            TrieNode possibleSibling = former.searchSibling(word.charAt(i));
-            if (possibleSibling.val == '#' || possibleSibling.val != word.charAt(i)) return false;
-            if (i == word.length() - 1) return possibleSibling.isEnd;
-            former = possibleSibling.child;
+        int i;
+        for (i = 0; i < word.length() - 1; i++) {
+            former = former.searchSibling(word.charAt(i));
+            if (former.val != word.charAt(i)) return false;
+            former = former.child;
         }
-        return false;
+        former = former.searchSibling(word.charAt(i));
+        if (former.val != word.charAt(i)) return false;
+        return former.isEnd;
     }
 
     /**
@@ -62,13 +64,15 @@ class Trie {
      */
     public boolean startsWith(String prefix) {
         TrieNode former = root;
-        for (int i = 0; i < prefix.length(); i++) {
-            TrieNode possibleSibling = former.searchSibling(prefix.charAt(i));
-            if (possibleSibling.val == '#' || possibleSibling.val != prefix.charAt(i)) return false;
-            if (i == prefix.length() - 1) return true;
-            former = possibleSibling.child;
+        int i;
+        for (i = 0; i < prefix.length() - 1; i++) {
+            former = former.searchSibling(prefix.charAt(i));
+            if (former.val != prefix.charAt(i)) return false;
+            former = former.child;
         }
-        return false;
+        former = former.searchSibling(prefix.charAt(i));
+        if (former.val != prefix.charAt(i)) return false;
+        return true;
     }
 }
 
