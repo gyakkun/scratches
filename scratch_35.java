@@ -3,7 +3,36 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.maxCoins(new int[]{3,1,5,8}));
+        System.err.println(s.maxCoins(new int[]{3, 1, 5, 8}));
+    }
+
+    // LC337
+    public int rob(TreeNode root) {
+        // 构造两个map<node,int>, 分别存储rob该节点和不rob该节点能取到的最大值
+        Map<TreeNode, Integer> choose = new HashMap<>();
+        Map<TreeNode, Integer> notChoose = new HashMap<>();
+        choose.put(null, 0);
+        notChoose.put(null, 0);
+        robLc337Helper(root, choose, notChoose);
+        return Math.max(choose.getOrDefault(root, 0), notChoose.getOrDefault(root, 0));
+    }
+
+    private void robLc337Helper(TreeNode root, Map<TreeNode, Integer> choose, Map<TreeNode, Integer> notChoose) {
+        if (root.left == null && root.right == null) {
+            choose.put(root, root.val);
+            notChoose.put(root, 0);
+            return;
+        }
+        if (root.left != null) robLc337Helper(root.left, choose, notChoose);
+        if (root.right != null) robLc337Helper(root.right, choose, notChoose);
+        choose.put(root, root.val
+                + notChoose.getOrDefault(root.left, 0)
+                + notChoose.getOrDefault(root.right, 0)
+        );
+        // 若不选root, 则其左/右 选/不选共4中, 挑出最大值
+        int max = Math.max(choose.getOrDefault(root.left, 0), notChoose.getOrDefault(root.left, 0))
+                + Math.max(choose.getOrDefault(root.right, 0), notChoose.getOrDefault(root.right, 0));
+        notChoose.put(root, max);
     }
 
     // LC312
@@ -221,5 +250,24 @@ class TrieHM {
      */
     public boolean startsWith(String prefix) {
         return m.containsKey(prefix);
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
