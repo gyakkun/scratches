@@ -9,38 +9,9 @@ class Scratch {
         TreeNode twoR = new TreeNode(2);
         one.left = twoL;
         one.right = twoR;
-        System.err.println(s.isSymmetric(one));
+//        System.err.println(s.isSymmetric(one));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
-    }
-
-    // LC101
-    public boolean isSymmetric(TreeNode root) {
-        Deque<TreeNode> q = new LinkedList<>();
-        q.offer(root);
-        while (!q.isEmpty()) {
-            int qLen = q.size();
-            List<Integer> valList = new ArrayList<>(qLen);
-            for (int i = 0; i < qLen; i++) {
-                if (q.peek().left != null) {
-                    q.offer(q.peek().left);
-                } else {
-                    q.offer(new TreeNode(19260817));
-                }
-                if (q.peek().left != null) {
-                    q.offer(q.peek().right);
-                } else {
-                    q.offer(new TreeNode(19260817));
-                }
-                valList.add(q.poll().val);
-            }
-            for (int i = 0; i < valList.size(); i++) {
-                if (valList.get(i) != valList.get(valList.size() - 1 - i)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     // LC98
