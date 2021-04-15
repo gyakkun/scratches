@@ -25,6 +25,29 @@ class Scratch {
 
     }
 
+    // LC104
+    public int maxDepth(TreeNode root) {
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        int layer = 0;
+
+        // 取层数
+        while (!q.isEmpty()) {
+            layer++;
+            int qLen = q.size();
+            for (int i = 0; i < qLen; i++) {
+                if (q.peek().left != null) {
+                    q.offer(q.peek().left);
+                }
+                if (q.peek().left != null) {
+                    q.offer(q.peek().right);
+                }
+                q.poll();
+            }
+        }
+        return layer;
+    }
+
     // LC101
     public boolean isSymmetric(TreeNode root) {
         int MAGIC_VALUE = 19260817;
