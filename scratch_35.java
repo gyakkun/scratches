@@ -3,19 +3,32 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.rob(new int[]{2, 7, 9, 3, 1}));
+        System.err.println(s.maxCoins(new int[]{3,1,5,8}));
     }
 
     // LC312
     public int maxCoins(int[] nums) {
         int n = nums.length;
-        int[][] memo = new int[n + 2][n + 2];
+        Integer[][] memo = new Integer[n + 2][n + 2];
         int[] balloon = new int[n + 2];
         balloon[0] = balloon[n + 1] = 1;
         for (int i = 1; i <= n; i++) {
             balloon[i] = nums[i - 1];
         }
-        return -1;
+        return maxCoinsHelper(balloon, 0, n + 1, memo);
+    }
+
+    private int maxCoinsHelper(int[] balloon, int l, int r, Integer[][] memo) {
+        if (l + 1 >= r) return 0;
+        if (memo[l][r] != null) return memo[l][r];
+        int result = 0;
+        for (int i = l + 1; i < r; i++) {
+            int sum = balloon[l] * balloon[i] * balloon[r];
+            sum += maxCoinsHelper(balloon, l, i, memo) + maxCoinsHelper(balloon, i, r, memo);
+            result = Math.max(result, sum);
+        }
+        memo[l][r] = result;
+        return result;
     }
 
     // LC213
