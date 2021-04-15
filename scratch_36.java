@@ -19,7 +19,7 @@ class Scratch {
         a1.left = a3;
         a1.right = a4;
         a2.left = a5;
-        a2.right = a5;
+        a2.right = a6;
 
         System.err.println(s.isSymmetric(a0));
 
@@ -27,24 +27,21 @@ class Scratch {
 
     // LC101
     public boolean isSymmetric(TreeNode root) {
+        int MAGIC_VALUE = 19260817;
         Deque<TreeNode> q = new LinkedList<>();
         q.offer(root);
         int layer = 0;
 
         // 取层数
-        while(!q.isEmpty()){
+        while (!q.isEmpty()) {
             layer++;
             int qLen = q.size();
             for (int i = 0; i < qLen; i++) {
                 if (q.peek().left != null) {
                     q.offer(q.peek().left);
-                } else {
-                    ;
                 }
                 if (q.peek().left != null) {
                     q.offer(q.peek().right);
-                } else {
-                    ;
                 }
                 q.poll();
             }
@@ -56,19 +53,19 @@ class Scratch {
 
         while (!q.isEmpty()) {
             layerCtr++;
-            if(layerCtr>layer) return true;
+            if (layerCtr > layer) return true;
             int qLen = q.size();
             List<Integer> valList = new ArrayList<>(qLen);
             for (int i = 0; i < qLen; i++) {
                 if (q.peek().left != null) {
                     q.offer(q.peek().left);
                 } else {
-                    q.offer(new TreeNode(19260817));
+                    q.offer(new TreeNode(MAGIC_VALUE));
                 }
                 if (q.peek().left != null) {
                     q.offer(q.peek().right);
                 } else {
-                    q.offer(new TreeNode(19260817));
+                    q.offer(new TreeNode(MAGIC_VALUE));
                 }
                 valList.add(q.poll().val);
             }
