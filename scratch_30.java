@@ -273,7 +273,7 @@ class Scratch {
     }
 
 
-    // Find maximum possible stolen value from houses, House thief, 偷房子
+    // LC198, Find maximum possible stolen value from houses, House thief, 偷房子
     public int maxLoot(int[] houseVal) {
         int n = houseVal.length;
 

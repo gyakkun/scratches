@@ -2,14 +2,62 @@ import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
-        Trie t = new Trie();
-        t.insert("nemathelminth");
-        t.insert("entracte");
-        t.search("nemathelminth");
-        t.search("entracte");
-        return;
+        Scratch s = new Scratch();
+        System.err.println(s.rob(new int[]{2, 7, 9, 3, 1}));
     }
+
+    // LC312
+    public int maxCoins(int[] nums) {
+        int n = nums.length;
+        int[][] memo = new int[n + 2][n + 2];
+        int[] balloon = new int[n + 2];
+        balloon[0] = balloon[n + 1] = 1;
+        for (int i = 1; i <= n; i++) {
+            balloon[i] = nums[i - 1];
+        }
+        return -1;
+    }
+
+    // LC213
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return nums[0];
+        if (n == 2) return Math.max(nums[0], nums[1]);
+        int[][] dp = new int[n][2];
+        // dp[i][0] 表示不rob 第i家能取到的最大值
+        // dp[i][1] 表示  rob 第i家能取到的最大值
+        // dp[i][0] = Math.max(dp[i-1][0],dp[i-1][1])
+        // dp[i][1] = Math.max(dp[i-2][0]+nums[i], dp[i-2][1]+nums[i])
+
+        // 假设第0家必须不被rob, 则令 dp[0][1] = Integer.MIN_VALUE;
+        // 此时的最后一家可被rob, 最大值在dp[n-1][1],dp[n-1][0]中
+        dp[0][0] = 0;
+        dp[0][1] = Integer.MIN_VALUE;
+        dp[1][0] = 0;
+        dp[1][1] = nums[1];
+        for (int i = 2; i < n; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1]);
+            dp[i][1] = Math.max(dp[i - 2][0] + nums[i], dp[i - 2][1] + nums[i]);
+        }
+        int onePossibleResult = Math.max(dp[n - 1][1], dp[n - 1][0]);
+
+        // 假设第0家必须被rob, 此时最后一家必须不被rob, 最大值在dp[n-2][0],dp[n-2][1]中
+        dp[0][0] = 0;
+        dp[0][1] = nums[0];
+        dp[1][0] = nums[0];
+        dp[1][1] = nums[1];
+        for (int i = 2; i < n - 1; i++) {
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1]);
+            dp[i][1] = Math.max(dp[i - 2][0] + nums[i], dp[i - 2][1] + nums[i]);
+        }
+        int anotherPossibleResult = Math.max(dp[n - 2][1], dp[n - 2][0]);
+        int result = Math.max(onePossibleResult, anotherPossibleResult);
+        return result;
+
+    }
+
 }
+
 
 // LC208 二叉树实现
 class Trie {
