@@ -18,8 +18,36 @@ class Scratch {
         a2.left = a5;
         a2.right = a6;
 
-        System.err.println(s.isSymmetric(a0));
+        System.err.println(s.isScramble("eebaacbcbcadaaedceaaacadccd", "eadcaacabaddaceacbceaabeccd"));
 
+    }
+
+    // LC87 TBD
+    public boolean isScramble(String s1, String s2) {
+        assert s1.length() == s2.length();
+        if(s1==s2) return true;
+
+        int[] alphabet = new int[26];
+        for (int i = 0; i < s1.length(); i++) {
+            alphabet[s1.charAt(i) - 'a']++;
+            alphabet[s2.charAt(i) - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (alphabet[i] != 0) {
+                return false;
+            }
+        }
+        if (s1.length() <= 3) return true;
+
+        for (int i = 1; i <= s1.length()-1; i++) {
+            if (isScramble(s1.substring(0, i), s2.substring(0, i)) && isScramble(s1.substring(i), s2.substring(i))) {
+                return true;
+            }
+            if (isScramble(s1.substring(0, i), s2.substring(s2.length() - i)) && isScramble(s1.substring(i), s2.substring(s2.length() - (s1.length()-i)))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // LC27 移除数组中指定值的元素并返回新长度
