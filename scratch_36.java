@@ -28,7 +28,7 @@ class Scratch {
 
     Map<String, Boolean> lc87Memo = new HashMap<>();
 
-    // LC87 TBD
+    // LC87
     public boolean isScramble(String s1, String s2) {
         assert s1.length() == s2.length();
         if(s1==s2) return true;
