@@ -1,7 +1,6 @@
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.poi.ss.formula.functions.T;
+
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
@@ -23,6 +22,24 @@ class Scratch {
 
         System.err.println(s.isSymmetric(a0));
 
+    }
+
+    // LC220 滑动窗口 + 有序集合, Java TreeSet / C++ set
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        // TreeMap<Integer, Integer> tm = new TreeMap<>();
+        int n = nums.length;
+        TreeSet<Long> ts = new TreeSet<>(Comparator.comparingLong(o -> o));
+        for (int i = 0; i < n; i++) {
+            Long ceiling = ts.ceiling((long) nums[i] - t); // 返回set中大于等于 x - t 的最小值
+            if (ceiling != null && ceiling <= (long) nums[i] + (long) t) {
+                return true;
+            }
+            ts.add((long) nums[i]);
+            if (i >= k) {
+                ts.remove((long) nums[i - k]);
+            }
+        }
+        return false;
     }
 
     // LC104
