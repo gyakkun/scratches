@@ -24,6 +24,38 @@ class Scratch {
 
     }
 
+    // LC220 桶
+    public boolean containsNearbyAlmostDuplicateBucket(int[] nums, int k, int t) {
+        int n = nums.length;
+        Map<Long, Long> bucket = new HashMap<>();
+        long step = (long) t + 1;
+        for (int i = 0; i < n; i++) {
+            long id = getBucketId(nums[i], step);
+            if (bucket.containsKey(id)) {
+                return true;
+            }
+            if (bucket.containsKey(id - 1) && Math.abs((long) nums[i] - bucket.get(id - 1)) < step) {
+                return true;
+            }
+            if (bucket.containsKey(id + 1) && Math.abs((long) nums[i] - bucket.get(id + 1)) < step) {
+                return true;
+            }
+            bucket.put(id, (long) nums[i]);
+            if (i >= k) {
+                bucket.remove(getBucketId(nums[i - k], step));
+            }
+        }
+        return false;
+    }
+
+    private long getBucketId(long num, long step) {
+        if (num >= 0) {
+            return num / step;
+        } else {
+            return ((num + 1) / step) - 1; // 注意保证[-k/2,0]这个范围的num和[0,k/2]范围的num拥有相同的桶ID?
+        }
+    }
+
     // LC220 滑动窗口 + 有序集合, Java TreeSet / C++ set
     public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
         // TreeMap<Integer, Integer> tm = new TreeMap<>();
