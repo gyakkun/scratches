@@ -19,20 +19,20 @@ class Scratch {
         a2.right = a6;
 
         long timing = System.currentTimeMillis();
-        System.err.println(s.isScramble("eebaacbcbcadaaedceaaacadccd",
-                "eadcaacabaddaceacbceaabeccd"));
+        System.err.println(s.isScramble("eebaacbcbcadaaedceaaacadccdabcdefg",
+                "eadcaacabaddaceacbceaabeccdabcdefg"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
 
     }
 
-    Map<String, Boolean> lc87Memo = new HashMap<>();
+    Set<String> lc87Memo = new HashSet<>();
 
     // LC87
     public boolean isScramble(String s1, String s2) {
         assert s1.length() == s2.length();
-        if(s1==s2) return true;
-        if(lc87Memo.get(s1+"#"+s2)!=null) return lc87Memo.get(s1 + "#" + s2);
+        if (s1 == s2) return true;
+        if (lc87Memo.contains(s1 + "#" + s2)) return false;
 
         int[] alphabet = new int[26];
         for (int i = 0; i < s1.length(); i++) {
@@ -41,22 +41,23 @@ class Scratch {
         }
         for (int i = 0; i < 26; i++) {
             if (alphabet[i] != 0) {
+                lc87Memo.add(s1 + "#" + s2);
                 return false;
             }
         }
         if (s1.length() <= 3) return true;
 
-        for (int i = 1; i <= s1.length()-1; i++) {
+        for (int i = 1; i <= s1.length() - 1; i++) {
             int n = i;
             int m = s1.length() - i;
             if (isScramble(s1.substring(0, i), s2.substring(0, i)) && isScramble(s1.substring(i), s2.substring(i))) {
                 return true;
             }
-            if (isScramble(s1.substring(0, i), s2.substring(s2.length() - i)) && isScramble(s1.substring(i), s2.substring(0,s2.length() - i))) {
+            if (isScramble(s1.substring(0, i), s2.substring(s2.length() - i)) && isScramble(s1.substring(i), s2.substring(0, s2.length() - i))) {
                 return true;
             }
         }
-        lc87Memo.put(s1 + "#" + s2, false);
+        lc87Memo.add(s1 + "#" + s2);
         return false;
     }
 
