@@ -1,5 +1,3 @@
-import org.apache.poi.ss.formula.functions.T;
-
 import java.util.*;
 
 class Scratch {
@@ -116,55 +114,13 @@ class Scratch {
 
     // LC101
     public boolean isSymmetric(TreeNode root) {
-        int MAGIC_VALUE = 19260817;
-        Deque<TreeNode> q = new LinkedList<>();
-        q.offer(root);
-        int layer = 0;
+        return isSymmerticHelper(root, root);
+    }
 
-        // 取层数
-        while (!q.isEmpty()) {
-            layer++;
-            int qLen = q.size();
-            for (int i = 0; i < qLen; i++) {
-                if (q.peek().left != null) {
-                    q.offer(q.peek().left);
-                }
-                if (q.peek().left != null) {
-                    q.offer(q.peek().right);
-                }
-                q.poll();
-            }
-        }
-
-        q.clear();
-        q.offer(root);
-        int layerCtr = 0;
-
-        while (!q.isEmpty()) {
-            layerCtr++;
-            if (layerCtr > layer) return true;
-            int qLen = q.size();
-            List<Integer> valList = new ArrayList<>(qLen);
-            for (int i = 0; i < qLen; i++) {
-                if (q.peek().left != null) {
-                    q.offer(q.peek().left);
-                } else {
-                    q.offer(new TreeNode(MAGIC_VALUE));
-                }
-                if (q.peek().left != null) {
-                    q.offer(q.peek().right);
-                } else {
-                    q.offer(new TreeNode(MAGIC_VALUE));
-                }
-                valList.add(q.poll().val);
-            }
-            for (int i = 0; i < valList.size(); i++) {
-                if (valList.get(i) != valList.get(valList.size() - 1 - i)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+    private boolean isSymmerticHelper(TreeNode a, TreeNode b) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        return a.val == b.val && isSymmerticHelper(a.left, b.right) && isSymmerticHelper(a.right, b.left);
     }
 
 }
