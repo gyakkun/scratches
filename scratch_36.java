@@ -123,7 +123,7 @@ class Scratch {
         return a.val == b.val && isSymmerticHelper(a.left, b.right) && isSymmerticHelper(a.right, b.left);
     }
 
-
+    // LC101 solution
     public boolean check(TreeNode u, TreeNode v) {
         Queue<TreeNode> q = new LinkedList<TreeNode>();
         q.offer(u);
