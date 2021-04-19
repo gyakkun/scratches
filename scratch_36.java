@@ -24,6 +24,23 @@ class Scratch {
 
     }
 
+    // LC27 移除数组中指定值的元素并返回新长度
+    public int removeElement(int[] nums, int val) {
+        // 1 2 3 3 4 3 3
+        int k = nums.length - 1;
+        for (int i = nums.length - 1; i >= 0; i--) {
+            if (nums[i] == val) {
+                if (i != k) {
+                    nums[i] ^= nums[k];
+                    nums[k] ^= nums[i];
+                    nums[i] ^= nums[k];
+                }
+                k--;
+            }
+        }
+        return k + 1;
+    }
+
     // LC220 桶
     public boolean containsNearbyAlmostDuplicateBucket(int[] nums, int k, int t) {
         int n = nums.length;
