@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -18,16 +19,59 @@ class Scratch {
         a2.left = a5;
         a2.right = a6;
 
+        String[] wl = new String[]{"hot","dot","tog","cog"};
+        List<String> wordList = Arrays.stream(wl).collect(Collectors.toList());
+
+
         long timing = System.currentTimeMillis();
-        System.err.println(s.isPalindrome("ab_a"));
+        System.err.println(s.ladderLength("hit", "cog", wordList));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
 
     }
 
+    // LC127
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        int layer = 0;
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) return 0;
+        Set<String> visited = new HashSet<>();
+
+        Deque<String> q = new LinkedList<>();
+        q.offer(beginWord);
+        while (!q.isEmpty()) {
+            int len = q.size();
+            layer++;
+            for (int i = 0; i < len; i++) {
+                String tmp = q.poll();
+                if (visited.contains(tmp)) continue;
+                visited.add(tmp);
+                if (tmp.equals(endWord)) return layer;
+                Iterator<String> it = wordSet.iterator();
+                while (it.hasNext()) {
+                    String next = it.next();
+                    if (!visited.contains(next) && oneLetterDiff(next, tmp)) {
+                        q.offer(next);
+                    }
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    private boolean oneLetterDiff(String a, String b) {
+        // if(a.length()!=b.length()) return false;
+        int ctr = 0;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) ctr++;
+        }
+        return ctr == 1;
+    }
+
     // LC125
     public boolean isPalindrome(String s) {
-        s = s.toLowerCase().replaceAll("/\\s+/","").replaceAll("_","").replaceAll("[^\\w\\d]+","");
+        s = s.toLowerCase().replaceAll("/\\s+/", "").replaceAll("_", "").replaceAll("[^\\w\\d]+", "");
 
         int half = s.length() / 2;
         for (int i = 0; i < half; i++) {
