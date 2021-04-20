@@ -26,6 +26,43 @@ class Scratch {
 
     }
 
+    // LC105 Solution
+    private Map<Integer, Integer> indexMap;
+
+    public TreeNode buildTreeHelper(int[] preorder, int[] inorder, int preorderLeft, int preorderRight, int inorderLeft, int inorderRight) {
+        if (preorderLeft > preorderRight) {
+            return null;
+        }
+
+        // 前序遍历中的第一个节点就是根节点
+        int preorderRoot = preorderLeft;
+        // 在中序遍历中定位根节点
+        int inorderRoot = indexMap.get(preorder[preorderRoot]);
+
+        // 先把根节点建立出来
+        TreeNode root = new TreeNode(preorder[preorderRoot]);
+        // 得到左子树中的节点数目
+        int sizeLeftSubtree = inorderRoot - inorderLeft;
+        // 递归地构造左子树，并连接到根节点
+        // 先序遍历中「从 左边界+1 开始的 size_left_subtree」个元素就对应了中序遍历中「从 左边界 开始到 根节点定位-1」的元素
+        root.left = buildTreeHelper(preorder, inorder, preorderLeft + 1, preorderLeft + sizeLeftSubtree, inorderLeft, inorderRoot - 1);
+        // 递归地构造右子树，并连接到根节点
+        // 先序遍历中「从 左边界+1+左子树节点数目 开始到 右边界」的元素就对应了中序遍历中「从 根节点定位+1 到 右边界」的元素
+        root.right = buildTreeHelper(preorder, inorder, preorderLeft + sizeLeftSubtree + 1, preorderRight, inorderRoot + 1, inorderRight);
+        return root;
+    }
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        int n = preorder.length;
+        // 构造哈希映射，帮助我们快速定位根节点
+        indexMap = new HashMap<Integer, Integer>();
+        for (int i = 0; i < n; i++) {
+            indexMap.put(inorder[i], i);
+        }
+        return buildTreeHelper(preorder, inorder, 0, n - 1, 0, n - 1);
+    }
+
+
     Set<String> lc87Memo = new HashSet<>();
 
     // LC87
@@ -48,9 +85,11 @@ class Scratch {
         if (s1.length() <= 3) return true;
 
         for (int i = 1; i <= s1.length() - 1; i++) {
+            // 如果 x+y -> x+y, 则 x与x幂等, y亦然
             if (isScramble(s1.substring(0, i), s2.substring(0, i)) && isScramble(s1.substring(i), s2.substring(i))) {
                 return true;
             }
+            // 如果 x+y -> y+x, 则x与y幂等, 反之亦然
             if (isScramble(s1.substring(0, i), s2.substring(s2.length() - i)) && isScramble(s1.substring(i), s2.substring(0, s2.length() - i))) {
                 return true;
             }
