@@ -28,6 +28,23 @@ class Scratch {
 
     }
 
+    // LC116, O(n) space
+    public Node connect(Node root) {
+        Deque<Node> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int len = q.size();
+            for (int i = 0; i < len; i++) {
+                Node n = q.poll();
+                if (n.left != null) q.offer(n.left);
+                if (n.right != null) q.offer(n.right);
+                if (i == len - 1) continue;
+                n.next = q.peek();
+            }
+        }
+        return root;
+    }
+
     // LC108
     public TreeNode sortedArrayToBST(int[] nums) {
         return sortedArrayToBSTHelper(nums, 0, nums.length - 1);
@@ -259,5 +276,26 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+    public Node next;
+
+    public Node() {
+    }
+
+    public Node(int _val) {
+        val = _val;
+    }
+
+    public Node(int _val, Node _left, Node _right, Node _next) {
+        val = _val;
+        left = _left;
+        right = _right;
+        next = _next;
     }
 }
