@@ -19,11 +19,36 @@ class Scratch {
         a2.right = a6;
 
         long timing = System.currentTimeMillis();
-        System.err.println(s.isScramble("eebaacbcbcadaaedceaaacadccdabcdefg",
-                "eadcaacabaddaceacbceaabeccdabcdefg"));
+        System.err.println(s.generate(5));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
 
+    }
+
+    // LC118
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> result = new ArrayList<>(numRows);
+        List<Integer> firstRow = new ArrayList<>(1);
+        firstRow.add(1);
+        result.add(firstRow);
+        if (numRows == 1) return result;
+        List<Integer> secondRow = new ArrayList<>(2);
+        secondRow.add(1);
+        secondRow.add(1);
+        result.add(secondRow);
+        if (numRows == 2) return result;
+
+        for (int i = 2; i < numRows; i++) {
+            List<Integer> thisRow = new LinkedList<>();
+            thisRow.add(1);
+            List<Integer> lastRow = result.get(result.size() - 1);
+            for (int j = 0; j < lastRow.size() - 1; j++) {
+                thisRow.add(lastRow.get(j) + lastRow.get(j + 1));
+            }
+            thisRow.add(1);
+            result.add(thisRow);
+        }
+        return result;
     }
 
     // LC116 Solution O(1) space
