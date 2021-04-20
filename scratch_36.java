@@ -1,3 +1,5 @@
+import org.apache.poi.ss.formula.functions.T;
+
 import java.util.*;
 
 class Scratch {
@@ -24,6 +26,22 @@ class Scratch {
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
 
+    }
+
+    // LC108
+    public TreeNode sortedArrayToBST(int[] nums) {
+        return sortedArrayToBSTHelper(nums, 0, nums.length - 1);
+    }
+
+    private TreeNode sortedArrayToBSTHelper(int[] nums, int left, int right) {
+        if (left == right) return new TreeNode(nums[left]);
+        if (left > right) return null;
+
+        int mid = (left + right) / 2;
+        TreeNode root = new TreeNode(nums[mid]);
+        root.left = sortedArrayToBSTHelper(nums, left, mid - 1);
+        root.right = sortedArrayToBSTHelper(nums, mid + 1, right);
+        return root;
     }
 
     // LC105 Solution
