@@ -19,10 +19,23 @@ class Scratch {
         a2.right = a6;
 
         long timing = System.currentTimeMillis();
-        System.err.println(s.generate(5));
+        System.err.println(s.isPalindrome("ab_a"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
 
+    }
+
+    // LC125
+    public boolean isPalindrome(String s) {
+        s = s.toLowerCase().replaceAll("/\\s+/","").replaceAll("_","").replaceAll("[^\\w\\d]+","");
+
+        int half = s.length() / 2;
+        for (int i = 0; i < half; i++) {
+            if (s.charAt(i) != s.charAt(s.length() - i - 1)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // LC122
