@@ -24,9 +24,41 @@ class Scratch {
 
 
         long timing = System.currentTimeMillis();
-        System.err.println(s.ladderLength("hit", "cog", wordList));
+        System.err.println(s.numDecodings("11106"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+
+    }
+
+    Integer[] lc91Memo;
+
+    // LC91
+    public int numDecodings(String s) {
+        lc91Memo = new Integer[s.length() + 1];
+        return numDecodingsHelper(s, 0);
+    }
+
+    private int numDecodingsHelper(String s, int idx) {
+
+        if (idx >= s.length()) return 1;
+
+        if (s.charAt(idx) == '0') return 0;
+
+//        if (idx + 1 == s.length()) {
+//            return numDecodingsHelper(s, idx + 1);
+//        }
+
+        if (lc91Memo[idx] != null) {
+            return lc91Memo[idx];
+        }
+        int one = numDecodingsHelper(s, idx + 1);
+        int two = 0;
+        if (idx + 2 <= s.length() && s.substring(idx, idx + 2).compareTo("26") <= 0) {
+            two = numDecodingsHelper(s, idx + 2);
+        }
+
+        lc91Memo[idx] = one + two;
+        return lc91Memo[idx];
 
     }
 
