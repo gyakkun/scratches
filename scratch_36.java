@@ -53,8 +53,8 @@ class Scratch {
             int currentGas = 0;
             boolean flag = false;
             for (int j = 0; j < n; j++) {
-                currentGas = currentGas + gas[(idx + j) % n] - cost[(idx + j)%n];
-                if ( currentGas < 0) {
+                currentGas = currentGas + gas[(idx + j) % n] - cost[(idx + j) % n];
+                if (currentGas < 0) {
                     flag = true;
                     break;
                 }
