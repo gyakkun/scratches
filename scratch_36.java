@@ -24,9 +24,79 @@ class Scratch {
 
 
         long timing = System.currentTimeMillis();
-        System.err.println(s.maxSumSubmatrix(new int[][]{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}}, 10));
+        char[][] board = new char[][]{{'X', 'X', 'X', 'X'}, {'X', 'O', 'O', 'X'}, {'X', 'X', 'O', 'X'}, {'X', 'O', 'X', 'X'}};
+        s.solve(board);
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+
+    }
+
+    // LC130, My Solution: 变通使用并查集
+    public void solve(char[][] board) {
+        int rowNum = board.length;
+        int colNum = board[0].length;
+        boolean[][] visited = new boolean[rowNum][colNum];
+        DisjointSetUnionString dsus = new DisjointSetUnionString();
+
+        // 用一个长度为2的整形组表示'O'点的行列坐标, 用visited二维数组表示该'O'点是否已经访问过
+        List<int[]> oPoints = new LinkedList<>();
+        for (int i = 0; i < rowNum; i++) {
+            for (int j = 0; j < colNum; j++) {
+                if (board[i][j] == 'O') {
+                    oPoints.add(new int[]{i, j});
+                }
+            }
+        }
+
+        Set<String> invalid = new HashSet<>();
+
+        for (int[] point : oPoints) {
+            int row = point[0];
+            int col = point[1];
+            dsus.add("" + row + ',' + col);
+
+            // CHECKVALID
+            if (row == 0 || row == rowNum - 1 || col == 0 || col == colNum - 1) {
+                invalid.add("" + row + ',' + col);
+            }
+
+            if (row >= 1) {
+                if (board[row - 1][col] == 'O') {
+                    dsus.add("" + (row - 1) + ',' + col);
+                    dsus.merge("" + (row - 1) + ',' + col, "" + row + ',' + col);
+                }
+            }
+            if (row <= rowNum - 2) {
+                if (board[row + 1][col] == 'O') {
+                    dsus.add("" + (row + 1) + ',' + col);
+                    dsus.merge("" + (row + 1) + ',' + col, "" + row + ',' + col);
+                }
+            }
+            if (col >= 1) {
+                if (board[row][col - 1] == 'O') {
+                    dsus.add("" + row + ',' + (col - 1));
+                    dsus.merge("" + row + ',' + (col - 1), "" + row + ',' + col);
+                }
+            }
+            if (col <= colNum - 2) {
+                if (board[row][col + 1] == 'O') {
+                    dsus.add("" + row + ',' + (col + 1));
+                    dsus.merge("" + row + ',' + (col + 1), "" + row + ',' + col);
+                }
+            }
+        }
+
+        Map<String, Set<String>> allGroup = dsus.getAllGroups();
+        for (String invalidGroupLeader : invalid) {
+            String leader = dsus.find(invalidGroupLeader);
+            allGroup.remove(leader);
+        }
+        for (Map.Entry<String, Set<String>> entry : allGroup.entrySet()) {
+            for (String s : entry.getValue()) {
+                List<Integer> coor = Arrays.stream(s.split(",")).map(Integer::valueOf).collect(Collectors.toList());
+                board[coor.get(0)][coor.get(1)] = 'X';
+            }
+        }
 
     }
 
@@ -597,6 +667,89 @@ class DisjointSetUnion {
     public int getNumOfGroups() {
         Set<Integer> s = new HashSet<Integer>();
         for (Integer i : father.keySet()) {
+            s.add(find(i));
+        }
+        return s.size();
+    }
+
+    public boolean contains(int i) {
+        return father.containsKey(i);
+    }
+
+}
+
+class DisjointSetUnionString {
+
+    Map<String, String> father;
+    Map<String, Integer> rank;
+
+    public DisjointSetUnionString() {
+        father = new HashMap<>();
+        rank = new HashMap<>();
+    }
+
+    public void add(String i) {
+        if (!father.containsKey(i)) {
+            // 置初始父亲为自身
+            // 之后判断连通分量个数时候, 遍历father, 找value==key的
+            father.put(i, i);
+        }
+        if (!rank.containsKey(i)) {
+            rank.put(i, 1);
+        }
+    }
+
+    // 找父亲, 路径压缩
+    public String find(String i) {
+        //先找到根 再压缩
+        String root = i;
+        while (!father.get(root).equals(root)) {
+            root = father.get(root);
+        }
+        // 找到根, 开始对一路上的子节点进行路径压缩
+        while (!father.get(i).equals(root)) {
+            String origFather = father.get(i);
+            father.put(i, root);
+            // 更新秩, 按照节点数
+            rank.put(root, rank.get(root) + 1);
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(String i, String j) {
+        String iFather = find(i);
+        String jFather = find(j);
+        if (iFather == jFather) return false;
+        // 按秩合并
+        if (rank.get(iFather) >= rank.get(jFather)) {
+            father.put(jFather, iFather);
+            rank.put(iFather, rank.get(jFather) + rank.get(iFather));
+        } else {
+            father.put(iFather, jFather);
+            rank.put(jFather, rank.get(jFather) + rank.get(iFather));
+        }
+        return true;
+    }
+
+    public boolean isConnected(String i, String j) {
+        return find(i) == find(j);
+    }
+
+    public Map<String, Set<String>> getAllGroups() {
+        Map<String, Set<String>> result = new HashMap<>();
+        // 找出所有根
+        for (String i : father.keySet()) {
+            String f = find(i);
+            result.putIfAbsent(f, new HashSet<>());
+            result.get(f).add(i);
+        }
+        return result;
+    }
+
+    public int getNumOfGroups() {
+        Set<String> s = new HashSet<>();
+        for (String i : father.keySet()) {
             s.add(find(i));
         }
         return s.size();
