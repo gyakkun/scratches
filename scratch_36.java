@@ -19,25 +19,74 @@ class Scratch {
         a2.left = a5;
         a2.right = a6;
 
-        String[] wl = new String[]{"hot","dot","tog","cog"};
+        String[] wl = new String[]{"hot", "dot", "tog", "cog"};
         List<String> wordList = Arrays.stream(wl).collect(Collectors.toList());
 
 
         long timing = System.currentTimeMillis();
-        System.err.println(s.numDecodings("11106"));
+        System.err.println(s.maxSumSubmatrix(new int[][]{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}}, 10));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
 
     }
 
+    // LC363
+    public int maxSumSubmatrix(int[][] matrix, int target) {
+        int ans = Integer.MIN_VALUE;
+        int m = matrix.length, n = matrix[0].length;
+        for (int i = 0; i < m; ++i) { // 枚举上边界
+            int[] sum = new int[n];
+            for (int j = i; j < m; ++j) { // 枚举下边界
+                for (int c = 0; c < n; ++c) {
+                    sum[c] += matrix[j][c]; // 更新每列的元素和
+                }
+                TreeSet<Integer> sumSet = new TreeSet<Integer>();
+                sumSet.add(0);
+                int s = 0;
+                for (int v : sum) {
+                    s += v;
+                    Integer ceil = sumSet.ceiling(s - target);
+                    if (ceil != null) {
+                        ans = Math.max(ans, s - ceil);
+                    }
+                    sumSet.add(s);
+                }
+            }
+            // prefix[r] - prefix[l] <= target
+            //
+            // prefix[l] >= prefix[r] - target
+            //
+            // ceil >= prefix[r] - target
+            // <-> ceil = prefix[l] (若存在)
+            //
+            // prefix[r] - prefix[l] = 区间和
+            // ans  = Math.max(ans, prefix[r] - prefix[l])
+        }
+        return ans;
+    }
+
+    // LC363前置: 最大子段和 (未优化空间)
+    public int maxSumSubArray(int[] arr) {
+        int n = arr.length;
+        int[] dp = new int[n + 1]; // 以i结尾的最大子段和, 注意子段长度不能为0
+        dp[0] = arr[0];
+        int result = dp[0];
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.max(0, dp[i - 1]) + arr[i];
+            result = Math.max(result, dp[i]);
+        }
+        return result; // 若子段长度可为0, 则取Math.max(result,0)
+    }
+
+    // LC128
     public int longestConsecutive(int[] nums) {
         DisjointSetUnion dsu = new DisjointSetUnion();
         for (int i = 0; i < nums.length; i++) {
             dsu.add(nums[i]);
-            if(dsu.contains(nums[i]-1)){
-                dsu.merge(nums[i], nums[i]-1);
+            if (dsu.contains(nums[i] - 1)) {
+                dsu.merge(nums[i], nums[i] - 1);
             }
-            if(dsu.contains(nums[i]+1)){
+            if (dsu.contains(nums[i] + 1)) {
                 dsu.merge(nums[i], nums[i] + 1);
             }
         }
@@ -553,7 +602,7 @@ class DisjointSetUnion {
         return s.size();
     }
 
-    public boolean contains(int i){
+    public boolean contains(int i) {
         return father.containsKey(i);
     }
 
