@@ -35,7 +35,6 @@ class Scratch {
     public void solve(char[][] board) {
         int rowNum = board.length;
         int colNum = board[0].length;
-        boolean[][] visited = new boolean[rowNum][colNum];
         DisjointSetUnionString dsus = new DisjointSetUnionString();
 
         // 用一个长度为2的整形组表示'O'点的行列坐标, 用visited二维数组表示该'O'点是否已经访问过
