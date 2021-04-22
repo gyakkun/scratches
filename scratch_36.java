@@ -31,6 +31,44 @@ class Scratch {
 
     }
 
+    // LC134
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int n = gas.length;
+        int result = -1;
+
+        List<double[]> unitCost = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            unitCost.add(new double[]{i, (double) gas[i] / (double) cost[i]});
+        }
+        unitCost.sort(new Comparator<double[]>() {
+            @Override
+            public int compare(double[] o1, double[] o2) {
+                return (int) (o2[1] - o1[1]);
+            }
+        });
+
+        for (int i = 0; i < n; i++) {
+            double[] firstStation = unitCost.get(i);
+            int idx = (int) firstStation[0];
+            int currentGas = 0;
+            boolean flag = false;
+            for (int j = 0; j < n; j++) {
+                currentGas = currentGas + gas[(idx + j) % n] - cost[(idx + j)%n];
+                if ( currentGas < 0) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) {
+                continue;
+            } else {
+                return idx;
+            }
+        }
+
+        return result;
+    }
+
     // LC130, My Solution: 变通使用并查集
     public void solve(char[][] board) {
         int rowNum = board.length;
