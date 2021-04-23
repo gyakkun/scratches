@@ -7,10 +7,33 @@ class Scratch {
         Scratch s = new Scratch();
 
         long timing = System.currentTimeMillis();
-        System.err.println(s.largestDivisibleSubset(new int[]{5, 9, 18, 54, 108, 540, 90, 180, 360, 720}));
+        // 10,9,2,5,3,7,101,18
+        System.err.println(s.lengthOfLIS(new int[]{5, 9, 18, 54, 108, 540, 90, 180, 360, 720}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
 
+    }
+
+    // LC300 使用TreeSet API
+    public int lengthOfLIS(int[] nums) {
+        TreeSet<Integer> tail = new TreeSet<>();
+        int n = nums.length;
+        tail.add(nums[0]);
+        for (int i = 1; i < n; i++) {
+            Integer ceiling = tail.ceiling(nums[i]);
+            //  if (ceiling == null) {
+            //     tail.add(nums[i]);
+            // } else {
+            //     tail.remove(ceiling);
+            //     tail.add(nums[i]);
+            // }
+            // IDEA简化后:
+            if (ceiling != null) {
+                tail.remove(ceiling);
+            }
+            tail.add(nums[i]);
+        }
+        return tail.size();
     }
 
     // LC368 Solution
