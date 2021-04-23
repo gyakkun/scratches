@@ -14,6 +14,18 @@ class Scratch {
 
     }
 
+    // LC137 躺平 选择哈希
+    public int singleNumberLc137(int[] nums) {
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i : nums) {
+            m.put(i, m.getOrDefault(i, 0) + 1);
+        }
+        for (Map.Entry<Integer, Integer> entry : m.entrySet()) {
+            if (entry.getValue() == 1) return entry.getKey();
+        }
+        return -1;
+    }
+
     // LC136 位运算
     public int singleNumber(int[] nums) {
         int result = 0;
