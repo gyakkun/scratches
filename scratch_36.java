@@ -1,33 +1,54 @@
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        TreeNode a0 = new TreeNode(1);
-        TreeNode a1 = new TreeNode(2);
-        TreeNode a2 = new TreeNode(2);
-        TreeNode a3 = new TreeNode(3);
-        TreeNode a4 = new TreeNode(3);
-        TreeNode a5 = new TreeNode(3);
-        TreeNode a6 = new TreeNode(3);
-
-        a0.left = a1;
-        a0.right = a2;
-        a1.left = a3;
-        a1.right = a4;
-        a2.left = a5;
-        a2.right = a6;
-
-        String[] wl = new String[]{"hot", "dot", "tog", "cog"};
-        List<String> wordList = Arrays.stream(wl).collect(Collectors.toList());
-
 
         long timing = System.currentTimeMillis();
-        char[][] board = new char[][]{{'X', 'X', 'X', 'X'}, {'X', 'O', 'O', 'X'}, {'X', 'X', 'O', 'X'}, {'X', 'O', 'X', 'X'}};
-        s.solve(board);
+        System.err.println(s.largestDivisibleSubset(new int[]{5, 9, 18, 54, 108, 540, 90, 180, 360, 720}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+
+    }
+
+    // LC368 Solution
+    public List<Integer> largestDivisibleSubset(int[] nums) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        int[] dp = new int[n]; // dp[i] 表示以i为约数的最大整除子集大小
+        Arrays.fill(dp, 1);
+        int maxSize = 1;
+        int maxVal = nums[0];
+
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] % nums[j] == 0) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            if (dp[i] > maxVal) {
+                maxVal = nums[i];
+                maxSize = dp[i];
+            }
+        }
+
+        List<Integer> result = new LinkedList<>();
+        if (maxSize == 1) {
+            result.add(nums[0]);
+            return result;
+        }
+
+        for (int i = n - 1; i >= 0 && maxVal > 0; i--) {
+            if (dp[i] == maxSize && maxVal % nums[i] == 0) {
+                result.add(nums[i]);
+                maxVal = nums[i];
+                maxSize--;
+            }
+        }
+        return result;
 
     }
 
