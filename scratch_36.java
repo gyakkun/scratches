@@ -17,14 +17,12 @@ class Scratch {
     // LC300 使用TreeSet API
     public int lengthOfLIS(int[] nums) {
         TreeSet<Integer> tail = new TreeSet<>();
-        int n = nums.length;
-        tail.add(nums[0]);
-        for (int i = 1; i < n; i++) {
-            Integer ceiling = tail.ceiling(nums[i]);
+        for (int i : nums) {
+            Integer ceiling = tail.ceiling(i);
             if (ceiling != null) {
                 tail.remove(ceiling);
             }
-            tail.add(nums[i]);
+            tail.add(i);
         }
         return tail.size();
     }
