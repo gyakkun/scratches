@@ -21,13 +21,6 @@ class Scratch {
         tail.add(nums[0]);
         for (int i = 1; i < n; i++) {
             Integer ceiling = tail.ceiling(nums[i]);
-            //  if (ceiling == null) {
-            //     tail.add(nums[i]);
-            // } else {
-            //     tail.remove(ceiling);
-            //     tail.add(nums[i]);
-            // }
-            // IDEA简化后:
             if (ceiling != null) {
                 tail.remove(ceiling);
             }
