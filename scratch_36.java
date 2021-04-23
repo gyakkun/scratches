@@ -64,7 +64,7 @@ class Scratch {
                     dp[i] = Math.max(dp[i], dp[j] + 1);
                 }
             }
-            if (dp[i] > maxVal) {
+            if (dp[i] > maxSize) {
                 maxVal = nums[i];
                 maxSize = dp[i];
             }
@@ -76,7 +76,7 @@ class Scratch {
             return result;
         }
 
-        for (int i = n - 1; i >= 0 && maxVal > 0; i--) {
+        for (int i = n - 1; i >= 0 && maxSize > 0; i--) {
             if (dp[i] == maxSize && maxVal % nums[i] == 0) {
                 result.add(nums[i]);
                 maxVal = nums[i];
@@ -84,7 +84,6 @@ class Scratch {
             }
         }
         return result;
-
     }
 
     // LC134
