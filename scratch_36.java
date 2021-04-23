@@ -14,7 +14,16 @@ class Scratch {
 
     }
 
-    // LC300 使用TreeSet API
+    // LC136 位运算
+    public int singleNumber(int[] nums) {
+        int result = 0;
+        for (int i = 0; i < nums.length; i++) {
+            result ^= nums[i];
+        }
+        return result;
+    }
+
+    // LC300 最长递增子序列LIS 使用TreeSet API
     public int lengthOfLIS(int[] nums) {
         TreeSet<Integer> tail = new TreeSet<>();
         for (int i : nums) {
