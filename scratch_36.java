@@ -14,6 +14,33 @@ class Scratch {
 
     }
 
+    // LC897
+    public TreeNode increasingBST(TreeNode root) {
+        Deque<TreeNode> stack = new LinkedList<>();
+        List<TreeNode> q = new LinkedList<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            while (stack.peek().left != null) {
+                stack.push(stack.peek().left);
+            }
+            while (!stack.isEmpty()) {
+                TreeNode top = stack.pop();
+                q.add(top);
+                if (top.right != null) {
+                    stack.push(top.right);
+                    break;
+                }
+            }
+        }
+        TreeNode newRoot = q.get(0);
+        newRoot.left = null;
+        for (int i = 1; i < q.size(); i++) {
+            q.get(i - 1).right = q.get(i);
+            q.get(i).left = null;
+        }
+        return newRoot;
+    }
+
     // LC377
     public int combinationSum4(int[] nums, int target) {
         int n = nums.length;
