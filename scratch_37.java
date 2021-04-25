@@ -26,6 +26,53 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC148
+    public ListNode sortList(ListNode head) {
+        return sortListHelper(head, null);
+    }
+
+    private ListNode sortListHelper(ListNode head, ListNode tail) {
+        if (head == null) return null;
+        if (head.next == tail) {
+            head.next = null;
+            return head;
+        }
+        ListNode fast = head, slow = head;
+        while (fast != tail) {
+            slow = slow.next;
+            fast = fast.next;
+            if (fast != tail) {
+                fast = fast.next;
+            }
+        }
+
+        ListNode left = sortListHelper(head, slow);
+        ListNode right = sortListHelper(slow, tail);
+        ListNode newHead = sortMerge(left, right);
+        return newHead;
+    }
+
+    private ListNode sortMerge(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(-1);
+        ListNode tmp = dummy, p1 = l1, p2 = l2;
+        while (p1 != null && p2 != null) {
+            if (p1.val < p2.val) {
+                tmp.next = p1;
+                p1 = p1.next;
+            } else {
+                tmp.next = p2;
+                p2 = p2.next;
+            }
+            tmp = tmp.next;
+        }
+        if (p1 != null) {
+            tmp.next = p1;
+        } else if (p2 != null) {
+            tmp.next = p2;
+        }
+        return dummy.next;
+    }
+
     // LC140
     private List<String> lc140Result = new LinkedList<>();
     private int longestWordLen = 0;
@@ -94,7 +141,7 @@ class Scratch {
 }
 
 // LC146
-class LRUCache extends LinkedHashMap<Integer, Integer>{
+class LRUCache extends LinkedHashMap<Integer, Integer> {
     private int capacity;
 
     public LRUCache(int capacity) {
@@ -135,5 +182,23 @@ class Node {
         this.val = val;
         this.next = null;
         this.random = null;
+    }
+}
+
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
