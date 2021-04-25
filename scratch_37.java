@@ -4,31 +4,24 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
 
-        Node zero = new Node(0);
-        Node one = new Node(1);
-        Node two = new Node(2);
-        Node three = new Node(3);
-        Node four = new Node(4);
-
-        zero.next = one;
-        one.next = two;
-        two.next = three;
-        three.next = four;
-
-        zero.random = four;
-        one.random = three;
-        two.random = null;
-        three.random = one;
-        four.random = zero;
 
         long timing = System.currentTimeMillis();
-        List<String> wordDict = new ArrayList<>();
-        wordDict.add("leet");
-        wordDict.add("code");
-        wordDict.add("l");
-        wordDict.add("ee");
-        wordDict.add("t");
-        System.err.println(s.wordBreak140("leetcode", wordDict));
+
+//        ["LRUCache","put","put","get","put","get","put","get","get","get"]
+//[[2],[1,1],[2,2],[1],[3,3],[2],[4,4],[1],[3],[4]]
+
+        LRUCache lru = new LRUCache(2);
+        lru.put(1, 1);
+        lru.put(2, 2);
+        lru.get(1);
+        lru.put(3, 3);
+        lru.get(2);
+        lru.put(4, 4);
+        lru.get(1);
+        lru.get(3);
+        lru.get(4);
+
+//        System.err.println(s.wordBreak140("leetcode", wordDict));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -99,6 +92,37 @@ class Scratch {
     }
 
 }
+
+// LC146
+class LRUCache extends LinkedHashMap<Integer, Integer>{
+    private int capacity;
+
+    public LRUCache(int capacity) {
+        super(capacity, 0.75F, true);
+        this.capacity = capacity;
+    }
+
+    public int get(int key) {
+        return super.getOrDefault(key, -1);
+    }
+
+    // 这个可不写
+    public void put(int key, int value) {
+        super.put(key, value);
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<Integer, Integer> eldest) {
+        return size() > capacity;
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
 
 
 // LC138
