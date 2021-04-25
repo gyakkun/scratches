@@ -23,11 +23,42 @@ class Scratch {
 
         long timing = System.currentTimeMillis();
         List<String> wordDict = new ArrayList<>();
-        wordDict.add("a");
-//        wordDict.add("code");
-        System.err.println(s.wordBreak("aa", wordDict));
+        wordDict.add("leet");
+        wordDict.add("code");
+        wordDict.add("l");
+        wordDict.add("ee");
+        wordDict.add("t");
+        System.err.println(s.wordBreak140("leetcode", wordDict));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC140
+    private List<String> lc140Result = new LinkedList<>();
+    private int longestWordLen = 0;
+
+    // LC140
+    public List<String> wordBreak140(String s, List<String> wordDict) {
+        Set<String> wordSet = new HashSet<>(wordDict);
+        for (String word : wordSet) {
+            longestWordLen = Math.max(longestWordLen, word.length());
+        }
+        wordBreak140Backtrack(s, wordSet, 0, new LinkedList<>());
+        return lc140Result;
+    }
+
+    private void wordBreak140Backtrack(String s, Set<String> wordSet, int curIdx, List<String> curList) {
+        if (curIdx == s.length()) {
+            lc140Result.add(String.join(" ", curList));
+            return;
+        }
+        for (int i = 1; i <= longestWordLen; i++) {
+            if (curIdx + i <= s.length() && wordSet.contains(s.substring(curIdx, curIdx + i))) {
+                curList.add(s.substring(curIdx, curIdx + i));
+                wordBreak140Backtrack(s, wordSet, curIdx + i, curList);
+                curList.remove(curList.size() - 1);
+            }
+        }
     }
 
     // LC139
