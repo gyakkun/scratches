@@ -1,5 +1,4 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
@@ -23,9 +22,28 @@ class Scratch {
         four.random = zero;
 
         long timing = System.currentTimeMillis();
-        Node a = s.copyRandomList(zero);
+        List<String> wordDict = new ArrayList<>();
+        wordDict.add("a");
+//        wordDict.add("code");
+        System.err.println(s.wordBreak("aa", wordDict));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC139
+    public boolean wordBreak(String s, List<String> wordDict) {
+        int n = s.length();
+        boolean[] reachable = new boolean[n + 1];
+        reachable[0] = true;
+        Set<String> wordSet = new HashSet<>(wordDict);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j <= n; j++) {
+                if (reachable[i] && wordSet.contains(s.substring(i, j))) {
+                    reachable[j] = true;
+                }
+            }
+        }
+        return reachable[n];
     }
 
     // LC138
