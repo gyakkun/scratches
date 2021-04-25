@@ -30,18 +30,18 @@ class Scratch {
 
     // LC138
     public Node copyRandomList(Node head) {
-        if(head==null){
+        if (head == null) {
             return head;
         }
         Map<Node, Node> map = new HashMap<>();
         Node node = head;
-        while(node != null){
+        while (node != null) {
             Node temp = new Node(node.val);
             map.put(node, temp);
             node = node.next;
         }
         node = head;
-        while(node!=null){
+        while (node != null) {
             map.get(node).next = map.get(node.next);
             map.get(node).random = map.get(node.random);
             node = node.next;
