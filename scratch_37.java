@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -21,9 +23,65 @@ class Scratch {
         lru.get(3);
         lru.get(4);
 
-        System.err.println(s.shipWithinDays(new int[]{361, 321, 186, 186, 67, 283, 36, 471, 304, 218, 60, 78, 149, 166, 282, 384, 61, 242, 426, 275, 236, 221, 27, 261, 487, 90, 468, 19, 453, 241}, 15));
+        System.err.println(s.maxPoints(new int[][]{{0, 1}, {0, 0}, {0, 4}, {0, -2}, {0, -1}, {0, 3}, {0, -4}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC149 Hard
+    public int maxPoints(int[][] points) {
+        Map<Double, Integer> slash = new HashMap<>();
+        int result = 1;
+        for (int i = 0; i < points.length - 1; i++) {
+            slash.clear();
+            int horizon = 1;
+            int dup = 0;
+            int tmpMax = 1;
+            for (int j = i + 1; j < points.length; j++) {
+                if (points[i][0] == points[j][0] && points[i][1] == points[j][1]) {
+                    dup++;
+                } else if (points[i][1] == points[j][1]) {
+                    horizon++;
+                    tmpMax = Math.max(tmpMax, horizon);
+                } else {
+                    double k;
+                    if (points[i][0] == points[j][0]) {
+                        k = 0d;
+                    } else {
+                        k = ((double) (points[i][0] - points[j][0])) / ((double) (points[i][1] - points[j][1]));
+                    }
+                    slash.put(k, slash.getOrDefault(k, 1) + 1);
+                    tmpMax = Math.max(tmpMax, slash.get(k));
+                }
+            }
+            result = Math.max(result, tmpMax + dup);
+        }
+        return result;
+    }
+
+    // LC1011 Solution
+    public int shipWithinDaysSolution(int[] weights, int D) {
+        // 确定二分查找左右边界
+        int left = Arrays.stream(weights).max().getAsInt(), right = Arrays.stream(weights).sum();
+        while (left < right) {
+            int mid = (left + right) / 2;
+            // need 为需要运送的天数
+            // cur 为当前这一天已经运送的包裹重量之和
+            int need = 1, cur = 0;
+            for (int weight : weights) {
+                if (cur + weight > mid) {
+                    ++need;
+                    cur = 0;
+                }
+                cur += weight;
+            }
+            if (need <= D) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
     }
 
     // LC1011 141ms
@@ -39,7 +97,7 @@ class Scratch {
         int average = (int) Math.ceil((double) total / (double) D);
         int left = Math.max(maxSingle, average), right = average + maxSingle;
         while (left < right) {
-            int midCap = (left + right) / 2;
+            int midCap = left + (right - left) / 2;
             int days = howManyDays(D, total, ts, midCap);
             if (days <= D) {
                 right = midCap;
@@ -67,23 +125,6 @@ class Scratch {
         }
         return Integer.MAX_VALUE;
     }
-
-    // LC149 Hard
-//    public int maxPoints(int[][] points) {
-//        int pointCount = points.length;
-//        int maxCount = 1;
-//        for (int i = 0; i < pointCount - 1; i++) {
-//            // find the line with max point on it including point[i]
-//            int count = 1;
-//            for (int j = i + 1; i + 1 < pointCount; j++) {
-//                if (points[i][1] != points[j][1]) {
-//                    // y = kx + b
-//                    double k = (double) (points[i][0] - points[j][0]) / (double) (points[i][1] - points[j][1]);
-//                }
-//            }
-//        }
-//
-//    }
 
     // LC148
     public ListNode sortList(ListNode head) {
