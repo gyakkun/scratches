@@ -26,7 +26,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1011 1000ms+
+    // LC1011 141ms
     public int shipWithinDays(int[] weights, int D) {
         int total = 0;
         int maxSingle = Integer.MIN_VALUE;
@@ -37,23 +37,35 @@ class Scratch {
             ts.add(total);
         }
         int average = (int) Math.ceil((double) total / (double) D);
-        int dCtr = 0;
-        int totalCtr = 0;
-        for (int i = Math.max(maxSingle, average); i <= average + maxSingle; i++) {
-            totalCtr = 0;
-            for (dCtr = 0; dCtr < D; dCtr++) {
-                Integer floor = ts.floor(totalCtr + i);
-                if (floor != null && totalCtr < total) {
-                    totalCtr = floor;
-                } else {
-                    break;
-                }
-            }
-            if (totalCtr == total) {
-                return i;
+        int left = Math.max(maxSingle, average), right = average + maxSingle;
+        while (left < right) {
+            int midCap = (left + right) / 2;
+            int days = howManyDays(D, total, ts, midCap);
+            if (days <= D) {
+                right = midCap;
+            } else {
+                left = midCap + 1;
             }
         }
-        return average + maxSingle;
+        return left;
+    }
+
+    private int howManyDays(int D, int total, TreeSet<Integer> ts, int cap) {
+        int totalCtr;
+        int dCtr;
+        totalCtr = 0;
+        for (dCtr = 0; dCtr < D; dCtr++) {
+            Integer floor = ts.floor(totalCtr + cap);
+            if (floor != null && totalCtr < total) {
+                totalCtr = floor;
+            } else {
+                break;
+            }
+        }
+        if (totalCtr == total) {
+            return dCtr;
+        }
+        return Integer.MAX_VALUE;
     }
 
     // LC149 Hard
