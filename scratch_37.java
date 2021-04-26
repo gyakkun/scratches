@@ -28,6 +28,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC172 建议纸笔做点草稿
+    public int trailingZeroes(int n) {
+        int result = 0;
+        while (n != 0) {
+            n /= 5;
+            result += n;
+        }
+        return result;
+    }
+
     // LC171
     public int titleToNumber(String columnTitle) {
         int result = 0;
