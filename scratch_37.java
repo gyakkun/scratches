@@ -21,10 +21,57 @@ class Scratch {
         lru.get(3);
         lru.get(4);
 
-//        System.err.println(s.wordBreak140("leetcode", wordDict));
+        System.err.println(s.shipWithinDays(new int[]{361, 321, 186, 186, 67, 283, 36, 471, 304, 218, 60, 78, 149, 166, 282, 384, 61, 242, 426, 275, 236, 221, 27, 261, 487, 90, 468, 19, 453, 241}, 15));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1011 1000ms+
+    public int shipWithinDays(int[] weights, int D) {
+        int total = 0;
+        int maxSingle = Integer.MIN_VALUE;
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i : weights) {
+            total += i;
+            maxSingle = Math.max(maxSingle, i);
+            ts.add(total);
+        }
+        int average = (int) Math.ceil((double) total / (double) D);
+        int dCtr = 0;
+        int totalCtr = 0;
+        for (int i = Math.max(maxSingle, average); i <= average + maxSingle; i++) {
+            totalCtr = 0;
+            for (dCtr = 0; dCtr < D; dCtr++) {
+                Integer floor = ts.floor(totalCtr + i);
+                if (floor != null && totalCtr < total) {
+                    totalCtr = floor;
+                } else {
+                    break;
+                }
+            }
+            if (totalCtr == total) {
+                return i;
+            }
+        }
+        return average + maxSingle;
+    }
+
+    // LC149 Hard
+//    public int maxPoints(int[][] points) {
+//        int pointCount = points.length;
+//        int maxCount = 1;
+//        for (int i = 0; i < pointCount - 1; i++) {
+//            // find the line with max point on it including point[i]
+//            int count = 1;
+//            for (int j = i + 1; i + 1 < pointCount; j++) {
+//                if (points[i][1] != points[j][1]) {
+//                    // y = kx + b
+//                    double k = (double) (points[i][0] - points[j][0]) / (double) (points[i][1] - points[j][1]);
+//                }
+//            }
+//        }
+//
+//    }
 
     // LC148
     public ListNode sortList(ListNode head) {
