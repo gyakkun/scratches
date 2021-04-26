@@ -28,6 +28,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC04.04
+    Map<TreeNode, Integer> treeHeight = new HashMap<>();
+    boolean lc0404Flag = false;
+
+    public boolean isBalanced(TreeNode root) {
+        checkHeight(root);
+        return !lc0404Flag;
+    }
+
+    private int checkHeight(TreeNode root) {
+        if (root == null) return 0;
+        if (treeHeight.containsKey(root)) return treeHeight.get(root);
+        int height = Math.max(checkHeight(root.left), checkHeight(root.right)) + 1;
+        if (Math.abs(checkHeight(root.left) - checkHeight(root.right)) > 1) lc0404Flag = true;
+        treeHeight.put(root, height);
+        return height;
+    }
+
+
+    // LC152 乘积最大子数组
+    public int maxProduct(int[] nums) {
+        int n = nums.length;
+        int[] dpMax = Arrays.copyOf(nums, n); // dpMax[i] 表示以nums[i] 结尾的最大子数组的积
+        int[] dpMin = Arrays.copyOf(nums, n); // dpMin 表示以nums[i]结尾的最小乘积
+        for (int i = 1; i < n; i++) {
+            dpMax[i] = Math.max(Math.max(dpMax[i - 1] * nums[i], dpMin[i - 1] * nums[i]), nums[i]);
+            dpMin[i] = Math.min(Math.min(dpMin[i - 1] * nums[i], dpMax[i - 1] * nums[i]), nums[i]);
+        }
+        return Arrays.stream(dpMax).max().getAsInt();
+    }
+
     // LC149 Hard
     public int maxPoints(int[][] points) {
         Map<Double, Integer> slash = new HashMap<>();
@@ -300,5 +331,24 @@ class ListNode {
     ListNode(int val, ListNode next) {
         this.val = val;
         this.next = next;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
