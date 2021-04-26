@@ -28,6 +28,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC169
+    public int majorityElement(int[] nums) {
+        int half = nums.length / 2;
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i : nums) {
+            m.put(i, m.getOrDefault(i, 0) + 1);
+            if (m.get(i) > half) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     // LC166 almost Solution
     public String fractionToDecimal(int numerator, int denominator) {
         long num = numerator;
