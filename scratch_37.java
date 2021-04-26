@@ -23,9 +23,46 @@ class Scratch {
         lru.get(3);
         lru.get(4);
 
-        System.err.println(s.maxPoints(new int[][]{{0, 1}, {0, 0}, {0, 4}, {0, -2}, {0, -1}, {0, 3}, {0, -4}}));
+        System.err.println(s.fractionToDecimal(1, 333));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC166 almost Solution
+    public String fractionToDecimal(int numerator, int denominator) {
+        long num = numerator;
+        long den = denominator;
+        num = Math.abs(num);
+        den = Math.abs(den);
+        String left = String.valueOf(num / den);
+        if ((numerator < 0 && denominator > 0) || (numerator > 0 && denominator < 0)) left = "-" + left;
+        long remainder = num % den;
+        StringBuffer sb = new StringBuffer(left);
+        sb.append(".");
+        if (remainder == 0) {
+            return left;
+        }
+        Map<Long, Integer> map = new HashMap<>();
+        while (remainder != 0) {
+            if (map.containsKey(remainder)) {
+                sb.insert(map.get(remainder), "(");
+                sb.append(")");
+                break;
+            }
+            map.put(remainder, sb.length());
+            remainder *= 10;
+            sb.append(remainder / den);
+            remainder %= den;
+        }
+        return sb.toString();
+    }
+
+    // LC162
+    public int findPeakElement(int[] nums) {
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (nums[i] > nums[i + 1]) return i;
+        }
+        return nums.length - 1;
     }
 
     // LC04.04
