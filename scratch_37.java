@@ -23,9 +23,18 @@ class Scratch {
         lru.get(3);
         lru.get(4);
 
-        System.err.println(s.fractionToDecimal(1, 333));
+        System.err.println(s.titleToNumber("AB"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC171
+    public int titleToNumber(String columnTitle) {
+        int result = 0;
+        for (int i = 0; i < columnTitle.length(); i++) {
+            result = 26 * result + (columnTitle.charAt(i) - 'A' + 1);
+        }
+        return result;
     }
 
     // LC169
