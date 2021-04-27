@@ -7,16 +7,96 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.numIslands(new char[][]{
-                        {'1','1','0','0','0'},
-                        {'1','1','0','0','0'},
-                        {'0','0','1','0','0'},
-                        {'0','0','0','1','1'}
-                }
-        ));
+//        System.err.println(s.findWords(new char[][]{{'o', 'a', 'a', 'n'}, {'e', 't', 'a', 'e'}, {'i', 'h', 'k', 'r'}, {'i', 'f', 'l', 'v'}}, new String[]{"oath", "pea", "eat", "rain"}));
+        System.err.println(s.findWords(new char[][]{{'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}, {'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'}}
+
+                , new String[]{"lllllll", "fffffff", "ssss", "s", "rr", "xxxx", "ttt", "eee", "ppppppp", "iiiiiiiii", "xxxxxxxxxx", "pppppp", "xxxxxx", "yy", "jj", "ccc", "zzz", "ffffffff", "r", "mmmmmmmmm", "tttttttt", "mm", "ttttt", "qqqqqqqqqq", "z", "aaaaaaaa", "nnnnnnnnn", "v", "g", "ddddddd", "eeeeeeeee", "aaaaaaa", "ee", "n", "kkkkkkkkk", "ff", "qq", "vvvvv", "kkkk", "e", "nnn", "ooo", "kkkkk", "o", "ooooooo", "jjj", "lll", "ssssssss", "mmmm", "qqqqq", "gggggg", "rrrrrrrrrr", "iiii", "bbbbbbbbb", "aaaaaa", "hhhh", "qqq", "zzzzzzzzz", "xxxxxxxxx", "ww", "iiiiiii", "pp", "vvvvvvvvvv", "eeeee", "nnnnnnn", "nnnnnn", "nn", "nnnnnnnn", "wwwwwwww", "vvvvvvvv", "fffffffff", "aaa", "p", "ddd", "ppppppppp", "fffff", "aaaaaaaaa", "oooooooo", "jjjj", "xxx", "zz", "hhhhh", "uuuuu", "f", "ddddddddd", "zzzzzz", "cccccc", "kkkkkk", "bbbbbbbb", "hhhhhhhhhh", "uuuuuuu", "cccccccccc", "jjjjj", "gg", "ppp", "ccccccccc", "rrrrrr", "c", "cccccccc", "yyyyy", "uuuu", "jjjjjjjj", "bb", "hhh", "l", "u", "yyyyyy", "vvv", "mmm", "ffffff", "eeeeeee", "qqqqqqq", "zzzzzzzzzz", "ggg", "zzzzzzz", "dddddddddd", "jjjjjjj", "bbbbb", "ttttttt", "dddddddd", "wwwwwww", "vvvvvv", "iii", "ttttttttt", "ggggggg", "xx", "oooooo", "cc", "rrrr", "qqqq", "sssssss", "oooo", "lllllllll", "ii", "tttttttttt", "uuuuuu", "kkkkkkkk", "wwwwwwwwww", "pppppppppp", "uuuuuuuu", "yyyyyyy", "cccc", "ggggg", "ddddd", "llllllllll", "tttt", "pppppppp", "rrrrrrr", "nnnn", "x", "yyy", "iiiiiiiiii", "iiiiii", "llll", "nnnnnnnnnn", "aaaaaaaaaa", "eeeeeeeeee", "m", "uuu", "rrrrrrrr", "h", "b", "vvvvvvv", "ll", "vv", "mmmmmmm", "zzzzz", "uu", "ccccccc", "xxxxxxx", "ss", "eeeeeeee", "llllllll", "eeee", "y", "ppppp", "qqqqqq", "mmmmmm", "gggg", "yyyyyyyyy", "jjjjjj", "rrrrr", "a", "bbbb", "ssssss", "sss", "ooooo", "ffffffffff", "kkk", "xxxxxxxx", "wwwwwwwww", "w", "iiiiiiii", "ffff", "dddddd", "bbbbbb", "uuuuuuuuu", "kkkkkkk", "gggggggggg", "qqqqqqqq", "vvvvvvvvv", "bbbbbbbbbb", "nnnnn", "tt", "wwww", "iiiii", "hhhhhhh", "zzzzzzzz", "ssssssssss", "j", "fff", "bbbbbbb", "aaaa", "mmmmmmmmmm", "jjjjjjjjjj", "sssss", "yyyyyyyy", "hh", "q", "rrrrrrrrr", "mmmmmmmm", "wwwww", "www", "rrr", "lllll", "uuuuuuuuuu", "oo", "jjjjjjjjj", "dddd", "pppp", "hhhhhhhhh", "kk", "gggggggg", "xxxxx", "vvvv", "d", "qqqqqqqqq", "dd", "ggggggggg", "t", "yyyy", "bbb", "yyyyyyyyyy", "tttttt", "ccccc", "aa", "eeeeee", "llllll", "kkkkkkkkkk", "sssssssss", "i", "hhhhhh", "oooooooooo", "wwwwww", "ooooooooo", "zzzz", "k", "hhhhhhhh", "aaaaa", "mmmmm"}));
+
+        // words = {"oath","pea","eat","rain"}
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC212 Hard
+    Set<String> lc212Result = new HashSet<>();
+
+    public List<String> findWords(char[][] board, String[] words) {
+        Trie trie = new Trie();
+        for (String word : words) {
+            trie.insert(word);
+        }
+        boolean[][] visited;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                visited = new boolean[board.length][board[0].length];
+                visited[i][j] = true;
+                lc79Backtrack(board, trie, i, j, "" + board[i][j], visited, -1);
+            }
+        }
+        return new LinkedList<>(lc212Result);
+    }
+
+
+    private void lc79Backtrack(char[][] board, Trie trie, int curRow, int curCol,
+                               String curWord, boolean[][] visited, int direct) { // 0123 - 上下左右
+        if (!trie.startsWith(curWord)) {
+            return;
+        }
+        if (trie.search(curWord)) {
+            lc212Result.add(curWord);
+        }
+        StringBuffer sb = new StringBuffer(curWord);
+        // 上下左右
+        if (curRow - 1 >= 0 && !visited[curRow - 1][curCol] && direct != 1) {
+            sb.append(board[curRow - 1][curCol]);
+            visited[curRow - 1][curCol] = true;
+            lc79Backtrack(board, trie, curRow - 1, curCol, sb.toString(), visited, 0);
+            visited[curRow - 1][curCol] = false;
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if (curRow + 1 < board.length && !visited[curRow + 1][curCol] && direct != 0) {
+            sb.append(board[curRow + 1][curCol]);
+            visited[curRow + 1][curCol] = true;
+            lc79Backtrack(board, trie, curRow + 1, curCol, sb.toString(), visited, 1);
+            visited[curRow + 1][curCol] = false;
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if (curCol - 1 >= 0 && !visited[curRow][curCol - 1] && direct != 3) {
+            sb.append(board[curRow][curCol - 1]);
+            visited[curRow][curCol - 1] = true;
+            lc79Backtrack(board, trie, curRow, curCol - 1, sb.toString(), visited, 2);
+            visited[curRow][curCol - 1] = false;
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if (curCol + 1 < board[0].length && !visited[curRow][curCol + 1] && direct != 2) {
+            sb.append(board[curRow][curCol + 1]);
+            visited[curRow][curCol + 1] = true;
+            lc79Backtrack(board, trie, curRow, curCol + 1, sb.toString(), visited, 3);
+            visited[curRow][curCol + 1] = false;
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return;
+    }
+
+
+    // LC204
+    public int countPrimes(int n) {
+        int MAX_SIZE = 348514;
+        boolean[] visit = new boolean[n + 1];
+        int[] prime = new int[Math.max(MAX_SIZE, n + 1)];
+        int ctr = 0;
+        for (int i = 2; i <= n; i++) {
+            if (!visit[i]) {
+                prime[ctr++] = i;
+            }
+            for (int j = 0; j < ctr; j++) {
+                if (i * prime[j] > n) break;
+                visit[i * prime[j]] = true;
+                if (i % prime[j] == 0) break;
+            }
+        }
+        return ctr;
     }
 
     // LC200
@@ -41,8 +121,8 @@ class Scratch {
                         dsu.add(i * colNum + j - 1);
                         dsu.merge(i * colNum + j, i * colNum + j - 1);
                     }
-                    if (j + 1 < colNum && grid[i][j+1] == '1') {
-                        dsu.add(i * colNum + j+1);
+                    if (j + 1 < colNum && grid[i][j + 1] == '1') {
+                        dsu.add(i * colNum + j + 1);
                         dsu.merge(i * colNum + j, i * colNum + j + 1);
                     }
                 }
@@ -564,4 +644,112 @@ class DisjointSetUnion {
         return father.containsKey(i);
     }
 
+}
+
+class Trie {
+    TrieNode root;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public Trie() {
+        root = new TrieNode();
+    }
+
+    /**
+     * Inserts a word into the trie.
+     */
+    public void insert(String word) {
+        TrieNode former = root;
+        int i;
+        for (i = 0; i < word.length() - 1; i++) {
+
+            if (former.val == '#') former.val = word.charAt(i);
+
+            former = former.searchSibling(word.charAt(i));
+            if (former.val != word.charAt(i)) {
+                former.sibling = new TrieNode(word.charAt(i));
+                former = former.sibling;
+            }
+            if (former.child == null) former.child = new TrieNode();
+            former = former.child;
+        }
+
+        if (former.val == '#') former.val = word.charAt(i);
+
+        former = former.searchSibling(word.charAt(i));
+        if (former.val != word.charAt(i)) {
+            former.sibling = new TrieNode(word.charAt(i));
+            former = former.sibling;
+        }
+        if (former.child == null) former.child = new TrieNode();
+        former.isEnd = true;
+    }
+
+    /**
+     * Returns if the word is in the trie.
+     */
+    public boolean search(String word) {
+        TrieNode former = root;
+        int i;
+        for (i = 0; i < word.length() - 1; i++) {
+            former = former.searchSibling(word.charAt(i));
+            if (former.val != word.charAt(i)) return false;
+            former = former.child;
+        }
+        former = former.searchSibling(word.charAt(i));
+        if (former.val != word.charAt(i)) return false;
+        return former.isEnd;
+    }
+
+    /**
+     * Returns if there is any word in the trie that starts with the given prefix.
+     */
+    public boolean startsWith(String prefix) {
+        TrieNode former = root;
+        int i;
+        for (i = 0; i < prefix.length() - 1; i++) {
+            former = former.searchSibling(prefix.charAt(i));
+            if (former.val != prefix.charAt(i)) return false;
+            former = former.child;
+        }
+        former = former.searchSibling(prefix.charAt(i));
+        if (former.val != prefix.charAt(i)) return false;
+        return true;
+    }
+}
+
+class TrieNode {
+    Character val;
+    Boolean isEnd;
+    TrieNode child;
+    TrieNode sibling;
+
+    public TrieNode() {
+        this.val = '#';
+        this.isEnd = false;
+    }
+
+    public TrieNode(Character c) {
+        this.val = c;
+        this.isEnd = false;
+    }
+
+    public TrieNode searchSibling(Character c) {
+        TrieNode former = this;
+        while (former.sibling != null) {
+            if (former.val == c) return former;
+            former = former.sibling;
+        }
+        return former;
+    }
+
+    public TrieNode searchChildren(Character c) {
+        TrieNode former = this;
+        while (former.child != null) {
+            if (former.val == c) return former;
+            former = former.child;
+        }
+        return former;
+    }
 }
