@@ -7,10 +7,48 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.titleToNumber("AB"));
+        System.err.println(s.numIslands(new char[][]{
+                        {'1','1','0','0','0'},
+                        {'1','1','0','0','0'},
+                        {'0','0','1','0','0'},
+                        {'0','0','0','1','1'}
+                }
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC200
+    public int numIslands(char[][] grid) {
+        int rowNum = grid.length;
+        int colNum = grid[0].length;
+        int totalPoints = rowNum * colNum;
+        DisjointSetUnion dsu = new DisjointSetUnion();
+        for (int i = 0; i < rowNum; i++) {
+            for (int j = 0; j < colNum; j++) {
+                if (grid[i][j] == '1') {
+                    dsu.add(i * colNum + j);
+                    if (i - 1 > 0 && grid[i - 1][j] == '1') {
+                        dsu.add((i - 1) * colNum + j);
+                        dsu.merge(i * colNum + j, (i - 1) * colNum + j);
+                    }
+                    if (i + 1 < rowNum && grid[i + 1][j] == '1') {
+                        dsu.add((i + 1) * colNum + j);
+                        dsu.merge(i * colNum + j, (i + 1) * colNum + j);
+                    }
+                    if (j - 1 > 0 && grid[i][j - 1] == '1') {
+                        dsu.add(i * colNum + j - 1);
+                        dsu.merge(i * colNum + j, i * colNum + j - 1);
+                    }
+                    if (j + 1 < colNum && grid[i][j+1] == '1') {
+                        dsu.add(i * colNum + j+1);
+                        dsu.merge(i * colNum + j, i * colNum + j + 1);
+                    }
+                }
+            }
+        }
+        return dsu.getNumOfGroups();
     }
 
     // LC938
@@ -443,4 +481,87 @@ class TreeNode {
         this.left = left;
         this.right = right;
     }
+}
+
+class DisjointSetUnion {
+
+    Map<Integer, Integer> father;
+    Map<Integer, Integer> rank;
+
+    public DisjointSetUnion() {
+        father = new HashMap<>();
+        rank = new HashMap<>();
+    }
+
+    public void add(int i) {
+        if (!father.containsKey(i)) {
+            // 置初始父亲为自身
+            // 之后判断连通分量个数时候, 遍历father, 找value==key的
+            father.put(i, i);
+        }
+        if (!rank.containsKey(i)) {
+            rank.put(i, 1);
+        }
+    }
+
+    // 找父亲, 路径压缩
+    public int find(int i) {
+        //先找到根 再压缩
+        int root = i;
+        while (father.get(root) != root) {
+            root = father.get(root);
+        }
+        // 找到根, 开始对一路上的子节点进行路径压缩
+        while (father.get(i) != root) {
+            int origFather = father.get(i);
+            father.put(i, root);
+            // 更新秩, 按照节点数
+            rank.put(root, rank.get(root) + 1);
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(int i, int j) {
+        int iFather = find(i);
+        int jFather = find(j);
+        if (iFather == jFather) return false;
+        // 按秩合并
+        if (rank.get(iFather) >= rank.get(jFather)) {
+            father.put(jFather, iFather);
+            rank.put(iFather, rank.get(jFather) + rank.get(iFather));
+        } else {
+            father.put(iFather, jFather);
+            rank.put(jFather, rank.get(jFather) + rank.get(iFather));
+        }
+        return true;
+    }
+
+    public boolean isConnected(int i, int j) {
+        return find(i) == find(j);
+    }
+
+    public Map<Integer, Set<Integer>> getAllGroups() {
+        Map<Integer, Set<Integer>> result = new HashMap<>();
+        // 找出所有根
+        for (Integer i : father.keySet()) {
+            int f = find(i);
+            result.putIfAbsent(f, new HashSet<>());
+            result.get(f).add(i);
+        }
+        return result;
+    }
+
+    public int getNumOfGroups() {
+        Set<Integer> s = new HashSet<Integer>();
+        for (Integer i : father.keySet()) {
+            s.add(find(i));
+        }
+        return s.size();
+    }
+
+    public boolean contains(int i) {
+        return father.containsKey(i);
+    }
+
 }
