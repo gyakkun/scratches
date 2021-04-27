@@ -5,35 +5,38 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-
-
         long timing = System.currentTimeMillis();
 
-//        ["LRUCache","put","put","get","put","get","put","get","get","get"]
-//[[2],[1,1],[2,2],[1],[3,3],[2],[4,4],[1],[3],[4]]
-
-        LRUCache lru = new LRUCache(2);
-        lru.put(1, 1);
-        lru.put(2, 2);
-        lru.get(1);
-        lru.put(3, 3);
-        lru.get(2);
-        lru.put(4, 4);
-        lru.get(1);
-        lru.get(3);
-        lru.get(4);
-
         System.err.println(s.titleToNumber("AB"));
+
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC938
+    int lc938Sum = 0;
+
+    public int rangeSumBST(TreeNode root, int low, int high) {
+        rangeSumBSTHelper(root, low, high);
+        return lc938Sum;
+    }
+
+    private void rangeSumBSTHelper(TreeNode root, int low, int high) {
+        if (root == null) return;
+        rangeSumBSTHelper(root.left, low, high);
+        if (root.val >= low && root.val <= high) {
+            lc938Sum += root.val;
+        }
+        if(root.val>high) return;
+        rangeSumBSTHelper(root.right, low, high);
     }
 
     // LC198
     public int rob(int[] nums) {
         int[][] dp = new int[nums.length][2];
         // dp[i][0] 表示不rob得到的最大金额, dp[i][1]表示rob得到得最大金额
-        if(nums.length==1) return nums[0];
-        if(nums.length==2) return Math.max(nums[0], nums[1]);
+        if (nums.length == 1) return nums[0];
+        if (nums.length == 2) return Math.max(nums[0], nums[1]);
         dp[0][0] = 0;
         dp[0][1] = nums[0];
         dp[1][0] = nums[0];
