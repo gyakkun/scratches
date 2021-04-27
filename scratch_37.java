@@ -23,12 +23,15 @@ class Scratch {
 
     private void rangeSumBSTHelper(TreeNode root, int low, int high) {
         if (root == null) return;
-        rangeSumBSTHelper(root.left, low, high);
-        if (root.val >= low && root.val <= high) {
+        if (root.val < low) {
+            rangeSumBSTHelper(root.right, low, high);
+        } else if (root.val >= low && root.val <= high) {
             lc938Sum += root.val;
+            rangeSumBSTHelper(root.left, low, high);
+            rangeSumBSTHelper(root.right, low, high);
+        } else if (root.val > high) {
+            rangeSumBSTHelper(root.left, low, high);
         }
-        if(root.val>high) return;
-        rangeSumBSTHelper(root.right, low, high);
     }
 
     // LC198
