@@ -26,6 +26,7 @@ class Scratch {
         lc230Ctr++;
         if (lc230Ctr == k) {
             lc230Result = root.val;
+            return;
         }
         if (root.right != null) inorder(root.right, k);
     }
