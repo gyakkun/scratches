@@ -55,7 +55,7 @@ class Scratch {
         // recover
         cur = prev; // end
         prev = null;
-        while(cur!=null){
+        while (cur != null) {
             ListNode origNext = cur.next;
             cur.next = prev;
             prev = cur;
