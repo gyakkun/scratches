@@ -12,6 +12,59 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC234 O(1) Space O(n) Time
+    public boolean isPalindrome(ListNode head) {
+        // get mid
+        ListNode dummy = new ListNode();
+        dummy.next = head;
+        ListNode middleDummy = new ListNode();
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null) {
+            slow = slow.next;
+            fast = fast.next;
+            if (fast != null) {
+                fast = fast.next;
+            }
+        }
+        middleDummy.next = slow;
+
+        // reverse the right part
+        ListNode prev = null;
+        ListNode cur = slow;
+        while (cur != null) {
+            ListNode origNext = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = origNext;
+        }
+
+        // judge
+        ListNode end = prev;
+        ListNode first = dummy.next;
+        boolean result = true;
+        while (end != null) {
+            if (end.val != first.val) {
+                result = false;
+                break;
+            }
+            end = end.next;
+            first = first.next;
+        }
+
+        // recover
+        cur = prev; // end
+        prev = null;
+        while(cur!=null){
+            ListNode origNext = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = origNext;
+        }
+
+        return result;
+    }
+
     // LC230
     int lc230Ctr = 0;
     int lc230Result = -1;
@@ -74,5 +127,23 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
