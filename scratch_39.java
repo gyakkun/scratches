@@ -13,7 +13,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC279 O(n^2) Time O(n) Space
+    // LC279 O(n^1.5) Time O(n) Space
     public int numSquares(int n) {
         int[] dp = new int[n + 1];
         for (int i = 1; i <= n; i++) {
@@ -24,8 +24,8 @@ class Scratch {
             dp[i * i] = 1;
         }
         for (int i = 5; i <= n; i++) {
-            for (int j = i - 1; j >= 1; j--) {
-                dp[i] = Math.min(dp[i], dp[j] + dp[i - j]);
+            for (int j = (int) (Math.sqrt(i)); j >= 1; j--) {
+                dp[i] = Math.min(dp[i], dp[j * j] + dp[i - j * j]);
             }
         }
 
