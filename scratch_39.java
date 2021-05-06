@@ -7,15 +7,63 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(
+//        System.err.println(
 
-                s.maxSlidingWindow(
-                        new int[]{1, 3, -1, -3, 5, 3, 6, 7}, 3
-                )
-        );
+        s.gameOfLife(new int[][]{
+                {0, 1, 0},
+                {0, 0, 1},
+                {1, 1, 1},
+                {0, 0, 0}});
+//        );
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC289 O(1) Space
+    public void gameOfLife(int[][] board) {
+        // LIFE: 1) 0,1 -> DEAD 2) 2,3 -> LIFE 3) 4,5,6,7,8 ->DEAD
+        // DEAD: 1) 3 -> LIFE 2) 0,1,2,4,5,6,7,8 -> DEAD
+        int m = board.length;
+        int n = board[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] = board[i][j] == 0 ? -1 : 1;
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int ctr = gameOfLifeLiveCounter(i, j, board);
+                if (board[i][j] > 0) board[i][j] = 1 + ctr;
+                else if (board[i][j] < 0) board[i][j] = -1 - ctr;
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] < 0) {
+                    if (board[i][j] == -4) board[i][j] = 1;
+                    else board[i][j] = 0;
+                } else if (board[i][j] > 0) {
+                    if (board[i][j] == 3 || board[i][j] == 4) board[i][j] = 1;
+                    else board[i][j] = 0;
+                }
+            }
+        }
+        return;
+    }
+
+    // LIVE : +1, DEAD: -1
+    private int gameOfLifeLiveCounter(int m, int n, int[][] board) {
+        int ctr = 0;
+        for (int i = m - 1; i <= m + 1; i++) {
+            if (i < 0 || i >= board.length) continue;
+            for (int j = n - 1; j <= n + 1; j++) {
+                if (j < 0 || j >= board[0].length) continue;
+                if (i == m && j == n) continue;
+                if (board[i][j] > 0) ctr++;
+            }
+        }
+        return ctr;
     }
 
     // LC242
