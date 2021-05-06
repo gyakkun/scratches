@@ -22,6 +22,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC238
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] result = new int[n];
+        result[0] = 1;
+        for (int i = 1; i < n; i++) {
+            result[i] = result[i - 1] * nums[i - 1];
+        }
+        int r = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            result[i] = result[i] * r;
+            r = r * nums[i];
+        }
+        return result;
+    }
+
 
     // LC1473 Hard
     public int minCost(int[] houses, int[][] cost, int m, int n, int target) {
