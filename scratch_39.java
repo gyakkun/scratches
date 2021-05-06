@@ -18,6 +18,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC240 双指针
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int m = matrix.length - 1;
+        int n = 0;
+        while (m >= 0 && n < matrix[0].length) {
+            if (matrix[m][n] > target) {
+                m--;
+            } else if (matrix[m][n] < target) {
+                n++;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // LC239 Solution
     public int[] maxSlidingWindowSolution(int[] nums, int k) {
         int n = nums.length;
