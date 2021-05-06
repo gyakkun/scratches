@@ -9,15 +9,45 @@ class Scratch {
 
 //        System.err.println(
 
-        s.gameOfLife(new int[][]{
-                {0, 1, 0},
-                {0, 0, 1},
-                {1, 1, 1},
-                {0, 0, 0}});
-//        );
+        s.sortColors(new int[]{2});
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC324
+    public void wiggleSort(int[] nums) {
+        // TBD
+        return;
+    }
+
+    // LC75 3 way partition
+    public void sortColors(int[] nums) {
+        int left = 0;
+        int right = nums.length - 1;
+        for (int i = 0; i < nums.length; i++) {
+
+            if (right < i) break;
+            if (nums[i] == 0) {
+                // 注意亦或运算时候如果两数相同会置零
+                if (nums[i] != nums[left]) {
+                    // swap i,left
+                    nums[left] ^= nums[i];
+                    nums[i] ^= nums[left];
+                    nums[left] ^= nums[i];
+                }
+                left++;
+            } else if (nums[i] == 2) {
+                if (nums[i] != nums[right]) {
+                    nums[right] ^= nums[i];
+                    nums[i] ^= nums[right];
+                    nums[right] ^= nums[i];
+                }
+                right--;
+                i--;
+            }
+        }
+        return;
     }
 
     // LC289 O(1) Space
