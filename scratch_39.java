@@ -7,10 +7,81 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.deleteAndEarn(new int[]{1,1,1,2,4,5,5,5,6}));
+        System.err.println(
+
+                s.minCost(
+                        new int[]{0, 2, 1, 2, 0},
+                        new int[][]{{1, 10}, {10, 1}, {10, 1}, {1, 10}, {5, 1}},
+                        5,
+                        2,
+                        3
+                )
+        );
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+
+    // LC1473 Hard
+    public int minCost(int[] houses, int[][] cost, int m, int n, int target) {
+        // Define dp[i][j][k] as the minimum cost where we have k neighborhoods in the first i houses and the i-th house is painted with the color j.
+        // houses[i] != -1, 则不需要涂漆, 设第i-1的颜色为j_0, 枚举j:
+        //                 1) 如果j=!house[i], 则 dp[i][j][k]=inf
+        //             否则 2) 若j==j_0, 则和(i-1)同属一个街区, 可从k转移来:    dp[i][j][k] = dp[i-1][j_0][k] iff houses[i]==j
+        //                    若j!=j_0, 则和(i-1)不同属于一个街区, 从k-1转移来: dp[i][j][k] = min dp[i-1][j][k-1] iff houses[i]==j
+        // houses[i] == -1, 则需要涂漆, 设第i-1的颜色为j_0, 同样枚举j:
+        //                 1) 若j!=j_0, 则和(i-1)不是同一个街区, 从k-1转移到k: dp[i][j][k] = min dp[i-1][j][k-1] + cost[i][j] iff houses[i]==0
+        //                 2) 若j==j_0, 则和(i-1)是同一个街区, 可从k转移来:    dp[i][j][k] = min dp[i-1][j][k] + cost[i][j] iff j==j_0
+
+        assert m == houses.length;
+        assert n == cost[0].length;
+
+        int numHouse = m;
+        int numColor = n;
+        final int INF = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < numHouse; i++) {
+            houses[i]--;
+        }
+
+        int[][][] dp = new int[numHouse][numColor][target];
+        for (int i = 0; i < numHouse; i++) {
+            for (int j = 0; j < numColor; j++) {
+                Arrays.fill(dp[i][j], INF);
+            }
+        }
+
+        for (int i = 0; i < numHouse; i++) {
+            for (int j = 0; j < numColor; j++) {
+                if (houses[i] != -1 && j != houses[i]) {
+                    continue;
+                }
+
+                for (int k = 0; k < target; k++) {
+                    for (int j0 = 0; j0 < numColor; j0++) {
+                        if (j == j0) {
+                            if (i == 0) {
+                                if (k == 0) {
+                                    dp[i][j][k] = 0;
+                                }
+                            } else {
+                                dp[i][j][k] = Math.min(dp[i][j][k], dp[i - 1][j][k]);
+                            }
+                        } else if (i > 0 && k > 0) {
+                            dp[i][j][k] = Math.min(dp[i][j][k], dp[i - 1][j0][k - 1]);
+                        }
+                    }
+                    if (dp[i][j][k] != INF && houses[i] == -1) {
+                        dp[i][j][k] += cost[i][j];
+                    }
+                }
+            }
+        }
+        int result = INF;
+        for (int j = 0; j < numColor; j++) {
+            result = Math.min(result, dp[numHouse - 1][j][target - 1]);
+        }
+        return result == INF ? -1 : result;
     }
 
     // LC740 另一种打家劫舍
@@ -21,8 +92,8 @@ class Scratch {
         for (int i : nums) {
             sum[i] += i;
         }
-        if(sum.length==2) return sum[1];
-        if(sum.length==3) return Math.max(sum[1], sum[2]);
+        if (sum.length == 2) return sum[1];
+        if (sum.length == 3) return Math.max(sum[1], sum[2]);
         int[] dp = new int[maxVal + 1];
         dp[1] = sum[1];
         dp[2] = Math.max(dp[1], sum[2]);
