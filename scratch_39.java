@@ -18,24 +18,40 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC239 Solution
+    public int[] maxSlidingWindowSolution(int[] nums, int k) {
+        int n = nums.length;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((pair1, pair2) -> pair1[0] != pair2[0] ? pair2[0] - pair1[0] : pair2[1] - pair1[1]);
+        for (int i = 0; i < k; i++) {
+            pq.offer(new int[]{nums[i], i});
+        }
+        int[] ans = new int[n - k + 1];
+        ans[0] = pq.peek()[0];
+        for (int i = k; i < n; i++) {
+            pq.offer(new int[]{nums[i], i});
+            while (pq.peek()[1] <= i - k) {
+                pq.poll();
+            }
+            ans[i - k + 1] = pq.peek()[0];
+        }
+        return ans;
+    }
+
     // LC239
     public int[] maxSlidingWindow(int[] nums, int k) {
         int[] result = new int[nums.length - k + 1];
-        TreeMap<Integer, Integer> tm = new TreeMap<>((o1, o2) -> o2 - o1);
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
         for (int i = 0; i < k; i++) {
             tm.put(nums[i], tm.getOrDefault(nums[i], 0) + 1);
         }
-//        List<Integer> res = new ArrayList<>(nums.length - k + 1);
-        result[0] = tm.keySet().iterator().next();
-//        res.add(tm.keySet().iterator().next());
+        result[0] = tm.lastKey();
         for (int i = k; i < nums.length; i++) {
             tm.put(nums[i - k], tm.get(nums[i - k]) - 1);
             if (tm.get(nums[i - k]) == 0) {
                 tm.remove(nums[i - k]);
             }
             tm.put(nums[i], tm.getOrDefault(nums[i], 0) + 1);
-            result[i - k + 1] = tm.keySet().iterator().next();
-//            res.add(tm.keySet().iterator().next());
+            result[i - k + 1] = tm.lastKey();
         }
         return result;
     }
