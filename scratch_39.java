@@ -18,6 +18,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC242
+    public boolean isAnagram(String s, String t) {
+        int[] freq = new int[26];
+        for (char c : s.toCharArray()) {
+            freq[c - 'a']++;
+        }
+        for (char c : t.toCharArray()) {
+            freq[c - 'a']--;
+        }
+        for (int i : freq) {
+            if (i != 0) return false;
+        }
+        return true;
+    }
+
     // LC240 双指针
     public boolean searchMatrix(int[][] matrix, int target) {
         int m = matrix.length - 1;
