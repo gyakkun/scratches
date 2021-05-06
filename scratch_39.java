@@ -9,17 +9,35 @@ class Scratch {
 
         System.err.println(
 
-                s.minCost(
-                        new int[]{0, 2, 1, 2, 0},
-                        new int[][]{{1, 10}, {10, 1}, {10, 1}, {1, 10}, {5, 1}},
-                        5,
-                        2,
-                        3
+                s.maxSlidingWindow(
+                        new int[]{1, 3, -1, -3, 5, 3, 6, 7}, 3
                 )
         );
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC239
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        int[] result = new int[nums.length - k + 1];
+        TreeMap<Integer, Integer> tm = new TreeMap<>((o1, o2) -> o2 - o1);
+        for (int i = 0; i < k; i++) {
+            tm.put(nums[i], tm.getOrDefault(nums[i], 0) + 1);
+        }
+//        List<Integer> res = new ArrayList<>(nums.length - k + 1);
+        result[0] = tm.keySet().iterator().next();
+//        res.add(tm.keySet().iterator().next());
+        for (int i = k; i < nums.length; i++) {
+            tm.put(nums[i - k], tm.get(nums[i - k]) - 1);
+            if (tm.get(nums[i - k]) == 0) {
+                tm.remove(nums[i - k]);
+            }
+            tm.put(nums[i], tm.getOrDefault(nums[i], 0) + 1);
+            result[i - k + 1] = tm.keySet().iterator().next();
+//            res.add(tm.keySet().iterator().next());
+        }
+        return result;
     }
 
     // LC238
