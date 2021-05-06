@@ -9,7 +9,7 @@ class Scratch {
 
 //        System.err.println(
 
-        s.sortColors(new int[]{2});
+        s.wiggleSort(new int[]{1, 5, 1, 1, 6, 4});
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -17,8 +17,18 @@ class Scratch {
 
     // LC324
     public void wiggleSort(int[] nums) {
-        // TBD
-        return;
+        Arrays.sort(nums);
+        int[] leftHalf = Arrays.copyOfRange(nums, 0, (nums.length + 1) / 2);
+        int[] rightHalf = Arrays.copyOfRange(nums, (nums.length + 1) / 2, nums.length);
+        int leftPointer = leftHalf.length - 1;
+        int rightPointer = rightHalf.length - 1;
+        for (int i = 0; i < nums.length; i++) {
+            if (i % 2 == 0) {
+                nums[i] = leftHalf[leftPointer--];
+            } else {
+                nums[i] = rightHalf[rightPointer--];
+            }
+        }
     }
 
     // LC75 3 way partition
