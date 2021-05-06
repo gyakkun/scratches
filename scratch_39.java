@@ -7,10 +7,29 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.err.println(s.getImportance(allEmployees, 1));
+        System.err.println(s.deleteAndEarn(new int[]{1,1,1,2,4,5,5,5,6}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC740 另一种打家劫舍
+    public int deleteAndEarn(int[] nums) {
+        int n = nums.length;
+        int maxVal = Arrays.stream(nums).max().getAsInt();
+        int[] sum = new int[maxVal + 1];
+        for (int i : nums) {
+            sum[i] += i;
+        }
+        if(sum.length==2) return sum[1];
+        if(sum.length==3) return Math.max(sum[1], sum[2]);
+        int[] dp = new int[maxVal + 1];
+        dp[1] = sum[1];
+        dp[2] = Math.max(dp[1], sum[2]);
+        for (int i = 2; i <= maxVal; i++) {
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + sum[i]);
+        }
+        return dp[maxVal];
     }
 
     // LC1720
