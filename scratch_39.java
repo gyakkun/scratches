@@ -16,10 +16,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC350 Stream (WA, 没有查频统计)
+    // LC350 Sort
     public int[] intersectStream(int[] nums1, int[] nums2) {
-        Set<Integer> set = Arrays.stream(nums1).boxed().collect(Collectors.toSet());
-        return Arrays.stream(nums2).distinct().filter(set::contains).toArray();
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int[] ints = new int[nums1.length + nums2.length];
+        int idx = 0, idx1 = 0, idx2 = 0;
+        while (idx1 < nums1.length && idx2 < nums2.length) {
+            int n1 = nums1[idx1], n2 = nums2[idx2];
+            if (n1 < n2) {
+                idx1++;
+            } else if (n2 < n1) {
+                idx2++;
+            } else {
+                ints[idx] = n1;
+                idx1++;
+                idx2++;
+                idx++;
+            }
+        }
+        return Arrays.copyOfRange(ints, 0, idx);
     }
 
     // LC350
