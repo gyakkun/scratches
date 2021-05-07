@@ -15,6 +15,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC328
+    public ListNode oddEvenList(ListNode head) {
+        ListNode first = head;
+        if (first == null || first.next == null) return head;
+        ListNode second = head.next;
+        ListNode secondDummy = new ListNode(-1);
+        secondDummy.next = second;
+        while (first != null && second != null) {
+            first.next = second.next;
+            if (second.next == null) break;
+            second.next = second.next.next;
+
+            first = first.next;
+            second = second.next;
+        }
+        first.next = secondDummy.next;
+
+        return head;
+    }
 
     // LC1486
     public int xorOperation(int n, int start) {
