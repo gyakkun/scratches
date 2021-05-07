@@ -10,10 +10,22 @@ class Scratch {
 
         System.err.println(
 
-                s.longestIncreasingPath(new int[][]{{9, 9, 4}, {6, 6, 8}, {2, 1, 1}})
+                s.getSum(-1, -1)
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC371 **
+    public int getSum(int a, int b) {
+        if (a == 0) return b;
+        if (b == 0) return a;
+        while (b != 0) {
+            int tmp = a ^ b;
+            b = (a & b) << 1;
+            a = tmp;
+        }
+        return a;
     }
 
     // LC350 Sort
