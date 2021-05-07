@@ -8,10 +8,33 @@ class Scratch {
         long timing = System.currentTimeMillis();
         int[] a = new int[]{2, 4, 3, 5, 1};
         System.err.println(
-                s.reversePairs(a)
+                s.maximum69Number(666)
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1323
+    public int maximum69Number(int num) {
+        int numDigit = 0;
+        int orig = num;
+        while (num != 0) {
+            numDigit++;
+            num /= 10;
+        }
+        num = orig;
+        int tenPow = 1;
+        int max = orig;
+        for (int i = 0; i < numDigit; i++) {
+            // 翻转一位
+            int digit = num % 10;
+            if (digit == 6) {
+                max = Math.max(max, orig + 3 * tenPow);
+            }
+            num /= 10;
+            tenPow *= 10;
+        }
+        return max;
     }
 
     // LC454
