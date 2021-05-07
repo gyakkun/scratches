@@ -7,12 +7,24 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.err.println(
+        System.err.println(
 
-        s.wiggleSort(new int[]{1, 5, 1, 1, 6, 4});
-
+                s.xorOperation(1000, 999)
+        );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+
+    // LC1486
+    public int xorOperation(int n, int start) {
+        // nums[i] = start + 2*i
+        // n==nums.length
+        int result = start;
+        for (int i = 1; i < n; i++) {
+            result ^= (start + 2 * i);
+        }
+        return result;
     }
 
     // LC324
