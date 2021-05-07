@@ -16,16 +16,10 @@ class Scratch {
 
     // LC1323
     public int maximum69Number(int num) {
-        int numDigit = 0;
         int orig = num;
-        while (num != 0) {
-            numDigit++;
-            num /= 10;
-        }
-        num = orig;
         int tenPow = 1;
         int max = orig;
-        for (int i = 0; i < numDigit; i++) {
+        while (num != 0) {
             // 翻转一位
             int digit = num % 10;
             if (digit == 6) {
