@@ -14,7 +14,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // JZOF51 TBD
+    // LC412
+    public List<String> fizzBuzz(int n) {
+        List<String> l = new ArrayList<>(n);
+        for (int i = 1; i <= n; i++) {
+            if (i % 3 != 0 && i % 5 != 0) {
+                l.add(String.valueOf(i));
+            } else if (i % 3 != 0 && i % 5 == 0) {
+                l.add("Buzz");
+            } else if (i % 3 == 0 && i % 5 != 0) {
+                l.add("Fizz");
+            } else {
+                l.add("FizzBuzz");
+            }
+        }
+        return l;
+    }
+
+    // JZOF51 HARD
     public int reversePairs(int[] nums) {
         return mergeSort(nums);
     }
