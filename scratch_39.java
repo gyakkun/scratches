@@ -6,55 +6,61 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] a = new int[]{5, 4, 3, 2, 1};
-//        System.err.println(
-        s.mergeSort(a);
-//        );
+        int[] a = new int[]{2, 4, 3, 5, 1};
+        System.err.println(
+                s.reversePairs(a)
+        );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
     // JZOF51 TBD
     public int reversePairs(int[] nums) {
-        return -1;
+        return mergeSort(nums);
     }
 
-    private void mergeSort(int[] arr) {
+    private int mergeSort(int[] arr) {
         int[] mock = new int[arr.length];
-        mergeSort(arr, mock, 0, arr.length - 1);
+        return mergeSort(arr, mock, 0, arr.length - 1);
     }
 
     // 对数组进行归并排序
-    private void mergeSort(int[] real, int[] mock, int start, int end) {
+    private int mergeSort(int[] real, int[] mock, int start, int end) {
         if (start < end) {
             int mid = start + (end - start) / 2;
-            mergeSort(real, mock, start, mid);
-            mergeSort(real, mock, mid + 1, end);
-            mergeSortHelper(real, mock, start, mid, end);
+            int leftCount = mergeSort(real, mock, start, mid);
+            int rightCount = mergeSort(real, mock, mid + 1, end);
+            int mergeCount = mergeSortHelper(real, mock, start, mid, end);
+            return leftCount + rightCount + mergeCount;
         }
+        return 0;
     }
 
-    private void mergeSortHelper(int[] real, int[] mock, int start, int mid, int end) {
+    private int mergeSortHelper(int[] real, int[] mock, int start, int mid, int end) {
         int leftPointer = start, rightPointer = mid + 1, mockPointer = start;
+        int count = 0;
         // 目标: 将排好序的放入mock中
         // 假设[start,mid] [mid+1,end]已经排好序
         while (leftPointer <= mid && rightPointer <= end) {
-            if (real[leftPointer] < real[rightPointer]) {
+            if (real[leftPointer] <= real[rightPointer]) {
                 mock[mockPointer++] = real[leftPointer++];
+                count += (rightPointer - (mid + 1));
             } else {
                 mock[mockPointer++] = real[rightPointer++];
             }
         }
         while (leftPointer <= mid) {
             mock[mockPointer++] = real[leftPointer++];
+            count += (rightPointer - (mid + 1));
         }
-        while (rightPointer <= mid) {
+        while (rightPointer <= end) {
             mock[mockPointer++] = real[rightPointer++];
         }
         // 将mock的数放回real中
         for (int i = start; i <= end; i++) {
             real[i] = mock[i];
         }
+        return count;
     }
 
 
