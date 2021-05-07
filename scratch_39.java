@@ -19,7 +19,7 @@ class Scratch {
         return -1;
     }
 
-    private void mergeSort(int[] arr){
+    private void mergeSort(int[] arr) {
         int[] mock = new int[arr.length];
         mergeSort(arr, mock, 0, arr.length - 1);
     }
