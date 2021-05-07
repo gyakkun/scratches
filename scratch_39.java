@@ -807,49 +807,58 @@ class Employee {
 };
 
 
-// LC380
+// LC380 O(1) getRandom
 class RandomizedSet {
-    Set<Integer> s;
+    Map<Integer, Integer> idxMap;
+    List<Integer> entities;
+    Random random = new Random();
 
     /**
      * Initialize your data structure here.
      */
     public RandomizedSet() {
-        s = new HashSet<>();
+        idxMap = new HashMap<>();
+        entities = new ArrayList<>();
     }
 
     /**
      * Inserts a value to the set. Returns true if the set did not already contain the specified element.
      */
     public boolean insert(int val) {
-        return s.add(val);
+        if (idxMap.containsKey(val)) return false;
+
+        idxMap.put(val, entities.size());
+        entities.add(val);
+        return true;
     }
 
     /**
      * Removes a value from the set. Returns true if the set contained the specified element.
      */
     public boolean remove(int val) {
-        return s.remove(val);
+        if (!idxMap.containsKey(val)) return false;
+
+        int idx = idxMap.get(val);
+        int lastEntity = entities.get(entities.size() - 1);
+        // swap entities[idx] entities[last]
+        entities.set(idx, lastEntity);
+        idxMap.put(lastEntity, idx);
+        idxMap.remove(val);
+        entities.remove(entities.size() - 1);
+        return true;
     }
 
     /**
      * Get a random element from the set.
      */
     public int getRandom() {
-        int idx = (int) (s.size() * Math.random());
-        Iterator<Integer> it = s.iterator();
-        for (int i = 0; i < idx; i++) {
-            it.next();
-        }
-        return it.next();
+        return entities.get(random.nextInt(entities.size()));
     }
 }
 
 // LC384
 class Solution {
-
     int[] origArr;
-    int[] shuffled;
 
     Random random = new Random();
 
@@ -869,7 +878,7 @@ class Solution {
      */
     public int[] shuffle() {
         int size = origArr.length;
-        shuffled = Arrays.copyOf(origArr, size);
+        int[] shuffled = Arrays.copyOf(origArr, size);
         int idx = size;
         while (idx > 0) {
             int randomIdx = random.nextInt(idx--);
