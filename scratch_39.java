@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -13,6 +14,12 @@ class Scratch {
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC350 Stream
+    public int[] intersectStream(int[] nums1, int[] nums2) {
+        Set<Integer> set = Arrays.stream(nums1).boxed().collect(Collectors.toSet());
+        return Arrays.stream(nums2).distinct().filter(set::contains).toArray();
     }
 
     // LC350
