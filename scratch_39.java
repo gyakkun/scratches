@@ -9,7 +9,8 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
         System.err.println(
-                s.primeoj1002(new int[][]{{1, 1},
+                s.primeoj1002(new int[][]{
+                        {1, 1},
                         {1, 2},
                         {1, 3},
                         {1, 4},
@@ -18,66 +19,13 @@ class Scratch {
                         {10, 5},
                         {15, 5},
                         {25, 25},
-                        {35, 40}})
-
-//                s.p1002(new int[]{
-//                        1,
-//                        2,
-//                        3,
-//                        4,
-//                        5,
-//                        15,
-//                        5,
-//                        5,
-//                        25,
-//                        40
-//                }, new int[]{
-//                        1,
-//                        1,
-//                        1,
-//                        1,
-//                        1,
-//                        10,
-//                        10,
-//                        15,
-//                        25,
-//                        35
-//
-//                })
+                        {35, 40}
+                })
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // PRIMEOJ 1002 优化空间
-    public int p1002(int[] price, int[] eachNumOfVote) {
-        int totalVotes = 0;
-        int halfVotes = 0;
-        int minCharge = Integer.MAX_VALUE;
-        for (int i : eachNumOfVote) {
-            totalVotes += i;
-        }
-
-        halfVotes = (totalVotes + 1) / 2;
-        //DP
-        int[] dp = new int[totalVotes + 1];
-        for (int i = 0; i <= totalVotes; i++) {
-            dp[i] = 500000001;
-        }
-        dp[0] = 0;
-        for (int i = 0; i < price.length; i++) {
-            for (int j = totalVotes; j >= eachNumOfVote[i]; j--) {
-                dp[j] = Math.min(dp[j], dp[j - eachNumOfVote[i]] + price[i]);
-            }
-        }
-        for (int i = halfVotes; i <= totalVotes; i++) {
-            if (dp[i] < minCharge) {
-                minCharge = dp[i];
-            }
-        }
-        System.out.println(minCharge);
-        return minCharge;
-    }
 
     // PRIMEOJ 1002
     public int primeoj1002(int[][] money) {
@@ -85,26 +33,21 @@ class Scratch {
         for (int[] i : money) {
             totalVotes += i[0];
         }
-        int[][] dp = new int[money.length + 1][totalVotes + 1];
+        int[] dp = new int[totalVotes + 1];
         // dp[i][j] 表示贿赂前i个群友得到j张选票的最小花费
         // dp[i][j] = Math.min(dp[i-1][j], dp[i-1][j - money[i][0] ] + money[i][1])
-        for (int i = 0; i <= money.length; i++) {
-            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
-        }
-        for (int i = 0; i < dp.length; i++) {
-            dp[i][0] = 0; // 不论贿赂多少群友, 0张选票的最小花费总是0
-        }
+
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
         for (int i = 1; i <= money.length; i++) {
-            for (int j = totalVotes; j >= 0; j--) {
-                if (j - money[i - 1][0] >= 0) {
-                    dp[i][j] = Math.min(dp[i - 1][j], dp[i - 1][j - money[i - 1][0]] + money[i - 1][1]);
-                }
+            for (int j = totalVotes; j >= money[i - 1][0]; j--) {
+                dp[j] = Math.min(dp[j], dp[j - money[i - 1][0]] + money[i - 1][1]);
             }
         }
 
         int result = Integer.MAX_VALUE;
         for (int i = (totalVotes + 1) / 2; i <= totalVotes; i++) {
-            result = Math.min(dp[money.length][i], result);
+            result = Math.min(dp[i], result);
         }
         return result;
     }
