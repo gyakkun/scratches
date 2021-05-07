@@ -1,7 +1,6 @@
 import javafx.util.Pair;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -808,3 +807,32 @@ class Employee {
 };
 
 
+// LC380
+class RandomizedSet {
+    Set<Integer> s;
+
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        s = new HashSet<>();
+    }
+
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        return s.add(val);
+    }
+
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        return s.remove(val);
+    }
+
+    /** Get a random element from the set. */
+    public int getRandom() {
+        int idx = (int)(s.size() * Math.random());
+        Iterator<Integer> it = s.iterator();
+        for (int i = 0; i < idx; i++) {
+            it.next();
+        }
+        return it.next();
+    }
+}
