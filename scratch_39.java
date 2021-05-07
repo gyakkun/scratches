@@ -6,21 +6,10 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.err.println(
-                s.primeoj1002(new int[][]{
-                        {1, 1},
-                        {1, 2},
-                        {1, 3},
-                        {1, 4},
-                        {1, 5},
-                        {10, 15},
-                        {10, 5},
-                        {15, 5},
-                        {25, 25},
-                        {35, 40}
-                })
-        );
+        int[] a = new int[]{5, 4, 3, 2, 1};
+//        System.err.println(
+        s.mergeSort(a);
+//        );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -28,6 +17,11 @@ class Scratch {
     // JZOF51 TBD
     public int reversePairs(int[] nums) {
         return -1;
+    }
+
+    private void mergeSort(int[] arr){
+        int[] mock = new int[arr.length];
+        mergeSort(arr, mock, 0, arr.length - 1);
     }
 
     // 对数组进行归并排序
@@ -43,7 +37,7 @@ class Scratch {
     private void mergeSortHelper(int[] real, int[] mock, int start, int mid, int end) {
         int leftPointer = start, rightPointer = mid + 1, mockPointer = start;
         // 目标: 将排好序的放入mock中
-        // [start,mid] [mid+1,end]已经排好序
+        // 假设[start,mid] [mid+1,end]已经排好序
         while (leftPointer <= mid && rightPointer <= end) {
             if (real[leftPointer] < real[rightPointer]) {
                 mock[mockPointer++] = real[leftPointer++];
