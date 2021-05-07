@@ -811,28 +811,75 @@ class Employee {
 class RandomizedSet {
     Set<Integer> s;
 
-    /** Initialize your data structure here. */
+    /**
+     * Initialize your data structure here.
+     */
     public RandomizedSet() {
         s = new HashSet<>();
     }
 
-    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    /**
+     * Inserts a value to the set. Returns true if the set did not already contain the specified element.
+     */
     public boolean insert(int val) {
         return s.add(val);
     }
 
-    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    /**
+     * Removes a value from the set. Returns true if the set contained the specified element.
+     */
     public boolean remove(int val) {
         return s.remove(val);
     }
 
-    /** Get a random element from the set. */
+    /**
+     * Get a random element from the set.
+     */
     public int getRandom() {
-        int idx = (int)(s.size() * Math.random());
+        int idx = (int) (s.size() * Math.random());
         Iterator<Integer> it = s.iterator();
         for (int i = 0; i < idx; i++) {
             it.next();
         }
         return it.next();
+    }
+}
+
+// LC384
+class Solution {
+
+    int[] origArr;
+    int[] shuffled;
+
+    Random random = new Random();
+
+    public Solution(int[] nums) {
+        this.origArr = nums;
+    }
+
+    /**
+     * Resets the array to its original configuration and return it.
+     */
+    public int[] reset() {
+        return origArr;
+    }
+
+    /**
+     * Returns a random shuffling of the array.
+     */
+    public int[] shuffle() {
+        int size = origArr.length;
+        shuffled = Arrays.copyOf(origArr, size);
+        int idx = size;
+        while (idx > 0) {
+            int randomIdx = random.nextInt(idx--);
+            // swap shuffled[randomIdx] shuffled[idx]
+            if (shuffled[randomIdx] != shuffled[idx]) {
+                shuffled[randomIdx] ^= shuffled[idx];
+                shuffled[idx] ^= shuffled[randomIdx];
+                shuffled[randomIdx] ^= shuffled[idx];
+            }
+        }
+        return shuffled;
     }
 }
