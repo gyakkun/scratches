@@ -15,6 +15,36 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC350
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> m1 = new HashMap<>(), m2 = new HashMap<>();
+        for (int i : nums1) {
+            m1.put(i, m1.getOrDefault(i, 0) + 1);
+        }
+        for (int i : nums2) {
+            m2.put(i, m2.getOrDefault(i, 0) + 1);
+        }
+        Set<Integer> m1KSCopy = new HashSet<>(m1.keySet());
+        Set<Integer> ints = new HashSet<>();
+        for (int i : m2.keySet()) {
+            if (!m1KSCopy.add(i)) {
+                ints.add(i);
+            }
+        }
+        List<Integer> result = new LinkedList<>();
+        for (int i : ints) {
+            int count = Math.min(m1.get(i), m2.get(i));
+            for (int j = 0; j < count; j++) {
+                result.add(i);
+            }
+        }
+        int[] ans = new int[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            ans[i] = result.get(i);
+        }
+        return ans;
+    }
+
     // LC334
     public boolean increasingTriplet(int[] nums) {
         TreeSet<Integer> ts = new TreeSet<>();
