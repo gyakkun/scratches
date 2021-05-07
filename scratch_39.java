@@ -23,7 +23,7 @@ class Scratch {
             // 翻转一位
             int digit = num % 10;
             if (digit == 6) {
-                max = Math.max(max, orig + 3 * tenPow);
+                max = orig + 3 * tenPow;
             }
             num /= 10;
             tenPow *= 10;
