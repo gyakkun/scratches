@@ -15,6 +15,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC334
+    public boolean increasingTriplet(int[] nums) {
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i : nums) {
+            Integer ceil = ts.ceiling(i);
+            if (ceil != null) {
+                ts.remove(ceil);
+            }
+            ts.add(i);
+            if (ts.size() >= 3) return true;
+        }
+        return false;
+    }
+
     // LC329 Hard
     final int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
