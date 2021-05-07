@@ -9,10 +9,43 @@ class Scratch {
 
         System.err.println(
 
-                s.xorOperation(1000, 999)
+                s.longestIncreasingPath(new int[][]{{9, 9, 4}, {6, 6, 8}, {2, 1, 1}})
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC329 Hard
+    final int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    public int longestIncreasingPath(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+        int rowNum = matrix.length;
+        int colNum = matrix[0].length;
+        Integer[][] memo = new Integer[rowNum][colNum];
+        int result = 0;
+        for (int i = 0; i < rowNum; i++) {
+            for (int j = 0; j < colNum; j++) {
+                result = Math.max(result, lipDfs(memo, i, j, matrix));
+            }
+        }
+        return result;
+    }
+
+    private int lipDfs(Integer[][] memo, int row, int col, int[][] matrix) {
+        if (memo[row][col] != null) {
+            return memo[row][col];
+        }
+        memo[row][col] = 1;
+        for (int[] dir : directions) {
+            int newRow = row + dir[0], newCol = col + dir[1];
+            if (newRow >= 0 && newRow < matrix.length && newCol >= 0 && newCol < matrix[0].length && matrix[newRow][newCol] > matrix[row][col]) {
+                memo[row][col] = Math.max(memo[row][col], lipDfs(memo, newRow, newCol, matrix) + 1);
+            }
+        }
+        return memo[row][col];
     }
 
     // LC328
