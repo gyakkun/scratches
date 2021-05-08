@@ -6,12 +6,48 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] a = new int[]{2, 4, 3, 5, 1};
+        int[] a = new int[]{3, 2, 3};
         System.err.println(
-                s.maximum69Number(666)
+                s.minimumTimeRequired(a, 3)
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1723
+    Set<Pair<Integer, Integer>> visitedStatus = new HashSet<>();
+    int[] lc1723Cache;
+    int[] lc1723MaxTimeMemo;
+    int lc1723MaxStatus;
+    int lc1723Answer = Integer.MAX_VALUE;
+
+    public int minimumTimeRequired(int[] jobs, int k) {
+        lc1723MaxStatus = (1 << jobs.length) - 1;
+        lc1723Cache = new int[lc1723MaxStatus + 1];
+        for (int i = 0; i <= lc1723MaxStatus; i++) {
+            for (int j = 0; j < jobs.length; j++) {
+                if (((i >> j) & 1) == 1) {
+                    lc1723Cache[i] += jobs[j];
+                }
+            }
+        }
+        int[][] dp = new int[k + 1][lc1723MaxStatus + 1];
+        for (int i = 1; i <= k; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        for (int i = 0; i <= lc1723MaxStatus; i++) {
+            dp[1][i] = lc1723Cache[i];
+        }
+
+        for (int i = 2; i <= k; i++) {
+            for (int j = 0; j <= lc1723MaxStatus; j++) {
+                for (int subset = j; subset != 0; subset = (subset - 1) & j) {
+                    // j-subset : 关于subset关于j的补集
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[i - 1][j - subset], lc1723Cache[subset]));
+                }
+            }
+        }
+        return dp[k][lc1723MaxStatus];
     }
 
     // LC1323
