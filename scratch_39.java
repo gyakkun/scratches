@@ -14,6 +14,41 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1482
+    public int minDays(int[] bloomDay, int m, int k) {
+        int n = bloomDay.length;
+        if (m * k > n) return -1;
+        int min = Arrays.stream(bloomDay).min().getAsInt();
+        int max = Arrays.stream(bloomDay).max().getAsInt();
+        int left = min, right = max;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (minDaysHelper(bloomDay, m, k, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+
+    private boolean minDaysHelper(int[] bloomDay, int m, int k, int nthDay) {
+        int bq = 0;
+        int tmpCtr = 0;
+        for (int i = 0; i < bloomDay.length; i++) {
+            if (bloomDay[i] <= nthDay) {
+                tmpCtr++;
+                if (tmpCtr == k) {
+                    bq++;
+                    tmpCtr = 0;
+                }
+            } else {
+                tmpCtr = 0;
+            }
+        }
+        return bq >= m;
+    }
+
     // LC1723
     Set<Pair<Integer, Integer>> visitedStatus = new HashSet<>();
     int[] lc1723Cache;
