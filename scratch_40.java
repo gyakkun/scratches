@@ -2,21 +2,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
-        System.out.println(primeFactors(10086));
+    public static void main(String[] args) throws IOException {
+        System.out.println(primePartner(new Integer[]{2, 5, 6, 13}));
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main2(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
 
         while ((n = br.readLine()) != null) {
-            int i = Integer.valueOf(n);
-            System.out.println(String.join(" ", primeFactors(i).stream().map(String::valueOf).collect(Collectors.toList())) + " ");
+            String arr = br.readLine();
+            Integer[] intArr = Arrays.stream(arr.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            System.out.println(primePartner(intArr));
         }
 
 //        while ((n = br.readLine()) != null) {
@@ -31,6 +31,67 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ28 匈牙利算法
+    public static int primePartner(Integer[] arr) {
+        int n = arr.length;
+        Arrays.sort(arr);
+        int max = arr[arr.length - 1];
+        int maxM1 = arr.length >= 2 ? arr[arr.length - 2] : arr[arr.length - 1];
+        int primeRange = max + maxM1;
+        int primeCtr = 0;
+        boolean[] notPrimeMark = new boolean[primeRange + 1];
+        List<Integer> primes = new ArrayList<>();
+        for (int i = 2; i <= primeRange; i++) {
+            if (!notPrimeMark[i]) {
+                primes.add(i);
+            }
+            for (int j = 0; j < primes.size(); j++) {
+                if (i * primes.get(j) > primeRange) {
+                    break;
+                }
+                notPrimeMark[i * primes.get(j)] = true;
+                if (i % primes.get(j) == 0) {
+                    break;
+                }
+            }
+        }
+        Set<Integer> primeSet = new HashSet<>(primes);
+
+        boolean[][] edgeMtx = new boolean[n][n];
+        boolean[] rightVisited = new boolean[n];
+        Integer[] rightLeftMap = new Integer[n]; // 右侧对应的左侧元素
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (primeSet.contains(arr[i] + arr[j])) {
+                    edgeMtx[i][j] = true;
+                    edgeMtx[j][i] = true;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(rightVisited, false);
+            if (match(i, n, edgeMtx, rightVisited, rightLeftMap)) {
+                result++;
+            }
+        }
+        return result / 2;
+
+    }
+
+    public static boolean match(int nthLeftEle, int n, boolean[][] edgeMtx, boolean[] rightVisited, Integer[] rightLeftMap) {
+        for (int i = 0; i < n; i++) {
+            if (edgeMtx[nthLeftEle][i] && !rightVisited[i]) {
+                rightVisited[i] = true;
+                if (rightLeftMap[i] == null || match(rightLeftMap[i], n, edgeMtx, rightVisited, rightLeftMap)) {
+                    rightLeftMap[i] = nthLeftEle;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // HJ6 分解质因数
