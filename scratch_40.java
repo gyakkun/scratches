@@ -244,7 +244,7 @@ class Scratch {
         } else if (i >= 1000 && i < 1000000) {
             return (" " + learnEnglish(i / 1000, false) + " thousand " + learnEnglish(i % 1000, true) + " ").trim();
         } else if (i >= 1000000 && i < 1000000000) {
-            return (" " + learnEnglish(i / 1000000, false) + " million " + learnEnglish(i % 1000000, true) + " ").trim();
+            return (" " + learnEnglish(i / 1000000, false) + " million " + learnEnglish(i % 1000000, (i % 1000000) < 1000) + " ").trim();
         } else {
             return "Error";
         }
