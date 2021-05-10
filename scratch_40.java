@@ -33,39 +33,32 @@ class Scratch {
 //        }
     }
 
-    // HJ24 如何DP?
+    // HJ24 使用最佳LIS算法
     public static int chorus(Integer[] heights) {
         int n = heights.length;
-        int minRemoveCount = n;
-        int finalPivot = -1;
+        TreeSet<Integer> left = new TreeSet<>();
+        TreeSet<Integer> right = new TreeSet<>();
+        int[] leftLis = new int[n];
+        int[] rightLis = new int[n];
         for (int pivot = 0; pivot < n; pivot++) {
-
-            TreeSet<Integer> left = new TreeSet<>();
-            for (int i = 0; i <= pivot; i++) {
-                Integer ceil = left.ceiling(heights[i]);
-                if (ceil != null) {
-                    left.remove(ceil);
-                }
-                left.add(heights[i]);
+            Integer ceilLeft = left.ceiling(heights[pivot]);
+            Integer ceilRight = right.ceiling(heights[n - 1 - pivot]);
+            if (ceilLeft != null) {
+                left.remove(ceilLeft);
             }
-            int leftRemoveCount = pivot + 1 - left.size();
-            TreeSet<Integer> right = new TreeSet<>();
-            for (int i = n - 1; i >= pivot; i--) {
-                Integer ceil = right.ceiling(heights[i]);
-                if (ceil != null) {
-                    right.remove(ceil);
-                }
-                right.add(heights[i]);
+            if (ceilRight != null) {
+                right.remove(ceilRight);
             }
-            int rightRemoveCount = n - pivot - right.size();
-            int totalRemoveCount = leftRemoveCount + rightRemoveCount;
-            if (left.size() <= 1 || right.size() <= 1) continue;
-            if (totalRemoveCount < minRemoveCount) {
-                finalPivot = pivot;
-                minRemoveCount = totalRemoveCount;
-            }
+            left.add(heights[pivot]);
+            right.add(heights[n - 1 - pivot]);
+            leftLis[pivot] = left.size();
+            rightLis[n - 1 - pivot] = right.size();
         }
-        return minRemoveCount;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(leftLis[i] + rightLis[i], max);
+        }
+        return (n - max + 1);
     }
 
 
