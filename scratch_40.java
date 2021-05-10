@@ -5,7 +5,7 @@ import java.util.*;
 
 class Scratch {
     public static void main(String[] args) throws IOException {
-        System.out.println(chorus(new Integer[]{186, 186, 150, 200, 160, 130, 197, 200}));
+        System.out.println(softDrink(4));
     }
 
     public static void main2(String[] args) throws IOException {
@@ -14,9 +14,10 @@ class Scratch {
         String n;
 
         while ((n = br.readLine()) != null) {
-            String arr = br.readLine();
-            Integer[] heights = Arrays.stream(arr.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            System.out.println(chorus(heights));
+            int num = Integer.valueOf(n);
+            if (num != 0) {
+                System.out.println(softDrink(num));
+            }
         }
 
 //        while ((n = br.readLine()) != null) {
@@ -31,6 +32,18 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ22
+    public static int softDrink(int n) {
+        int result = 0;
+        // 3瓶子换1瓶
+        while (n / 3 != 0) {
+            result += n / 3;
+            n = n - (n / 3) * 3 + (n / 3);
+        }
+        if (n == 2) result++;
+        return result;
     }
 
     // HJ24 使用最佳LIS算法
