@@ -2,22 +2,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
-    public static void main(String[] args) throws IOException {
-        System.out.println(softDrink(4));
+    public static void main1(String[] args) throws IOException {
+        System.out.println(primeFactors(10086));
     }
 
-    public static void main2(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
 
         while ((n = br.readLine()) != null) {
-            int num = Integer.valueOf(n);
-            if (num != 0) {
-                System.out.println(softDrink(num));
-            }
+            int i = Integer.valueOf(n);
+            System.out.println(String.join(" ", primeFactors(i).stream().map(String::valueOf).collect(Collectors.toList())) + " ");
         }
 
 //        while ((n = br.readLine()) != null) {
@@ -32,6 +31,21 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ6 分解质因数
+    public static List<Integer> primeFactors(int i) {
+        List<Integer> result = new LinkedList<>();
+        int factor = 2;
+        while (i != 0) {
+            while (i % factor == 0) {
+                result.add(factor);
+                i /= factor;
+            }
+            factor++;
+            if (factor > i) break;
+        }
+        return result;
     }
 
     // HJ22
