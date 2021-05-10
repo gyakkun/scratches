@@ -71,9 +71,9 @@ class Scratch {
                 }
             }
         }
-        for (int i = 0; i < n; i++) {
+        for (int leftIdx = 0; leftIdx < n; leftIdx++) {
             Arrays.fill(rightVisited, false);
-            if (match(i, n, edgeMtx, rightVisited, rightLeftMap)) {
+            if (match(leftIdx, n, edgeMtx, rightVisited, rightLeftMap)) {
                 result++;
             }
         }
@@ -81,12 +81,12 @@ class Scratch {
 
     }
 
-    public static boolean match(int nthLeftEle, int n, boolean[][] edgeMtx, boolean[] rightVisited, Integer[] rightLeftMap) {
-        for (int i = 0; i < n; i++) {
-            if (edgeMtx[nthLeftEle][i] && !rightVisited[i]) {
-                rightVisited[i] = true;
-                if (rightLeftMap[i] == null || match(rightLeftMap[i], n, edgeMtx, rightVisited, rightLeftMap)) {
-                    rightLeftMap[i] = nthLeftEle;
+    public static boolean match(int leftIdx, int n, boolean[][] edgeMtx, boolean[] rightVisited, Integer[] rightLeftMap) {
+        for (int rightIdx = 0; rightIdx < n; rightIdx++) {
+            if (edgeMtx[leftIdx][rightIdx] && !rightVisited[rightIdx]) {
+                rightVisited[rightIdx] = true;
+                if (rightLeftMap[rightIdx] == null || match(rightLeftMap[rightIdx], n, edgeMtx, rightVisited, rightLeftMap)) {
+                    rightLeftMap[rightIdx] = leftIdx;
                     return true;
                 }
             }
