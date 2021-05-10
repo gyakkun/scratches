@@ -1,23 +1,20 @@
-import com.alibaba.druid.sql.visitor.functions.Char;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
+    public static void main1(String[] args) throws IOException {
+        System.out.println(maxGcRatio("AAAACCACCCCACAAAAA", 5));
+    }
+
     public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-//            System.out.println(learnEnglish(Integer.valueOf(n), Integer.valueOf(n) < 1000));
-            int num = Integer.valueOf(n);
-
-            for (int i = 0; i < num; i++) {
-                String name = br.readLine();
-                System.out.println(howBeautiful(name));
-            }
+            int minLen = Integer.valueOf(br.readLine());
+            System.out.println(maxGcRatio(n, minLen));
 
 //            String ip1S = br.readLine().trim();
 //            String ip2S = br.readLine().trim();
@@ -27,6 +24,28 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
         }
+    }
+
+    // HJ63
+    public static String maxGcRatio(String gene, int minLen) {
+        int[] prefix = new int[gene.length() + 1];
+        for (int i = 1; i <= gene.length(); i++) {
+            if (gene.charAt(i - 1) == 'G' || gene.charAt(i - 1) == 'C') {
+                prefix[i] = prefix[i - 1] + 1;
+            } else {
+                prefix[i] = prefix[i - 1];
+            }
+        }
+        int startIdx = 0, max = 0;
+        for (int i = 0; i < gene.length() - minLen; i++) {
+            int count = prefix[i + minLen] - prefix[i];
+            if (count > max) {
+                max = count;
+                startIdx = i;
+            }
+        }
+
+        return gene.substring(startIdx, startIdx + minLen);
     }
 
     // HJ45
