@@ -4,18 +4,20 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
-        System.out.println(maxGcRatio("AAAACCACCCCACAAAAA", 5));
+    public static void main(String[] args) throws IOException {
+        System.out.println(chorus(new Integer[]{186, 186, 150, 200, 160, 130, 197, 200}));
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main2(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
 
-        n = br.readLine();
-        Calculator calculator = new Calculator();
-        System.out.println(calculator.calculate(n));
+        while ((n = br.readLine()) != null) {
+            String arr = br.readLine();
+            Integer[] heights = Arrays.stream(arr.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            System.out.println(chorus(heights));
+        }
 
 //        while ((n = br.readLine()) != null) {
 //            int minLen = Integer.valueOf(br.readLine());
@@ -29,6 +31,41 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ24 如何DP?
+    public static int chorus(Integer[] heights) {
+        int n = heights.length;
+        int minRemoveCount = n;
+        int finalPivot = -1;
+        for (int pivot = 0; pivot < n; pivot++) {
+
+            TreeSet<Integer> left = new TreeSet<>();
+            for (int i = 0; i <= pivot; i++) {
+                Integer ceil = left.ceiling(heights[i]);
+                if (ceil != null) {
+                    left.remove(ceil);
+                }
+                left.add(heights[i]);
+            }
+            int leftRemoveCount = pivot + 1 - left.size();
+            TreeSet<Integer> right = new TreeSet<>();
+            for (int i = n - 1; i >= pivot; i--) {
+                Integer ceil = right.ceiling(heights[i]);
+                if (ceil != null) {
+                    right.remove(ceil);
+                }
+                right.add(heights[i]);
+            }
+            int rightRemoveCount = n - pivot - right.size();
+            int totalRemoveCount = leftRemoveCount + rightRemoveCount;
+            if (left.size() <= 1 || right.size() <= 1) continue;
+            if (totalRemoveCount < minRemoveCount) {
+                finalPivot = pivot;
+                minRemoveCount = totalRemoveCount;
+            }
+        }
+        return minRemoveCount;
     }
 
 
