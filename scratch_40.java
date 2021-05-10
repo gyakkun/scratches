@@ -4,11 +4,11 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         System.out.println(maxGcRatio("AAAACCACCCCACAAAAA", 5));
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main2(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
@@ -26,7 +26,7 @@ class Scratch {
         }
     }
 
-    // HJ63
+    // HJ63 算最高GC比例的子串, 定义的应该是最小子串长度而不是固定子串长度
     public static String maxGcRatio(String gene, int minLen) {
         int[] prefix = new int[gene.length() + 1];
         for (int i = 1; i <= gene.length(); i++) {
@@ -36,16 +36,21 @@ class Scratch {
                 prefix[i] = prefix[i - 1];
             }
         }
-        int startIdx = 0, max = 0;
-        for (int i = 0; i < gene.length() - minLen; i++) {
-            int count = prefix[i + minLen] - prefix[i];
-            if (count > max) {
-                max = count;
-                startIdx = i;
+        int startIdx = 0, max = 0, maxLen = minLen;
+        double maxRatio = 0d;
+        for (int i = minLen; i <= gene.length(); i++) {
+            for (int j = 0; j <= (gene.length() - i); j++) {
+                int count = prefix[j + i] - prefix[j];
+                double ratio = (double) count / (double) i;
+                if(ratio>maxRatio){
+                    maxRatio = ratio;
+                    startIdx = j;
+                    maxLen = i;
+                }
             }
         }
 
-        return gene.substring(startIdx, startIdx + minLen);
+        return gene.substring(startIdx, startIdx + maxLen);
     }
 
     // HJ45
