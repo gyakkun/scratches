@@ -1,3 +1,5 @@
+import com.alibaba.druid.sql.visitor.functions.Char;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,10 +9,16 @@ class Scratch {
     public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String str;
-        while ((str = br.readLine()) != null) {
-            System.out.println(learnEnglish(Integer.valueOf(str), Integer.valueOf(str) < 1000));
-//            int n = Integer.valueOf(str);
+        String n;
+        while ((n = br.readLine()) != null) {
+//            System.out.println(learnEnglish(Integer.valueOf(n), Integer.valueOf(n) < 1000));
+            int num = Integer.valueOf(n);
+
+            for (int i = 0; i < num; i++) {
+                String name = br.readLine();
+                System.out.println(howBeautiful(name));
+            }
+
 //            String ip1S = br.readLine().trim();
 //            String ip2S = br.readLine().trim();
 ////            Integer[] mask = Arrays.stream(str.trim().split("\\.")).map(Integer::valueOf).toArray(Integer[]::new);
@@ -19,6 +27,34 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
         }
+    }
+
+    // HJ45
+    public static int howBeautiful(String str) {
+        str = str.toLowerCase();
+        Map<Character, Integer> freqMap = new HashMap<>();
+        for (int i = 0; i < 26; i++) {
+            freqMap.put((char) ('a' + i), 0);
+        }
+        for (char c : str.toCharArray()) {
+            freqMap.put(c, freqMap.get(c) + 1);
+        }
+        List<Map.Entry<Character, Integer>> freqList = new ArrayList<>(26);
+        for (Map.Entry<Character, Integer> entry : freqMap.entrySet()) {
+            freqList.add(entry);
+        }
+        freqList.sort(new Comparator<Map.Entry<Character, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Character, Integer> o1, Map.Entry<Character, Integer> o2) {
+                return o2.getValue() - o1.getValue();
+            }
+        });
+        int result = 0;
+        for (int i = 0; i < 26; i++) {
+            result += (26 - i) * freqList.get(i).getValue();
+        }
+        return result;
+
     }
 
     // HJ42
