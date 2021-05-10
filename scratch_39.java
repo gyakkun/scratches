@@ -14,6 +14,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC872 DFS
+    public boolean leafSimilar(TreeNode root1, TreeNode root2) {
+        List<Integer> leaf1 = new ArrayList<>(200);
+        List<Integer> leaf2 = new ArrayList<>(200);
+        Deque<TreeNode> q1 = new LinkedList<>();
+        Deque<TreeNode> q2 = new LinkedList<>();
+        q1.push(root1);
+        q2.push(root2);
+        while (!q1.isEmpty()) {
+            TreeNode tmp = q1.pop();
+            if (tmp.left != null) q1.push(tmp.left);
+            if (tmp.right != null) q1.push(tmp.right);
+            if (tmp.left == null && tmp.right == null) leaf1.add(tmp.val);
+        }
+        while (!q2.isEmpty()) {
+            TreeNode tmp = q2.pop();
+            if (tmp.left != null) q2.push(tmp.left);
+            if (tmp.right != null) q2.push(tmp.right);
+            if (tmp.left == null && tmp.right == null) leaf2.add(tmp.val);
+        }
+        if (leaf1.size() != leaf2.size()) return false;
+        for (int i = 0; i < leaf1.size(); i++) {
+            if (leaf1.get(i) != leaf2.get(i)) return false;
+        }
+        return true;
+    }
+
     // LC1482
     public int minDays(int[] bloomDay, int m, int k) {
         int n = bloomDay.length;
