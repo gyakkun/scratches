@@ -5,18 +5,64 @@ import java.util.*;
 
 class Scratch {
     public static void main(String[] args) throws IOException {
-//        System.out.println(numOfWeights(2, new Integer[]{1, 2}, new Integer[]{2, 1}));
+//        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String str;
         while ((str = br.readLine()) != null) {
-            int n = Integer.valueOf(str);
-            String ip1S = br.readLine().trim();
-            String ip2S = br.readLine().trim();
-//            Integer[] mask = Arrays.stream(str.trim().split("\\.")).map(Integer::valueOf).toArray(Integer[]::new);
-            Integer[] ip1 = Arrays.stream(ip1S.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            Integer[] ip2 = Arrays.stream(ip2S.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            int num = numOfWeights(n, ip1, ip2);
-            System.out.println(num);
+            System.out.println(learnEnglish(Integer.valueOf(str), Integer.valueOf(str) < 1000));
+//            int n = Integer.valueOf(str);
+//            String ip1S = br.readLine().trim();
+//            String ip2S = br.readLine().trim();
+////            Integer[] mask = Arrays.stream(str.trim().split("\\.")).map(Integer::valueOf).toArray(Integer[]::new);
+//            Integer[] ip1 = Arrays.stream(ip1S.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+//            Integer[] ip2 = Arrays.stream(ip2S.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+//            int num = numOfWeights(n, ip1, ip2);
+//            System.out.println(num);
+        }
+    }
+
+    // HJ42
+    final static String[] numEng = new String[]{null, "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+    final static String[] numTenToTwenty = new String[]{"ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
+    final static String[] numTensEng = new String[]{null, "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+
+    public static String learnEnglish(int i, boolean isLastTuple) {
+        StringBuffer sb = new StringBuffer();
+        if (i == 0) return "";
+        else if (i > 0 && i < 1000) {
+            int ones = i % 10;
+            int tens = (i / 10) % 10;
+            int hundreds = (i / 100) % 10;
+            if (hundreds != 0) {
+                sb.append(numEng[hundreds]);
+                sb.append(" hundred");
+                if (tens == 0 && ones == 0) {
+                    return sb.toString();
+                } else {
+                    sb.append(" and ");
+                }
+            }
+            if (tens == 0) {
+                sb.append(numEng[ones]);
+            } else if (tens == 1) {
+                sb.append(numTenToTwenty[ones]);
+            } else {
+                sb.append(numTensEng[tens]);
+                if (ones != 0) {
+                    sb.append(" ");
+                    sb.append(numEng[ones]);
+                }
+            }
+            if (hundreds == 0 && tens == 0 && isLastTuple) {
+                sb.insert(0, "and ");
+            }
+            return sb.toString();
+        } else if (i >= 1000 && i < 1000000) {
+            return (" " + learnEnglish(i / 1000, false) + " thousand " + learnEnglish(i % 1000, true) + " ").trim();
+        } else if (i >= 1000000 && i < 1000000000) {
+            return (" " + learnEnglish(i / 1000000, false) + " million " + learnEnglish(i % 1000000, true) + " ").trim();
+        } else {
+            return "Error";
         }
     }
 
