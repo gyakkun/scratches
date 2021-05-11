@@ -19,7 +19,7 @@ class Scratch {
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
 
 
-        System.out.println(twentyFourPoints(n));
+//        System.out.println(twentyFourPoints(n));
 //        while ((n = br.readLine()) != null) {
 //            int minLen = Integer.valueOf(br.readLine());
 //            System.out.println(maxGcRatio(n, minLen));
