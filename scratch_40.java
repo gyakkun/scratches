@@ -4,25 +4,20 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
-        int[] price = new int[]{800, 400, 300, 400, 500};
-        int[] importance = new int[]{2, 5, 5, 3, 2};
-        int[] mainPartNum = new int[]{0, 1, 1, 0, 0};
-        int N = 1000;
-        int m = 5;
-
-        System.out.println(LCM(100,51));
+        System.out.println(cubeRoot(12d));
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         n = br.readLine();
-        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-        System.out.println(LCM(intArr[0], intArr[1]));
+//        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+        double d = Double.valueOf(n);
 
+        System.out.println(String.format("%.1f", cubeRoot(d)));
 //        while ((n = br.readLine()) != null) {
 //            int minLen = Integer.valueOf(br.readLine());
 //            System.out.println(maxGcRatio(n, minLen));
@@ -36,6 +31,32 @@ class Scratch {
 //            System.out.println(num);
 //        }
     }
+
+    // HJ107 立方根 不使用库函数, 留1位小数
+    public static double cubeRoot(double d) {
+        boolean negFlag = d < 0;
+        if (negFlag) d = -d;
+        double left = 0d;
+        double right = d;
+        while (right - left > 0.01d) {
+            double mid = (left + right) / 2;
+            if (mid * mid * mid > d) {
+                right = mid;
+            } else {
+                left = mid;
+            }
+        }
+        left = (double) ((int) (left * 10)) / 10;
+        right = (double) ((int) (right * 10)) / 10;
+        double result = left;
+        for (double i = left - 1d; i <= right + 1d; i += 0.1d) {
+            if (Math.abs(i * i * i - d) < Math.abs(result * result * result - d)) {
+                result = i;
+            }
+        }
+        return negFlag ? -result : result;
+    }
+
 
     // HJ108 最小公倍数
     public static int LCM(int a, int b) {
