@@ -4,40 +4,27 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
-        stack1.push("3");
-        stack1.push("2");
-        stack1.push("1");
-        hj77dfs("");
-        result.sort(Comparator.naturalOrder());
-        System.out.println(result);
+        System.out.println(egypt(8, 11));
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         String result = "";
         while ((n = br.readLine()) != null) {
-            TreeSet<Integer> ts = new TreeSet<>();
-            String line = br.readLine();
-            Integer[] mask = Arrays.stream(line.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            for (int i : mask) {
-                ts.add(i);
+            Integer[] intArr = Arrays.stream(n.trim().split("/")).map(Integer::valueOf).toArray(Integer[]::new);
+            List<Integer> l = egypt(intArr[0], intArr[1]);
+            for (int i = 0; i < l.size(); i++) {
+                if (i != l.size() - 1) {
+                    System.out.print("1/" + l.get(i) + "+");
+                } else {
+                    System.out.print("1/" + l.get(i) + "\n");
+                }
             }
-            br.readLine();
-            line = br.readLine();
-            mask = Arrays.stream(line.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            for (int i : mask) {
-                ts.add(i);
-            }
-            Iterator<Integer> it = ts.iterator();
-            while (it.hasNext()) {
-                System.out.print(it.next());
-            }
-            System.out.print("\n");
         }
 
 
@@ -57,6 +44,27 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ82
+    public static List<Integer> egypt(int num, int den) {
+        List<Integer> result = new LinkedList<>();
+        int gcd = GCD(num, den);
+        num /= gcd;
+        den /= gcd;
+        while (num != 1) {
+            double d = (double) den / (double) num;
+            int maxEgypt = (int) Math.ceil(d);
+            result.add(maxEgypt);
+            // 通分
+            int newNum = maxEgypt * num - den;
+            int newDen = den * maxEgypt;
+            gcd = GCD(newNum, newDen);
+            num = newNum / gcd;
+            den = newDen / gcd;
+        }
+        result.add(den);
+        return result;
     }
 
     // HJ80
