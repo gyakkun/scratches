@@ -13,7 +13,9 @@ class Scratch {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
-        n = br.readLine();
+        while ((n = br.readLine()) != null) {
+            System.out.println(hexToDec(n));
+        }
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
 
 
@@ -30,6 +32,11 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ5 进制转换, 16进制转10进制
+    public static int hexToDec(String hexStr) {
+        return Integer.valueOf(hexStr.replaceAll("0x",""), 16);
     }
 
     // HJ89
