@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
         int[] price = new int[]{800, 400, 300, 400, 500};
         int[] importance = new int[]{2, 5, 5, 3, 2};
@@ -15,7 +15,7 @@ class Scratch {
         System.out.println(shoppingList(N, m, price, importance, mainPartNum));
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main2(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
@@ -100,25 +100,25 @@ class Scratch {
             }
             ctr += 4;
         }
-        int[][] dp = new int[newLen + 1][N + 1];
+        int[] dp = new int[N + 1];
         // dp[i][j] 表示购买前i项商品在限价为j的情况下能得到的最大价值
         // 其中 若 i%4==0, 则在i,i+1,i+2,i+3四件商品中只能选一件购买
 
         for (int i = 1; i <= newLen; i += 4) {
-            for (int j = 0; j <= N; j++) {
-                int tmpMaxValue = dp[i - 1][j];
+            for (int j = N; j >= 0; j--) {
+                int tmpMaxValue = dp[j];
                 for (int k = 0; k < 4; k++) {
                     if (j - newPrice[i + k - 1] >= 0) {
-                        int pv = Math.max(dp[i - 1][j], dp[i - 1][j - newPrice[i + k - 1]] + newValue[i + k - 1]);
+                        int pv = Math.max(dp[j], dp[j - newPrice[i + k - 1]] + newValue[i + k - 1]);
                         tmpMaxValue = Math.max(tmpMaxValue, pv);
                     }
                 }
                 for (int k = 0; k < 4; k++) {
-                    dp[i + k][j] = tmpMaxValue;
+                    dp[j] = tmpMaxValue;
                 }
             }
         }
-        return dp[newLen][N] * 10;
+        return dp[N] * 10;
     }
 
     // HJ28 匈牙利算法
