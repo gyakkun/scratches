@@ -6,7 +6,7 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) throws IOException {
 
-        System.out.println(egypt(8, 11));
+        System.out.println(longestPalindrome("qkvmilhdkmjqjzssjufwxvumeogpywxrixvmyvlbyuiykbzflreihurwcsdjkrhoqybjrljvwuwulmssvtrxfsvkicbnwnmzukssbtpwkdvkheeqyxtpojixxbtmbmwmlpxtwsfnltjusjkmnwzoeqvxoftenbgpystjxrjfeblfcomepsmcdkfoporeeqjobmmmsvpjfqxbtkebkwcmjtycisurvxsvttuyhtlewvdcvmlusbpkvubcvtnsduknupkznzfrbstsklcbzltmxovdcgvpycyejlsqoxhluucwocskmwxvcggzyhfcccqmcszniyypeocfkvtwuswcnynkuevgjmlwjutlgzkqsvlphsphligvqnfyrsqsnbooxecprzclqrczjimqcghtbpeovqfngjnyxyeknopsltwvibduwhtxctwqixckxxojegcrugpsqhhmpehsojobvglisylvspkgcyqebmkmohepnizjwttqvnsscgvzpqgfwfhkunpqlvvrfbpxglvnzduzsutixzkhugoixsisodxrpeqbqqwhouimrexktctwqzdspoefeooepctyestcrfxfluwxmjwogubedhdljisfmrboqcihxxjnscxwxgeftrnhvzdyiriivpsixwykydesyursbcuvvoqelyebqbcoutjnehflluqsrpprzktkgdcqnqokdhbwiccfljkukmhszexxgdfwtdonetfkfelxzsrsvbqgxyiykjvprqwfncjvimefetzftfjviiykfwmjsljpszheotouxqlvkbgkkjhecrixhxlgsemtfqfgdyfuivgiptnsmbsnuiiownshvvgdzhljztkvtbofjnpgbqlfbotrlzrdrxownjdkghsubbpzksurplcgxddfxfjiofmwtunqqgxfycoxrvwitvbcffbpimcrrcwrpbdyermztnwssxkzjqrgdmwzxdrmizsqqvdjvhzodhgstfzvktozikbiigkkszyoospiyjcsonjykrtmkcougzcjuodxbndwmwebbxmktqpzkwujedstlvjwnkfxiqgpeiqfhwbqlpprjzeswlyvgkkbwsemmbdmvzumovdqnuzjfbkhbxupwxlzqflyuefzjhdjsqythfjzedznuvqcdenqugzzhnzktrgokmfirdvnqlyxvsefevwpwwdeedogxetuqtqlqownqtojmvyidljsvwbfndssxjtlngqdqrcqlzqcojnphvvwcjmrebkenurdemjoicnquqfzhpwbbqbfisersjpodpvklypjnnwyfeputelulpppuotnepmptxr"));
 
     }
 
@@ -16,15 +16,10 @@ class Scratch {
         String n;
         String result = "";
         while ((n = br.readLine()) != null) {
-            Integer[] intArr = Arrays.stream(n.trim().split("/")).map(Integer::valueOf).toArray(Integer[]::new);
-            List<Integer> l = egypt(intArr[0], intArr[1]);
-            for (int i = 0; i < l.size(); i++) {
-                if (i != l.size() - 1) {
-                    System.out.print("1/" + l.get(i) + "+");
-                } else {
-                    System.out.print("1/" + l.get(i) + "\n");
-                }
-            }
+            System.out.println(longestPalindrome(n));
+            lpMaxLen = 0;
+            lpMaxStartIdx = -1;
+            lpMaxEndIdx = -1;
         }
 
 
@@ -45,6 +40,74 @@ class Scratch {
 //            System.out.println(num);
 //        }
     }
+
+    // HJ32 最长回文子串
+
+    public static int longestPalindromeDp(String s) {
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        String ans = "";
+        for (int l = 0; l < n; ++l) {
+            for (int i = 0; i + l < n; ++i) {
+                int j = i + l;
+                if (l == 0) {
+                    dp[i][j] = true;
+                } else if (l == 1) {
+                    dp[i][j] = (s.charAt(i) == s.charAt(j));
+                } else {
+                    dp[i][j] = (s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1]);
+                }
+                if (dp[i][j] && l + 1 > ans.length()) {
+                    ans = s.substring(i, i + l + 1);
+                }
+            }
+        }
+        return ans.length();
+    }
+
+    static int lpMaxLen = 0;
+    static int lpMaxStartIdx = -1;
+    static int lpMaxEndIdx = -1;
+
+    public static String longestPalindrome(String s) {
+        int n = s.length();
+        Boolean[][] memo = new Boolean[n + 1][n + 1];
+        longestPalindromeHelper(s, 0, n - 1, memo);
+        return s.substring(lpMaxStartIdx, lpMaxEndIdx + 1);
+    }
+
+    private static boolean longestPalindromeHelper(String s, int start, int end, Boolean[][] memo) {
+        if (start == end) {
+            memo[start][end] = true;
+            if (lpMaxLen == 0) {
+                lpMaxLen = 1;
+                lpMaxStartIdx = start;
+                lpMaxStartIdx = end;
+            }
+            return true;
+        }
+        if (start > end) return false;
+        if (memo[start][end] != null) {
+            return memo[start][end];
+        }
+        boolean result = false;
+        if (start + 1 == end) {
+            result = s.charAt(start) == s.charAt(end);
+        } else {
+            longestPalindromeHelper(s, start + 1, end, memo);
+            longestPalindromeHelper(s, start, end - 1, memo);
+            longestPalindromeHelper(s, start + 1, end - 1, memo);
+            result = s.charAt(start) == s.charAt(end) && memo[start + 1][end - 1];
+        }
+        if (result && (end - start + 1) > lpMaxLen) {
+            lpMaxLen = end - start + 1;
+            lpMaxStartIdx = start;
+            lpMaxEndIdx = end;
+        }
+        memo[start][end] = result;
+        return result;
+    }
+
 
     // HJ82
     public static List<Integer> egypt(int num, int den) {
