@@ -92,7 +92,7 @@ class Scratch {
             } else if (mainPartSubPartMap.get(i).size() == 2) {
                 newPrice[ctr + 1] = price[i] + price[mainPartSubPartMap.get(i).get(0)];
                 newPrice[ctr + 2] = price[i] + price[mainPartSubPartMap.get(i).get(1)];
-                newPrice[ctr + 3] = price[i] + price[mainPartSubPartMap.get(i).get(0)] + price[mainPartSubPartMap.get(i).get(1)];
+                newPrice[ctr + 3] = newPrice[ctr + 1] + newPrice[ctr + 2] - price[i];
 
                 newValue[ctr + 1] = price[i] * importance[i] + price[mainPartSubPartMap.get(i).get(0)] * importance[mainPartSubPartMap.get(i).get(0)];
                 newValue[ctr + 2] = price[i] * importance[i] + price[mainPartSubPartMap.get(i).get(1)] * importance[mainPartSubPartMap.get(i).get(1)];
@@ -113,9 +113,7 @@ class Scratch {
                         tmpMaxValue = Math.max(tmpMaxValue, pv);
                     }
                 }
-                for (int k = 0; k < 4; k++) {
-                    dp[j] = tmpMaxValue;
-                }
+                dp[j] = tmpMaxValue;
             }
         }
         return dp[N] * 10;
