@@ -4,18 +4,39 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
-        System.out.println(twentyFourPoints("4 2 K A"));
+        sudoku(new int[][]{{0, 9, 2, 4, 8, 1, 7, 6, 3},
+                {4, 1, 3, 7, 6, 2, 9, 8, 5},
+                {8, 6, 7, 3, 5, 9, 4, 1, 2},
+                {6, 2, 4, 1, 9, 5, 3, 7, 8},
+                {7, 5, 9, 8, 4, 3, 1, 2, 6},
+                {1, 3, 8, 6, 2, 7, 5, 9, 4},
+                {2, 7, 1, 5, 3, 8, 6, 4, 9},
+                {3, 8, 6, 9, 1, 4, 2, 5, 7},
+                {0, 4, 5, 2, 7, 6, 8, 3, 1}}, 2);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
-        while ((n = br.readLine()) != null) {
-            System.out.println(hexToDec(n));
+//        while ((n = br.readLine()) != null) {
+//            System.out.println(hexToDec(n));
+//        }
+        int[][] board = new int[9][9];
+        int left = 0;
+        for (int i = 0; i < 9; i++) {
+            n = br.readLine();
+            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            for (int j = 0; j < 9; j++) {
+                board[i][j] = intArr[j];
+                if (board[i][j] == 0) {
+                    left++;
+                }
+            }
         }
+        sudoku(board, left);
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
 
 
@@ -34,9 +55,66 @@ class Scratch {
 //        }
     }
 
+    // HJ44 解数独
+    public static boolean sudoku(int[][] board, int left) {
+        if (left == 0) {
+            for (int[] i : board) {
+                for (int j = 0; j < 9; j++) {
+                    if (j == 8) {
+                        System.out.print(i[j] + "\n");
+                    } else {
+                        System.out.print(i[j] + " ");
+                    }
+                }
+            }
+            return true;
+        }
+
+        Set<Integer> notAllow = new HashSet<>();
+        int i = 0, j = 0;
+        for (i = 0; i < 9; i++) {
+            boolean flag = false;
+            for (j = 0; j < 9; j++) {
+                if (board[i][j] == 0) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) break;
+        }
+        if (i == 9 || j == 9) return false;
+        int row = i, col = j;
+        for (int k = 0; k < 9; k++) {
+            notAllow.add(board[i][k]);
+            notAllow.add(board[k][j]);
+        }
+        i /= 3;
+        j /= 3;
+        for (int k = 0; k < 3; k++) {
+            for (int n = 0; n < 3; n++) {
+                notAllow.add(board[i * 3 + k][j * 3 + n]);
+            }
+        }
+        List<Integer> allow = new ArrayList<>();
+        for (i = 1; i <= 9; i++) {
+            if (!notAllow.contains(i)) allow.add(i);
+        }
+        if (allow.size() == 0) return false;
+
+        for (int num : allow) {
+            board[row][col] = num;
+            if (sudoku(board, left - 1)) {
+                return true;
+            }
+            board[row][col] = 0;
+        }
+
+        return false;
+    }
+
     // HJ5 进制转换, 16进制转10进制
     public static int hexToDec(String hexStr) {
-        return Integer.valueOf(hexStr.replaceAll("0x",""), 16);
+        return Integer.valueOf(hexStr.replaceAll("0x", ""), 16);
     }
 
     // HJ89
