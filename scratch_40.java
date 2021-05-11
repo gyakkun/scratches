@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 
         int[] price = new int[]{800, 400, 300, 400, 500};
         int[] importance = new int[]{2, 5, 5, 3, 2};
@@ -12,30 +12,16 @@ class Scratch {
         int N = 1000;
         int m = 5;
 
-        System.out.println(shoppingList(N, m, price, importance, mainPartNum));
+        System.out.println(LCM(100,51));
     }
 
-    public static void main2(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         n = br.readLine();
         Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-        int N = intArr[0];
-        int m = intArr[1];
-        int[] price = new int[m];
-        int[] importance = new int[m];
-        int[] mainPartNum = new int[m];
-
-
-        for (int i = 0; i < m; i++) {
-            String arr = br.readLine();
-            intArr = Arrays.stream(arr.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            price[i] = intArr[0];
-            importance[i] = intArr[1];
-            mainPartNum[i] = intArr[2];
-        }
-        System.out.println(shoppingList(N, m, price, importance, mainPartNum));
+        System.out.println(LCM(intArr[0], intArr[1]));
 
 //        while ((n = br.readLine()) != null) {
 //            int minLen = Integer.valueOf(br.readLine());
@@ -49,6 +35,15 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ108 最小公倍数
+    public static int LCM(int a, int b) {
+        return a * b / GCD(a, b);
+    }
+
+    public static int GCD(int a, int b) {
+        return a % b == 0 ? b : GCD(b, a % b);
     }
 
     // HJ16 背包
