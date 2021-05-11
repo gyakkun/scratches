@@ -4,20 +4,38 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main(String[] args) throws IOException {
-        System.out.println(primePartner(new Integer[]{2, 5, 6, 13}));
+    public static void main1(String[] args) throws IOException {
+
+        int[] price = new int[]{800, 400, 300, 400, 500};
+        int[] importance = new int[]{2, 5, 5, 3, 2};
+        int[] mainPartNum = new int[]{0, 1, 1, 0, 0};
+        int N = 1000;
+        int m = 5;
+
+        System.out.println(shoppingList(N, m, price, importance, mainPartNum));
     }
 
-    public static void main2(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
+        n = br.readLine();
+        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+        int N = intArr[0];
+        int m = intArr[1];
+        int[] price = new int[m];
+        int[] importance = new int[m];
+        int[] mainPartNum = new int[m];
 
-        while ((n = br.readLine()) != null) {
+
+        for(int i=0;i<m;i++){
             String arr = br.readLine();
-            Integer[] intArr = Arrays.stream(arr.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            System.out.println(primePartner(intArr));
+            intArr = Arrays.stream(arr.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            price[i] = intArr[0];
+            importance[i] = intArr[1];
+            mainPartNum[i] = intArr[2];
         }
+        System.out.println(shoppingList(N,m,price,importance,mainPartNum));
 
 //        while ((n = br.readLine()) != null) {
 //            int minLen = Integer.valueOf(br.readLine());
@@ -31,6 +49,85 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ16 背包
+    public static int shoppingList(int N, int m, int[] price, int[] importance, int[] mainPartNum) {
+        // 注意mainPartNum表示的主键下标是从1开始算的
+        // 如果要买归类为附件的物品，必须先买该附件所属的主件。每个主件可以有 0 个、 1 个或 2 个附件。
+        // 总价格N, 总个数m, N是10的整数倍, 作处理
+        int n = price.length;
+        N /= 10;
+        for (int i = 0; i < n; i++) {
+            price[i] /= 10;
+        }
+
+        // 处理附件, 将 主 / 主 - 附1 / 主 - 附2 / 主 - 附1+2 分为4个商品, 有各自的价格和重要性,
+        // 4个商品为1组, 每组只能选一个转移, 考虑使用下标和取模来限制转移
+        Map<Integer, List<Integer>> mainPartSubPartMap = new HashMap<>();
+        // 结构 key - 主件idx, value - 附件id list, 容量为2
+        for (int i = 0; i < n; i++) {
+            if (mainPartNum[i] == 0) {
+                mainPartSubPartMap.putIfAbsent(i, new ArrayList<>(2));
+            } else {
+                mainPartSubPartMap.putIfAbsent(mainPartNum[i] - 1, new ArrayList<>(2));
+                mainPartSubPartMap.get(mainPartNum[i] - 1).add(i);
+            }
+        }
+        // 构造新的price value 数组
+        int newLen = mainPartSubPartMap.keySet().size() * 4;
+        int[] newPrice = new int[newLen], newValue = new int[newLen];
+        int ctr = 0;
+        for (int i : mainPartSubPartMap.keySet()) {
+            // mod4 的 0,1,2,3 分别对应 主 / 主 - 附1 / 主 - 附2 / 主 - 附1+2
+            newPrice[ctr] = price[i];
+            newValue[ctr] = price[i] * importance[i];
+            if (mainPartSubPartMap.get(i).size() == 0) {
+                ;
+            } else if (mainPartSubPartMap.get(i).size() == 1) {
+                newPrice[ctr + 1] = newPrice[ctr + 2] = newPrice[ctr + 3]
+                        = price[i] + price[mainPartSubPartMap.get(i).get(0)];
+                newValue[ctr + 1] = newValue[ctr + 2] = newValue[ctr + 3]
+                        = price[i] * importance[i] + price[mainPartSubPartMap.get(i).get(0)] * importance[mainPartSubPartMap.get(i).get(0)];
+            } else if (mainPartSubPartMap.get(i).size() == 2) {
+                newPrice[ctr + 1] = price[i] + price[mainPartSubPartMap.get(i).get(0)];
+                newPrice[ctr + 2] = price[i] + price[mainPartSubPartMap.get(i).get(1)];
+                newPrice[ctr + 3] = price[i] + price[mainPartSubPartMap.get(i).get(0)] + price[mainPartSubPartMap.get(i).get(1)];
+
+                newValue[ctr + 1] = price[i] * importance[i] + price[mainPartSubPartMap.get(i).get(0)] * importance[mainPartSubPartMap.get(i).get(0)];
+                newValue[ctr + 2] = price[i] * importance[i] + price[mainPartSubPartMap.get(i).get(1)] * importance[mainPartSubPartMap.get(i).get(1)];
+                newValue[ctr + 3] = newValue[ctr + 1] + newValue[ctr + 2] - price[i] * importance[i];
+            }
+            ctr += 4;
+        }
+        int[][] dp = new int[newLen + 1][N + 1];
+        // dp[i][j] 表示购买前i项商品在限价为j的情况下能得到的最大价值
+        // 其中 若 i%4==0, 则在i,i+1,i+2,i+3四件商品中只能选一件购买
+
+        for (int i = 1; i <= newLen; i += 4) {
+            for (int j = 0; j <= N; j++) {
+                List<Integer> possibleValues = new ArrayList<>(4);
+                for (int k = 0; k < 4; k++) {
+                    if (j - newPrice[i + k - 1] >= 0) {
+                        int pv = Math.max(dp[i - 1][j], dp[i - 1][j - newPrice[i + k - 1]] + newValue[i + k - 1]);
+                        possibleValues.add(pv);
+                    }
+                }
+                if (possibleValues.size() > 0) {
+                    possibleValues.sort(Comparator.naturalOrder());
+
+                    int tmpMaxValue = possibleValues.get(possibleValues.size() - 1);
+                    for (int k = 0; k < 4; k++) {
+                        dp[i + k][j] = tmpMaxValue;
+                    }
+                } else {
+                    for (int k = 0; k < 4; k++) {
+                        dp[i + k][j] = dp[i - 1][j];
+                    }
+                }
+            }
+        }
+        return dp[newLen][N] * 10;
     }
 
     // HJ28 匈牙利算法
