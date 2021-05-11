@@ -8,10 +8,32 @@ class Scratch {
         long timing = System.currentTimeMillis();
         int[] a = new int[]{3, 2, 3};
         System.err.println(
-                s.minimumTimeRequired(a, 3)
+                s.decode(new int[]{6, 5, 4, 6})
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1734
+    public int[] decode(int[] encoded) {
+        // decoded.length = n, n%2 = 1, 是前n个正整数的排列
+        // encoded[i] = decoded[i] ^ decoded[i+1]
+        int n = encoded.length + 1;
+        int total = 0;
+        for (int i = 1; i <= n; i++) {
+            total ^= i;
+        }
+        int odd = 0;
+        for (int i = 1; i < (n - 1); i += 2) {
+            odd ^= encoded[i];
+        }
+        int first = odd ^ total;
+        int[] result = new int[n];
+        result[0] = first;
+        for (int i = 1; i < n; i++) {
+            result[i] = encoded[i - 1] ^ result[i - 1];
+        }
+        return result;
     }
 
     // LC872 DFS
