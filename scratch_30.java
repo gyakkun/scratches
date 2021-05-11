@@ -340,8 +340,8 @@ class Scratch {
         int min = Integer.MAX_VALUE / 2;
         for (int i = l + 1; i <= h && i <= arr[l] + l; i++) {
             int jump;
-            if (memo[l][h] != null) {
-                jump = memo[l][h];
+            if (memo[i][h] != null) {
+                jump = memo[i][h];
             } else {
                 jump = minJumpsRecursive(i, h, arr, memo);
                 memo[i][h] = jump;
