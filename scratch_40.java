@@ -6,15 +6,13 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) throws IOException {
 
-        sudoku(new int[][]{{0, 9, 2, 4, 8, 1, 7, 6, 3},
-                {4, 1, 3, 7, 6, 2, 9, 8, 5},
-                {8, 6, 7, 3, 5, 9, 4, 1, 2},
-                {6, 2, 4, 1, 9, 5, 3, 7, 8},
-                {7, 5, 9, 8, 4, 3, 1, 2, 6},
-                {1, 3, 8, 6, 2, 7, 5, 9, 4},
-                {2, 7, 1, 5, 3, 8, 6, 4, 9},
-                {3, 8, 6, 9, 1, 4, 2, 5, 7},
-                {0, 4, 5, 2, 7, 6, 8, 3, 1}}, 2);
+        stack1.push("3");
+        stack1.push("2");
+        stack1.push("1");
+        hj77dfs("");
+        result.sort(Comparator.naturalOrder());
+        System.out.println(result);
+
     }
 
     public static void main1(String[] args) throws IOException {
@@ -53,6 +51,30 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ77 Solution 非常精妙
+    static Deque<String> stack1 = new LinkedList<>();
+    static Deque<String> stack2 = new LinkedList<>();
+    static List<String> result = new LinkedList<>();
+
+    public static void hj77dfs(String status) {
+        if (stack1.isEmpty() && stack2.isEmpty()) {
+            result.add(status.trim());
+            return;
+        }
+        if (!stack2.isEmpty()) {
+            String tmp = stack2.pop();
+            hj77dfs(status + " " + tmp);
+            stack2.push(tmp);
+        }
+        if (!stack1.isEmpty()) {
+            String tmp = stack1.pop();
+            stack2.push(tmp);
+            hj77dfs(status);
+            stack2.pop();
+            stack1.push(tmp);
+        }
     }
 
     // HJ44 解数独
