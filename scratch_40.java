@@ -4,20 +4,20 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 
-        System.out.println(cubeRoot(12d));
+        System.out.println(twentyFourPoints("4 2 K A"));
     }
 
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         n = br.readLine();
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-        double d = Double.valueOf(n);
 
-        System.out.println(String.format("%.1f", cubeRoot(d)));
+
+        System.out.println(twentyFourPoints(n));
 //        while ((n = br.readLine()) != null) {
 //            int minLen = Integer.valueOf(br.readLine());
 //            System.out.println(maxGcRatio(n, minLen));
@@ -30,6 +30,123 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ89
+    final static Map<String, Integer> poker = new HashMap<String, Integer>() {{
+        put("A", 1);
+        put("2", 2);
+        put("3", 3);
+        put("4", 4);
+        put("5", 5);
+        put("6", 6);
+        put("7", 7);
+        put("8", 8);
+        put("9", 9);
+        put("10", 10);
+        put("J", 11);
+        put("Q", 12);
+        put("K", 13);
+        put("JOKER", -1);
+    }};
+    final static Map<Integer, String> pokerReverse = new HashMap<Integer, String>() {{
+        put(1, "A");
+        put(2, "2");
+        put(3, "3");
+        put(4, "4");
+        put(5, "5");
+        put(6, "6");
+        put(7, "7");
+        put(8, "8");
+        put(9, "9");
+        put(10, "10");
+        put(11, "J");
+        put(12, "Q");
+        put(13, "K");
+    }};
+
+    public static String twentyFourPoints(String s) {
+        s = s.toUpperCase();
+        String[] pokers = s.trim().split(" ");
+        if (pokers.length != 4) return "ERROR";
+        int[] cards = new int[4];
+        for (int i = 0; i < 4; i++) {
+            if (!poker.containsKey(pokers[i])) return "ERROR";
+            cards[i] = poker.get(pokers[i]);
+            if (cards[i] == -1) {
+                return "ERROR";
+            }
+        }
+        Calculator cal = new Calculator();
+        String[] operPerm = new String[64];
+        char[] opers = new char[]{'+', '-', '*', '/'};
+        int ctr = 0;
+        for (int i = 0; i < 4; i++) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(opers[i]);
+            for (int j = 0; j < 4; j++) {
+                sb.append(opers[j]);
+                for (int k = 0; k < 4; k++) {
+                    sb.append(opers[k]);
+                    operPerm[ctr++] = sb.toString();
+                    sb.deleteCharAt(2);
+                }
+                sb.deleteCharAt(1);
+            }
+            sb.deleteCharAt(0);
+        }
+        List<int[]> numPerm = new ArrayList<>(24);
+        permNum(cards, numPerm, 0, 3);
+        for (String operP : operPerm) {
+            for (int[] numP : numPerm) {
+                int result = numP[0];
+                for (int i = 0; i < 3; i++) {
+                    switch (operP.charAt(i)) {
+                        case '+':
+                            result += numP[i + 1];
+                            break;
+                        case '-':
+                            result -= numP[i + 1];
+                            break;
+                        case '*':
+                            result *= numP[i + 1];
+                            break;
+                        case '/':
+                            result /= numP[i + 1];
+                            break;
+                        default:
+                    }
+                }
+                if (result == 24) {
+                    StringBuffer sb = new StringBuffer();
+                    for (int i = 0; i < 3; i++) {
+                        sb.append(pokerReverse.get(numP[i]));
+                        sb.append(operP.charAt(i));
+                    }
+                    sb.append(pokerReverse.get(numP[3]));
+                    return sb.toString();
+                }
+            }
+        }
+
+        return "NONE";
+    }
+
+    private static void permNum(int[] cards, List<int[]> numPerm, int start, int end) {
+        if (start == end) {
+            int[] result = new int[4];
+            System.arraycopy(cards, 0, result, 0, 4);
+            numPerm.add(result);
+        }
+        for (int i = start; i <= end; i++) {
+            int tmp = cards[start];
+            cards[start] = cards[i];
+            cards[i] = tmp;
+            permNum(cards, numPerm, start + 1, end);
+            tmp = cards[start];
+            cards[start] = cards[i];
+            cards[i] = tmp;
+        }
     }
 
     // HJ107 立方根 不使用库函数, 留1位小数
