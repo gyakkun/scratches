@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 
         stack1.push("3");
         stack1.push("2");
@@ -15,26 +15,32 @@ class Scratch {
 
     }
 
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
-//        while ((n = br.readLine()) != null) {
-//            System.out.println(hexToDec(n));
-//        }
-        int[][] board = new int[9][9];
-        int left = 0;
-        for (int i = 0; i < 9; i++) {
-            n = br.readLine();
-            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            for (int j = 0; j < 9; j++) {
-                board[i][j] = intArr[j];
-                if (board[i][j] == 0) {
-                    left++;
-                }
+        String result = "";
+        while ((n = br.readLine()) != null) {
+            TreeSet<Integer> ts = new TreeSet<>();
+            String line = br.readLine();
+            Integer[] mask = Arrays.stream(line.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            for (int i : mask) {
+                ts.add(i);
             }
+            br.readLine();
+            line = br.readLine();
+            mask = Arrays.stream(line.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            for (int i : mask) {
+                ts.add(i);
+            }
+            Iterator<Integer> it = ts.iterator();
+            while (it.hasNext()) {
+                System.out.print(it.next());
+            }
+            System.out.print("\n");
         }
-        sudoku(board, left);
+
+
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
 
 
@@ -51,6 +57,21 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ80
+    static Set<Integer> s = new HashSet<>();
+
+    public static String mergeInt(Integer[] arr) {
+        for (int i : arr) {
+            s.add(i);
+        }
+        List<Integer> l = new ArrayList<>(s);
+        StringBuffer sb = new StringBuffer();
+        for (int i : l) {
+            sb.append(i);
+        }
+        return sb.toString();
     }
 
     // HJ77 Solution 非常精妙
