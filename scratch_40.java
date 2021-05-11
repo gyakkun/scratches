@@ -28,14 +28,14 @@ class Scratch {
         int[] mainPartNum = new int[m];
 
 
-        for(int i=0;i<m;i++){
+        for (int i = 0; i < m; i++) {
             String arr = br.readLine();
             intArr = Arrays.stream(arr.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
             price[i] = intArr[0];
             importance[i] = intArr[1];
             mainPartNum[i] = intArr[2];
         }
-        System.out.println(shoppingList(N,m,price,importance,mainPartNum));
+        System.out.println(shoppingList(N, m, price, importance, mainPartNum));
 
 //        while ((n = br.readLine()) != null) {
 //            int minLen = Integer.valueOf(br.readLine());
@@ -106,24 +106,15 @@ class Scratch {
 
         for (int i = 1; i <= newLen; i += 4) {
             for (int j = 0; j <= N; j++) {
-                List<Integer> possibleValues = new ArrayList<>(4);
+                int tmpMaxValue = dp[i - 1][j];
                 for (int k = 0; k < 4; k++) {
                     if (j - newPrice[i + k - 1] >= 0) {
                         int pv = Math.max(dp[i - 1][j], dp[i - 1][j - newPrice[i + k - 1]] + newValue[i + k - 1]);
-                        possibleValues.add(pv);
+                        tmpMaxValue = Math.max(tmpMaxValue, pv);
                     }
                 }
-                if (possibleValues.size() > 0) {
-                    possibleValues.sort(Comparator.naturalOrder());
-
-                    int tmpMaxValue = possibleValues.get(possibleValues.size() - 1);
-                    for (int k = 0; k < 4; k++) {
-                        dp[i + k][j] = tmpMaxValue;
-                    }
-                } else {
-                    for (int k = 0; k < 4; k++) {
-                        dp[i + k][j] = dp[i - 1][j];
-                    }
+                for (int k = 0; k < 4; k++) {
+                    dp[i + k][j] = tmpMaxValue;
                 }
             }
         }
