@@ -5,8 +5,11 @@ import java.util.*;
 
 class Scratch {
     public static void main(String[] args) throws IOException {
-        System.out.println(ipToLong("10.0.3.193"));
-        System.out.println(longToIp("167969729"));
+        System.out.println(shortestMazePath(new Integer[][]{{0, 1, 0, 0, 0},
+                {0, 1, 0, 1, 0},
+                {0, 0, 0, 0, 0},
+                {0, 1, 1, 1, 0},
+                {0, 0, 0, 1, 0}}));
 
     }
 
@@ -14,12 +17,28 @@ class Scratch {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
-        String result = "";
 
         while ((n = br.readLine()) != null) {
-            System.out.println(ipToLong(n));
-            System.out.println(longToIp(br.readLine()));
+            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            int row = intArr[0];
+            int col = intArr[1];
+            Integer[][] maze = new Integer[row][col];
+            for (int i = 0; i < row; i++) {
+                n = br.readLine();
+                intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+                maze[i] = intArr;
+            }
+            List<int[]> result = shortestMazePath(maze);
+            for (int[] step : result) {
+                System.out.println("(" + (step[0] - 1) + "," + (step[1] - 1) + ")");
+            }
         }
+
+
+//        while ((n = br.readLine()) != null) {
+//            System.out.println(ipToLong(n));
+//            System.out.println(longToIp(br.readLine()));
+//        }
 
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
 
@@ -39,8 +58,56 @@ class Scratch {
 //        }
     }
 
+    // HJ43 走迷宫
+    public static List<int[]> shortestMazePath(Integer[][] oldMaze) {
+        int rowNum = oldMaze.length;
+        int colNum = oldMaze[0].length;
+        Integer[][] maze = new Integer[rowNum + 1][colNum + 1];
+        for (int i = 1; i <= rowNum; i++) {
+            System.arraycopy(oldMaze[i - 1], 0, maze[i], 1, colNum);
+        }
+        maze[1][1] = 1;
+
+        Deque<int[]> stack = new LinkedList<>();
+        int[][] directions = new int[][]{{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+        stack.push(new int[]{1, 1});
+        while (!stack.isEmpty()) {
+            int[] point = stack.poll();
+            int row = point[0];
+            int col = point[1];
+            if (row == rowNum && col == colNum) break;
+
+            for (int[] dir : directions) {
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+                if (newRow > 0 && newRow <= rowNum && newCol > 0 && newCol <= colNum && maze[newRow][newCol] == 0) {
+                    maze[newRow][newCol] = row * 100 + col; // 对100取模得走到这里得列, 除以100得行
+                    stack.offer(new int[]{newRow, newCol});
+                    if (newRow == rowNum && newCol == colNum) {
+                        break;
+                    }
+                }
+            }
+        }
+        int row = maze[maze.length - 1][maze[0].length - 1] / 100;
+        int col = maze[maze.length - 1][maze[0].length - 1] % 100;
+        List<int[]> result = new ArrayList<>();
+        result.add(new int[]{rowNum, colNum});
+        while (maze[row][col] != 1) {
+            int newRow = maze[row][col] / 100;
+            int newCol = maze[row][col] % 100;
+            result.add(new int[]{row, col});
+            row = newRow;
+            col = newCol;
+        }
+        result.add(new int[]{1, 1});
+        Collections.reverse(result);
+        return result;
+    }
+
+
     // HJ33 IP 地址 转整数
-    public static long ipToLong(String ipAdd){
+    public static long ipToLong(String ipAdd) {
         String[] split = ipAdd.split("\\.");
         long result = 0;
         for (String i : split) {
@@ -57,8 +124,8 @@ class Scratch {
         for (int i = 0; i < 4; i++) {
             long part = ip - ((ip >> 8) << 8);
             ip = ip >> 8;
-            sb.insert(0,".");
-            sb.insert(0,part);
+            sb.insert(0, ".");
+            sb.insert(0, part);
         }
         sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
