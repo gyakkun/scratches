@@ -5,11 +5,7 @@ import java.util.*;
 
 class Scratch {
     public static void main(String[] args) throws IOException {
-        System.out.println(shortestMazePath(new Integer[][]{{0, 1, 0, 0, 0},
-                {0, 1, 0, 1, 0},
-                {0, 0, 0, 0, 0},
-                {0, 1, 1, 1, 0},
-                {0, 0, 0, 1, 0}}));
+        System.out.println(fib(9));
 
     }
 
@@ -19,19 +15,8 @@ class Scratch {
         String n;
 
         while ((n = br.readLine()) != null) {
-            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            int row = intArr[0];
-            int col = intArr[1];
-            Integer[][] maze = new Integer[row][col];
-            for (int i = 0; i < row; i++) {
-                n = br.readLine();
-                intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-                maze[i] = intArr;
-            }
-            List<int[]> result = shortestMazePath(maze);
-            for (int[] step : result) {
-                System.out.println("(" + (step[0] - 1) + "," + (step[1] - 1) + ")");
-            }
+            int i = Integer.valueOf(n);
+            System.out.println(fib(i));
         }
 
 
@@ -56,6 +41,32 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ37
+    public static int fib(int nth) {
+        int cur = 1, next = 1;
+        if (nth <= 2) return 1;
+        for (int i = 2; i <= nth; i++) {
+            int tmp = cur + next;
+            cur = next;
+            next = tmp;
+        }
+        return cur;
+    }
+
+    static Integer[] fibMemo;
+
+    public static int fibRecursive(int i) {
+        fibMemo = new Integer[i + 1];
+        return fibHelper(i);
+    }
+
+    public static int fibHelper(int i) {
+        if (i <= 2) return 1;
+        if (fibMemo[i] != null) return fibMemo[i];
+        fibMemo[i] = fibHelper(i - 1) + fibHelper(i - 2);
+        return fibMemo[i];
     }
 
     // HJ43 走迷宫
