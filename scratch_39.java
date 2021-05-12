@@ -14,6 +14,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1310
+    public int[] xorQueries(int[] arr, int[][] queries) {
+        int n = arr.length;
+        int[] result = new int[queries.length];
+        int[] prefix = new int[n + 1];
+//        int total = 0;
+//        for (int i : arr) {
+//            total ^= i;
+//        }
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] ^ arr[i - 1];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int left = queries[i][0];
+            int right = queries[i][1];
+            int possibleResult = prefix[right + 1] ^ prefix[left];
+            result[i] = possibleResult;
+        }
+        return result;
+    }
+
     // LC1734
     public int[] decode(int[] encoded) {
         // decoded.length = n, n%2 = 1, 是前n个正整数的排列
