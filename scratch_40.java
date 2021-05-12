@@ -5,9 +5,7 @@ import java.util.*;
 
 class Scratch {
     public static void main(String[] args) throws IOException {
-
-        System.out.println(longestPalindrome("qkvmilhdkmjqjzssjufwxvumeogpywxrixvmyvlbyuiykbzflreihurwcsdjkrhoqybjrljvwuwulmssvtrxfsvkicbnwnmzukssbtpwkdvkheeqyxtpojixxbtmbmwmlpxtwsfnltjusjkmnwzoeqvxoftenbgpystjxrjfeblfcomepsmcdkfoporeeqjobmmmsvpjfqxbtkebkwcmjtycisurvxsvttuyhtlewvdcvmlusbpkvubcvtnsduknupkznzfrbstsklcbzltmxovdcgvpycyejlsqoxhluucwocskmwxvcggzyhfcccqmcszniyypeocfkvtwuswcnynkuevgjmlwjutlgzkqsvlphsphligvqnfyrsqsnbooxecprzclqrczjimqcghtbpeovqfngjnyxyeknopsltwvibduwhtxctwqixckxxojegcrugpsqhhmpehsojobvglisylvspkgcyqebmkmohepnizjwttqvnsscgvzpqgfwfhkunpqlvvrfbpxglvnzduzsutixzkhugoixsisodxrpeqbqqwhouimrexktctwqzdspoefeooepctyestcrfxfluwxmjwogubedhdljisfmrboqcihxxjnscxwxgeftrnhvzdyiriivpsixwykydesyursbcuvvoqelyebqbcoutjnehflluqsrpprzktkgdcqnqokdhbwiccfljkukmhszexxgdfwtdonetfkfelxzsrsvbqgxyiykjvprqwfncjvimefetzftfjviiykfwmjsljpszheotouxqlvkbgkkjhecrixhxlgsemtfqfgdyfuivgiptnsmbsnuiiownshvvgdzhljztkvtbofjnpgbqlfbotrlzrdrxownjdkghsubbpzksurplcgxddfxfjiofmwtunqqgxfycoxrvwitvbcffbpimcrrcwrpbdyermztnwssxkzjqrgdmwzxdrmizsqqvdjvhzodhgstfzvktozikbiigkkszyoospiyjcsonjykrtmkcougzcjuodxbndwmwebbxmktqpzkwujedstlvjwnkfxiqgpeiqfhwbqlpprjzeswlyvgkkbwsemmbdmvzumovdqnuzjfbkhbxupwxlzqflyuefzjhdjsqythfjzedznuvqcdenqugzzhnzktrgokmfirdvnqlyxvsefevwpwwdeedogxetuqtqlqownqtojmvyidljsvwbfndssxjtlngqdqrcqlzqcojnphvvwcjmrebkenurdemjoicnquqfzhpwbbqbfisersjpodpvklypjnnwyfeputelulpppuotnepmptxr"));
-
+        System.out.println(placeApple(7, 3));
     }
 
     public static void main1(String[] args) throws IOException {
@@ -15,13 +13,11 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         String result = "";
-        while ((n = br.readLine()) != null) {
-            System.out.println(longestPalindrome(n));
-            lpMaxLen = 0;
-            lpMaxStartIdx = -1;
-            lpMaxEndIdx = -1;
-        }
 
+        while ((n = br.readLine()) != null) {
+            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            System.out.println(placeApple(intArr[0], intArr[1]));
+        }
 
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
 
@@ -39,6 +35,32 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ61 m个苹果 n个盆子
+    static Integer[][] hj61Memo;
+
+    public static int placeApple(int m, int n) {
+        hj61Memo = new Integer[m + 1][n + 1];
+        return placeAppleHelper(m, n);
+    }
+
+
+    public static int placeAppleHelper(int m, int n) {
+        if (m == 0 || n == 1) {
+            return 1;
+        }
+        if (hj61Memo[m][n] != null) {
+            return hj61Memo[m][n];
+        }
+        int result = -1;
+        if (m < n) {
+            result = placeAppleHelper(m, m);
+        } else {
+            result = placeAppleHelper(m, n - 1) + placeAppleHelper(m - n, n);
+        }
+        hj61Memo[m][n] = result;
+        return result;
     }
 
     // HJ32 最长回文子串
