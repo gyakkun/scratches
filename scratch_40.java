@@ -4,20 +4,21 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
-//        System.out.println(snakeMtx(5));
-        snakeMtx(5);
+    public static void main(String[] args) throws IOException {
+        System.out.println(ipToLong("10.0.3.193"));
+        System.out.println(longToIp("167969729"));
+
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         String result = "";
 
         while ((n = br.readLine()) != null) {
-            int i = Integer.valueOf(n);
-            snakeMtx(i);
+            System.out.println(ipToLong(n));
+            System.out.println(longToIp(br.readLine()));
         }
 
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
@@ -37,6 +38,32 @@ class Scratch {
 //            System.out.println(num);
 //        }
     }
+
+    // HJ33 IP 地址 转整数
+    public static long ipToLong(String ipAdd){
+        String[] split = ipAdd.split("\\.");
+        long result = 0;
+        for (String i : split) {
+            int part = Integer.valueOf(i);
+            result = (result << 8) ^ part;
+        }
+        return result;
+    }
+
+    // 整数转IP地址
+    public static String longToIp(String ipLong) {
+        long ip = Long.valueOf(ipLong);
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < 4; i++) {
+            long part = ip - ((ip >> 8) << 8);
+            ip = ip >> 8;
+            sb.insert(0,".");
+            sb.insert(0,part);
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
+
 
     // HJ35 蛇形矩阵
     public static void snakeMtx(int n) {
