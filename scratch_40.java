@@ -4,19 +4,19 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
         System.out.println(placeApple(7, 3));
     }
 
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         String result = "";
 
         while ((n = br.readLine()) != null) {
-            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            System.out.println(placeApple(intArr[0], intArr[1]));
+//            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            System.out.println(validPassword(n) ? "OK" : "NG");
         }
 
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
@@ -35,6 +35,33 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ20
+    //1.长度超过8位
+    //2.包括大小写字母.数字.其它符号,以上四种至少三种
+    //3.不能有相同长度大于2的子串重复
+    public static boolean validPassword(String pw) {
+        if (pw.length() <= 8) return false;
+        String noLowerCase = pw.replaceAll("[a-z]", "");
+        String noUpperCase = pw.replaceAll("[A-Z]", "");
+        String noDigit = pw.replaceAll("\\d", "");
+        int lowCaseLen = pw.length() - noLowerCase.length();
+        int upperCaseLen = pw.length() - noUpperCase.length();
+        int digitLen = pw.length() - noDigit.length();
+        int otherLen = pw.length() - lowCaseLen - upperCaseLen - digitLen;
+        int ctr = 0;
+        if (lowCaseLen > 0) ctr++;
+        if (upperCaseLen > 0) ctr++;
+        if (digitLen > 0) ctr++;
+        if (otherLen > 0) ctr++;
+        if (ctr < 3) return false;
+        for (int i = 0; i < pw.length() - 3; i++) {
+            String word = pw.substring(i, i + 3);
+            int nextIdx = pw.lastIndexOf(word);
+            if(nextIdx!=i) return false;
+        }
+        return true;
     }
 
     // HJ61 m个苹果 n个盆子
