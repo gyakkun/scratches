@@ -5,8 +5,7 @@ import java.util.*;
 
 class Scratch {
     public static void main1(String[] args) throws IOException {
-//        System.out.println(new Calculator().calculate("3+2*{1+2*[-4/(8-6)+7]}"));
-
+//        System.out.println(hundredChicken());
     }
 
     public static void main(String[] args) throws IOException {
@@ -14,15 +13,16 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-            int num = Integer.valueOf(n);
-            List<Integer[]> mtxParam = new ArrayList<>(num);
-            for (int i = 0; i < num; i++) {
-                n = br.readLine();
-                Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-                mtxParam.add(intArr);
+            List<int[]> result = hundredChicken();
+            for (int[] i : result) {
+                for (int j = 0; j < 3; j++) {
+                    if(j==2){
+                        System.out.print(i[j] + "\n");
+                    } else {
+                        System.out.print(i[j] + " ");
+                    }
+                }
             }
-            String order = br.readLine();
-            System.out.println(mtxMulEst(order, mtxParam));
         }
 //        while ((n = br.readLine()) != null) {
 //            System.out.println(ipToLong(n));
@@ -45,6 +45,23 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ72 百钱买百鸡
+    public static List<int[]> hundredChicken() {
+        //    M:5 F:3 C:1/3
+        //*3  M:15 F:9 C:1
+        List<int[]> result = new ArrayList<>(10);
+        for (int i = 0; i <= 100; i++) {
+            for (int j = 0; j <= 100; j++) {
+                for (int k = 0; k <= 100; k++) {
+                    if (i + j + k == 100 && i * 15 + j * 9 + k * 1 == 300) {
+                        result.add(new int[]{i, j, k});
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     // HJ70
