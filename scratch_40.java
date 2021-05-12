@@ -5,7 +5,7 @@ import java.util.*;
 
 class Scratch {
     public static void main(String[] args) throws IOException {
-        System.out.println(fib(9));
+//        System.out.println(new Calculator().calculate("3+2*{1+2*[-4/(8-6)+7]}"));
 
     }
 
@@ -13,10 +13,10 @@ class Scratch {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
+        Calculator cal = new Calculator();
 
         while ((n = br.readLine()) != null) {
-            int i = Integer.valueOf(n);
-            System.out.println(fib(i));
+            System.out.println(cal.calculate(n));
         }
 
 
@@ -925,6 +925,11 @@ class Calculator {
     }
 
     private List<String> decodeExpression(String express) {
+        express = express.replaceAll("\\{", "(");
+        express = express.replaceAll("\\}", ")");
+        express = express.replaceAll("\\[", "(");
+        express = express.replaceAll("\\]", ")");
+
         express = express.replaceAll("\\ ", "");
         express = express.replaceAll("\\(\\+", "(0+");
         express = express.replaceAll("\\(\\-", "(0-");
