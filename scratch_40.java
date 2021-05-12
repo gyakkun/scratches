@@ -68,11 +68,11 @@ class Scratch {
         }
         maze[1][1] = 1;
 
-        Deque<int[]> stack = new LinkedList<>();
+        Deque<int[]> queue = new LinkedList<>();
         int[][] directions = new int[][]{{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
-        stack.push(new int[]{1, 1});
-        while (!stack.isEmpty()) {
-            int[] point = stack.poll();
+        queue.push(new int[]{1, 1});
+        while (!queue.isEmpty()) {
+            int[] point = queue.poll();
             int row = point[0];
             int col = point[1];
             if (row == rowNum && col == colNum) break;
@@ -82,7 +82,7 @@ class Scratch {
                 int newCol = col + dir[1];
                 if (newRow > 0 && newRow <= rowNum && newCol > 0 && newCol <= colNum && maze[newRow][newCol] == 0) {
                     maze[newRow][newCol] = row * 100 + col; // 对100取模得走到这里得列, 除以100得行
-                    stack.offer(new int[]{newRow, newCol});
+                    queue.offer(new int[]{newRow, newCol});
                     if (newRow == rowNum && newCol == colNum) {
                         break;
                     }
