@@ -4,22 +4,26 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 //        System.out.println(new Calculator().calculate("3+2*{1+2*[-4/(8-6)+7]}"));
 
     }
 
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
-        Calculator cal = new Calculator();
-
         while ((n = br.readLine()) != null) {
-            System.out.println(cal.calculate(n));
+            int num = Integer.valueOf(n);
+            List<Integer[]> mtxParam = new ArrayList<>(num);
+            for (int i = 0; i < num; i++) {
+                n = br.readLine();
+                Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+                mtxParam.add(intArr);
+            }
+            String order = br.readLine();
+            System.out.println(mtxMulEst(order, mtxParam));
         }
-
-
 //        while ((n = br.readLine()) != null) {
 //            System.out.println(ipToLong(n));
 //            System.out.println(longToIp(br.readLine()));
@@ -41,6 +45,30 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ70
+    public static int mtxMulEst(String order, List<Integer[]> mtxParam) {
+        char lastLetter = (char) ('A' + mtxParam.size() - 1);
+        Deque<Character> stack = new LinkedList<>();
+        int result = 0;
+        for (char c : order.toCharArray()) {
+            if (c == '(') {
+                ;
+            } else if (c == ')') {
+                if (stack.size() == 1) break;
+                Integer[] param1 = mtxParam.get(stack.pop() - 'A');
+                Integer[] param2 = mtxParam.get(stack.pop() - 'A');
+                int m = param2[0], n = param2[1], p = param1[1];
+                result += m * n * p;
+                mtxParam.add(new Integer[]{m, p});
+                stack.push((char) (lastLetter + 1));
+                lastLetter = (char) (lastLetter + 1);
+            } else {
+                stack.push(c);
+            }
+        }
+        return result;
     }
 
     // HJ37
@@ -687,7 +715,8 @@ class Scratch {
 
     }
 
-    public static boolean match(int leftIdx, int n, boolean[][] edgeMtx, boolean[] rightVisited, Integer[] rightLeftMap) {
+    public static boolean match(int leftIdx, int n, boolean[][] edgeMtx, boolean[] rightVisited, Integer[]
+            rightLeftMap) {
         for (int rightIdx = 0; rightIdx < n; rightIdx++) {
             if (edgeMtx[leftIdx][rightIdx] && !rightVisited[rightIdx]) {
                 rightVisited[rightIdx] = true;
