@@ -5,7 +5,8 @@ import java.util.*;
 
 class Scratch {
     public static void main1(String[] args) throws IOException {
-        System.out.println(placeApple(7, 3));
+//        System.out.println(snakeMtx(5));
+        snakeMtx(5);
     }
 
     public static void main(String[] args) throws IOException {
@@ -15,8 +16,8 @@ class Scratch {
         String result = "";
 
         while ((n = br.readLine()) != null) {
-//            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            System.out.println(validPassword(n) ? "OK" : "NG");
+            int i = Integer.valueOf(n);
+            snakeMtx(i);
         }
 
 //        Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
@@ -36,6 +37,39 @@ class Scratch {
 //            System.out.println(num);
 //        }
     }
+
+    // HJ35 蛇形矩阵
+    public static void snakeMtx(int n) {
+        int total = (n + 1) * n / 2;
+        int ctr = 1;
+        int[][] mtx = new int[n][n];
+        int row = 0, col = 0;
+        boolean goingUp = false;
+        while (ctr <= total) {
+            mtx[row][col] = ctr++;
+            if (goingUp) {
+                row--;
+                col++;
+                goingUp = !(row == 0);
+            } else {
+                row = col + 1;
+                col = 0;
+                goingUp = true;
+            }
+        }
+        for (int[] i : mtx) {
+            for (int j = 0; j < i.length; j++) {
+                if (i[j] == 0) break;
+                if (j + 1 >= i.length || i[j + 1] == 0) {
+                    System.out.print(i[j] + "\n");
+                } else {
+                    System.out.print(i[j] + " ");
+                }
+            }
+        }
+        return;
+    }
+
 
     // HJ20
     //1.长度超过8位
@@ -59,7 +93,7 @@ class Scratch {
         for (int i = 0; i < pw.length() - 3; i++) {
             String word = pw.substring(i, i + 3);
             int nextIdx = pw.lastIndexOf(word);
-            if(nextIdx!=i) return false;
+            if (nextIdx != i) return false;
         }
         return true;
     }
