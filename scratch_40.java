@@ -5,7 +5,7 @@ import java.util.*;
 
 class Scratch {
     public static void main1(String[] args) throws IOException {
-//        System.out.println(hundredChicken());
+//        System.out.println(approachToEndMtx(9, 9));
     }
 
     public static void main(String[] args) throws IOException {
@@ -13,16 +13,8 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-            List<int[]> result = hundredChicken();
-            for (int[] i : result) {
-                for (int j = 0; j < 3; j++) {
-                    if(j==2){
-                        System.out.print(i[j] + "\n");
-                    } else {
-                        System.out.print(i[j] + " ");
-                    }
-                }
-            }
+            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            System.out.println(approachToEndMtx(intArr[0] + 1, intArr[1] + 1));
         }
 //        while ((n = br.readLine()) != null) {
 //            System.out.println(ipToLong(n));
@@ -45,6 +37,15 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // HJ91
+    public static int approachToEndMtx(int row, int col) {
+        if (row == 1 || col == 1) return 1;
+        int result = 0;
+        result += approachToEndMtx(row - 1, col);
+        result += approachToEndMtx(row, col - 1);
+        return result;
     }
 
     // HJ72 百钱买百鸡
