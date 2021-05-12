@@ -4,11 +4,11 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 class Scratch {
-    public static void main1(String[] args) throws IOException {
-//        System.out.println(approachToEndMtx(9, 9));
+    public static void main(String[] args) throws IOException {
+        System.out.println(aEbP2c(new int[]{6, 2, 2, 10}));
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 //        System.out.println(learnEnglish(969150, false));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
@@ -37,6 +37,41 @@ class Scratch {
 //            int num = numOfWeights(n, ip1, ip2);
 //            System.out.println(num);
 //        }
+    }
+
+    // OD 20210320
+    public static boolean aEbP2c(int[] arr) {
+        Map<Integer, Set<String>> m = new HashMap<>();
+        Set<int[]> result = new HashSet<>();
+        int n = arr.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                m.putIfAbsent(arr[i] + arr[j], new HashSet<>());
+                m.get(arr[i] + arr[j]).add("" + i + "," + j);
+                m.get(arr[i] + arr[j]).add("" + j + "," + i);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (m.containsKey(arr[i] - arr[j])) {
+                    Iterator<String> it = m.get(arr[i] - arr[j]).iterator();
+                    while (it.hasNext()) {
+                        String tmp = it.next();
+                        if (tmp.indexOf("" + j) != -1 && tmp.indexOf("" + i) == -1) {
+                            String[] twoNum = tmp.split(",");
+                            int one = Integer.valueOf(twoNum[0]);
+                            int two = Integer.valueOf(twoNum[1]);
+                            if (j == one) {
+                                result.add(new int[]{arr[i], arr[two], arr[j]});
+                            } else {
+                                result.add(new int[]{arr[i], arr[one], arr[j]});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result.size() > 0;
     }
 
     // HJ91
