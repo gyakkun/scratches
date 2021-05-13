@@ -10,10 +10,10 @@ class Scratch {
         String n;
         while ((n = br.readLine()) != null) {
             List<String> result = longestNumberSubstring(n);
-            for(String s : result){
+            for (String s : result) {
                 System.out.print(s);
             }
-            System.out.print("," + result.get(0).length()+"\n");
+            System.out.print("," + result.get(0).length() + "\n");
         }
     }
 
@@ -25,7 +25,7 @@ class Scratch {
         int curIdx = -1;
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) >= '0' && str.charAt(i) <= '9') {
-                if(curIdx==-1) curIdx = i;
+                if (curIdx == -1) curIdx = i;
                 curLen++;
                 if (curLen == maxLen) {
                     result.add(str.substring(curIdx, curIdx + curLen));
