@@ -9,11 +9,26 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-//            n = br.readLine();
-//            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            System.out.println(countSelfProtectNum(Integer.valueOf(n)));
+            n = br.readLine();
+            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+//            int num = Integer.valueOf(n);
+            int posCtr = 0;
+            int negCtr = 0;
+            long posSum = 0;
+            for (int i : intArr) {
+                if (i > 0) {
+                    posCtr++;
+                    posSum += i;
+                } else if (i < 0) {
+                    negCtr++;
+                }
+
+            }
+            System.out.println(negCtr + " " + String.format("%.1f", (posSum + 0.0) / (posCtr + 0.0)));
         }
     }
+
+    // HJ97
 
     // HJ99
     public static int countSelfProtectNum(int n) {
@@ -21,7 +36,7 @@ class Scratch {
         for (int i = 0; i <= n; i++) {
             int mod10 = i % 10;
             if (mod10 == 0 || mod10 == 1 || mod10 == 5 || mod10 == 6) {
-                if(isSelfProtectNum(i)) ctr++;
+                if (isSelfProtectNum(i)) ctr++;
             }
         }
         return ctr;
