@@ -23,7 +23,7 @@ class Scratch {
     public static int numOfPerfectNumTable(int n) {
         for (int i = 1; i <= 4; i++) {
             if (n >= hj56Table[i]) {
-                return 11 - i + 1;
+                return 4 - i + 1;
             }
         }
         return 0;
