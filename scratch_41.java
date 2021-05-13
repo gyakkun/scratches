@@ -8,12 +8,10 @@ class Scratch {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
+        Calculator cal = new Calculator();
+        cal.calculateDouble("3*18");
         while ((n = br.readLine()) != null) {
-            List<String> result = longestNumberSubstring(n);
-            for (String s : result) {
-                System.out.print(s);
-            }
-            System.out.print("," + result.get(0).length() + "\n");
+            System.out.println(cal.calculateDouble(n));
         }
     }
 
@@ -232,4 +230,136 @@ class Scratch {
         }
         return result;
     }
+}
+
+class Calculator {
+
+    public double calculateDouble(String expression) {
+        return evalRpnDouble(tokenToRpn(tokenize(expression)));
+    }
+
+    public static Set<String> notNumberToken = new HashSet<String>() {{
+        add("+");
+        add("-");
+        add("/");
+        add("*");
+        add("(");
+        add(")");
+    }};
+
+    public static Set<String> operSet = new HashSet<String>() {{
+        add("+");
+        add("-");
+        add("/");
+        add("*");
+    }};
+
+    public static int getOperPriority(String oper) {
+        switch (oper) {
+            case "+":
+            case "-":
+                return 1;
+            case "*":
+            case "/":
+                return 2;
+            default:
+                return -1;
+        }
+    }
+
+    public List<String> tokenize(String expression) {
+        expression = expression.replaceAll("\\{", "(");
+        expression = expression.replaceAll("\\}", ")");
+        expression = expression.replaceAll("\\[", "(");
+        expression = expression.replaceAll("\\]", ")");
+
+        expression = expression.replaceAll(" ", ""); // 空格
+        expression = expression.replaceAll("\\(\\-", "(0-");  // (-10) 之类的可能会出问题
+        expression = expression.replaceAll("\\(\\+", "(0+"); // (+10) 之类的可能会出问题
+        expression = expression.replaceAll("\\((\\d+(\\.\\d+)?)\\)", "$1"); // (0.0) 之类的
+
+        int i = 0;
+        List<String> tokens = new ArrayList<>();
+        if (expression.length() == 0) return tokens;
+
+        do {
+            if (notNumberToken.contains(expression.charAt(i) + "")) {
+                tokens.add(expression.charAt(i) + "");
+                i++;
+            } else {
+                StringBuffer sb = new StringBuffer();
+                while (i < expression.length() && !notNumberToken.contains(expression.charAt(i) + "")) {
+                    sb.append(expression.charAt(i));
+                    i++;
+                }
+                tokens.add(sb.toString());
+            }
+        } while (i < expression.length());
+        return tokens;
+    }
+
+    public List<String> tokenToRpn(List<String> tokens) {
+        Deque<String> stack = new LinkedList<>();
+        List<String> rpn = new ArrayList<>();
+        String tmp;
+        for (String token : tokens) {
+            if (!notNumberToken.contains(token)) {
+                rpn.add(token);
+            } else if (token.equals("(")) {
+                stack.push(token);
+            } else if (token.equals(")")) {
+                while (!stack.isEmpty()) {
+                    String topToken = stack.pop();
+                    if (!topToken.equals("(")) {
+                        rpn.add(topToken);
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                while (!stack.isEmpty() && getOperPriority(stack.peek()) >= getOperPriority(token)) {
+                    rpn.add(stack.pop());
+                }
+                stack.push(token);
+            }
+        }
+        while (!stack.isEmpty()) {
+            rpn.add(stack.pop());
+        }
+        return rpn;
+    }
+
+    public double evalRpnDouble(List<String> rpn) {
+        Deque<String> stack = new LinkedList<>();
+        stack.push("0");
+        for (String token : rpn) {
+            if (operSet.contains(token)) {
+                double second = Double.valueOf(stack.pop());
+                double first = Double.valueOf(stack.pop());
+                double tmp = 0d;
+                switch (token) {
+                    case "+":
+                        tmp = first + second;
+                        break;
+                    case "-":
+                        tmp = first - second;
+                        break;
+                    case "*":
+                        tmp = first * second;
+                        break;
+                    case "/":
+                        tmp = first / second;
+                        break;
+                    default:
+                        ;
+                }
+                stack.push(String.valueOf(tmp));
+            } else {
+                stack.push(token);
+            }
+        }
+        return stack.isEmpty() ? 0d : Double.valueOf(stack.pop());
+
+    }
+
 }
