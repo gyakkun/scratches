@@ -8,7 +8,7 @@ class Scratch {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
-        while((n = br.readLine())!=null) {
+        while ((n = br.readLine()) != null) {
             int i = Integer.valueOf(n);
             System.out.println(numOfPerfectNum(i));
         }
@@ -30,56 +30,29 @@ class Scratch {
     }
 
     public static int numOfPerfectNum(int n) {
+        hj56Result = 0;
         for (int i = 6; i <= n; i++) {
             calFactor(i);
         }
-        Collections.reverse(perfectNum);
-        System.out.println(perfectNum);
         return hj56Result;
     }
 
     private static void calFactor(int n) {
         int upperBound = (int) (Math.sqrt(n) + 1);
-        Set<Integer> s = new HashSet<>();
-        boolean[] visited = new boolean[upperBound + 1];
-        for (int i = 1; i <= upperBound; i++) {
-            if (!visited[i] && n % i == 0) {
-                s.add(i);
-                s.add(n / i);
-                if (numFactorMap.containsKey(i)) {
-                    Set<Integer> tmp = numFactorMap.get(i);
-                    Iterator<Integer> it = tmp.iterator();
-                    while (it.hasNext()) {
-                        int j = it.next();
-                        s.add(j);
-                        visited[j] = true;
-                    }
+        int sum = 1;
+        for (int i = 2; i < upperBound; i++) {
+            if (n % i == 0 ) {
+                int de = n / i;
+                if (de == i) {// 平方根
+                    sum += de;
+                } else {
+                    sum += i;
+                    sum += de;
                 }
-//                if (numFactorMap.containsKey(n / i)) {
-//                    Set<Integer> tmp = numFactorMap.get(n / i);
-//                    Iterator<Integer> it = tmp.iterator();
-//                    while (it.hasNext()) {
-//                        int j = it.next();
-//                        s.add(j);
-//                        if (j <= upperBound) {
-//                            visited[j] = true;
-//                        }
-//                    }
-//                }
-                visited[i] = true;
             }
         }
-        numFactorMap.put(n, s);
-        Iterator<Integer> it = s.iterator();
-        int sumFactor = 0;
-        while (it.hasNext()) {
-            int i = it.next();
-            if (i != n) sumFactor += i;
-        }
-        if (sumFactor == n) {
-            hj56Result++;
-            perfectNum.add(n);
-        }
+
+        if (sum == n) hj56Result++;
     }
 
     // PRIMEOJ 1002
