@@ -11,12 +11,31 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-            int i = Integer.valueOf(n);
             n = br.readLine();
-            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            System.out.println(arraySplit(intArr));
+            Map<String, Integer> votes = new HashMap<>();
+            String[] idArr = n.trim().split(" ");
+            for (String id : idArr) {
+                votes.put(id, 0);
+            }
+            n = br.readLine();
+            n = br.readLine();
+            String[] voteArr = n.trim().split(" ");
+            int invalidCtr = 0;
+            for (String vote : voteArr) {
+                if (votes.containsKey(vote)) {
+                    votes.put(vote, votes.get(vote) + 1);
+                } else {
+                    invalidCtr++;
+                }
+            }
+            for (String id : idArr) {
+                System.out.println(id + " : " + votes.get(id));
+            }
+            System.out.println("Invalid : " + invalidCtr);
         }
     }
+
+    // HJ94
 
     // HJ93
     public static boolean arraySplit(Integer[] arr) {
