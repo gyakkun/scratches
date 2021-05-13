@@ -8,10 +8,39 @@ class Scratch {
         long timing = System.currentTimeMillis();
         int[] a = new int[]{3, 2, 3};
         System.err.println(
-                s.decode(new int[]{6, 5, 4, 6})
+                s.numWays(500, 1000000)
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1269
+    final int lc1269Mod = 1000000007;
+
+    public int numWays(int steps, int arrLen) {
+        // Try with Dynamic programming, dp(pos,steps): number of ways to back pos = 0 using exactly "steps" moves.
+        Map<Pair<Integer, Integer>, Integer> memo = new HashMap<>();
+        return numWaysHelper(0, steps, arrLen, memo);
+    }
+
+    // steps: 剩余可走的步数 pos: 当前的位置下标
+    private int numWaysHelper(int pos, int steps, int arrLen, Map<Pair<Integer, Integer>, Integer> memo) {
+        if (steps < pos) return 0;
+        if (steps == pos) return 1;
+        if (memo.containsKey(new Pair<>(pos, steps))) {
+            return memo.get(new Pair<>(pos, steps));
+        }
+        int result = 0;
+        if (pos - 1 >= 0) {
+            result = (result + numWaysHelper(pos - 1, steps - 1, arrLen, memo)) % lc1269Mod;
+        }
+        if (pos + 1 < arrLen) {
+            result = (result + numWaysHelper(pos + 1, steps - 1, arrLen, memo)) % lc1269Mod;
+        }
+        result = (result + numWaysHelper(pos, steps - 1, arrLen, memo)) % lc1269Mod;
+        result %= lc1269Mod;
+        memo.put(new Pair<>(pos, steps), result);
+        return result;
     }
 
     // LC1310
