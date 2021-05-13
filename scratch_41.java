@@ -11,14 +11,25 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-            BigInteger sum = BigInteger.valueOf(0);
-            BigInteger next = new BigInteger(n.trim());
-            sum = sum.add(next);
-            n = br.readLine();
-            next = new BigInteger(n.trim());
-            sum = sum.add(next);
-            System.out.println(sum);
+            int i = Integer.valueOf(n);
+            System.out.println(Nicomachus(i));
         }
+    }
+
+    // HJ76
+    public static String Nicomachus(int m) {
+        StringBuffer sb = new StringBuffer();
+        // m * m * m = m (i0 + im-1) / 2
+        // im-1 = i0 + (m-1) *2
+        // m*m = i0+(m-1)
+        // i0 = m*m-m+1
+        int i0 = m * m - m + 1;
+        for (int i = 0; i < m; i++) {
+            sb.append(i0 + "+");
+            i0 += 2;
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
     }
 
     // HJ56
