@@ -9,26 +9,38 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-            n = br.readLine();
-            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-//            int num = Integer.valueOf(n);
-            int posCtr = 0;
-            int negCtr = 0;
-            long posSum = 0;
-            for (int i : intArr) {
-                if (i > 0) {
-                    posCtr++;
-                    posSum += i;
-                } else if (i < 0) {
-                    negCtr++;
-                }
-
+            List<String> result = longestNumberSubstring(n);
+            for(String s : result){
+                System.out.print(s);
             }
-            System.out.println(negCtr + " " + String.format("%.1f", (posSum + 0.0) / (posCtr + 0.0)));
+            System.out.print("," + result.get(0).length()+"\n");
         }
     }
 
-    // HJ97
+    // HJ92
+    public static List<String> longestNumberSubstring(String str) {
+        List<String> result = new ArrayList<>();
+        int maxLen = 0;
+        int curLen = 0;
+        int curIdx = -1;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) >= '0' && str.charAt(i) <= '9') {
+                if(curIdx==-1) curIdx = i;
+                curLen++;
+                if (curLen == maxLen) {
+                    result.add(str.substring(curIdx, curIdx + curLen));
+                } else if (curLen > maxLen) {
+                    result.clear();
+                    result.add(str.substring(curIdx, curIdx + curLen));
+                    maxLen = curLen;
+                }
+            } else {
+                curLen = 0;
+                curIdx = -1;
+            }
+        }
+        return result;
+    }
 
     // HJ99
     public static int countSelfProtectNum(int n) {
