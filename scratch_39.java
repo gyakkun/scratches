@@ -19,16 +19,17 @@ class Scratch {
 
     public int numWays(int steps, int arrLen) {
         // Try with Dynamic programming, dp(pos,steps): number of ways to back pos = 0 using exactly "steps" moves.
-        Map<Pair<Integer, Integer>, Integer> memo = new HashMap<>();
+        int len = Math.min(steps, arrLen);
+        Integer[][] memo = new Integer[len + 2][steps + 2];
         return numWaysHelper(0, steps, arrLen, memo);
     }
 
     // steps: 剩余可走的步数 pos: 当前的位置下标
-    private int numWaysHelper(int pos, int steps, int arrLen, Map<Pair<Integer, Integer>, Integer> memo) {
+    private int numWaysHelper(int pos, int steps, int arrLen, Integer[][] memo) {
         if (steps < pos) return 0;
         if (steps == pos) return 1;
-        if (memo.containsKey(new Pair<>(pos, steps))) {
-            return memo.get(new Pair<>(pos, steps));
+        if (memo[pos][steps] != null) {
+            return memo[pos][steps];
         }
         int result = 0;
         if (pos - 1 >= 0) {
@@ -39,7 +40,7 @@ class Scratch {
         }
         result = (result + numWaysHelper(pos, steps - 1, arrLen, memo)) % lc1269Mod;
         result %= lc1269Mod;
-        memo.put(new Pair<>(pos, steps), result);
+        memo[pos][steps] = result;
         return result;
     }
 
