@@ -9,10 +9,27 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-            n = br.readLine();
-            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            System.out.println(LIS(intArr));
+//            n = br.readLine();
+//            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            System.out.println(longestContinuousOneInBit(Integer.valueOf(n)));
         }
+    }
+
+    // HJ86
+    public static int longestContinuousOneInBit(int num) {
+        int result = 0;
+        int tmp = 0;
+        for (int i = 0; i < Integer.SIZE; i++) {
+            if (((num >> i) & 1) == 1) {
+                tmp++;
+                if (tmp > result) {
+                    result = tmp;
+                }
+            } else {
+                tmp = 0;
+            }
+        }
+        return result;
     }
 
     // HJ103
