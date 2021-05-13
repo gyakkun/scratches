@@ -12,8 +12,51 @@ class Scratch {
         String n;
         while ((n = br.readLine()) != null) {
             int i = Integer.valueOf(n);
-            System.out.println(Nicomachus(i));
+            n = br.readLine();
+            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            System.out.println(arraySplit(intArr));
         }
+    }
+
+    // HJ93
+    public static boolean arraySplit(Integer[] arr) {
+        int sum = 0;
+        List<Integer> threeMul = new ArrayList<>();
+        List<Integer> fiveMul = new ArrayList<>();
+        List<Integer> other = new LinkedList<>();
+        int fiveSum = 0;
+        int threeSum = 0;
+        for (int i : arr) {
+            sum += i;
+            if (i % 5 == 0) {
+                fiveMul.add(i);
+                fiveSum += i;
+            } else if (i % 3 == 0) {
+                threeMul.add(i);
+                threeSum += i;
+            } else {
+                other.add(i);
+            }
+        }
+        if (sum % 2 != 0) return false;
+        int half = sum / 2;
+        int target = half - fiveSum; // 目标: 在Other里面找到和为target的组合
+        return hj93Backtrack(other, target);
+    }
+
+    private static boolean hj93Backtrack(List<Integer> other, int target) {
+        if (target == 0) {
+            return true;
+        }
+        for (int i = 0; i < other.size(); i++) {
+            int tmp = other.get(i);
+            other.remove(i);
+            if (hj93Backtrack(other, target - tmp)) {
+                return true;
+            }
+            other.add(i, tmp);
+        }
+        return false;
     }
 
     // HJ76
