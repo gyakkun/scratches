@@ -12,10 +12,10 @@ class Scratch {
         String n;
         while ((n = br.readLine()) != null) {
             BigInteger sum = BigInteger.valueOf(0);
-            BigInteger next = new BigInteger(n);
+            BigInteger next = new BigInteger(n.trim());
             sum = sum.add(next);
             n = br.readLine();
-            next = new BigInteger(n);
+            next = new BigInteger(n.trim());
             sum = sum.add(next);
             System.out.println(sum);
         }
