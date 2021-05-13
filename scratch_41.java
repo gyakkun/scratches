@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 class Scratch {
@@ -9,8 +11,13 @@ class Scratch {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
         while ((n = br.readLine()) != null) {
-            int i = Integer.valueOf(n);
-            System.out.println(numOfPerfectNum(i));
+            BigInteger sum = BigInteger.valueOf(0);
+            BigInteger next = new BigInteger(n);
+            sum = sum.add(next);
+            n = br.readLine();
+            next = new BigInteger(n);
+            sum = sum.add(next);
+            System.out.println(sum);
         }
     }
 
@@ -41,7 +48,7 @@ class Scratch {
         int upperBound = (int) (Math.sqrt(n) + 1);
         int sum = 1;
         for (int i = 2; i < upperBound; i++) {
-            if (n % i == 0 ) {
+            if (n % i == 0) {
                 int de = n / i;
                 if (de == i) {// 平方根
                     sum += de;
