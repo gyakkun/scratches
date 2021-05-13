@@ -11,8 +11,46 @@ class Scratch {
         while ((n = br.readLine()) != null) {
 //            n = br.readLine();
 //            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
-            System.out.println(longestContinuousOneInBit(Integer.valueOf(n)));
+            System.out.println(countSelfProtectNum(Integer.valueOf(n)));
         }
+    }
+
+    // HJ99
+    public static int countSelfProtectNum(int n) {
+        int ctr = 0;
+        for (int i = 0; i <= n; i++) {
+            int mod10 = i % 10;
+            if (mod10 == 0 || mod10 == 1 || mod10 == 5 || mod10 == 6) {
+                if(isSelfProtectNum(i)) ctr++;
+            }
+        }
+        return ctr;
+    }
+
+    public static boolean isSelfProtectNum(int n) {
+        int numDigit = countDigit(n);
+        long sqr = (long) n * (long) n;
+        if ((sqr - n) % 10 != 0) return false;
+        long tenPow = tenPow(numDigit);
+        return sqr % tenPow == n;
+    }
+
+    private static long tenPow(int n) {
+        long result = 1;
+        while (n-- != 0) {
+            result *= 10;
+        }
+        return result;
+    }
+
+    private static int countDigit(long n) {
+        if (n == 0l) return 1;
+        int result = 0;
+        while (n != 0) {
+            result++;
+            n /= 10;
+        }
+        return result;
     }
 
     // HJ86
