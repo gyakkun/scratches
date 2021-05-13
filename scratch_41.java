@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 
 class Scratch {
@@ -12,30 +10,23 @@ class Scratch {
         String n;
         while ((n = br.readLine()) != null) {
             n = br.readLine();
-            Map<String, Integer> votes = new HashMap<>();
-            String[] idArr = n.trim().split(" ");
-            for (String id : idArr) {
-                votes.put(id, 0);
-            }
-            n = br.readLine();
-            n = br.readLine();
-            String[] voteArr = n.trim().split(" ");
-            int invalidCtr = 0;
-            for (String vote : voteArr) {
-                if (votes.containsKey(vote)) {
-                    votes.put(vote, votes.get(vote) + 1);
-                } else {
-                    invalidCtr++;
-                }
-            }
-            for (String id : idArr) {
-                System.out.println(id + " : " + votes.get(id));
-            }
-            System.out.println("Invalid : " + invalidCtr);
+            Integer[] intArr = Arrays.stream(n.trim().split(" ")).map(Integer::valueOf).toArray(Integer[]::new);
+            System.out.println(LIS(intArr));
         }
     }
 
-    // HJ94
+    // HJ103
+    public static int LIS(Integer[] arr) {
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i : arr) {
+            Integer ceil = ts.ceiling(i);
+            if (ceil != null) {
+                ts.remove(ceil);
+            }
+            ts.add(i);
+        }
+        return ts.size();
+    }
 
     // HJ93
     public static boolean arraySplit(Integer[] arr) {
