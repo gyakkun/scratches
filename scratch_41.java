@@ -301,7 +301,6 @@ class Calculator {
     public List<String> tokenToRpn(List<String> tokens) {
         Deque<String> stack = new LinkedList<>();
         List<String> rpn = new ArrayList<>();
-        String tmp;
         for (String token : tokens) {
             if (!notNumberToken.contains(token)) {
                 rpn.add(token);

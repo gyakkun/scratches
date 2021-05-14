@@ -8,10 +8,69 @@ class Scratch {
         long timing = System.currentTimeMillis();
         int[] a = new int[]{3, 2, 3};
         System.err.println(
-                s.numWays(500, 1000000)
+                s.intToRoman(1994)
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC12
+    Map<Integer, String> th = new HashMap<Integer, String>() {{
+        put(3, "MMM");
+        put(2, "MM");
+        put(1, "M");
+        put(0, "");
+    }};
+    Map<Integer, String> hu = new HashMap<Integer, String>() {{
+        put(9, "CM");
+        put(8, "DCCC");
+        put(7, "DCC");
+        put(6, "DC");
+        put(5, "D");
+        put(4, "CD");
+        put(3, "CCC");
+        put(2, "CC");
+        put(1, "C");
+        put(0, "");
+    }};
+    Map<Integer, String> te = new HashMap<Integer, String>() {{
+        put(9, "XC");
+        put(8, "LXXX");
+        put(7, "LXX");
+        put(6, "LX");
+        put(5, "L");
+        put(4, "XL");
+        put(3, "XXX");
+        put(2, "XX");
+        put(1, "X");
+        put(0, "");
+    }};
+    Map<Integer, String> on = new HashMap<Integer, String>() {{
+        put(9, "IX");
+        put(8, "VIII");
+        put(7, "VII");
+        put(6, "VI");
+        put(5, "V");
+        put(4, "IV");
+        put(3, "III");
+        put(2, "II");
+        put(1, "I");
+        put(0, "");
+    }};
+    public String intToRoman(int num) {
+        // 1-3999
+        int thousand = num / 1000;
+        int hundred = (num - thousand * 1000) / 100;
+        int ten = (num - hundred * 100 - thousand * 1000) / 10;
+        int one = num % 10;
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(th.get(thousand));
+        sb.append(hu.get(hundred));
+        sb.append(te.get(ten));
+        sb.append(on.get(one));
+
+        return sb.toString();
     }
 
     // LC1269
