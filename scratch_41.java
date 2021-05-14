@@ -8,11 +8,36 @@ class Scratch {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String n;
-        Calculator cal = new Calculator();
-        cal.calculateDouble("3*18");
+
         while ((n = br.readLine()) != null) {
-            System.out.println(cal.calculateDouble(n));
+            System.out.println(countSeven(Integer.valueOf(n)));
         }
+    }
+
+    // HJ55
+    public static int countSeven(int n) {
+        int result = 0;
+        for (int i = 1; i <= n; i++) {
+            if (i % 7 == 0) {
+                result++;
+                continue;
+            }
+            int numDigit = countDigit(i);
+            for (int j = 0; j < numDigit; j++) {
+                if ((i / tenPow(j)) % 10 == 7) {
+                    result++;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    // HJ7
+    public static String roundBelowFive(String fl) {
+        double d = Double.valueOf(fl);
+        long round = Math.round(d);
+        return String.format("%d", round);
     }
 
     // HJ92
