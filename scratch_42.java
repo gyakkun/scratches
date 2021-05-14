@@ -1,7 +1,7 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
+import com.alibaba.druid.sql.visitor.functions.Char;
+import javafx.util.Pair;
+
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
@@ -14,6 +14,33 @@ class Scratch {
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC451
+    public String frequencySort(String s) {
+        StringBuffer sb = new StringBuffer(s.length());
+
+        Map<Character, Integer> freq = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            freq.put(c, freq.getOrDefault(c, 0) + 1);
+        }
+        List<Pair<Character, Integer>> freqList = new ArrayList<>(freq.keySet().size());
+        for (Map.Entry<Character, Integer> entry : freq.entrySet()) {
+            freqList.add(new Pair<>(entry.getKey(), entry.getValue()));
+        }
+        Collections.sort(freqList, new Comparator<Pair<Character, Integer>>() {
+            @Override
+            public int compare(Pair<Character, Integer> o1, Pair<Character, Integer> o2) {
+                return o2.getValue() - o1.getValue();
+            }
+        });
+        for (Pair<Character, Integer> pair : freqList) {
+            for (int i = 0; i < pair.getValue(); i++) {
+                sb.append(pair.getKey());
+            }
+        }
+
+        return sb.toString();
     }
 
     // LC784
