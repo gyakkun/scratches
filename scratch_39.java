@@ -15,48 +15,11 @@ class Scratch {
     }
 
     // LC12
-    Map<Integer, String> th = new HashMap<Integer, String>() {{
-        put(3, "MMM");
-        put(2, "MM");
-        put(1, "M");
-        put(0, "");
-    }};
-    Map<Integer, String> hu = new HashMap<Integer, String>() {{
-        put(9, "CM");
-        put(8, "DCCC");
-        put(7, "DCC");
-        put(6, "DC");
-        put(5, "D");
-        put(4, "CD");
-        put(3, "CCC");
-        put(2, "CC");
-        put(1, "C");
-        put(0, "");
-    }};
-    Map<Integer, String> te = new HashMap<Integer, String>() {{
-        put(9, "XC");
-        put(8, "LXXX");
-        put(7, "LXX");
-        put(6, "LX");
-        put(5, "L");
-        put(4, "XL");
-        put(3, "XXX");
-        put(2, "XX");
-        put(1, "X");
-        put(0, "");
-    }};
-    Map<Integer, String> on = new HashMap<Integer, String>() {{
-        put(9, "IX");
-        put(8, "VIII");
-        put(7, "VII");
-        put(6, "VI");
-        put(5, "V");
-        put(4, "IV");
-        put(3, "III");
-        put(2, "II");
-        put(1, "I");
-        put(0, "");
-    }};
+    final static String[] th = new String[]{"", "M", "MM", "MMM"};
+    final static String[] hu = new String[]{"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+    final static String[] te = new String[]{"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+    final static String[] on = new String[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+
     public String intToRoman(int num) {
         // 1-3999
         int thousand = num / 1000;
@@ -65,10 +28,10 @@ class Scratch {
         int one = num % 10;
 
         StringBuffer sb = new StringBuffer();
-        sb.append(th.get(thousand));
-        sb.append(hu.get(hundred));
-        sb.append(te.get(ten));
-        sb.append(on.get(one));
+        sb.append(th[thousand]);
+        sb.append(hu[hundred]);
+        sb.append(te[ten]);
+        sb.append(on[one]);
 
         return sb.toString();
     }
