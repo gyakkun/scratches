@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,8 +11,50 @@ class Scratch {
         String n;
 
         while ((n = br.readLine()) != null) {
-            System.out.println(countSeven(Integer.valueOf(n)));
+            List<Integer> twoPrime = closetPrimeToSumEven(Integer.valueOf(n));
+            for (int i : twoPrime) {
+                System.out.println(i);
+            }
         }
+    }
+
+    // HJ60
+    public static List<Integer> closetPrimeToSumEven(int n) { // n is a even number
+        // 欧拉筛
+        List<Integer> primeList = new ArrayList<>();
+        Set<Integer> primeSet;
+        Set<Integer> notPrime = new HashSet<>();
+        for (int i = 2; i <= n; i++) {
+            if (!notPrime.contains(i)) {
+                primeList.add(i);
+            }
+            for (int j = 0; j < primeList.size(); j++) {
+                if (i * primeList.get(j) > n) break;
+                notPrime.add(i * primeList.get(j));
+                if (i % primeList.get(j) == 0) break;
+            }
+        }
+        primeSet = new HashSet<>(primeList);
+        int minDiff = Integer.MAX_VALUE;
+        int pr1 = -1, pr2 = -1;
+        Iterator<Integer> it = primeSet.iterator();
+        while (it.hasNext()) {
+            int prime1 = it.next();
+            if (primeSet.contains(n - prime1)) {
+                if (Math.abs(n - prime1 - prime1) < minDiff) {
+                    pr1 = prime1;
+                    pr2 = n - prime1;
+                    minDiff = Math.abs(n - prime1 - prime1);
+                }
+            }
+        }
+        List<Integer> result = new ArrayList<>(2);
+        if (pr1 != -1 && pr2 != -1) {
+            result.add(pr1);
+            result.add(pr2);
+        }
+        Collections.sort(result);
+        return result;
     }
 
     // HJ55
