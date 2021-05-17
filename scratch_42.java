@@ -7,7 +7,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.canPartitionKSubsetsTLE(new int[]{3522, 181, 521, 515, 304, 123, 2512, 312, 922, 407, 146, 1932, 4037, 2646, 3871, 269}, 5));
+        System.err.println(s.canPartitionKSubsetsTLE(new int[]{815, 625, 3889, 4471, 60, 494, 944, 1118, 4623, 497, 771, 679, 1240, 202, 601, 883}, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -92,40 +92,35 @@ class Scratch {
         return false;
     }
 
-    // LC698 TLE 剪枝后还是TLE
+    // LC698 TLE 注意剪枝技巧
     public boolean canPartitionKSubsetsTLE(int[] nums, int k) {
         int sum = 0;
-        List<Integer> option = new LinkedList<>();
         for (int i : nums) {
-            option.add(i);
             sum += i;
         }
         if (sum % k != 0) return false;
         int subsetSum = sum / k;
-
-        return lc698helperTLE(nums, subsetSum, k, 0, option);
+        boolean[] option = new boolean[nums.length];
+        return lc698helperTLE(nums, subsetSum, k, 0, option, 0);
     }
 
-    private boolean lc698helperTLE(int[] nums, int subsetSum, int leftSetNum, int currentSum, List<Integer> option) {
-        if (leftSetNum == 0 && currentSum == 0) {
+    private boolean lc698helperTLE(int[] nums, int subsetSum, int leftSetNum, int currentSum, boolean[] option, int start) {
+        if (leftSetNum == 0) {
             return true;
         }
-        for (int i = 0; i < option.size(); i++) {
-            int tmpOption = option.get(i);
-            int tmpSum = currentSum + tmpOption;
-            option.remove(i);
-
-            if (tmpSum == subsetSum) {
-                if (lc698helperTLE(nums, subsetSum, leftSetNum - 1, 0, option)) {
+        if (currentSum == subsetSum) {
+            return lc698helperTLE(nums, subsetSum, leftSetNum - 1, 0, option, 0); // 注意这里start改成了0, 从头开始
+        }
+        for (int i = start; i < nums.length; i++) { // 注意剪枝技巧, 用start作为开始下标, 不顾左边可能已经挑选的 (因为是证明存在性, 故若存在答案, 则必然存在一种从左到右依次划分的方法???)
+            if (!option[i] && currentSum + nums[i] <= subsetSum) {
+                option[i] = true;
+                int tmpSum = currentSum + nums[i];
+                if (lc698helperTLE(nums, subsetSum, leftSetNum, tmpSum, option, i + 1)) {
                     return true;
                 }
-            } else if(tmpSum<subsetSum) { // 注意这里的剪枝
-                if (lc698helperTLE(nums, subsetSum, leftSetNum, tmpSum, option)) {
-                    return true;
-                }
+                option[i] = false;
             }
 
-            option.add(i, tmpOption);
         }
         return false;
     }
