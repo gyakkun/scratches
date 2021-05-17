@@ -1,4 +1,3 @@
-import com.alibaba.druid.sql.visitor.functions.Char;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -14,6 +13,33 @@ class Scratch {
         );
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC13
+    public int romanToInt(String s) {
+        Map<Character, Integer> m = new HashMap<Character, Integer>() {{
+            put('I', 1);
+            put('V', 5);
+            put('X', 10);
+            put('L', 50);
+            put('C', 100);
+            put('D', 500);
+            put('M', 1000);
+        }};
+        int pre = m.get(s.charAt(0));
+        int cur = 1;
+        int sum = 0;
+        while (cur < s.length()) {
+            int tmp = m.get(s.charAt(cur++));
+            if (pre < tmp) {
+                sum -= pre;
+            } else {
+                sum += pre;
+            }
+            pre = tmp;
+        }
+        sum += pre;
+        return sum;
     }
 
     // LC451
