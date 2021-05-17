@@ -92,7 +92,7 @@ class Scratch {
         return false;
     }
 
-    // LC698 TLE 剪枝后AC
+    // LC698 TLE 剪枝后还是TLE
     public boolean canPartitionKSubsetsTLE(int[] nums, int k) {
         int sum = 0;
         List<Integer> option = new LinkedList<>();
