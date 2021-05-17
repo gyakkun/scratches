@@ -9,7 +9,6 @@ class Scratch {
     }
 
 
-
     public int[][] mergeInterval(int[][] intervals) {
         if (intervals.length == 0) {
             return new int[0][2];
@@ -599,7 +598,7 @@ class Scratch {
             m.put(s.charAt(right), m.getOrDefault(s.charAt(right), 0) + 1);
             while (left < n && m.size() > k) {
                 if (m.containsKey(s.charAt(left))) {
-                    m.put(s.charAt(left), m.get(s.charAt(left) - 1));
+                    m.put(s.charAt(left), m.get(s.charAt(left)) - 1);
                     if (m.get(s.charAt(left)) == 0) {
                         m.remove(s.charAt(left));
                     }
