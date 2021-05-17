@@ -9,7 +9,7 @@ class Scratch {
 
         int sum = 99;
         for (int i = 1; i <= 99; i++) {
-            if(i==55) continue;
+            if (i == 55) continue;
             sum ^= i;
         }
 
