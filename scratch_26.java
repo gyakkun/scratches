@@ -127,6 +127,7 @@ class Scratch {
 
     }
 
+    // LC142
     public ListNode detectCycle(ListNode head) {
         if (head == null) {
             return null;
