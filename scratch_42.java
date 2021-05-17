@@ -40,6 +40,23 @@ class Scratch {
         return sum;
     }
 
+    // LC70
+    public int climbStairs(int n) {
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        if (n == 2) return 2;
+        // return climbStairs(n - 1) + climbStairs(n - 2);
+
+        int preOne = 1, preTwo = 1, cur = 2; // 0阶算有一种方法
+        for (int i = 3; i <= n; i++) {
+            int tmp = cur + preTwo;
+            preOne = preTwo;
+            preTwo = cur;
+            cur = tmp;
+        }
+        return cur;
+    }
+
     // LC698
     public boolean canPartitionKSubsets(int[] nums, int k) {
         int sum = 0;
