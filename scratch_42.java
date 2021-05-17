@@ -9,8 +9,10 @@ class Scratch {
         int[] arr = new int[]{1, 4, 2, 3};
         int k = 4;
         System.err.println(
-                s.letterCasePermutation("12345")
+                ""
         );
+//        StringBuffer sb = new StringBuffer("012");
+//        sb.insert(3, "A");
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -40,6 +42,44 @@ class Scratch {
         }
         sum += pre;
         return sum;
+    }
+
+    // LC993
+    public boolean isCousins(TreeNode root, int x, int y) {
+        if (root == null || root.left == null || root.right == null) return false;
+        Deque<TreeNode> q = new LinkedList<>();
+        Map<TreeNode, TreeNode> father = new HashMap<>();
+        Map<TreeNode, Integer> layer = new HashMap<>();
+        q.offer(root);
+        int layerCtr = -1;
+        boolean xFlag = false, yFlag = false;
+        TreeNode xTN = null, yTN = null;
+        while (!q.isEmpty()) {
+            layerCtr++;
+            int qLen = q.size();
+            for (int i = 0; i < qLen; i++) {
+                TreeNode tmp = q.poll();
+                layer.put(tmp, layerCtr);
+                if (tmp.left != null) {
+                    father.put(tmp.left, tmp);
+                    q.offer(tmp.left);
+                }
+                if (tmp.right != null) {
+                    father.put(tmp.right, tmp);
+                    q.offer(tmp.right);
+                }
+                if (tmp.val == x) {
+                    xTN = tmp;
+                    xFlag = true;
+                }
+                if (tmp.val == y) {
+                    yTN = tmp;
+                    yFlag = true;
+                }
+                if (xFlag && yFlag) break;
+            }
+        }
+        return father.get(xTN) != father.get(yTN) && layer.get(xTN) == layer.get(yTN);
     }
 
     // LC451
@@ -156,4 +196,23 @@ class Scratch {
         }
     }
 
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
 }
