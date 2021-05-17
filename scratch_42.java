@@ -7,7 +7,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.nextGreaterElements(new int[]{1,2,1}));
+        System.err.println(s.nextGreaterElements(new int[]{1, 2, 1}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -37,6 +37,47 @@ class Scratch {
         }
         sum += pre;
         return sum;
+    }
+
+    // LC416 DP 分割等和子集
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        for (int i : nums) {
+            sum += i;
+        }
+        int halfSum = sum / 2;
+        int[][] dp = new int[nums.length + 1][halfSum + 1];
+        // dp[i][j] 表示添加前i个元素 在背包大小限制为j的情况下能达到的最大值
+        for (int i = 1; i <= nums.length; i++) {
+            for (int j = 0; j <= halfSum; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j - nums[i - 1] >= 0 && dp[i - 1][j - nums[i - 1]] + nums[i - 1] <= halfSum) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - nums[i - 1]] + nums[i - 1]);
+                }
+            }
+            if(dp[i][halfSum]==halfSum) return true;
+        }
+
+        return false;
+    }
+
+    // LC494
+    int lc494Result = 0;
+
+    public int findTargetSumWaysDFS(int[] array, int target) {
+        lc494Helper(array, target, 0, 0);
+        return lc494Result;
+    }
+
+    private void lc494Helper(int[] array, int target, int currentIdx, int currentSum) {
+        if (currentIdx == array.length) {
+            if (currentSum == target) {
+                lc494Result++;
+            }
+        } else {
+            lc494Helper(array, target, currentIdx + 1, currentSum + array[currentIdx]);
+            lc494Helper(array, target, currentIdx + 1, currentSum - array[currentIdx]);
+        }
     }
 
     // LC503
