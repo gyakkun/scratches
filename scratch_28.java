@@ -11,6 +11,7 @@ class Scratch {
     }
 
 
+    // LC297
     public class Codec {
 
         // Encodes a tree to a single string.
@@ -117,7 +118,7 @@ class Scratch {
         return true;
     }
 
-    // LC767
+    // LC767 发牌算法
     class Pair {
         char left;
         int right;
@@ -179,6 +180,7 @@ class Scratch {
         return result;
     }
 
+    // LC1200
     public List<List<Integer>> minimumAbsDifference(int[] arr) {
         Set<Integer> s = new HashSet<>();
         List<List<Integer>> result = new ArrayList<>();
@@ -202,6 +204,7 @@ class Scratch {
         return result;
     }
 
+    // LC201
     public int rangeBitwiseAnd(int left, int right) {
         int shift = 0;
         while (left < right) {
@@ -213,7 +216,6 @@ class Scratch {
     }
 
     // LC754
-
     public int reachNumber(int target) {
         double absTarget = Math.abs(target);
         double root = (Math.sqrt(1 + 8 * absTarget) - 1d) / 2d;
@@ -229,6 +231,7 @@ class Scratch {
         return min + 2;
     }
 
+    // LC1297
     public int maxFreq(String s, int maxLetters, int minSize, int maxSize) {
         int n = s.length();
         Map<String, Integer> occ = new HashMap<>();
@@ -302,7 +305,7 @@ class Scratch {
         return num > maxLetters;
     }
 
-
+    // LC320
     private void generateAbbreviationsDfs(char[] wa, int from, int last, String abbr, List<String> result) {
         if (from == wa.length) {
             result.add(abbr);
@@ -323,7 +326,6 @@ class Scratch {
     // LC320
     // Given word = "word", return the following list (order does not matter):
     // ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
-
     public List<String> generateAbbreviationsBinaryMask(String word) {
         List<String> result = new ArrayList<>();
         int n = word.length();
@@ -352,7 +354,7 @@ class Scratch {
         return result;
     }
 
-
+    // LC1494 并行课程
     public int minNumberOfSemesters(int n, int[][] dependencies, int k) {
 
         // 前置课程约束: 不能在同一个学期, 既选择一门课程C有选择C的前置课程(如C有前置课程)
@@ -404,6 +406,7 @@ class Scratch {
         return dp[(1 << n) - 1];
     }
 
+    // LC46 全排列 (回溯)
     List<List<Integer>> permuteResult;
 
     public List<List<Integer>> permute(int[] nums) {
@@ -436,7 +439,7 @@ class Scratch {
         }
     }
 
-
+    // LC78
     public List<List<Integer>> subsets(int[] nums) {
         Arrays.sort(nums);
         List<List<Integer>> subsetsResult = new ArrayList<>();
@@ -498,6 +501,7 @@ class Scratch {
         return result;
     }
 
+    // LC502
     public int findMaximizedCapital(int k, int W, int[] pureProfits, int[] capital) {
         int n = pureProfits.length;
         Set<Integer> tmp = new HashSet<>();
@@ -560,7 +564,7 @@ class Scratch {
         }
     }
 
-
+    // LC131
     boolean[][] dp;
     List<List<String>> ret = new ArrayList<>();
     List<String> ans = new ArrayList<>();
@@ -595,6 +599,7 @@ class Scratch {
         }
     }
 
+    // LC132
     public int minCut(String s) {
 
         int n = s.length();
@@ -644,6 +649,7 @@ class Scratch {
 
     }
 
+    // LC5
     public String longestPalindrome(String s) {
         int n = s.length();
         boolean[][] dp = new boolean[n][n];
@@ -667,6 +673,7 @@ class Scratch {
     }
 
 
+    // LC1047
     public String removeDuplicates(String s) {
         Deque<Character> stack = new LinkedList<>();
         char[] cArr = s.toCharArray();
@@ -691,6 +698,7 @@ class Scratch {
 
 }
 
+// LC295 ?
 class MedianFinder {
 
     PriorityQueue<Integer> maxHeap;
