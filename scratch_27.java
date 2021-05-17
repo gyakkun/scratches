@@ -442,7 +442,7 @@ class Scratch {
         return -1;
     }
 
-
+    // LC41
     public int firstMissingPositive(int[] nums) {
         int n = nums.length;
         for (int i = 0; i < n; ++i) {
@@ -460,6 +460,7 @@ class Scratch {
         return n + 1;
     }
 
+    // LC268
     public int missingNumber(int[] nums) {
         int n = nums.length;
         int missing = n;

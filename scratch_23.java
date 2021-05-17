@@ -7,7 +7,7 @@ class Scratch {
     }
 
 
-
+    // LC448
     public List<Integer> findDisappearedNumbers(int[] nums) {
         List<Integer> result = new ArrayList<>();
         int n = nums.length;
@@ -22,6 +22,7 @@ class Scratch {
         return result;
     }
 
+    // LC1052
     public int maxSatisfied(int[] customers, int[] grumpy, int x) {
         int time = customers.length;
         int totalSatisfyTime = 0;
@@ -44,6 +45,7 @@ class Scratch {
         return totalSatisfyTime + maxBearTime;
     }
 
+    // LC567
     public boolean checkInclusion(String s1, String s2) {
         int len = s1.length();
         int[] s1Freq = getCharFreq(s1);
@@ -74,6 +76,7 @@ class Scratch {
         return true;
     }
 
+    // LC992
     public int subarraysWithKDistinct(int[] A, int K) {
         int n = A.length;
         int leftK = 0, leftKm1 = 0, right = 0;
@@ -123,6 +126,7 @@ class Scratch {
         return result;
     }
 
+    // LC766
     public boolean isToeplitzMatrix(int[][] matrix) {
         int n = matrix.length;
         int m = matrix[0].length;
@@ -136,6 +140,7 @@ class Scratch {
         return true;
     }
 
+    // LC978
     public int maxTurbulenceSize(int[] arr) {
         int left = 0, right = 2;
         int max = 0;

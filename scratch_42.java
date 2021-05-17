@@ -7,7 +7,13 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.canPartitionKSubsetsTLE(new int[]{815, 625, 3889, 4471, 60, 494, 944, 1118, 4623, 497, 771, 679, 1240, 202, 601, 883}, 3));
+        int sum = 99;
+        for (int i = 1; i <= 99; i++) {
+            if(i==55) continue;
+            sum ^= i;
+        }
+
+        System.err.println(sum);
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
