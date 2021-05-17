@@ -4,7 +4,12 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.canPartitionKSubsets(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, 8));
+        long timing = System.currentTimeMillis();
+
+        System.err.println(s.canPartitionKSubsets(new int[]{3522, 181, 521, 515, 304, 123, 2512, 312, 922, 407, 146, 1932, 4037, 2646, 3871, 269}, 5));
+        timing = System.currentTimeMillis() - timing;
+        System.err.println("TIMING: " + timing + "ms.");
+
     }
 
     // LC210

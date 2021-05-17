@@ -7,7 +7,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.findTargetSumWays(new int[]{1, 1, 1, 1, 1}, 3));
+        System.err.println(s.canPartitionKSubsetsTLE(new int[]{3522, 181, 521, 515, 304, 123, 2512, 312, 922, 407, 146, 1932, 4037, 2646, 3871, 269}, 5));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -38,6 +38,96 @@ class Scratch {
         }
         sum += pre;
         return sum;
+    }
+
+    // LC698
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+        for (int i : nums) {
+            sum += i;
+        }
+        if (sum % k != 0) return false;
+        int subsetSum = sum / k;
+        // 从空集的补集(全集)开始(11111) > 产生子集(10101) > 如果和为k > (选择)产生补集(01010) > 对补集使用backtrack函数 > 取消选择
+        // 开一个数组存和值, 初始化为-1, 按需求和
+        int[] sums = new int[1 << nums.length];
+        Arrays.fill(sums, -1);
+
+        return lc698Helper(nums, (1 << nums.length) - 1, new ArrayList<>(k), k, sums, subsetSum);
+    }
+
+    private boolean lc698Helper(int[] nums, int fullSetMask, List<Integer> selectedSet, int k, int[] sums, int subsetSum) {
+        if (selectedSet.size() == k) {
+            return true;
+        }
+        if (fullSetMask == 0) {
+            return false;
+        }
+        // 产生二进制子集算法
+        for (int subset = fullSetMask; subset != 0; subset = (subset - 1) & fullSetMask) {
+            if (sums[subset] == -1) {
+                sums[subset] = 0;
+                for (int i = 0; i < nums.length; i++) {
+                    if (((subset >> i) & 1) == 1) {
+                        sums[subset] += nums[i];
+                    }
+                }
+            }
+            if (sums[subset] == subsetSum) {
+                selectedSet.add(subset);
+                // 求当前已经选的集合的并集
+                int all = 0;
+                for (int i : selectedSet) {
+                    all |= i;
+                }
+                // 求当前并集的补集
+                int sup = (1 << nums.length) - 1;
+                sup ^= all;
+                if (lc698Helper(nums, sup, selectedSet, k, sums, subsetSum)) {
+                    return true;
+                }
+                selectedSet.remove(selectedSet.size() - 1);
+            }
+        }
+        return false;
+    }
+
+    // LC698 TLE 剪枝后AC
+    public boolean canPartitionKSubsetsTLE(int[] nums, int k) {
+        int sum = 0;
+        List<Integer> option = new LinkedList<>();
+        for (int i : nums) {
+            option.add(i);
+            sum += i;
+        }
+        if (sum % k != 0) return false;
+        int subsetSum = sum / k;
+
+        return lc698helperTLE(nums, subsetSum, k, 0, option);
+    }
+
+    private boolean lc698helperTLE(int[] nums, int subsetSum, int leftSetNum, int currentSum, List<Integer> option) {
+        if (leftSetNum == 0 && currentSum == 0) {
+            return true;
+        }
+        for (int i = 0; i < option.size(); i++) {
+            int tmpOption = option.get(i);
+            int tmpSum = currentSum + tmpOption;
+            option.remove(i);
+
+            if (tmpSum == subsetSum) {
+                if (lc698helperTLE(nums, subsetSum, leftSetNum - 1, 0, option)) {
+                    return true;
+                }
+            } else if(tmpSum<subsetSum) { // 注意这里的剪枝
+                if (lc698helperTLE(nums, subsetSum, leftSetNum, tmpSum, option)) {
+                    return true;
+                }
+            }
+
+            option.add(i, tmpOption);
+        }
+        return false;
     }
 
     // LC494 DP
