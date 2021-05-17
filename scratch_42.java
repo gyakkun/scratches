@@ -46,16 +46,16 @@ class Scratch {
             sum += i;
         }
         int halfSum = sum / 2;
-        int[][] dp = new int[nums.length + 1][halfSum + 1];
+        int[] dp = new int[halfSum + 1];
         // dp[i][j] 表示添加前i个元素 在背包大小限制为j的情况下能达到的最大值
         for (int i = 1; i <= nums.length; i++) {
-            for (int j = 0; j <= halfSum; j++) {
-                dp[i][j] = dp[i - 1][j];
-                if (j - nums[i - 1] >= 0 && dp[i - 1][j - nums[i - 1]] + nums[i - 1] <= halfSum) {
-                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - nums[i - 1]] + nums[i - 1]);
+            for (int j = halfSum; j >= 0; j--) {
+//                dp[j] = dp[j];
+                if (j - nums[i - 1] >= 0 && dp[j - nums[i - 1]] + nums[i - 1] <= halfSum) {
+                    dp[j] = Math.max(dp[j], dp[j - nums[i - 1]] + nums[i - 1]);
                 }
             }
-            if(dp[i][halfSum]==halfSum) return true;
+            if (dp[halfSum] == halfSum) return true;
         }
 
         return false;
