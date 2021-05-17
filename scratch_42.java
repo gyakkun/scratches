@@ -6,13 +6,8 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{1, 4, 2, 3};
-        int k = 4;
-        System.err.println(
-                ""
-        );
-//        StringBuffer sb = new StringBuffer("012");
-//        sb.insert(3, "A");
+
+        System.err.println(s.nextGreaterElements(new int[]{1,2,1}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -42,6 +37,37 @@ class Scratch {
         }
         sum += pre;
         return sum;
+    }
+
+    // LC503
+    public int[] nextGreaterElements(int[] nums) {
+        int[] snge = simpleNGE(nums);
+        int[] doubleArray = new int[nums.length * 2];
+        System.arraycopy(nums, 0, doubleArray, 0, nums.length);
+        System.arraycopy(nums, 0, doubleArray, nums.length, nums.length);
+        int[] dnge = simpleNGE(doubleArray);
+        for (int i = 0; i < nums.length; i++) {
+            if (snge[i] != -1) {
+                continue;
+            } else {
+                snge[i] = dnge[i];
+            }
+        }
+        return snge;
+    }
+
+    public int[] simpleNGE(int[] nums) {
+        int n = nums.length;
+        Deque<Integer> stack = new LinkedList<>();
+        int[] result = new int[n];
+        Arrays.fill(result, -1);
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {
+                result[stack.pop()] = nums[i];
+            }
+            stack.push(i);
+        }
+        return result;
     }
 
     // LC993

@@ -47,6 +47,7 @@ class Scratch {
         return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
     }
 
+    // LC496
     public int[] nextGreaterElement(int[] nums1, int[] nums2) {
         int[] m2 = simpleNGE(nums2);
         Map<Integer, Integer> map = new HashMap<>();
@@ -63,29 +64,19 @@ class Scratch {
     public int[] simpleNGE(int[] nums) {
         int n = nums.length;
         Deque<Integer> stack = new LinkedList<>();
-//        int[] dummy = new int[n + 1];
         int[] result = new int[n];
         Arrays.fill(result, -1);
-//        for (int i = 0; i < n; i++) {
-//            dummy[i] = nums[i];
-//        }
-//        dummy[n] = Integer.MIN_VALUE;
         for (int i = 0; i < n; i++) {
             while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {
                 result[stack.pop()] = nums[i];
             }
             stack.push(i);
         }
-
         return result;
-
     }
 
 
-    // 给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），输出每个元素的下一个更大元素。
-    // 数字 x 的下一个更大的元素是按数组遍历顺序，这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
-    //
-
+    // LC503 
     public int[] nextGreaterElements(int[] nums) {
         int[] doubleNums = new int[nums.length * 2 + 1];
         int[] result = new int[nums.length];
