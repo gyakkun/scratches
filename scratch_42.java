@@ -7,7 +7,8 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.nextGreaterElements(new int[]{1, 2, 1}));
+        System.err.println(s.findTargetSumWays(new int[]{1, 1, 1, 1, 1}, 3));
+
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -37,6 +38,36 @@ class Scratch {
         }
         sum += pre;
         return sum;
+    }
+
+    // LC494 DP
+    public int findTargetSumWays(int[] nums, int target) {
+        // array[i] >=0
+        int sum = 0;
+        for (int i : nums) {
+            sum += i;
+        }
+        if (Math.abs(target) > sum) return 0;
+        int t = sum * 2 + 1;
+        int[][] dp = new int[nums.length + 1][t];
+        // dp[i][j]: 加入前i个元素, 到达j的方案个数
+        // dp[i][j] = dp[i-1][j-nums[i-1]] + dp[i-1][j+nums[i+1]], 注意使用sum做负下标修正偏移量
+        dp[0][sum] = 1;
+
+        for (int i = 1; i <= nums.length; i++) {
+            for (int j = 0; j < t; j++) {
+                int tmp = 0;
+                if (j - nums[i - 1] >= 0) {
+                    tmp += dp[i - 1][j - nums[i - 1]];
+                }
+                if (j + nums[i - 1] < t) {
+                    tmp += dp[i - 1][j + nums[i - 1]];
+                }
+                dp[i][j] = tmp;
+            }
+        }
+
+        return dp[nums.length][sum + target];
     }
 
     // LC416 DP 分割等和子集
