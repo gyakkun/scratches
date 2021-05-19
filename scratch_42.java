@@ -16,7 +16,7 @@ class Scratch {
     // LC557
     public String reverseWords(String s) {
         String[] arr = s.split(" ");
-        for (int i=0;i<arr.length;i++) {
+        for (int i = 0; i < arr.length; i++) {
             String word = arr[i];
             arr[i] = new StringBuffer(word).reverse().toString();
         }
