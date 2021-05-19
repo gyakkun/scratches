@@ -7,10 +7,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.multiply("123", "0"));
+        System.err.println(s.grayCode(16));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC89
+    public List<Integer> grayCode(int n) {
+        if (n == 0) return new ArrayList<Integer>() {{
+            add(0);
+        }};
+        int max = (1 << n);
+        List<Integer> result = new ArrayList<>(max);
+        Set<Integer> set = new HashSet<>(max);
+        result.add(0);
+        set.add(0);
+        for (int i = 1; i < max; i++) {
+            int former = result.get(result.size() - 1);
+            for (int j = 0; j < n; j++) {
+                int cur = former;
+                if (((former >> j) & 1) == 1) {
+                    cur = cur - (1 << j);
+                } else {
+                    cur = cur + (1 << j);
+                }
+                if (!set.contains(cur)) {
+                    set.add(cur);
+                    result.add(cur);
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     // LC43
