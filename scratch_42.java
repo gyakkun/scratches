@@ -7,14 +7,25 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.grayCode(16));
+        System.err.println(s.isPowerOfTwo(0));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC231
+    public boolean isPowerOfTwo(int n) {
+        if (n <= 0) return false;
+        int ctr = 0;
+        for (int i = 0; i < Integer.SIZE; i++) {
+            if (((n >> i) & 1) == 1) ctr++;
+            if (ctr > 1) return false;
+        }
+        return ctr == 1;
+    }
+
     // LC89
-    public List<Integer> grayCode(int n){
+    public List<Integer> grayCode(int n) {
         int max = 1 << n;
         List<Integer> result = new ArrayList<>(max);
         result.add(0);
@@ -658,7 +669,9 @@ class MinStack {
     Deque<Integer> stack;
     Deque<Integer> minStack;
 
-    /** initialize your data structure here. */
+    /**
+     * initialize your data structure here.
+     */
     public MinStack() {
         stack = new LinkedList<>();
         minStack = new LinkedList<>();
