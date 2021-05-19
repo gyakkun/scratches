@@ -13,6 +13,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC292
+    public boolean canWinNim(int n) {
+        return n % 4 != 0;
+    }
+
     // LC235 二叉搜索树
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         TreeNode anc = root;
