@@ -7,10 +7,20 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.isPowerOfTwo(0));
+        System.err.println(s.reverseWords("Let's take LeetCode contest"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC557
+    public String reverseWords(String s) {
+        String[] arr = s.split(" ");
+        for (int i=0;i<arr.length;i++) {
+            String word = arr[i];
+            arr[i] = new StringBuffer(word).reverse().toString();
+        }
+        return String.join(" ", arr);
     }
 
     // LC292
