@@ -7,11 +7,78 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
-        System.err.println(s.isPalindrome(123));
+        System.err.println(s.multiply("123", "0"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC43
+    public String multiply(String num1, String num2) {
+        StringBuffer sb;
+        // 假设num2更短, num1更长
+        if (num1.length() < num2.length()) {
+            String tmp = num2;
+            num2 = num1;
+            num1 = tmp;
+        }
+        List<String> each = new ArrayList<>(num2.length());
+        for (int i = 0; i < num2.length(); i++) {
+            int carry = 0;
+            int twoDigit = num2.charAt(num2.length() - 1 - i) - '0';
+            sb = new StringBuffer();
+            for (int j = 0; j < num1.length(); j++) {
+                int oneDigit = num1.charAt(num1.length() - 1 - j) - '0';
+                int tmpResult = twoDigit * oneDigit + carry;
+                carry = tmpResult / 10;
+                sb.append(tmpResult % 10);
+            }
+            if (carry != 0) {
+                sb.append(carry);
+            }
+            sb = sb.reverse();
+            for (int k = 0; k < i; k++) {
+                sb.append("0");
+            }
+            each.add(sb.toString());
+        }
+
+        String result = each.get(0);
+        for (int i = 1; i < each.size(); i++) {
+            result = add(result, each.get(i));
+        }
+        if (result.matches("^0+$")) {
+            result = "0";
+        }
+        return result;
+    }
+
+    public String add(String num1, String num2) {
+        StringBuffer sb = new StringBuffer();
+        // 确保num1长 num2短
+        if (num1.length() < num2.length()) {
+            String tmp = num1;
+            num1 = num2;
+            num2 = tmp;
+        }
+        int carry = 0;
+        int i = 0;
+        for (; i < num2.length(); i++) {
+            int twoDigit = num2.charAt(num2.length() - 1 - i) - '0';
+            int oneDigit = num1.charAt(num1.length() - 1 - i) - '0';
+            int tmpSum = twoDigit + oneDigit + carry;
+            carry = tmpSum / 10;
+            sb.append(tmpSum % 10);
+        }
+        for (; i < num1.length(); i++) {
+            int oneDigit = num1.charAt(num1.length() - 1 - i) - '0';
+            int tmpSum = oneDigit + carry;
+            carry = tmpSum / 10;
+            sb.append(tmpSum % 10);
+        }
+        if (carry != 0) sb.append(carry);
+        sb = sb.reverse();
+        return sb.toString();
     }
 
     // LC9
