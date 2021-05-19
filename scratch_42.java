@@ -14,7 +14,22 @@ class Scratch {
     }
 
     // LC89
-    public List<Integer> grayCode(int n) {
+    public List<Integer> grayCode(int n){
+        int max = 1 << n;
+        List<Integer> result = new ArrayList<>(max);
+        result.add(0);
+        int head = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = result.size() - 1; j >= 0; j--) {
+                result.add(result.get(j) + head);
+            }
+            head = head << 1;
+        }
+        return result;
+    }
+
+    // LC89
+    public List<Integer> grayCodeSet(int n) {
         if (n == 0) return new ArrayList<Integer>() {{
             add(0);
         }};
