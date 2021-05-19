@@ -6,7 +6,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{3,2,1};
+        int[] arr = new int[]{3, 2, 1};
         s.nextPermutation(arr);
 
         timing = System.currentTimeMillis() - timing;
@@ -19,7 +19,7 @@ class Scratch {
         while (right >= 0 && nums[right] >= nums[right + 1]) {
             right--;
         }
-        if(right>=0){
+        if (right >= 0) {
             int left = nums.length - 1;
             while (left >= 0 && nums[right] >= nums[left]) {
                 left--;
