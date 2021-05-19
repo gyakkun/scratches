@@ -19,6 +19,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1738
+    public int kthLargestValue(int[][] matrix, int k) {
+        // 分行亦或前缀
+        int[][] matrixXorPrefix = new int[matrix.length][matrix[0].length + 1];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 1; j <= matrix[0].length; j++) {
+                matrixXorPrefix[i][j] = matrixXorPrefix[i][j - 1] ^ matrix[i][j - 1];
+            }
+        }
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>(k);
+        for (int j = 0; j < matrix[0].length; j++) {
+            int tmp = 0;
+            for (int i = 0; i < matrix.length; i++) {
+                tmp ^= matrixXorPrefix[i][j + 1];
+                if (minHeap.size() < k) {
+                    minHeap.offer(tmp);
+                } else {
+                    if (tmp > minHeap.peek()) {
+                        minHeap.poll();
+                        minHeap.offer(tmp);
+                    }
+                }
+            }
+        }
+        return minHeap.peek();
+    }
+
     // LC13
     public int romanToInt(String s) {
         Map<Character, Integer> m = new HashMap<Character, Integer>() {{
