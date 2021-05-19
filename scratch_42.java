@@ -6,12 +6,41 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.err.println(s.maximalRectangle(new char[][]{{'1','0','1','0','0'},{'1','0','1','1','1'},{'1','1','1','1','1'},{'1','0','0','1','0'}}
-        ));
+        int[] arr = new int[]{3,2,1};
+        s.nextPermutation(arr);
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC31 **
+    public void nextPermutation(int[] nums) {
+        int right = nums.length - 2;
+        while (right >= 0 && nums[right] >= nums[right + 1]) {
+            right--;
+        }
+        if(right>=0){
+            int left = nums.length - 1;
+            while (left >= 0 && nums[right] >= nums[left]) {
+                left--;
+            }
+            arraySwap(nums, left, right);
+        }
+        arrayReverse(nums, right + 1, nums.length - 1);
+    }
+
+    private void arraySwap(int[] arr, int i, int j) {
+        if (i < 0 || i >= arr.length || j < 0 || j >= arr.length) return;
+        int tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+    }
+
+    private void arrayReverse(int[] arr, int i, int j) {
+        int mid = (i + j + 1) / 2;
+        for (int k = i; k < mid; k++) {
+            arraySwap(arr, k, j - (k - i));
+        }
     }
 
     // LC85
