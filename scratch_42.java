@@ -13,6 +13,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC235 二叉搜索树
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode anc = root;
+        while (true) {
+            if (p.val > anc.val && q.val > anc.val) {
+                anc = anc.right;
+            } else if (p.val < anc.val && q.val < anc.val) {
+                anc = anc.left;
+            } else {
+                break;
+            }
+        }
+        return anc;
+    }
+
     // LC231
     public boolean isPowerOfTwo(int n) {
         if (n <= 0) return false;
