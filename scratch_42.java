@@ -37,6 +37,7 @@ class Scratch {
     }
 
     private void arrayReverse(int[] arr, int i, int j) {
+        if (i < 0 || i >= arr.length || j < 0 || j >= arr.length || j <= i) return;
         int mid = (i + j + 1) / 2;
         for (int k = i; k < mid; k++) {
             arraySwap(arr, k, j - (k - i));
