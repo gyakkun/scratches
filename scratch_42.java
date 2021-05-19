@@ -7,10 +7,36 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.maximalSquare(new char[][]{{'1', '0', '1', '0', '0'}, {'1', '0', '1', '1', '1'}, {'1', '1', '1', '1', '1'}, {'1', '0', '0', '1', '0'}}));
+        System.err.println(s.maximalRectangle(new char[][]{{'1','0','1','0','0'},{'1','0','1','1','1'},{'1','1','1','1','1'},{'1','0','0','1','0'}}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC85
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix.length == 0) return 0;
+        int[][] prefix = new int[matrix.length + 1][matrix[0].length + 1];
+        int max = 0;
+        for (int i = 1; i <= matrix.length; i++) {
+            for (int j = 1; j <= matrix[0].length; j++) {
+                if (matrix[i - 1][j - 1] == '1') {
+                    prefix[i][j] = prefix[i][j - 1] + 1;
+                }
+            }
+        }
+        for (int i = 0; i <= matrix.length; i++) {
+            for (int j = 0; j <= matrix[0].length; j++) {
+                int width = prefix[i][j];
+                for (int k = i; k >= 0; k--) {
+                    int height = i - k + 1;
+                    width = Math.min(width, prefix[k][j]);
+                    max = Math.max(max, height * width);
+                }
+            }
+        }
+        return max;
     }
 
     // LC221
