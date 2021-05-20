@@ -7,10 +7,65 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{3, 2, 1};
-        System.err.println(s.topKFrequent(new String[]{"i", "love", "leetcode", "i", "love", "coding"}, 1));
+        System.err.println(s.removeInvalidParentheses("()())()"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC301 Solution
+    Set<String> lc301result;
+    char[] lc301CharArr;
+    int lc301Len;
+
+    public List<String> removeInvalidParentheses(String s) {
+        lc301result = new HashSet<>();
+        lc301CharArr = s.toCharArray();
+        lc301Len = s.length();
+        // 待删除的左括号数和右括号数
+        int leftRemove = 0;
+        int rightRemove = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '(') {
+                leftRemove++;
+            } else if (c == ')') {
+                if (leftRemove == 0) {
+                    rightRemove++;
+                } else {
+                    leftRemove--;
+                }
+            }
+        }
+        StringBuffer sb = new StringBuffer();
+        lc301backtrack(leftRemove, rightRemove, sb, 0, 0, 0);
+        return new ArrayList<>(lc301result);
+    }
+
+    private void lc301backtrack(int leftRemove, int rightRemove, StringBuffer sb, int curIdx, int leftCtr, int rightCtr) {
+        if (curIdx == lc301Len) {
+            if (leftRemove == 0 && rightRemove == 0) {
+                lc301result.add(sb.toString());
+            }
+            return;
+        }
+
+        char c = lc301CharArr[curIdx];
+        if (c == '(' && leftRemove > 0) {
+            lc301backtrack(leftRemove - 1, rightRemove, sb, curIdx + 1, leftCtr, rightCtr);
+        }
+        if (c == ')' && rightRemove > 0) {
+            lc301backtrack(leftRemove, rightRemove - 1, sb, curIdx + 1, leftCtr, rightCtr);
+        }
+
+        sb.append(c);
+        if (c != '(' && c != ')') {
+            lc301backtrack(leftRemove, rightRemove, sb, curIdx + 1, leftCtr, rightCtr);
+        } else if (c == '(') {
+            lc301backtrack(leftRemove, rightRemove, sb, curIdx + 1, leftCtr + 1, rightCtr);
+        } else if (rightCtr < leftCtr) {
+            lc301backtrack(leftRemove, rightRemove, sb, curIdx + 1, leftCtr, rightCtr + 1);
+        }
+        sb.deleteCharAt(sb.length() - 1);
     }
 
     // LC114 展开 先序遍历顺序
