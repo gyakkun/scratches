@@ -7,10 +7,40 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{3, 2, 1};
-        System.err.println(s.removeInvalidParentheses("()())()"));
+        System.err.println(s.decodeString("3[a2[c]]"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC394
+    public String decodeString(String s) {
+        char[] arr = s.toCharArray();
+        int len = s.length();
+        int idx = 0;
+        Deque<Integer> stackNum = new LinkedList<>();
+        Deque<StringBuffer> stackSb = new LinkedList<>();
+        stackNum.add(1);
+        stackSb.add(new StringBuffer());
+        int num = 0;
+        for (; idx < len; idx++) {
+            if (Character.isDigit(arr[idx])) {
+                num = num * 10 + (arr[idx] - '0');
+            } else if (arr[idx] == '[') {
+                stackNum.push(num);
+                num = 0;
+                stackSb.push(new StringBuffer());
+            } else if (arr[idx] == ']') {
+                StringBuffer top = stackSb.pop();
+                int ctr = stackNum.pop();
+                for (int i = 0; i < ctr; i++) {
+                    stackSb.peek().append(top);
+                }
+            } else {
+                stackSb.peek().append(arr[idx]);
+            }
+        }
+        return stackSb.peek().toString();
     }
 
     // LC301 Solution
