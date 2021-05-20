@@ -20,8 +20,8 @@ class Scratch {
         int idx = 0;
         Deque<Integer> stackNum = new LinkedList<>();
         Deque<StringBuffer> stackSb = new LinkedList<>();
-        stackNum.add(1);
-        stackSb.add(new StringBuffer());
+        stackNum.push(1);
+        stackSb.push(new StringBuffer());
         int num = 0;
         for (; idx < len; idx++) {
             if (Character.isDigit(arr[idx])) {
