@@ -5,12 +5,83 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        long timing = System.currentTimeMillis();
-        int[] arr = new int[]{3, 2, 1};
-        System.err.println(s.decodeString("3[a2[c]]"));
+//        int[] arr = new int[]{};
+//        s.quickSort(arr, 0, arr.length - 1);
 
-        timing = System.currentTimeMillis() - timing;
-        System.err.println("TIMING: " + timing + "ms.");
+        List<Integer> l = new ArrayList<>(100000);
+        Random r = new Random();
+//        for (int i = 0; i < 100000; i++) {
+//            l.add(r.nextInt());
+//        }
+        Integer[] orig;
+        Integer[] arr = new Integer[100000];
+        long qsTotalTime = 0;
+        long rqsTotalTime = 0;
+
+        l = new ArrayList<>(100000);
+        for (int j = 0; j < 100000; j++) {
+            l.add(r.nextInt());
+        }
+        orig = l.toArray(new Integer[100000]);
+        System.arraycopy(orig, 0, arr, 0, 100000);
+        Arrays.sort(arr);
+
+        for (int i = 0; i < 1; i++) {
+
+
+            long qsTiming = System.currentTimeMillis();
+            s.quickSort(arr, 0, arr.length - 1, false);
+            qsTiming = System.currentTimeMillis() - qsTiming;
+
+            System.arraycopy(orig, 0, arr, 0, 100000);
+            long rqsTiming = System.currentTimeMillis();
+            s.quickSort(arr, 0, arr.length - 1, true);
+            rqsTiming = System.currentTimeMillis() - rqsTiming;
+
+            qsTotalTime += qsTiming;
+            rqsTotalTime += rqsTiming;
+        }
+
+        System.err.println("QS TIMING: " + qsTotalTime + "ms.");
+        System.err.println("RQS TIMING: " + rqsTotalTime + "ms.");
+    }
+
+    // Quick Sort
+    Random rr = new Random();
+
+    public void quickSort(Integer[] arr, int start, int end, boolean isRandom) {
+        if (start >= end) return;
+        if (isRandom) {
+            int rIdx = rr.nextInt(end - start) + start;
+            if (arr[start] != arr[rIdx]) {
+                arr[start] ^= arr[rIdx];
+                arr[rIdx] ^= arr[start];
+                arr[start] ^= arr[rIdx];
+            }
+        }
+
+        int pivot = arr[start];
+        int left = start;
+        int right = end;
+        while (left < right) {
+            while (left < right && arr[right] > pivot) { // 找到第一个比pivot小的数
+                right--;
+            }
+            if (left < right) {
+                arr[left] = arr[right];
+                left++;
+            }
+            while (left < right && arr[left] < pivot) {
+                left++;
+            }
+            if (left < right) {
+                arr[right] = arr[left];
+                right--;
+            }
+        }
+        arr[left] = pivot;
+        quickSort(arr, start, left - 1, isRandom);
+        quickSort(arr, right + 1, end, isRandom);
     }
 
     // LC394
