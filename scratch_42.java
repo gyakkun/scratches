@@ -7,10 +7,36 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{3, 2, 1};
-        s.nextPermutation(arr);
+        System.err.println(s.topKFrequent(new String[]{"i", "love", "leetcode", "i", "love", "coding"}, 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC692 O(n) Space O(n*log(k))time
+    public List<String> topKFrequent(String[] words, int k) {
+        Map<String, Integer> freq = new HashMap<>();
+        for (String word : words) {
+            freq.put(word, freq.getOrDefault(word, 0) + 1);
+        }
+        PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return o1.getValue() == o2.getValue() ? o2.getKey().compareTo(o1.getKey()) : o1.getValue() - o2.getValue();
+            }
+        });
+        for (Map.Entry<String, Integer> entry : freq.entrySet()) {
+            pq.offer(entry);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        List<String> result = new ArrayList<>(k);
+        while (!pq.isEmpty()) {
+            result.add(pq.poll().getKey());
+        }
+        Collections.reverse(result);
+        return result;
     }
 
     // LC31 **
