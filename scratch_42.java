@@ -13,6 +13,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC114 展开 先序遍历顺序
+    public void flatten(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) return;
+        Deque<TreeNode> stack = new LinkedList<>();
+        List<TreeNode> inorder = new ArrayList<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            TreeNode tmp = stack.pop();
+            inorder.add(tmp);
+            if (tmp.right != null) {
+                stack.push(tmp.right);
+            }
+            if (tmp.left != null) {
+                stack.push(tmp.left);
+            }
+        }
+        for (int i = 0; i < inorder.size() - 1; i++) {
+            inorder.get(i).right = inorder.get(i + 1);
+            inorder.get(i).left = null;
+        }
+    }
+
     // LC692 O(n) Space O(n*log(k))time
     public List<String> topKFrequent(String[] words, int k) {
         Map<String, Integer> freq = new HashMap<>();
