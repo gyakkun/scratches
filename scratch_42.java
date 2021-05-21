@@ -7,23 +7,36 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{3, 2, 1, 4, 7};
-        int[] arr2 = new int[]{1, 2, 3, 2, 1};
-        System.err.println(s.findLength(arr, arr2));
+        System.err.println(s.reconstructQueue(new int[][]{{7,0},{4,4},{7,1},{5,0},{6,1},{5,2}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC406 TBD
+    // LC406 **
     public int[][] reconstructQueue(int[][] people) {
         // people[i][0] = h : 身高h
         // people[i][1] = k : 前面有k个人身高大于等于自己
         Arrays.sort(people, new Comparator<int[]>() {
             @Override
             public int compare(int[] o1, int[] o2) {
-                return o1[0] == o2[0] ? o1[1] - o2[1] : o1[0] - o2[0];
+                return o1[0] == o2[0] ? o2[1] - o1[1] : o1[0] - o2[0];
             }
         });
-        return people;
+        int[][] result = new int[people.length][];
+        for (int i = 0; i < people.length; i++) {
+            int numOfEmpty = 0; // 统计从左往右第k+i个空位置
+            int[] p = people[i];
+            int ki = p[1];
+            int j = 0;
+            for (; j < people.length; j++) {
+                if (result[j] == null) numOfEmpty++;
+                if (numOfEmpty == ki + 1) {
+                    break;
+                }
+            }
+            result[j] = p;
+        }
+        return result;
     }
 
     // LC718 最长公共子串 Longest Common Sub-array  / Substring
