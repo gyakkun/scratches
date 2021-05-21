@@ -7,9 +7,34 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{3, 2, 1, 4, 7};
-        System.err.println(s.reconstructQueue(new int[][]{{7, 0}, {4, 4}, {7, 1}, {5, 0}, {6, 1}, {5, 2}}));
+        System.err.println(s.findAnagrams("abab", "ab"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC438 O(S*P) time
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> result = new LinkedList<>();
+        int[] pFreq = new int[26];
+        for (char c : p.toCharArray()) {
+            pFreq[c - 'a']++;
+        }
+        char[] sArr = s.toCharArray();
+        for (int i = 0; i < sArr.length - p.length() + 1; i++) {
+            int[] freq = new int[26];
+            boolean flag = true;
+            for (int j = i; j < (i + p.length()); j++) {
+                freq[sArr[j] - 'a']++;
+                if (freq[sArr[j] - 'a'] > pFreq[sArr[j] - 'a']) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                result.add(i);
+            }
+        }
+        return result;
     }
 
     // LC406 **
