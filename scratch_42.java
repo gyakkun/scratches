@@ -7,31 +7,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{3, 2, 1, 4, 7};
-        System.err.println(s.findAnagrams("abab", "ab"));
+        System.err.println(s.findAnagrams("cbaebabacd", "abc"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC438 O(S*P) time
+    // LC438 O(S*Sigma(C)) time, Sigma(C) represents character set length
     public List<Integer> findAnagrams(String s, String p) {
         List<Integer> result = new LinkedList<>();
         int[] pFreq = new int[26];
         for (char c : p.toCharArray()) {
             pFreq[c - 'a']++;
         }
+        int pLen = p.length();
         char[] sArr = s.toCharArray();
-        for (int i = 0; i < sArr.length - p.length() + 1; i++) {
-            int[] freq = new int[26];
-            boolean flag = true;
-            for (int j = i; j < (i + p.length()); j++) {
-                freq[sArr[j] - 'a']++;
-                if (freq[sArr[j] - 'a'] > pFreq[sArr[j] - 'a']) {
-                    flag = false;
-                    break;
+        int[] freq = new int[26];
+        for (int i = 0; i < sArr.length; i++) {
+            if (i < (pLen - 1)) {
+                freq[sArr[i] - 'a']++;
+            } else {
+                freq[sArr[i] - 'a']++;
+                if (i >= pLen) {
+                    freq[sArr[i - pLen] - 'a']--;
                 }
-            }
-            if (flag) {
-                result.add(i);
+                boolean flag = true;
+                for (int j = 0; j < 26; j++) {
+                    if (freq[j] != pFreq[j]) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    result.add(i - pLen + 1);
+                }
             }
         }
         return result;
