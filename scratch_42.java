@@ -6,31 +6,35 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{3, 2, 1, 4, 7};
-
-        TreeNode four = new TreeNode(4);
-        TreeNode one = new TreeNode(1);
-        TreeNode six = new TreeNode(6);
-        TreeNode zero = new TreeNode(0);
-        TreeNode two = new TreeNode(2);
-        TreeNode five = new TreeNode(5);
-        TreeNode seven = new TreeNode(7);
-        TreeNode three = new TreeNode(3);
-        TreeNode eight = new TreeNode(8);
-
-        four.left = one;
-        four.right = six;
-        one.left = zero;
-        one.right = two;
-        two.right = three;
-        six.left = five;
-        six.right = seven;
-        seven.right = eight;
-
-
-        System.err.println(s.convertBST(four));
+        int[] arr = new int[]{1, 2, 3, 4};
+        System.err.println(s.findUnsortedSubarray(arr));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC581 O(n*log(n)) Time
+    public int findUnsortedSubarray(int[] nums) {
+        int[] orig = new int[nums.length];
+        System.arraycopy(nums, 0, orig, 0, nums.length);
+        Arrays.sort(nums);
+        int leftIdx = -1;
+        int rightIdx = nums.length;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != orig[i]) {
+                leftIdx = i;
+                break;
+            }
+        }
+        if (leftIdx == -1) {
+            return 0;
+        }
+        for (int i = nums.length - 1; i >= 0; i--) {
+            if (nums[i] != orig[i]) {
+                rightIdx = i;
+                break;
+            }
+        }
+        return nums.length - (leftIdx + (nums.length - 1 - rightIdx));
     }
 
     // LC543
