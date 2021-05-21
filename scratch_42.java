@@ -22,23 +22,30 @@ class Scratch {
         int pLen = p.length();
         char[] sArr = s.toCharArray();
         int[] freq = new int[26];
+        boolean[] changeSet = new boolean[26];
         for (int i = 0; i < sArr.length; i++) {
             if (i < (pLen - 1)) {
                 freq[sArr[i] - 'a']++;
+                changeSet[sArr[i] - 'a'] = true;
             } else {
                 freq[sArr[i] - 'a']++;
+                changeSet[sArr[i] - 'a'] = true;
                 if (i >= pLen) {
                     freq[sArr[i - pLen] - 'a']--;
+                    changeSet[sArr[i - pLen] - 'a'] = true;
                 }
                 boolean flag = true;
                 for (int j = 0; j < 26; j++) {
-                    if (freq[j] != pFreq[j]) {
-                        flag = false;
-                        break;
+                    if (changeSet[j]) {
+                        if (freq[j] != pFreq[j]) {
+                            flag = false;
+                            break;
+                        }
                     }
                 }
                 if (flag) {
                     result.add(i - pLen + 1);
+                    Arrays.fill(changeSet, false);
                 }
             }
         }
