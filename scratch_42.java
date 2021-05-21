@@ -7,10 +7,65 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{3, 2, 1, 4, 7};
-        System.err.println(s.findAnagrams("cbaebabacd", "abc"));
+
+        TreeNode four = new TreeNode(4);
+        TreeNode one = new TreeNode(1);
+        TreeNode six = new TreeNode(6);
+        TreeNode zero = new TreeNode(0);
+        TreeNode two = new TreeNode(2);
+        TreeNode five = new TreeNode(5);
+        TreeNode seven = new TreeNode(7);
+        TreeNode three = new TreeNode(3);
+        TreeNode eight = new TreeNode(8);
+
+        four.left = one;
+        four.right = six;
+        one.left = zero;
+        one.right = two;
+        two.right = three;
+        six.left = five;
+        six.right = seven;
+        seven.right = eight;
+
+
+        System.err.println(s.convertBST(four));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC543
+    int lc543ans = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        lc543ans = 1;
+        lc543Recursive(root);
+        return lc543ans - 1;
+    }
+
+    // 记录遍历左右子树经过节点数的最大值, 节点数-1 = 路径长度
+    private int lc543Recursive(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = lc543Recursive(root.left);
+        int right = lc543Recursive(root.right);
+        lc543ans = Math.max(lc543ans, left + right + 1); // +1 为加上root本身这个节点
+        return Math.max(left, right) + 1; // 返回的是左右子树节点数的最大值加上自己这个节点
+    }
+
+    // LC538 **
+    int lc538Sum = 0;
+
+    public TreeNode convertBST(TreeNode root) {
+        if (root != null) {
+            convertBST(root.right);
+            lc538Sum += root.val;
+            root.val = lc538Sum;
+            convertBST(root.left);
+        }
+        return root;
+    }
+
 
     // LC461
     public int hammingDistance(int x, int y) {
