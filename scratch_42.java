@@ -12,6 +12,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC617
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        if (root1 == null && root2 == null) return null;
+        if (root1 == null && root2 != null) {
+            return root2;
+        }
+        if (root1 != null && root2 == null) {
+            return root1;
+        }
+        int result = root1.val + root2.val;
+        root1.val = result;
+        TreeNode r1L = mergeTrees(root1.left, root2.left);
+        TreeNode r1R = mergeTrees(root1.right, root2.right);
+        root1.left = r1L;
+        root1.right = r1R;
+        return root1;
+    }
+
     // LC581 Stack O(n) Time 单调栈思想
     public int findUnsortedSubarrayStack(int[] nums) {
         Deque<Integer> stack = new LinkedList<>();
