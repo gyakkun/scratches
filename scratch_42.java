@@ -6,10 +6,34 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{1, 2, 3, 4};
-        System.err.println(s.findUnsortedSubarray(arr));
+        int[] arr = new int[]{12, 12, 4, 56, 1, -100, 130};
+        System.err.println(s.findUnsortedSubarrayStack(arr));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC581 Stack O(n) Time 单调栈思想
+    public int findUnsortedSubarrayStack(int[] nums) {
+        Deque<Integer> stack = new LinkedList<>();
+        stack.push(0);
+        int minLeft = nums.length - 1;
+        for (int i = 1; i < nums.length; i++) {
+            while (!stack.isEmpty() && nums[i] < nums[stack.peek()]) {
+                minLeft = Math.min(stack.pop(), minLeft);
+            }
+            stack.push(i);
+        }
+        if (minLeft == nums.length - 1) return 0;
+        stack.clear();
+        int maxRight = 0;
+        stack.push(nums.length - 1);
+        for (int i = nums.length - 2; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {
+                maxRight = Math.max(stack.pop(), maxRight);
+            }
+            stack.push(i);
+        }
+        return nums.length - (minLeft + (nums.length - 1 - maxRight));
     }
 
     // LC581 O(n*log(n)) Time
