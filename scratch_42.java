@@ -6,13 +6,59 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        int[] arr = new int[]{9, 6, 5, 3, 1, -1};
-
-        System.err.println(s.quickSelect(arr, 0, arr.length - 1, 5));
+        int[] arr = new int[]{3, 2, 1, 4, 7};
+        int[] arr2 = new int[]{1, 2, 3, 2, 1};
+        System.err.println(s.findLength(arr, arr2));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC406 TBD
+    public int[][] reconstructQueue(int[][] people) {
+        // people[i][0] = h : 身高h
+        // people[i][1] = k : 前面有k个人身高大于等于自己
+        Arrays.sort(people, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] == o2[0] ? o1[1] - o2[1] : o1[0] - o2[0];
+            }
+        });
+        return people;
+    }
+
+    // LC718 最长公共子串 Longest Common Sub-array  / Substring
+    public int findLength(int[] nums1, int[] nums2) {
+        int[][] dp = new int[nums1.length + 1][nums2.length + 1];
+        int maxLen = 0;
+        for (int i = 1; i <= nums1.length; i++) {
+            for (int j = 1; j <= nums2.length; j++) {
+                if (nums1[i - 1] == nums2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                    if (dp[i][j] > maxLen) {
+                        maxLen = dp[i][j];
+                    }
+                }
+            }
+        }
+        return maxLen;
+    }
+
+    // LC1035 同LC1143 最长公共子序列 Longest Common Subsequence
+    public int maxUncrossedLines(int[] nums1, int[] nums2) {
+        int[][] dp = new int[nums1.length + 1][nums2.length + 1];
+        // dp[i][j] 表示nums1前i个数字和nums2前j个数字最多可以组成多少条不相交的线
+        for (int i = 1; i <= nums1.length; i++) {
+            for (int j = 1; j <= nums2.length; j++) {
+                if (nums1[i - 1] == nums2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[nums1.length][nums2.length];
+    }
+
 
     Random quickAlgorithmRandom = new Random();
 
@@ -95,7 +141,9 @@ class Scratch {
         arr[left] = pivot;
         quickSort(arr, start, left - 1, isRandom);
         quickSort(arr, right + 1, end, isRandom);
+
     }
+
 
     // LC394
     public String decodeString(String s) {
