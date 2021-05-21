@@ -12,6 +12,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC461
+    public int hammingDistance(int x, int y) {
+        return Integer.bitCount(x ^ y);
+    }
+
     // LC438 O(S*Sigma(C)) time, Sigma(C) represents character set length
     public List<Integer> findAnagrams(String s, String p) {
         List<Integer> result = new LinkedList<>();
