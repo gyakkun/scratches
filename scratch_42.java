@@ -7,9 +7,104 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{12, 12, 4, 56, 1, -100, 130};
-        System.err.println(s.findUnsortedSubarrayStack(arr));
+        char[] carr = new char[]{'A', 'A', 'A', 'B', 'B', 'B', 'C', 'D', 'E', 'F'};
+        System.err.println(s.leastInterval(carr, 0));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC621 ** Solution
+    public int leastIntervalSolution(char[] tasks, int n) {
+        Map<Character, Integer> freq = new HashMap<Character, Integer>();
+        // 最多的执行次数
+        int maxExec = 0;
+        for (char ch : tasks) {
+            int exec = freq.getOrDefault(ch, 0) + 1;
+            freq.put(ch, exec);
+            maxExec = Math.max(maxExec, exec);
+        }
+
+        // 具有最多执行次数的任务数量
+        int maxCount = 0;
+        Set<Map.Entry<Character, Integer>> entrySet = freq.entrySet();
+        for (Map.Entry<Character, Integer> entry : entrySet) {
+            int value = entry.getValue();
+            if (value == maxExec) {
+                ++maxCount;
+            }
+        }
+
+        return Math.max((maxExec - 1) * (n + 1) + maxCount, tasks.length);
+    }
+
+    // LC621 WA
+    public int leastInterval(char[] tasks, int n) {
+        Map<Character, Integer> m = new HashMap<>();
+        for (char c : tasks) {
+            m.put(c, m.getOrDefault(c, 0) + 1);
+        }
+        Map<Character, Integer> lastCompleteTime = new HashMap<>(); // 存的是上一次完成任务的时刻
+        for (char c : m.keySet()) {
+            lastCompleteTime.put(c, -n - 1);
+        }
+//        List<Map.Entry<Character, Integer>> l = new ArrayList<>(m.entrySet());
+//        l.sort(new Comparator<Map.Entry<Character, Integer>>() {
+//            @Override
+//            public int compare(Map.Entry<Character, Integer> o1, Map.Entry<Character, Integer> o2) {
+//                return o2.getValue() - o1.getValue();
+//            }
+//        });
+        int idx = 0;
+//        for (Map.Entry<Character, Integer> e : l) {
+//            for (int i = 0; i < e.getValue(); i++) {
+//                tasks[idx++] = e.getKey();
+//            }
+//        }
+//        char[] newTaskList = new char[tasks.length];
+//        int gapNum = (int) Math.ceil(((double) tasks.length) / ((double) n));
+//        for (int i = 0; i < tasks.length; i++) {
+//            int tmpIdx = getIdx(i, tasks.length, n + 1, gapNum, newTaskList);
+//            newTaskList[tmpIdx] = tasks[i];
+//        }
+
+        idx = 0;
+        while (!m.isEmpty()) {
+            Iterator<Map.Entry<Character, Integer>> it = m.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Character, Integer> ne = it.next();
+                tasks[idx++] = ne.getKey();
+//            ne.setValue(ne.getValue() - 1);
+                m.put(ne.getKey(), ne.getValue() - 1);
+                if (ne.getValue() == 0) {
+                    it.remove();
+                }
+            }
+        }
+
+        int time = 0;
+        for (int i = 0; i < tasks.length; i++) {
+            if (lastCompleteTime.get(tasks[i]) > time - n) {
+                time += (n - (time - lastCompleteTime.get(tasks[i]))) + 1;
+            } else {
+                time += 1;
+            }
+            lastCompleteTime.put(tasks[i], time);
+        }
+
+        return time;
+    }
+
+    public int getIdx(int current, int length, int gapLength, int gapNum, char[] taskList) {
+        int round = current / gapNum;
+        int whichGap = current % gapNum;
+        int result = round + whichGap * gapLength;
+        if (result >= length) {
+            return getIdx(current + 1, length, gapLength, gapNum, taskList);
+        }
+        if (taskList[result] != 0) {
+            return getIdx(current + 1, length, gapLength, gapNum, taskList);
+        }
+        return result;
     }
 
     // LC617
