@@ -13,6 +13,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC739 单调栈
+    public int[] dailyTemperatures(int[] temperatures) {
+        int n = temperatures.length;
+        int[] nge = new int[n];
+        Arrays.fill(nge, -1);
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && temperatures[stack.peek()] < temperatures[i]) {
+                nge[stack.pop()] = i;
+            }
+            stack.push(i);
+        }
+        for (int i = 0; i < n; i++) {
+            if (nge[i] != -1) {
+                nge[i] = nge[i] - i;
+            } else {
+                nge[i] = 0;
+            }
+        }
+        return nge;
+    }
+
     // LC647 求回文子串的个数
     public int countSubstrings(String s) {
         int n = s.length();
