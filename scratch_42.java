@@ -1,3 +1,4 @@
+import io.swagger.models.auth.In;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -13,27 +14,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC664 Solution
-    public int strangePrinterSolution(String s) {
-        int n = s.length();
-        char[] cArr = s.toCharArray();
-        int[][] dp = new int[n][n];
-        // dp[i][j] 表示区间[i,j]打印需要的最小次数
-        // 1) c[i] == c[j], dp[i][j] = dp[i][j-1]
-        // 2) c[i] != c[j], dp[i][j] = 枚举 k:[i,j), 取最小的dp[i][k]+dp[k+1][j]
-        for (int i = n - 1; i >= 0; i--) {
-            for (int j = i; j < n; j++) {
-                if (cArr[i] == cArr[j]) {
-                    dp[i][j] = j - i == 0 ? 1 : dp[i][j - 1];
-                } else {
-                    dp[i][j] = Integer.MAX_VALUE;
-                    for (int k = i; k < j; k++) {
-                        dp[i][j] = Math.min(dp[i][j], dp[i][k] + dp[k + 1][j]);
-                    }
-                }
-            }
+
+    // LC810 Solution 精妙
+    public boolean xorGame(int[] nums) {
+        if (nums.length % 2 == 0) {
+            return true;
         }
-        return dp[0][n - 1];
+        int xorSum = 0;
+        for (int i : nums) {
+            xorSum ^= i;
+        }
+        return xorSum == 0;
     }
 
     // LC664 Recursive
@@ -63,6 +54,30 @@ class Scratch {
         memo[i][j] = result;
         return memo[i][j];
     }
+
+    // LC664 Solution
+    public int strangePrinterSolution(String s) {
+        int n = s.length();
+        char[] cArr = s.toCharArray();
+        int[][] dp = new int[n][n];
+        // dp[i][j] 表示区间[i,j]打印需要的最小次数
+        // 1) c[i] == c[j], dp[i][j] = dp[i][j-1]
+        // 2) c[i] != c[j], dp[i][j] = 枚举 k:[i,j), 取最小的dp[i][k]+dp[k+1][j]
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i; j < n; j++) {
+                if (cArr[i] == cArr[j]) {
+                    dp[i][j] = j - i == 0 ? 1 : dp[i][j - 1];
+                } else {
+                    dp[i][j] = Integer.MAX_VALUE;
+                    for (int k = i; k < j; k++) {
+                        dp[i][j] = Math.min(dp[i][j], dp[i][k] + dp[k + 1][j]);
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+    }
+
 
 
     // LC621 Simulation WA
