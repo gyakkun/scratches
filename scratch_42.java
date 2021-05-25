@@ -6,8 +6,8 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{4, 17, 25, 30, 27, 20, 14, 8, 24, 21, 7, 3, 13, 11, 10, 3, 21, 21, 30, 0, 0};
-        System.err.println(s.minChanges(arr, 13));
+        int[] arr = new int[]{155, 202, 193, 166, 246, 28, 158, 44, 244, 174, 6, 9, 123, 150, 97, 250, 18, 149, 148, 137, 172, 152, 143, 33, 211, 248, 53, 184, 146, 6, 228, 22, 116, 84, 1, 233, 167, 141, 35, 189, 142, 139, 234, 249, 190, 195, 60, 112, 117, 230, 122, 154, 131, 246, 137, 45, 111, 114, 235, 66, 209, 159, 137, 96, 36, 102, 23, 126, 158, 101, 245, 157, 25, 18, 243, 237, 14, 80, 92, 185, 127, 84, 87, 162, 120, 30, 234, 183, 214, 50, 70, 135, 210, 216, 75, 170, 165, 108, 250, 120, 166, 40, 134, 37, 205, 131, 180, 55, 185, 113, 51, 53, 249, 195, 51, 139, 207, 93, 108, 76, 122, 64, 98, 141, 50, 231, 8, 159, 87, 251, 66, 216, 196, 214, 179, 25, 165, 184, 112, 215, 82, 177, 226, 67, 172, 186, 42, 249, 255, 199, 149, 38, 194, 15, 115, 150, 195, 73, 94, 71, 166, 224, 215, 180, 10, 199, 157, 113, 189, 107, 204, 220, 26, 30, 235, 116, 168, 154, 160, 220};
+        System.err.println(s.minChanges(arr, 84));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -15,31 +15,35 @@ class Scratch {
     // LC1787 TLE
     public int minChanges(int[] nums, int k) {
         int n = nums.length;
-        Map<Integer, Integer>[] mArr = new Map[k];
+        int[][] mArr = new int[k][1 << 10];
         int[] eachGroupCtr = new int[k];
         Arrays.fill(eachGroupCtr, 0);
-        for (int i = 0; i < k; i++) {
-            mArr[i] = new HashMap<>();
-        }
         for (int i = 0; i < n; i++) {
-            mArr[i % k].put(nums[i], mArr[i % k].getOrDefault(nums[i], 0) + 1);
+            mArr[i % k][nums[i]]++;
             eachGroupCtr[i % k]++;
         }
-        Map<Pair<Integer, Integer>, Integer> memo = new HashMap();
-        memo.put(new Pair<>(-1, 0), 0);
+        Integer[][] memo = new Integer[k][1 << 10];
         return minChangesHelper(k - 1, 0, k, memo, eachGroupCtr, mArr);
     }
 
-    private int minChangesHelper(int i, int mask, int k, Map<Pair<Integer, Integer>, Integer> memo, int[] eachGroupCtr, Map<Integer, Integer>[] mArr) {
-        Pair<Integer, Integer> thisPair = new Pair<>(i, mask);
-        if (memo.containsKey(thisPair)) return memo.get(thisPair);
+    private int minChangesHelper(int i, int mask, int k, Integer[][] memo, int[] eachGroupCtr, int[][] mArr) {
+        if (i >= 0 && mask >= 0 && memo[i][mask] != null) return memo[i][mask];
+        if (i < 0 && mask == 0) return 0;
         if (i < 0) return Integer.MAX_VALUE / 2;
         int max = 1 << 10;
-        int result = Integer.MAX_VALUE / 2;
-        for (int j = 0; j < max; j++) { // 枚举 mask(i-1,formerMask)的formerMask, 使得 formerMask = mask ^ j, j 属于 [0,max)
-            result = Math.min(result, minChangesHelper(i - 1, mask ^ j, k, memo, eachGroupCtr, mArr) + eachGroupCtr[i] - mArr[i].getOrDefault(j, 0));
+
+        int t2 = Integer.MAX_VALUE / 2;
+        int t1 = Integer.MAX_VALUE / 2;
+
+        for (int j = 0; j < max; j++) {
+            if (mArr[i][j] != 0) {
+                t1 = Math.min(t1, minChangesHelper(i - 1, mask ^ j, k, memo, eachGroupCtr, mArr) - mArr[i][j]);
+            } else {
+                t2 = Math.min(t2, minChangesHelper(i - 1, mask ^ j, k, memo, eachGroupCtr, mArr));
+            }
         }
-        memo.put(thisPair, result);
+        int result = eachGroupCtr[i] + Math.min(t1, t2);
+        memo[i][mask] = result;
         return result;
     }
 
