@@ -6,10 +6,41 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{12, 12, 4, 56, 1, -100, 130};
-        System.err.println(s.countSubstrings("aaa"));
+        int[] arr = new int[]{4, 17, 25, 30, 27, 20, 14, 8, 24, 21, 7, 3, 13, 11, 10, 3, 21, 21, 30, 0, 0};
+        System.err.println(s.minChanges(arr, 13));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1787 TLE
+    public int minChanges(int[] nums, int k) {
+        int n = nums.length;
+        Map<Integer, Integer>[] mArr = new Map[k];
+        int[] eachGroupCtr = new int[k];
+        Arrays.fill(eachGroupCtr, 0);
+        for (int i = 0; i < k; i++) {
+            mArr[i] = new HashMap<>();
+        }
+        for (int i = 0; i < n; i++) {
+            mArr[i % k].put(nums[i], mArr[i % k].getOrDefault(nums[i], 0) + 1);
+            eachGroupCtr[i % k]++;
+        }
+        Map<Pair<Integer, Integer>, Integer> memo = new HashMap();
+        memo.put(new Pair<>(-1, 0), 0);
+        return minChangesHelper(k - 1, 0, k, memo, eachGroupCtr, mArr);
+    }
+
+    private int minChangesHelper(int i, int mask, int k, Map<Pair<Integer, Integer>, Integer> memo, int[] eachGroupCtr, Map<Integer, Integer>[] mArr) {
+        Pair<Integer, Integer> thisPair = new Pair<>(i, mask);
+        if (memo.containsKey(thisPair)) return memo.get(thisPair);
+        if (i < 0) return Integer.MAX_VALUE / 2;
+        int max = 1 << 10;
+        int result = Integer.MAX_VALUE / 2;
+        for (int j = 0; j < max; j++) { // 枚举 mask(i-1,formerMask)的formerMask, 使得 formerMask = mask ^ j, j 属于 [0,max)
+            result = Math.min(result, minChangesHelper(i - 1, mask ^ j, k, memo, eachGroupCtr, mArr) + eachGroupCtr[i] - mArr[i].getOrDefault(j, 0));
+        }
+        memo.put(thisPair, result);
+        return result;
     }
 
     // LC1707 TBD Trie 位运算
