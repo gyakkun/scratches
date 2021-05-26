@@ -12,7 +12,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC51 N Queens
+    // LC51 LC52 N Queens
     List<List<String>> lc51Result;
 
     public List<List<String>> solveNQueens(int n) {
