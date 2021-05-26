@@ -7,9 +7,28 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{155, 202, 193, 166, 246, 28, 158, 44, 244, 174, 6, 9, 123, 150, 97, 250, 18, 149, 148, 137, 172, 152, 143, 33, 211, 248, 53, 184, 146, 6, 228, 22, 116, 84, 1, 233, 167, 141, 35, 189, 142, 139, 234, 249, 190, 195, 60, 112, 117, 230, 122, 154, 131, 246, 137, 45, 111, 114, 235, 66, 209, 159, 137, 96, 36, 102, 23, 126, 158, 101, 245, 157, 25, 18, 243, 237, 14, 80, 92, 185, 127, 84, 87, 162, 120, 30, 234, 183, 214, 50, 70, 135, 210, 216, 75, 170, 165, 108, 250, 120, 166, 40, 134, 37, 205, 131, 180, 55, 185, 113, 51, 53, 249, 195, 51, 139, 207, 93, 108, 76, 122, 64, 98, 141, 50, 231, 8, 159, 87, 251, 66, 216, 196, 214, 179, 25, 165, 184, 112, 215, 82, 177, 226, 67, 172, 186, 42, 249, 255, 199, 149, 38, 194, 15, 115, 150, 195, 73, 94, 71, 166, 224, 215, 180, 10, 199, 157, 113, 189, 107, 204, 220, 26, 30, 235, 116, 168, 154, 160, 220};
-        System.err.println(s.minChanges(arr, 84));
+        System.err.println(s.reverseParentheses("(ed(et(oc))el)"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1190
+    public String reverseParentheses(String s) {
+        Deque<StringBuffer> sbStack = new LinkedList<>();
+        sbStack.push(new StringBuffer());
+        char[] cArr = s.toCharArray();
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            if (cArr[i] == '(') {
+                sbStack.push(new StringBuffer());
+            } else if (cArr[i] == ')') {
+                StringBuffer tmp = sbStack.pop();
+                sbStack.peek().append(tmp.reverse());
+            } else {
+                sbStack.peek().append(cArr[i]);
+            }
+        }
+        return sbStack.peek().toString();
     }
 
     // LC1787 TLE
