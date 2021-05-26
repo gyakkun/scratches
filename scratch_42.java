@@ -6,10 +6,99 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{155, 202, 193, 166, 246, 28, 158, 44, 244, 174, 6, 9, 123, 150, 97, 250, 18, 149, 148, 137, 172, 152, 143, 33, 211, 248, 53, 184, 146, 6, 228, 22, 116, 84, 1, 233, 167, 141, 35, 189, 142, 139, 234, 249, 190, 195, 60, 112, 117, 230, 122, 154, 131, 246, 137, 45, 111, 114, 235, 66, 209, 159, 137, 96, 36, 102, 23, 126, 158, 101, 245, 157, 25, 18, 243, 237, 14, 80, 92, 185, 127, 84, 87, 162, 120, 30, 234, 183, 214, 50, 70, 135, 210, 216, 75, 170, 165, 108, 250, 120, 166, 40, 134, 37, 205, 131, 180, 55, 185, 113, 51, 53, 249, 195, 51, 139, 207, 93, 108, 76, 122, 64, 98, 141, 50, 231, 8, 159, 87, 251, 66, 216, 196, 214, 179, 25, 165, 184, 112, 215, 82, 177, 226, 67, 172, 186, 42, 249, 255, 199, 149, 38, 194, 15, 115, 150, 195, 73, 94, 71, 166, 224, 215, 180, 10, 199, 157, 113, 189, 107, 204, 220, 26, 30, 235, 116, 168, 154, 160, 220};
-        System.err.println(s.reverseParentheses("(ed(et(oc))el)"));
+//        int[] arr = new int[]{155, 202, 193, 166, 246, 28, 158, 44, 244, 174, 6, 9, 123, 150, 97, 250, 18, 149, 148, 137, 172, 152, 143, 33, 211, 248, 53, 184, 146, 6, 228, 22, 116, 84, 1, 233, 167, 141, 35, 189, 142, 139, 234, 249, 190, 195, 60, 112, 117, 230, 122, 154, 131, 246, 137, 45, 111, 114, 235, 66, 209, 159, 137, 96, 36, 102, 23, 126, 158, 101, 245, 157, 25, 18, 243, 237, 14, 80, 92, 185, 127, 84, 87, 162, 120, 30, 234, 183, 214, 50, 70, 135, 210, 216, 75, 170, 165, 108, 250, 120, 166, 40, 134, 37, 205, 131, 180, 55, 185, 113, 51, 53, 249, 195, 51, 139, 207, 93, 108, 76, 122, 64, 98, 141, 50, 231, 8, 159, 87, 251, 66, 216, 196, 214, 179, 25, 165, 184, 112, 215, 82, 177, 226, 67, 172, 186, 42, 249, 255, 199, 149, 38, 194, 15, 115, 150, 195, 73, 94, 71, 166, 224, 215, 180, 10, 199, 157, 113, 189, 107, 204, 220, 26, 30, 235, 116, 168, 154, 160, 220};
+        System.err.println(s.solveNQueens(10).size());
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC51 N Queens
+    List<List<String>> lc51Result;
+
+    public List<List<String>> solveNQueens(int n) {
+        lc51Result = new ArrayList<>();
+        lc51Helper(n, 0, 0, new ArrayList<>(n), 0);
+        return lc51Result;
+    }
+
+    private void lc51Helper(int n, int curRow, int curCol, List<Integer> curBoard, int status) {
+        if (curRow == n) {
+            if (lc51check(curBoard, n)) {
+                lc51Result.add(lc51ToListString(curBoard, n));
+            }
+            return;
+        }
+        for (int i = curCol; i < n; i++) {
+            if (curBoard.size() != 0 && (i == curBoard.get(curBoard.size() - 1) + 1 || i == curBoard.get(curBoard.size() - 1) - 1)) {
+                continue;
+            }
+            if (((status >> i) & 1) == 1) {
+                continue;
+            }
+            int newStatus = ((1 << i) ^ status);
+            curBoard.add(i);
+            lc51Helper(n, curRow + 1, 0, curBoard, newStatus);
+            curBoard.remove(curBoard.size() - 1);
+        }
+    }
+
+    private boolean lc51check(List<Integer> curBoard, int n) {
+        // 同一列
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (curBoard.get(i) == curBoard.get(j)) return false;
+            }
+        }
+        // 对角线
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int aRow = i, aCol = curBoard.get(i);
+                int bRow = j, bCol = curBoard.get(j);
+                while (aRow >= 0 && aRow < n && aCol >= 0 && aCol < n) {
+                    if (aRow == bRow && aCol == bCol) return false;
+                    aRow++;
+                    aCol++;
+                }
+                aRow = i;
+                aCol = curBoard.get(i);
+                while (aRow >= 0 && aRow < n && aCol >= 0 && aCol < n) {
+                    if (aRow == bRow && aCol == bCol) return false;
+                    aRow--;
+                    aCol--;
+                }
+                aRow = i;
+                aCol = curBoard.get(i);
+                while (aRow >= 0 && aRow < n && aCol >= 0 && aCol < n) {
+                    if (aRow == bRow && aCol == bCol) return false;
+                    aRow++;
+                    aCol--;
+                }
+                aRow = i;
+                aCol = curBoard.get(i);
+                while (aRow >= 0 && aRow < n && aCol >= 0 && aCol < n) {
+                    if (aRow == bRow && aCol == bCol) return false;
+                    aRow--;
+                    aCol++;
+                }
+            }
+        }
+        return true;
+    }
+
+    private List<String> lc51ToListString(List<Integer> curIntegerBoard, int n) {
+        List<String> result = new ArrayList<>(curIntegerBoard.size());
+        for (int i : curIntegerBoard) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    sb.append('.');
+                } else {
+                    sb.append('Q');
+                }
+            }
+            result.add(sb.toString());
+        }
+        return result;
     }
 
     // LC1190
