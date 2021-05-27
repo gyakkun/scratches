@@ -6,10 +6,55 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{7, 17, 100, 200, 3, 409};
-        System.err.println(s.minimumSize(arr, 10));
+        int[] arr = new int[]{9};
+//        for (int i = 1; i < 100; i++)
+        System.err.println(s.minimumBoxes((int) (1e9)));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1739 Hard 二分
+//    Map<Long, Long> lc1739Memo;
+    public int minimumBoxes(int n) {
+//        lc1739Memo = new HashMap<>();
+        long left = 1, right = n;
+        while (left < right) { // 二分查找第一层应该放多少个, 第一层放的个数越多, 能放下的总数越多
+            // 找出第一个total>=n时候的mid
+            long mid = left + (right - left) / 2;
+            long total = lc1739TotalHelper(mid);
+            if (total >= n) {
+                right = mid;
+            } else if (total < n) {
+                left = mid + 1;
+            }
+        }
+
+        return (int) left;
+    }
+
+    private long lc1739Helper(long total) { // 这一层放total个盒子的时候, 最多有多少个上面可以放盒子？
+        // (1+n)*n / 2 <= total
+        // n*n + n - 2*total <= 0
+        long n = (long) ((-1.0d + Math.sqrt(1.0d + 8 * total)) / (2.0)); // n的下界
+        long remain = total - ((1 + n) * n) / 2;
+        if (remain <= 1) {
+            return (n * (n - 1) / 2);
+        } else {
+            return (n * (n - 1) / 2) + (remain - 1);
+        }
+    }
+
+    private long lc1739TotalHelper(long firstFloorCount) { // 第一层摆放firstFloorCount个的时候, 最多总共可以摆放多少个？
+//        if(lc1739Memo.containsKey(firstFloorCount)) return lc1739Memo.get(firstFloorCount);
+        long sum = firstFloorCount;
+        long thisFloorCount = firstFloorCount;
+        while (thisFloorCount >= 3) {
+            long nextFloorCount = lc1739Helper(thisFloorCount);
+            sum += nextFloorCount;
+            thisFloorCount = nextFloorCount;
+        }
+//        lc1739Memo.put(firstFloorCount, sum);
+        return sum;
     }
 
     // LC1760 Solution 二分
