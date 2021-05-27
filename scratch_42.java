@@ -6,10 +6,31 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-//        int[] arr = new int[]{155, 202, 193, 166, 246, 28, 158, 44, 244, 174, 6, 9, 123, 150, 97, 250, 18, 149, 148, 137, 172, 152, 143, 33, 211, 248, 53, 184, 146, 6, 228, 22, 116, 84, 1, 233, 167, 141, 35, 189, 142, 139, 234, 249, 190, 195, 60, 112, 117, 230, 122, 154, 131, 246, 137, 45, 111, 114, 235, 66, 209, 159, 137, 96, 36, 102, 23, 126, 158, 101, 245, 157, 25, 18, 243, 237, 14, 80, 92, 185, 127, 84, 87, 162, 120, 30, 234, 183, 214, 50, 70, 135, 210, 216, 75, 170, 165, 108, 250, 120, 166, 40, 134, 37, 205, 131, 180, 55, 185, 113, 51, 53, 249, 195, 51, 139, 207, 93, 108, 76, 122, 64, 98, 141, 50, 231, 8, 159, 87, 251, 66, 216, 196, 214, 179, 25, 165, 184, 112, 215, 82, 177, 226, 67, 172, 186, 42, 249, 255, 199, 149, 38, 194, 15, 115, 150, 195, 73, 94, 71, 166, 224, 215, 180, 10, 199, 157, 113, 189, 107, 204, 220, 26, 30, 235, 116, 168, 154, 160, 220};
-        System.err.println(s.uniquePathsWithObstacles(new int[][]{{0, 0}, {1, 1}, {0, 0}}));
+        int[] arr = new int[]{7, 17, 100, 200, 3, 409};
+        System.err.println(s.minimumSize(arr, 10));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1760 Solution 二分
+    public int minimumSize(int[] nums, int maxOperations) {
+        int left = 1, right = Arrays.stream(nums).max().getAsInt();
+        int ans = -1;
+        while (left <= right) { // 二分查找每个袋子的最大球个数y, y越大, 总操作数sum越小, 是一个单调的关系
+            int mid = left + (right - left) / 2;
+            long sum = 0;
+            for (int i : nums) {
+                sum += (i - 1) / mid;
+            }
+            if (sum <= maxOperations) { // 总操作数小于最大操作数, 说明y太大, 还可能有更小的值, 往左边找
+                ans = mid;
+                right = mid - 1;
+            } else { // 总操作数太多, 说明y太小, 需要往右边找
+                left = mid + 1;
+            }
+        }
+
+        return ans;
     }
 
     // LC63
