@@ -7,13 +7,30 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
         int[] arr = new int[]{1};
-        System.err.println(s.wiggleMaxLength(arr));
+        System.err.println(s.wiggleMaxLengthON2(arr));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC376
+    // LC376 O(n) time Solution
     public int wiggleMaxLength(int[] nums) {
+        int n = nums.length;
+        if (n < 2) {
+            return n;
+        }
+        int up = 1, down = 1;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] > nums[i - 1]) {
+                up = Math.max(up, down + 1);
+            } else if (nums[i] < nums[i - 1]) {
+                down = Math.max(up + 1, down);
+            }
+        }
+        return Math.max(up, down);
+    }
+
+    // LC376 O(n*n) time
+    public int wiggleMaxLengthON2(int[] nums) {
         int ans = 1;
         int n = nums.length;
         lc376Status[][] dp = new lc376Status[n][n];
