@@ -6,11 +6,54 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{9};
-//        for (int i = 1; i < 100; i++)
-        System.err.println(s.minimumBoxes((int) (1e9)));
+        int[] arr = new int[]{1};
+        System.err.println(s.wiggleMaxLength(arr));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC376
+    public int wiggleMaxLength(int[] nums) {
+        int ans = 1;
+        int n = nums.length;
+        lc376Status[][] dp = new lc376Status[n][n];
+        // dp[i][j] 表示 nums[i,j]之间最长摆动摆动序列的长度
+
+        for (int i = 0; i < n - 1; i++) {
+            if (nums[i] != nums[i + 1]) {
+                dp[i][i + 1] = new lc376Status(2, nums[i] - nums[i + 1] < 0);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 2; j < n; j++) {
+                if (dp[i][j - 1] != null) {
+                    Boolean status = null;
+                    if (nums[j - 1] - nums[j] < 0) {
+                        status = true;
+                    } else if (nums[j - 1] - nums[j] > 0) {
+                        status = false;
+                    }
+
+                    if (status != null && status != dp[i][j - 1].status) {
+                        dp[i][j] = new lc376Status(dp[i][j - 1].len + 1, status);
+                    } else {
+                        dp[i][j] = new lc376Status(dp[i][j - 1].len, dp[i][j - 1].status);
+                    }
+                    ans = Math.max(ans, dp[i][j].len);
+                }
+            }
+        }
+        return ans;
+    }
+
+    class lc376Status {
+        int len;
+        Boolean status; // upForTrue, downForFalse, equal for null
+
+        public lc376Status(int len, boolean upForTrue) {
+            this.len = len;
+            this.status = upForTrue;
+        }
     }
 
     // LC1739 Hard 二分
