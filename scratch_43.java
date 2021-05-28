@@ -17,6 +17,49 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1298 Learn from Solution
+    public int maxCandiesS(int[] status, int[] candies, int[][] keys, int[][] containedBoxes, int[] initialBoxes) {
+        int n = status.length;
+        int ans = 0;
+        boolean[] hasBox = new boolean[n];
+        boolean[] canOpen = new boolean[n];
+        boolean[] visited = new boolean[n];
+        Deque<Integer> boxQueue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (status[i] == 1) {
+                canOpen[i] = true;
+            }
+        }
+        for (int i : initialBoxes) {
+            hasBox[i] = true;
+            if (canOpen[i]) {
+                boxQueue.offer(i);
+                visited[i] = true;
+                ans += candies[i];
+            }
+        }
+        while (!boxQueue.isEmpty()) {
+            int frontBoxIdx = boxQueue.poll();
+            for (int key : keys[frontBoxIdx]) {
+                canOpen[key] = true;
+                if (!visited[key] && hasBox[key]) {
+                    boxQueue.offer(key);
+                    visited[key] = true;
+                    ans += candies[key];
+                }
+            }
+            for (int box : containedBoxes[frontBoxIdx]) {
+                hasBox[box] = true;
+                if (!visited[box] && canOpen[box]) {
+                    boxQueue.offer(box);
+                    visited[box] = true;
+                    ans += candies[box];
+                }
+            }
+        }
+        return ans;
+    }
+
     // LC1298 Hard BFS
     // 给你n个盒子，每个盒子的格式为[status, candies, keys, containedBoxes]，其中：
     //
