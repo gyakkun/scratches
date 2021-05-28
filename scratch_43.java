@@ -17,6 +17,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC398
+    public int pick(int target, int[] nums) {
+        Random r = new Random();
+        int count = 0, result = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            if (nums[i] == target) {
+                count++;
+                if (r.nextInt(count) == 0) { // 蓄水池大小为1, 落在[0,1)范围的数即只有0
+                    result = i;
+                }
+            }
+        }
+        return result;
+    }
 
     // LC382 流中的随机抽样问题, 蓄水池算法
     ListNode h;
