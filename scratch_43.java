@@ -61,8 +61,8 @@ class Scratch {
         int count = 0;
         while (cur != null) {
             count++;
-            int re = r.nextInt(count) + 1;
-            if (re == count) {
+            int ran = r.nextInt(count);
+            if (ran == 0) {
                 reserve = cur.val;
             }
             cur = cur.next;
