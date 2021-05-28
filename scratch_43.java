@@ -17,6 +17,50 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
+    // LC382 流中的随机抽样问题, 蓄水池算法
+    ListNode h;
+    ListNode dummy = new ListNode(-1);
+    Random r = new Random();
+    int len = -1;
+
+    public int getRandom() {
+        // 蓄水池算法, 以1/n的概率保留第n个数, 每个数的期望概率都是1/len
+        int reserve = 0;
+        ListNode cur = h;
+        int count = 0;
+        while (cur != null) {
+            count++;
+            int re = r.nextInt(count) + 1;
+            if (re == count) {
+                reserve = cur.val;
+            }
+            cur = cur.next;
+        }
+        return reserve;
+    }
+
+    public int getRandomMy() {
+        int nth;
+        if (len == -1) {
+            nth = r.nextInt();
+        } else {
+            nth = r.nextInt(len);
+        }
+
+        ListNode ptr = h;
+        int ctr = 1;
+        while (ptr.next != null && ctr <= nth) {
+            ptr = ptr.next;
+            ctr++;
+        }
+        if (ptr.next == null) {
+            len = ctr;
+        }
+        return ptr.val;
+
+    }
+
     // LC1298 Learn from Solution
     public int maxCandiesS(int[] status, int[] candies, int[][] keys, int[][] containedBoxes, int[] initialBoxes) {
         int n = status.length;
@@ -151,5 +195,23 @@ class Scratch {
             }
         }
         return ans;
+    }
+}
+
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
