@@ -19,13 +19,16 @@ class Scratch {
 
     public List<String> findAllConcatenatedWordsInADict(String[] words) {
         lc472Trie = new Trie();
-        Arrays.sort(words);
         for (String word : words) {
-            lc472Trie.insert(word);
+            if (!word.equals("")) {
+                lc472Trie.insert(word);
+            }
         }
         for (String word : words) {
-            if (lc472Helper(word, 0, 1, 0)) {
-                lc472Result.add(word);
+            if (!word.equals("")) {
+                if (lc472Helper(word, 0, 1, 0)) {
+                    lc472Result.add(word);
+                }
             }
         }
         return lc472Result;
@@ -33,7 +36,7 @@ class Scratch {
 
     private boolean lc472Helper(String word, int idx, int cur, int ctr) {
         if (cur >= word.length()) {
-            if (lc472Trie.search(word.substring(idx, word.length())) && ctr >= 1) {
+            if (lc472Trie.search(word.substring(idx)) && ctr >= 1) {
                 return true;
             }
             return false;
@@ -41,8 +44,8 @@ class Scratch {
         if (!lc472Trie.startsWith(word.substring(idx, cur))) {
             return false;
         }
-        if (lc472Trie.search(word.substring(idx, cur))) {
-            return lc472Helper(word, cur, cur + 1, ctr + 1) || lc472Helper(word, idx, cur + 1, ctr);
+        if (lc472Trie.search(word.substring(idx, cur)) && lc472Helper(word, cur, cur + 1, ctr + 1)) {
+            return true;
         }
         return lc472Helper(word, idx, cur + 1, ctr);
     }
