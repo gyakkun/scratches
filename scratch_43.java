@@ -8,9 +8,43 @@ class Scratch {
         long timing = System.currentTimeMillis();
         int[] candies = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
 
-        System.err.println(s.reservoirSampling(candies, 30));
+        System.err.println(s.findAllConcatenatedWordsInADict(new String[]{"cat", "cats", "catsdogcats", "dog", "dogcatsdog", "hippopotamuses", "rat", "ratcatdogcat"}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC472 这都行???
+    List<String> lc472Result = new LinkedList<>();
+    Trie lc472Trie;
+
+    public List<String> findAllConcatenatedWordsInADict(String[] words) {
+        lc472Trie = new Trie();
+        Arrays.sort(words);
+        for (String word : words) {
+            lc472Trie.insert(word);
+        }
+        for (String word : words) {
+            if (lc472Helper(word, 0, 1, 0)) {
+                lc472Result.add(word);
+            }
+        }
+        return lc472Result;
+    }
+
+    private boolean lc472Helper(String word, int idx, int cur, int ctr) {
+        if (cur >= word.length()) {
+            if (lc472Trie.search(word.substring(idx, word.length())) && ctr >= 1) {
+                return true;
+            }
+            return false;
+        }
+        if (!lc472Trie.startsWith(word.substring(idx, cur))) {
+            return false;
+        }
+        if (lc472Trie.search(word.substring(idx, cur))) {
+            return lc472Helper(word, cur, cur + 1, ctr + 1) || lc472Helper(word, idx, cur + 1, ctr);
+        }
+        return lc472Helper(word, idx, cur + 1, ctr);
     }
 
     // 标准蓄水池抽样算法, 通常nums的长度很大, 或是只是一个链表头节点, 未知总长度
@@ -243,5 +277,40 @@ class ListNode {
     ListNode(int val, ListNode next) {
         this.val = val;
         this.next = next;
+    }
+}
+
+class Trie {
+    Map<String, Boolean> m;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public Trie() {
+        m = new HashMap<>();
+    }
+
+    /**
+     * Inserts a word into the trie.
+     */
+    public void insert(String word) {
+        for (int i = 0; i < word.length(); i++) {
+            m.putIfAbsent(word.substring(0, i + 1), false);
+        }
+        m.put(word, true);
+    }
+
+    /**
+     * Returns if the word is in the trie.
+     */
+    public boolean search(String word) {
+        return m.getOrDefault(word, false);
+    }
+
+    /**
+     * Returns if there is any word in the trie that starts with the given prefix.
+     */
+    public boolean startsWith(String prefix) {
+        return m.containsKey(prefix);
     }
 }
