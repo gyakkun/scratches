@@ -32,41 +32,26 @@ class Scratch {
     public int maxCandies(int[] status, int[] candies, int[][] keys, int[][] containedBoxes, int[] initialBoxes) {
         Set<Integer> acquiredKey = new HashSet<>();
         Deque<Integer> boxVisitQueue = new LinkedList<>();
-        Set<Integer> visited = new HashSet<>();
+//        Set<Integer> visited = new HashSet<>();
         int[] noKeyCounter = new int[status.length];
         int ans = 0;
         for (int i : initialBoxes) {
-            if (status[i] == 1) {
-                ans += candies[i];
-                int[] tmpContainedBox = containedBoxes[i];
-                for (int j : tmpContainedBox) {
-                    boxVisitQueue.offer(j);
-                }
-                int[] tmpKey = keys[i];
-                for (int j : tmpKey) {
-                    acquiredKey.add(j);
-                }
-                visited.add(i);
-            } else {
-                boxVisitQueue.offer(i);
-            }
+            boxVisitQueue.offer(i);
         }
         while (!boxVisitQueue.isEmpty()) {
             int tmpBoxIdx = boxVisitQueue.poll();
-            if (visited.contains(tmpBoxIdx)) {
-                continue;
-            }
-            if (status[tmpBoxIdx] == 1 || (acquiredKey.contains(tmpBoxIdx))) {
+//            if (visited.contains(tmpBoxIdx)) {
+//                continue;
+//            }
+            if (status[tmpBoxIdx] == 1 || acquiredKey.contains(tmpBoxIdx)) {
                 ans += candies[tmpBoxIdx];
-                int[] tmpContainedBox = containedBoxes[tmpBoxIdx];
-                for (int j : tmpContainedBox) {
+                for (int j : containedBoxes[tmpBoxIdx]) {
                     boxVisitQueue.offer(j);
                 }
-                int[] tmpKey = keys[tmpBoxIdx];
-                for (int j : tmpKey) {
+                for (int j : keys[tmpBoxIdx]) {
                     acquiredKey.add(j);
                 }
-                visited.add(tmpBoxIdx);
+//                visited.add(tmpBoxIdx);
             } else {
                 noKeyCounter[tmpBoxIdx]++;
                 if (noKeyCounter[tmpBoxIdx] > status.length) {
