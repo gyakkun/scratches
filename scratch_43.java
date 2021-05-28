@@ -6,11 +6,29 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[]{4,-1,4,-2,4};
+        int[] arr = new int[]{4, -1, 4, -2, 4};
         int[][] ob = new int[][]{{2, 4}};
         System.err.println(s.robotSim(arr, ob));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC477 Solution
+    public int totalHammingDistance(int[] nums) {
+        int ans = 0, n = nums.length;
+        for (int i = 0; i < 30; i++) {
+            int c = 0;
+            for (int val : nums) {
+                c += (val >> i) & 1;
+            }
+            ans += c * (n - c);
+        }
+        return ans;
+    }
+
+    // LC1298 TBD
+    public int maxCandies(int[] status, int[] candies, int[][] keys, int[][] containedBoxes, int[] initialBoxes) {
+        return -1;
     }
 
     // LC874
