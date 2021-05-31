@@ -13,6 +13,13 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC326
+    public boolean isPowerOfThree(int n) {
+        int upper = (int) (Math.log(Integer.MAX_VALUE) / Math.log(3));
+        int max3Power = (int) (Math.pow(3, upper));
+        return n > 0 && max3Power % n == 0;
+    }
+
     // LC342 Power of 4
     public boolean isPowerOfFour(int n) {
         return n > 0 && (n & (n - 1)) == 0 && (n & 0xaaaaaaaa) == 0;
