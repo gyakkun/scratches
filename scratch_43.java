@@ -7,10 +7,38 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.isPowerOfFour(1));
+        System.err.println(s.smallestDifference(new int[]{1, 2, 11, 15}, new int[]{4, 12, 19, 23, 127, 11}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC Interview 16.06
+    public int smallestDifference(int[] a, int[] b) {
+        Arrays.sort(a);
+        Arrays.sort(b);
+        long smallestDifference = Math.abs((long) a[0] - (long) b[0]);
+
+
+        int aPtr = 0;
+        int bPtr = 0;
+        while (aPtr < a.length && bPtr < b.length) {
+            // 移动aptr 还是移动bptr?
+            // a<b, a右移 直到 a>=b
+            while (aPtr < a.length && bPtr < b.length && a[aPtr] <= b[bPtr]) {
+                smallestDifference = Math.min(smallestDifference, Math.abs((long) a[aPtr] - (long) b[bPtr]));
+                aPtr++;
+                if (smallestDifference == 0) return 0;
+            }
+
+            while (aPtr < a.length && bPtr < b.length && a[aPtr] >= b[bPtr]) {
+                smallestDifference = Math.min(smallestDifference, Math.abs((long) a[aPtr] - (long) b[bPtr]));
+                bPtr++;
+                if (smallestDifference == 0) return 0;
+            }
+        }
+
+        return (int) smallestDifference;
     }
 
     // LC326
