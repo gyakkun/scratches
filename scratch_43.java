@@ -10,10 +10,13 @@ class Scratch {
         int[] arr1 = {0, 0, 0, 0, 0};
         int[] arr2 = {-3, 22, 35, 56, 76};
 
-        //
-        //[0,0,0,0,0]
-        //[-3,22,35,56,76]
-        //22
+        // [-10,-4,0,0,6]
+        // [3,5,6,7,8,100]
+        // 10
+
+        // [0,0,0,0,0]
+        // [-3,22,35,56,76]
+        // 22
 
         System.err.println(s.kSmallestPairsWA(arr1, arr2, 22));
 
@@ -45,8 +48,10 @@ class Scratch {
         while (!pq.isEmpty()) {
             result.add(pq.poll().getValue());
         }
+        result.sort((o1, o2) -> (o1.get(0) == o2.get(0) ? o1.get(1) - o2.get(1) : o1.get(0) - o2.get(0)));
         return result;
     }
+
 
     // LC373
     public List<List<Integer>> kSmallestPairsMy(int[] nums1, int[] nums2, int k) {
@@ -117,12 +122,12 @@ class Scratch {
         }
 
         int count = 0, n1Ptr = 0, n2Ptr = 0;
-        for (; n2Ptr < n2L; n2Ptr++) {
-            Integer floor = ts1.floor(low - nums2[n2Ptr]);
+        for (; n1Ptr < n1L; n1Ptr++) {
+            Integer floor = ts2.floor(low - nums1[n1Ptr]);
             if (floor != null) {
-                int idx = m1.get(floor);
+                int idx = m2.get(floor);
                 for (int i = 0; i <= idx; i++) {
-                    Integer[] tmp = {nums1[i], nums2[n2Ptr]};
+                    Integer[] tmp = {nums1[n1Ptr], nums2[i]};
                     result.add(Arrays.asList(tmp));
                     if (result.size() == k) break;
                 }
@@ -131,7 +136,7 @@ class Scratch {
         }
 
         return result;
-    }
+    } //
 
     // LC719 ** 第k小数对差 Hard
     public int smallestDistancePair(int[] nums, int k) {
