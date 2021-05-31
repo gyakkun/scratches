@@ -7,10 +7,60 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.smallestDifference(new int[]{1, 2, 11, 15}, new int[]{4, 12, 19, 23, 127, 11}));
+        TreeNode t1 = new TreeNode(1);
+        TreeNode t2 = new TreeNode(2);
+        TreeNode t3 = new TreeNode(3);
+        TreeNode t4 = new TreeNode(4);
+        TreeNode t5 = new TreeNode(5);
+        TreeNode t6 = new TreeNode(6);
+        t1.left = t2;
+        t1.right = t3;
+        t2.left = t4;
+        t2.right = t5;
+        t3.left = t6;
+
+        System.err.println(s.isCompleteTree(t1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC958
+    public boolean isCompleteTree(TreeNode root) {
+        if (root == null) return true;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        int maybeLastButOneLayer = -1;
+        int layer = -1;
+        while (!q.isEmpty()) {
+            layer++;
+            int size = q.size();
+
+            for (int i = 0; i < size; i++) {
+                TreeNode tmpTreeNode = q.poll();
+                // 当疑似倒数第二层出现时候, 如果该层后续节点仍有节点拥有非空子树, 则该树不可能为完全二叉树
+                if (maybeLastButOneLayer != -1 && (tmpTreeNode.left != null || tmpTreeNode.right != null)) {
+                    return false;
+                }
+
+                if (tmpTreeNode.left == null || tmpTreeNode.right == null) {
+                    // 第一个有空子树的节点出现时, 该节点 1) 要不两个都空 2) 要不只空右子树 , 否则该树不可能为完全二叉树
+                    if (tmpTreeNode.left == null && tmpTreeNode.right != null) {
+                        return false;
+                    }
+                    maybeLastButOneLayer = layer;
+                }
+
+                if (tmpTreeNode.left != null) {
+                    q.offer(tmpTreeNode.left);
+                }
+                if (tmpTreeNode.right != null) {
+                    q.offer(tmpTreeNode.right);
+                }
+            }
+        }
+
+        return true;
     }
 
     // LC Interview 16.06
@@ -428,5 +478,24 @@ class Trie {
      */
     public boolean startsWith(String prefix) {
         return m.containsKey(prefix);
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
