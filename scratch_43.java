@@ -1,5 +1,6 @@
 import javafx.util.*;
 
+import javax.sound.midi.MidiChannel;
 import java.util.*;
 
 class Scratch {
@@ -10,18 +11,33 @@ class Scratch {
         int[] arr1 = {0, 0, 0, 0, 0};
         int[] arr2 = {-3, 22, 35, 56, 76};
 
-        // [-10,-4,0,0,6]
-        // [3,5,6,7,8,100]
-        // 10
 
-        // [0,0,0,0,0]
-        // [-3,22,35,56,76]
-        // 22
-
-        System.err.println(s.kSmallestPairsWA(arr1, arr2, 22));
+        System.err.println(s.findKthNumber(30000, 30000, 1024));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC668 乘法表m*n 中第k小的数
+    public int findKthNumber(int m, int n, int k) {
+        int low = 1;
+        int high = m * n;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+
+            // 小于等于mid的数有几个?
+            int count = 0;
+            for (int i = 1; i <= m; i++) {
+                count += Math.min(mid / i, n);
+                if (i > mid) break;
+            }
+            if (count >= k) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
     }
 
     //  LC373
