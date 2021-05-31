@@ -27,9 +27,10 @@ class Scratch {
 
             // 小于等于mid的数有几个?
             int count = 0;
-            for (int i = 1; i <= m; i++) {
-                count += Math.min(mid / i, n);
-                if (i > mid) break;
+            count += n * (mid / n);
+            int upper = Math.min(mid, m);
+            for (int i = (mid / n) + 1; i <= upper; i++) {
+                count += mid / i;
             }
             if (count >= k) {
                 high = mid;
