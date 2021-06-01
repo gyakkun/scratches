@@ -17,47 +17,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1711
+    // LC1711 因为下标有先后顺序, 不需要一开始就全部添加, 只需迭代的时候递增即可
     public int countPairs(int[] deliciousness) {
         Arrays.sort(deliciousness);
+        int min = deliciousness[0];
+        int max = deliciousness[deliciousness.length - 1];
         int mod = 1000000007;
-        int result = 0;
-        // 大餐 指两菜美味程度之和为2的幂
-        List<Integer> powerOfTwo = new ArrayList<>(22);
-        for (int i = 0; i <= 21; i++) {
-            powerOfTwo.add((int) Math.pow(2, i));
-            if (powerOfTwo.get(powerOfTwo.size() - 1) > deliciousness[deliciousness.length - 1] * 2) break;
-        }
-        Map<Integer, List<Integer>> m = new HashMap<>();
-        for (int i = 0; i < deliciousness.length; i++) {
-            m.putIfAbsent(deliciousness[i], new ArrayList<>());
-            m.get(deliciousness[i]).add(i);
-        }
+        int maxPotLog = (int) Math.ceil((Math.log(2 * max) / Math.log(2)));
+        long result = 0;
+        int[] map = new int[max - min + 1];
 
-        for (int i = 0; i < deliciousness.length; i++) {
-            for (int pot : powerOfTwo) {
-                if (m.containsKey(pot - deliciousness[i])) {
-                    List<Integer> arr = m.get(pot - deliciousness[i]);
-                    int low = 0, high = arr.size() - 1;
-                    while (low < high) {
-                        int mid = low + (high - low) / 2;
-                        if (arr.get(mid) >= i) {
-                            high = mid;
-                        } else {
-                            low = mid + 1;
-                        }
-                    }
-                    if (arr.get(low) < i) {
-                        continue;
-                    }
-                    while (low < arr.size() && arr.get(low) == i) {
-                        low++;
-                    }
-                    result = (result + (arr.size() - low)) % mod;
+        for (int i : deliciousness) {
+            int pot = 1;
+            for (int j = 0; j <= maxPotLog; j++) {
+                if (pot >= i && (pot - i) <= max && (pot - i) >= min && map[(pot - i) - min] > 0) {
+                    result += map[(pot - i) - min];
                 }
+                pot *= 2;
             }
+            map[i - min]++;
         }
-        return result;
+        return (int) (result % mod);
     }
 
     private boolean isPowerOfTwo(int i) {
