@@ -11,10 +11,57 @@ class Scratch {
         int[] arr2 = {-3, 22, 35, 56, 76};
 
 
-        System.err.println(s.longestWPI(new int[]{9, 9, 9}));
+        System.err.println(s.countPairs(new int[]{1, 1, 1, 3, 3, 3, 7}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1711
+    public int countPairs(int[] deliciousness) {
+        Arrays.sort(deliciousness);
+        int mod = 1000000007;
+        int result = 0;
+        // 大餐 指两菜美味程度之和为2的幂
+        List<Integer> powerOfTwo = new ArrayList<>(22);
+        for (int i = 0; i <= 21; i++) {
+            powerOfTwo.add((int) Math.pow(2, i));
+            if (powerOfTwo.get(powerOfTwo.size() - 1) > deliciousness[deliciousness.length - 1] * 2) break;
+        }
+        Map<Integer, List<Integer>> m = new HashMap<>();
+        for (int i = 0; i < deliciousness.length; i++) {
+            m.putIfAbsent(deliciousness[i], new ArrayList<>());
+            m.get(deliciousness[i]).add(i);
+        }
+
+        for (int i = 0; i < deliciousness.length; i++) {
+            for (int pot : powerOfTwo) {
+                if (m.containsKey(pot - deliciousness[i])) {
+                    List<Integer> arr = m.get(pot - deliciousness[i]);
+                    int low = 0, high = arr.size() - 1;
+                    while (low < high) {
+                        int mid = low + (high - low) / 2;
+                        if (arr.get(mid) >= i) {
+                            high = mid;
+                        } else {
+                            low = mid + 1;
+                        }
+                    }
+                    if (arr.get(low) < i) {
+                        continue;
+                    }
+                    while (low < arr.size() && arr.get(low) == i) {
+                        low++;
+                    }
+                    result = (result + (arr.size() - low)) % mod;
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean isPowerOfTwo(int i) {
+        return i > 0 && (i & (i - 1)) == 0;
     }
 
     // LC1124 ** 注意单调栈的使用
