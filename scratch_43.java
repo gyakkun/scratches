@@ -11,10 +11,28 @@ class Scratch {
         int[] arr2 = {-3, 22, 35, 56, 76};
 
 
-        System.err.println(s.countPairs(new int[]{1, 1, 1, 3, 3, 3, 7}));
+        System.err.println(s.maxWidthRamp(new int[]{9, 8, 1, 0, 1, 9, 4, 0, 4, 1}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC962 ** 单调栈
+    public int maxWidthRamp(int[] nums) {
+        int n = nums.length;
+        int result = 0;
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (stack.isEmpty() || nums[stack.peek()] > nums[i]) { // 先找递减坡 (下坡)
+                stack.push(i);
+            }
+        }
+        for (int i = nums.length - 1; i >= 0; i--) { // 反向遍历
+            while (!stack.isEmpty() && nums[stack.peek()] <= nums[i]) {
+                result = Math.max(result, i - stack.pop());
+            }
+        }
+        return result;
     }
 
     // LC1711 因为下标有先后顺序, 不需要一开始就全部添加, 只需迭代的时候递增即可
