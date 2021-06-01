@@ -18,39 +18,19 @@ class Scratch {
     }
 
     // LC563
-    Map<TreeNode, Integer> lc563Map;
+    int lc563Result = 0;
 
     public int findTilt(TreeNode root) {
-        if (root == null) return 0;
-        lc563Map = new HashMap<>();
         sumTree(root);
-        Deque<TreeNode> q = new LinkedList<>();
-        q.offer(root);
-        int result = 0;
-        while (!q.isEmpty()) {
-            TreeNode tmp = q.poll();
-            int left = 0, right = 0;
-            if (tmp.left != null) {
-                left = lc563Map.get(tmp.left);
-                q.offer(tmp.left);
-            }
-            if (tmp.right != null) {
-                right = lc563Map.get(tmp.right);
-                q.offer(tmp.right);
-            }
-            result += Math.abs(left - right);
-
-        }
-        return result;
+        return lc563Result;
     }
 
     private int sumTree(TreeNode root) {
         if (root == null) return 0;
-        if (lc563Map.containsKey(root)) return lc563Map.get(root);
         int left = 0, right = 0;
         if (root.left != null) left = sumTree(root.left);
         if (root.right != null) right = sumTree(root.right);
-        lc563Map.put(root, left + right + root.val);
+        lc563Result += Math.abs(left - right);
         return left + right + root.val;
     }
 
