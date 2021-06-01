@@ -50,7 +50,9 @@ class Scratch {
             long minCondition = prefix[favoriteType] + 1;
             long maxCondition = prefix[favoriteType + 1];
 
-            result[i] = !(minEating > maxCondition || maxEating < minCondition);
+            if (minEating <= maxCondition && minCondition <= maxEating) {
+                result[i] = true;
+            }
         }
         return result;
     }
