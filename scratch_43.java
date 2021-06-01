@@ -17,6 +17,44 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC563
+    Map<TreeNode, Integer> lc563Map;
+
+    public int findTilt(TreeNode root) {
+        if (root == null) return 0;
+        lc563Map = new HashMap<>();
+        sumTree(root);
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        int result = 0;
+        while (!q.isEmpty()) {
+            TreeNode tmp = q.poll();
+            int left = 0, right = 0;
+            if (tmp.left != null) {
+                left = lc563Map.get(tmp.left);
+                q.offer(tmp.left);
+            }
+            if (tmp.right != null) {
+                right = lc563Map.get(tmp.right);
+                q.offer(tmp.right);
+            }
+            result += Math.abs(left - right);
+
+        }
+        return result;
+    }
+
+    private int sumTree(TreeNode root) {
+        if (root == null) return 0;
+        if (lc563Map.containsKey(root)) return lc563Map.get(root);
+        int left = 0, right = 0;
+        if (root.left != null) left = sumTree(root.left);
+        if (root.right != null) right = sumTree(root.right);
+        lc563Map.put(root, left + right + root.val);
+        return left + right + root.val;
+    }
+
+
     // LC962 ** 单调栈
     public int maxWidthRamp(int[] nums) {
         int n = nums.length;
