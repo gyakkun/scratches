@@ -10,7 +10,7 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.minimumLengthEncoding(new String[]{"t"}));
+        System.err.println(s.minimumLengthEncoding(new String[]{"time", "me", "bell"}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -20,17 +20,13 @@ class Scratch {
     public int minimumLengthEncoding(String[] words) {
         int n = words.length;
         Trie trie = new Trie();
-        String[] reverseWords = new String[words.length];
         for (int i = 0; i < n; i++) {
-            reverseWords[i] = new StringBuilder(words[i]).reverse().toString();
-            trie.insert(reverseWords[i]);
+            words[i] = new StringBuilder(words[i]).reverse().toString();
+            trie.insert(words[i]);
         }
-        Arrays.sort(reverseWords);
-        for (String reverseWord : reverseWords) {
-            trie.insert(reverseWord);
-        }
+        Arrays.sort(words);
         Map<String, String> m = new HashMap<>();
-        for (String reverseWord : reverseWords) {
+        for (String reverseWord : words) {
             for (int i = 1; i <= reverseWord.length(); i++) {
                 String cut = reverseWord.substring(0, i);
                 if (trie.search(cut)) {
@@ -43,14 +39,14 @@ class Scratch {
                     }
                 }
             }
+            trie.insert(reverseWord);
         }
         Set<String> set = new HashSet<>();
-        for (Map.Entry<String, String> entry : m.entrySet()) {
-            set.add(entry.getValue());
-        }
         int result = 0;
-        for (String ans : set) {
-            result += ans.length() + 1;
+        for (Map.Entry<String, String> entry : m.entrySet()) {
+            if (set.add(entry.getValue())) {
+                result += entry.getValue().length() + 1;
+            }
         }
         return result;
     }
