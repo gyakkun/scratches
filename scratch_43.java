@@ -17,6 +17,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC404
+    public int sumOfLeftLeaves(TreeNode root) {
+        if (root == null) return 0;
+        int lc404Result = 0;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            TreeNode tmp = q.poll();
+            if (tmp.left != null) {
+                if (tmp.left.left == null && tmp.left.right == null) {
+                    lc404Result += tmp.left.val;
+                }
+                q.offer(tmp.left);
+            }
+            if (tmp.right != null) {
+                q.offer(tmp.right);
+            }
+        }
+        return lc404Result;
+    }
+
     // LC1106 Hard
     public boolean parseBoolExpr(String expression) {
         char[] oper = {'!', '|', '&'};
@@ -33,11 +54,11 @@ class Scratch {
         for (int i = 0; i < n; i++) {
             if (operSet.contains(exp[i])) {
                 stack.push(exp[i]);
-            } else if(exp[i]=='t'||exp[i]=='f'){
+            } else if (exp[i] == 't' || exp[i] == 'f') {
                 stack.push(exp[i]);
             } else if (exp[i] == ')') {
                 List<Boolean> tmpList = new ArrayList<>();
-                while(stack.peek()=='t'||stack.peek()=='f'){
+                while (stack.peek() == 't' || stack.peek() == 'f') {
                     tmpList.add(stack.peek() == 't' ? true : false);
                     stack.pop();
                 }
@@ -56,7 +77,7 @@ class Scratch {
                         }
                         break;
                     case '!':
-                        if(tmpList.size()!=1){
+                        if (tmpList.size() != 1) {
                             last = false;
                             break;
                         }
