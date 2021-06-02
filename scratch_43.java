@@ -10,11 +10,35 @@ class Scratch {
         int[] arr1 = {0, 0, 0, 0, 0};
         int[] arr2 = {-3, 22, 35, 56, 76};
 
-
-        System.err.println(s.maxWidthRamp(new int[]{9, 8, 1, 0, 1, 9, 4, 0, 4, 1}));
+        System.err.println(s.checkSubarraySum(new int[]{23, 2, 6, 4, 7}, 13));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC523 0是任何数的倍数
+    public boolean checkSubarraySum(int[] nums, int k) {
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i - 1];
+        }
+
+        // 目标 prefix[i] - prefix[j] == 0 MOD k , i-j >=2
+        // <=> prefix[i] == prefix[j] MOD k , i-j>=2
+
+        Map<Integer, TreeSet<Integer>> tsArr = new HashMap<>();
+        for (int i = 0; i <= n; i++) {
+            if (tsArr.get(prefix[i] % k) == null) {
+                tsArr.put(prefix[i] % k, new TreeSet<>());
+            }
+            Integer floor = tsArr.get(prefix[i] % k).floor(i - 2);
+            if (floor != null) return true;
+            tsArr.get(prefix[i] % k).add(i);
+        }
+
+        return false;
     }
 
     // LC563
