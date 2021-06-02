@@ -10,10 +10,49 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.bestCoordinate(towers, 2));
+        System.err.println(s.minimumLengthEncoding(new String[]{"t"}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC820
+    public int minimumLengthEncoding(String[] words) {
+        int n = words.length;
+        Trie trie = new Trie();
+        String[] reverseWords = new String[words.length];
+        for (int i = 0; i < n; i++) {
+            reverseWords[i] = new StringBuilder(words[i]).reverse().toString();
+            trie.insert(reverseWords[i]);
+        }
+        Arrays.sort(reverseWords);
+        for (String reverseWord : reverseWords) {
+            trie.insert(reverseWord);
+        }
+        Map<String, String> m = new HashMap<>();
+        for (String reverseWord : reverseWords) {
+            for (int i = 1; i <= reverseWord.length(); i++) {
+                String cut = reverseWord.substring(0, i);
+                if (trie.search(cut)) {
+                    if (m.containsKey(cut)) {
+                        if (m.get(cut).length() < reverseWord.length()) {
+                            m.put(cut, reverseWord);
+                        }
+                    } else {
+                        m.put(cut, reverseWord);
+                    }
+                }
+            }
+        }
+        Set<String> set = new HashSet<>();
+        for (Map.Entry<String, String> entry : m.entrySet()) {
+            set.add(entry.getValue());
+        }
+        int result = 0;
+        for (String ans : set) {
+            result += ans.length() + 1;
+        }
+        return result;
     }
 
     // LC1620 模拟
