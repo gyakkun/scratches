@@ -10,43 +10,26 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.removeDuplicates("pbbcggttciiippooaais", 2));
-        System.err.println(s.removeDuplicates("deeedbbcccbdaa", 3));
-        System.err.println(s.removeDuplicates("abcd", 2));
+        System.err.println(s.constructArr(new int[]{1, 2, 3, 4, 5}));
+
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // JZOF66 不使用除法???
+    // JZOF66 不使用除法
     public int[] constructArr(int[] a) {
+        if (a.length == 0) return new int[0];
         int n = a.length;
-        int zeroCount = 0;
-        int firstZeroIdx = -1;
-        for (int i = 0; i < n; i++) {
-            if (a[i] == 0) {
-                zeroCount++;
-                if (firstZeroIdx == -1) {
-                    firstZeroIdx = i;
-                }
-            }
-        }
-        if (zeroCount >= 2) {
-            return new int[n];
-        }
-        int sum = 1;
-        for (int i : a) {
-            if (i != 0) {
-                sum *= i;
-            }
+        int[] left = new int[n], right = new int[n];
+        left[0] = right[n - 1] = 1;
+        for (int i = 1; i < n; i++) {
+            left[i] = left[i - 1] * a[i - 1];
+            right[n - 1 - i] = right[n - i] * a[n - i];
         }
         int[] result = new int[n];
-        if (zeroCount != 0) {
-            result[firstZeroIdx] = sum;
-            return result;
-        }
         for (int i = 0; i < n; i++) {
-            result[i] = sum / a[i];
+            result[i] = left[i] * right[i];
         }
         return result;
     }
