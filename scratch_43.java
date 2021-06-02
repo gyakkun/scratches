@@ -7,13 +7,51 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        int[] arr1 = {0, 0, 0, 0, 0};
-        int[] arr2 = {-3, 22, 35, 56, 76};
+        int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
-        System.err.println(s.checkSubarraySum(new int[]{23, 2, 6, 4, 7}, 13));
+
+        System.err.println(s.bestCoordinate(towers, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1620 模拟
+    public int[] bestCoordinate(int[][] towers, int radius) {
+        int[] result = new int[2];
+        int max = Integer.MIN_VALUE;
+        int maxDis = radius * radius;
+        for (int x = 0; x <= 50; x++) {
+            for (int y = 0; y <= 50; y++) {
+                int qualitySum = 0;
+                for (int[] ot : towers) {
+                    int distance = (ot[0] - x) * (ot[0] - x) + (ot[1] - y) * (ot[1] - y);
+                    if (distance <= maxDis) {
+                        int quality = (int) Math.floor(ot[2] / (1 + Math.sqrt(distance)));
+                        qualitySum += quality;
+                    }
+                }
+                if (qualitySum > max) {
+                    result = new int[]{x, y};
+                    max = qualitySum;
+                } else if (qualitySum == max) {
+                    int origX = result[0];
+                    if (origX < x) {
+                        continue;
+                    } else if (origX == x) {
+                        int origY = result[1];
+                        if (origY < y) {
+                            continue;
+                        } else {
+                            result = new int[]{x, y};
+                        }
+                    } else {
+                        result = new int[]{x, y};
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     // LC523 0是任何数的倍数
