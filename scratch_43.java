@@ -18,6 +18,39 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF66 不使用除法???
+    public int[] constructArr(int[] a) {
+        int n = a.length;
+        int zeroCount = 0;
+        int firstZeroIdx = -1;
+        for (int i = 0; i < n; i++) {
+            if (a[i] == 0) {
+                zeroCount++;
+                if (firstZeroIdx == -1) {
+                    firstZeroIdx = i;
+                }
+            }
+        }
+        if (zeroCount >= 2) {
+            return new int[n];
+        }
+        int sum = 1;
+        for (int i : a) {
+            if (i != 0) {
+                sum *= i;
+            }
+        }
+        int[] result = new int[n];
+        if (zeroCount != 0) {
+            result[firstZeroIdx] = sum;
+            return result;
+        }
+        for (int i = 0; i < n; i++) {
+            result[i] = sum / a[i];
+        }
+        return result;
+    }
+
     // LC1209
     public String removeDuplicates(String s, int k) {
         int origLen = s.length();
