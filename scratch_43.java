@@ -10,11 +10,50 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.parseBoolExpr("!(t)"));
+        System.err.println(s.repeatedStringMatch("abcbc",
+                "cabcbca"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC686
+    public int repeatedStringMatch(String a, String b) {
+        if (a.equals(b)) return 1;
+
+        // 1 查频剪枝
+        boolean[] aBool = new boolean[26];
+        boolean[] bBool = new boolean[26];
+        for (char c : a.toCharArray()) {
+            aBool[c - 'a'] = true;
+        }
+        for (char c : b.toCharArray()) {
+            bBool[c - 'a'] = true;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (bBool[i] && !aBool[i]) {
+                return -1;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder(b.length() * 2);
+        int ctr = 0;
+
+        // 补长
+        do {
+            sb.append(a);
+            ctr++;
+        } while (sb.length() < b.length());
+        if (sb.indexOf(b) != -1) return ctr; // 做一次判断
+
+        while (sb.length() < b.length() * 2 || ctr <= 2) {
+            ctr++;
+            sb.append(a);
+            if (sb.indexOf(b) != -1) return ctr;
+        }
+
+        return -1;
     }
 
     // LC404
