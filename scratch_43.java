@@ -10,10 +10,83 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.minimumLengthEncoding(new String[]{"time", "me", "bell"}));
+        System.err.println(s.removeDuplicates("pbbcggttciiippooaais", 2));
+        System.err.println(s.removeDuplicates("deeedbbcccbdaa", 3));
+        System.err.println(s.removeDuplicates("abcd", 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1209
+    public String removeDuplicates(String s, int k) {
+        int origLen = s.length();
+        int nextLen = s.length();
+
+        // 正则解法
+        //        do  {
+        //            origLen = s.length();
+        //            s = s.replaceAll("(\\w)\\1{" + (k - 1) + "}", "");
+        //            nextLen = s.length();
+        //        } while(origLen != nextLen);
+        //        return s;
+
+        Deque<Pair<Character, Integer>> origStack = new LinkedList<>();
+        boolean evenOdd = false;
+        for (char c : s.toCharArray()) {
+            if (origStack.isEmpty()) {
+                origStack.push(new Pair<>(c, 1));
+            } else {
+                if (c == origStack.peek().getKey()) {
+                    origStack.push(new Pair<>(c, origStack.pop().getValue() + 1));
+                } else {
+                    origStack.push(new Pair<>(c, 1));
+                }
+            }
+        }
+        do {
+            evenOdd = !evenOdd;
+            origLen = nextLen;
+            Deque<Pair<Character, Integer>> newStack = new LinkedList<>();
+            while (!origStack.isEmpty()) {
+                if (!newStack.isEmpty() && origStack.peek().getKey() == newStack.peek().getKey()) {
+                    char tmpChar = origStack.peek().getKey();
+                    int tmpCount = origStack.pop().getValue() + newStack.peek().getValue();
+                    nextLen -= (tmpCount / k) * k;
+                    newStack.pop();
+                    if (tmpCount % k != 0) {
+                        newStack.push(new Pair<>(tmpChar, tmpCount % k));
+                    }
+                } else {
+                    Pair<Character, Integer> tmpPop = origStack.pop();
+                    int tmpCount = tmpPop.getValue();
+                    nextLen -= (tmpCount / k) * k;
+                    if (tmpCount % k != 0) {
+                        tmpPop = new Pair<>(tmpPop.getKey(), tmpPop.getValue() % k);
+                        newStack.push(tmpPop);
+                    }
+                }
+            }
+            origStack = newStack;
+        } while (origLen != nextLen);
+
+        StringBuilder sb = new StringBuilder();
+        if (evenOdd) {
+            while (!origStack.isEmpty()) {
+                Pair<Character, Integer> tmpPop = origStack.pop();
+                for (int i = 0; i < tmpPop.getValue(); i++) {
+                    sb.append(tmpPop.getKey());
+                }
+            }
+        } else {
+            while (!origStack.isEmpty()) {
+                Pair<Character, Integer> tmpPoll = origStack.pollLast();
+                for (int i = 0; i < tmpPoll.getValue(); i++) {
+                    sb.append(tmpPoll.getKey());
+                }
+            }
+        }
+        return sb.toString();
     }
 
     // LC820
@@ -39,7 +112,6 @@ class Scratch {
                     }
                 }
             }
-            trie.insert(reverseWord);
         }
         Set<String> set = new HashSet<>();
         int result = 0;
