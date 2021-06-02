@@ -10,11 +10,65 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.constructArr(new int[]{1, 2, 3, 4, 5}));
+        System.err.println(s.parseBoolExpr("!(t)"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1106 Hard
+    public boolean parseBoolExpr(String expression) {
+        char[] oper = {'!', '|', '&'};
+        char[] token = {'!', '|', '&', ',', '(', ')'};
+
+        Set<Character> operSet = new HashSet<>();
+        for (char c : oper) {
+            operSet.add(c);
+        }
+        Deque<Character> stack = new LinkedList<>();
+        char[] exp = expression.toCharArray();
+        int n = exp.length;
+        Boolean last = null;
+        for (int i = 0; i < n; i++) {
+            if (operSet.contains(exp[i])) {
+                stack.push(exp[i]);
+            } else if(exp[i]=='t'||exp[i]=='f'){
+                stack.push(exp[i]);
+            } else if (exp[i] == ')') {
+                List<Boolean> tmpList = new ArrayList<>();
+                while(stack.peek()=='t'||stack.peek()=='f'){
+                    tmpList.add(stack.peek() == 't' ? true : false);
+                    stack.pop();
+                }
+                char tmpOper = stack.pop();
+                switch (tmpOper) {
+                    case '&':
+                        last = true;
+                        for (boolean tf : tmpList) {
+                            last &= tf;
+                        }
+                        break;
+                    case '|':
+                        last = false;
+                        for (boolean tf : tmpList) {
+                            last |= tf;
+                        }
+                        break;
+                    case '!':
+                        if(tmpList.size()!=1){
+                            last = false;
+                            break;
+                        }
+                        last = !tmpList.get(0);
+                        break;
+                    default:
+                        last = false;
+                }
+                stack.push(last ? 't' : 'f');
+            }
+        }
+        return stack.peek() == 't' ? true : false;
     }
 
     // JZOF66 不使用除法
