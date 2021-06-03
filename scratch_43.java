@@ -7,14 +7,29 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        int[][] towers = {{2, 1, 9}, {0, 1, 9}};
-
-
-        System.err.println(s.intersection(new int[]{4, 9, 5}, new int[]{9, 4, 9, 8, 4}));
-
+        System.err.println(s.maxNumberOfBalloons("nlaebolko"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1189
+    public int maxNumberOfBalloons(String text) {
+        int[] freq = new int[26];
+        char[] cArr = text.toCharArray();
+        for (int c : cArr) {
+            freq[c - 'a']++;
+        }
+//        balloon
+        freq['b' - 'a'] *= 2;
+        freq['a' - 'a'] *= 2;
+        freq['n' - 'a'] *= 2;
+        char[] balloon = {'b', 'a', 'l', 'o', 'n'};
+        int min = Integer.MAX_VALUE;
+        for (char c : balloon) {
+            min = Math.min(freq[c - 'a'], min);
+        }
+        return min / 2;
     }
 
     // LC349
