@@ -10,11 +10,40 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.finalPrices(new int[]{8,4,6,2,3}));
+        System.err.println(s.intersection(new int[]{4, 9, 5}, new int[]{9, 4, 9, 8, 4}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC349
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int ptr1 = 0, ptr2 = 0;
+        int ctr = 0;
+        while (ptr1 != nums1.length && ptr2 != nums2.length) {
+            if (nums1[ptr1] == nums2[ptr2]) {
+                nums1[ctr] = nums1[ptr1];
+                ctr++;
+                while (ptr1 + 1 < nums1.length && nums1[ptr1 + 1] == nums1[ptr1]) {
+                    ptr1++;
+                }
+                ptr1++;
+                while (ptr2 + 1 < nums2.length && nums2[ptr2 + 1] == nums2[ptr2]) {
+                    ptr2++;
+                }
+                ptr2++;
+            } else if (nums1[ptr1] > nums2[ptr2]) {
+                ptr2++;
+            } else {
+                ptr1++;
+            }
+        }
+        int[] result = new int[ctr];
+        System.arraycopy(nums1, 0, result, 0, ctr);
+        return result;
     }
 
     // LC1475
