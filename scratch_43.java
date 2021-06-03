@@ -7,10 +7,105 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.maxNumberOfBalloons("nlaebolko"));
+//        System.err.println(s.maxNumberOfBalloons("nlaebolko"));
+
+        ExamRoom er = new ExamRoom(10);
+
+        er.seat();
+        er.seat();
+        er.seat();
+        er.seat();
+        er.leave(4);
+
+        System.err.println(er.seat());
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC855
+    static class ExamRoom {
+        boolean isInit;
+        TreeSet<Integer> ts;
+        int count;
+
+        public ExamRoom(int n) {
+            count = n;
+            isInit = false;
+            ts = new TreeSet<>();
+        }
+
+        public int seat() {
+            if (!isInit) {
+                isInit = true;
+                ts.add(0);
+                return 0;
+            }
+            // 离他最近的人的距离最大
+            int idx = -1;
+            int minDistance = Integer.MAX_VALUE;
+            for (int i : ts) {
+                Integer lower = ts.lower(i);
+                Integer higher = ts.higher(i);
+                if (lower == null && i != 0) {
+                    int possibleIdx = 0;
+                    int distance = i;
+
+                    int[] tmpRes = getIdxAndMinDistance(possibleIdx, distance, idx, minDistance);
+                    idx = tmpRes[0];
+                    minDistance = tmpRes[1];
+
+                } else if (lower != null) {
+                    int possibleIdx = (i + lower) / 2;
+                    int distance = possibleIdx - lower;
+
+                    int[] tmpRes = getIdxAndMinDistance(possibleIdx, distance, idx, minDistance);
+                    idx = tmpRes[0];
+                    minDistance = tmpRes[1];
+                }
+                if (higher == null && i != count - 1) {
+                    int possibleIdx = count - 1;
+                    int distance = count - 1 - i;
+
+                    int[] tmpRes = getIdxAndMinDistance(possibleIdx, distance, idx, minDistance);
+                    idx = tmpRes[0];
+                    minDistance = tmpRes[1];
+                } else if (higher != null) {
+                    int possibleIdx = (i + higher) / 2;
+                    int distance = possibleIdx - i;
+
+                    int[] tmpRes = getIdxAndMinDistance(possibleIdx, distance, idx, minDistance);
+                    idx = tmpRes[0];
+                    minDistance = tmpRes[1];
+                }
+            }
+            ts.add(idx);
+            return idx;
+        }
+
+        private int[] getIdxAndMinDistance(int possibleIdx, int distance, int idx, int minDistance) {
+            if (idx == -1) {
+                idx = possibleIdx;
+                minDistance = distance;
+            } else {
+                if (distance != 0) {
+                    if (distance > minDistance) {
+                        minDistance = distance;
+                        idx = possibleIdx;
+                    } else if (distance == minDistance) {
+                        idx = Math.min(idx, possibleIdx);
+                    }
+                }
+            }
+            return new int[]{idx, minDistance};
+        }
+
+        public void leave(int p) {
+            ts.remove(p);
+            if (ts.size() == 0) {
+                isInit = false;
+            }
+        }
     }
 
     // LC1189
