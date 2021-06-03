@@ -7,12 +7,56 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
-        System.err.println("");
+        System.err.println(s.smallestSufficientTeam(new String[]{"java", "nodejs", "reactjs"}, new String[][]{{"java"}, {"nodejs"}, {"nodejs", "reactjs"}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1125 TBD
+    public int[] smallestSufficientTeam(String[] reqSkills, String[][] people) {
+        Map<String, Integer> skillIdxMap = new HashMap<>();
+        for (int i = 0; i < reqSkills.length; i++) {
+            skillIdxMap.put(reqSkills[i], i);
+        }
+        int maxMask = 1 << reqSkills.length;
+        int[] peopleSkillMask = new int[people.length];
+        for (int i = 0; i < people.length; i++) {
+            for (String skill : people[i]) {
+                if (skillIdxMap.containsKey(skill)) {
+                    peopleSkillMask[i] ^= 1 << skillIdxMap.get(skill);
+                }
+            }
+        }
+
+        // dp: mask - 表示当前状态是否可达(存在即可达), value里面存的是人的下标
+        Map<Integer, Set<Integer>> dp = new HashMap<>();
+        dp.put(0, new HashSet<>());
+        for (int j = 0; j < maxMask; j++) {
+            for (int i = 0; i < people.length; i++) {
+                // 加入这个人的技能之后的状态
+                if (dp.containsKey(j)) {
+                    int afterJoin = j | peopleSkillMask[i];
+                    if (!dp.containsKey(afterJoin)) {
+                        dp.put(afterJoin, dp.getOrDefault(j, new HashSet<>()));
+                        dp.get(afterJoin).add(i);
+                    } else {
+                        if (1 + dp.get(j).size() < dp.get(afterJoin).size()) {
+                            dp.put(afterJoin, dp.get(j));
+                            dp.get(afterJoin).add(i);
+                        }
+                    }
+                }
+            }
+        }
+        int[] result = new int[dp.get(maxMask - 1).size()];
+        int ctr = 0;
+        for (int i : dp.get(maxMask - 1)) {
+            result[ctr++] = i;
+        }
+        return result;
+    }
+
 
     // LC1311 BFS
     public List<String> watchedVideosByFriends(List<List<String>> watchedVideos, int[][] friends, int id, int level) {
@@ -120,6 +164,7 @@ class Scratch {
         public void leave(int p) {
             students.remove(p);
         }
+
     }
 
     // LC1189
