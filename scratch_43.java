@@ -7,10 +7,52 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.maxDistToClosest(new int[]{1,0,0,0,0,1,0,1,0}));
+
+        System.err.println("");
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1311 BFS
+    public List<String> watchedVideosByFriends(List<List<String>> watchedVideos, int[][] friends, int id, int level) {
+        List<String> result = new ArrayList<>();
+        Deque<Integer> q = new LinkedList<>();
+        Map<String, Integer> m = new HashMap<>();
+        boolean[] visited = new boolean[friends.length];
+        q.offer(id);
+        int levelCtr = -1;
+        while (!q.isEmpty()) {
+            levelCtr++;
+            if (levelCtr > level) break;
+
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
+                int tmpId = q.poll();
+                visited[tmpId] = true;
+
+                for (int friend : friends[tmpId]) {
+                    if (!visited[friend]) {
+                        q.offer(friend);
+                        visited[friend] = true;
+                    }
+                }
+                if (levelCtr == level) {
+                    for (String vid : watchedVideos.get(tmpId)) {
+                        m.put(vid, m.getOrDefault(vid, 0) + 1);
+                    }
+                }
+            }
+        }
+        result.addAll(m.keySet());
+        result.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return m.get(o1) == m.get(o2) ? o1.compareTo(o2) : m.get(o1) - m.get(o2);
+            }
+        });
+
+        return result;
     }
 
     // LC849
