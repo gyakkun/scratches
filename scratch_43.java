@@ -7,20 +7,36 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.err.println(s.maxNumberOfBalloons("nlaebolko"));
-
-        ExamRoom er = new ExamRoom(10);
-
-        er.seat();
-        er.seat();
-        er.seat();
-        er.seat();
-        er.leave(4);
-
-        System.err.println(er.seat());
+        System.err.println(s.maxDistToClosest(new int[]{1,0,0,0,0,1,0,1,0}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC849
+    public int maxDistToClosest(int[] seats) {
+        int n = seats.length;
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i = 0; i < n; i++) {
+            if (seats[i] == 1) {
+                ts.add(i);
+            }
+        }
+        int maxDistance = ts.first();
+        Integer prev = null;
+        for (int i : ts) {
+            if (prev != null) {
+                int possibleDistance = (i - prev) / 2;
+                if (possibleDistance > maxDistance) {
+                    maxDistance = possibleDistance;
+                }
+            }
+            prev = i;
+        }
+        if (n - 1 - ts.last() > maxDistance) {
+            maxDistance = n - 1 - ts.last();
+        }
+        return maxDistance;
     }
 
     // LC855
