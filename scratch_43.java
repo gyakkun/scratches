@@ -39,7 +39,7 @@ class Scratch {
                     // 加入这个人的技能之后的状态
                     int afterJoin = i | peopleSkillMask[j];
                     if (!dp.containsKey(afterJoin) || dp.get(afterJoin).size() > dp.get(i).size() + 1) {
-                        dp.put(afterJoin, new HashSet(dp.getOrDefault(i, new HashSet<>()))); // 必须复制一份Set, 不然直接改引用, 所有的dp[i]都共用同一个set
+                        dp.put(afterJoin, new HashSet(dp.get(i))); // 必须复制一份Set, 不然直接改引用, 所有的dp[i]都共用同一个set
                         dp.get(afterJoin).add(j);
                     }
                 }
