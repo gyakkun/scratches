@@ -13,7 +13,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1125 TBD
+    // LC1125 状压DP 0/1背包
     public int[] smallestSufficientTeam(String[] reqSkills, String[][] people) {
         Map<String, Integer> skillIdxMap = new HashMap<>();
         for (int i = 0; i < reqSkills.length; i++) {
@@ -24,7 +24,7 @@ class Scratch {
         for (int i = 0; i < people.length; i++) {
             for (String skill : people[i]) {
                 if (skillIdxMap.containsKey(skill)) {
-                    peopleSkillMask[i] ^= 1 << skillIdxMap.get(skill);
+                    peopleSkillMask[i] |= 1 << skillIdxMap.get(skill);
                 }
             }
         }
@@ -32,19 +32,15 @@ class Scratch {
         // dp: mask - 表示当前状态是否可达(存在即可达), value里面存的是人的下标
         Map<Integer, Set<Integer>> dp = new HashMap<>();
         dp.put(0, new HashSet<>());
-        for (int j = 0; j < maxMask; j++) {
-            for (int i = 0; i < people.length; i++) {
-                // 加入这个人的技能之后的状态
-                if (dp.containsKey(j)) {
-                    int afterJoin = j | peopleSkillMask[i];
-                    if (!dp.containsKey(afterJoin)) {
-                        dp.put(afterJoin, dp.getOrDefault(j, new HashSet<>()));
-                        dp.get(afterJoin).add(i);
-                    } else {
-                        if (1 + dp.get(j).size() < dp.get(afterJoin).size()) {
-                            dp.put(afterJoin, dp.get(j));
-                            dp.get(afterJoin).add(i);
-                        }
+        for (int i = 0; i < maxMask; i++) {
+            if (dp.containsKey(i)) {
+                for (int j = 0; j < people.length; j++) {
+                    if (peopleSkillMask[j] == 0) continue;
+                    // 加入这个人的技能之后的状态
+                    int afterJoin = i | peopleSkillMask[j];
+                    if (!dp.containsKey(afterJoin) || dp.get(afterJoin).size() > dp.get(i).size() + 1) {
+                        dp.put(afterJoin, new HashSet(dp.getOrDefault(i, new HashSet<>()))); // 必须复制一份Set, 不然直接改引用, 所有的dp[i]都共用同一个set
+                        dp.get(afterJoin).add(j);
                     }
                 }
             }
