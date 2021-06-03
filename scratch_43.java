@@ -10,7 +10,7 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.findMaxLength(new int[]{0, 1}));
+        System.err.println(s.findMaxLength(new int[]{0, 1, 0, 1}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -19,24 +19,17 @@ class Scratch {
 
     // LC525
     public int findMaxLength(int[] nums) {
-        int n = nums.length;
         Map<Integer, Integer> m = new HashMap<>();
-        for (int i = 0; i < n; i++) {
-            if (nums[i] == 0) {
-                nums[i] = -1;
-            }
-        }
-        int[] prefix = new int[n + 1];
-        for (int i = 1; i <= n; i++) {
-            prefix[i] = prefix[i - 1] + nums[i - 1];
-        }
         int result = 0;
+        int count = 0;
+        m.put(0, -1);
         // 目标 prefix[j] - prefix[i] = 0 , j>i
-        for (int i = 0; i <= n; i++) {
-            if (m.containsKey(prefix[i])) {
-                result = Math.max(result, i - m.get(prefix[i]));
+        for (int i = 0; i < nums.length; i++) {
+            count = count + (nums[i] == 0 ? -1 : 1);
+            if (m.containsKey(count)) {
+                result = Math.max(result, i - m.get(count));
             } else {
-                m.put(prefix[i], i);
+                m.put(count, i);
             }
         }
         return result;
