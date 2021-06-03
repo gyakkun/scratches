@@ -10,11 +10,33 @@ class Scratch {
         int[][] towers = {{2, 1, 9}, {0, 1, 9}};
 
 
-        System.err.println(s.findMaxLength(new int[]{0, 1, 0, 1}));
+        System.err.println(s.finalPrices(new int[]{8,4,6,2,3}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1475
+    public int[] finalPrices(int[] prices) {
+        // NGE - NSE
+        int n = prices.length;
+        int[] nse = new int[n];
+        Arrays.fill(nse, -1);
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && prices[stack.peek()] >= prices[i]) {
+//                nse[stack.pop()] = i;
+                prices[stack.pop()] -= prices[i];
+            }
+            stack.push(i);
+        }
+//        for (int i = 0; i < n; i++) {
+//            if (nse[i] != -1) {
+//                prices[i] -= prices[nse[i]];
+//            }
+//        }
+        return prices;
     }
 
     // LC525
