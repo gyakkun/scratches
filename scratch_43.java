@@ -7,13 +7,15 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        int var1 = 48240;
+
         System.err.println(s.bonus(6, new int[][]{{1, 2}, {1, 6}, {2, 3}, {2, 5}, {1, 4}}, new int[][]{{1, 1, 500}, {2, 2, 50}, {3, 1}, {2, 6, 15}, {3, 1}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LCP05 TLE
+    // LCP05 TLE BIT Optimized
     public int[] bonus(int n, int[][] leadership, int[][] operations) {
         int mod = 1000000007;
         Map<Integer, lcp05Node> m = new HashMap<>(n);
@@ -26,33 +28,42 @@ class Scratch {
             p.children.add(c);
             c.parent = p;
         }
+
+        for (int i = 1; i <= n; i++) {
+            m.get(i).totalChildrenCount = sumOfChildren(m.get(i));
+        }
+        BITLong bit = new BITLong(n);
+        Map<Integer, Integer> bitIdxMap = new HashMap<>(); // key: id, value: bit中的数组下标
+        int ctr = 0;
+        Deque<lcp05Node> stack = new LinkedList<>();
+        stack.push(m.get(1));
+        while (!stack.isEmpty()) {
+            lcp05Node tmp = stack.pop();
+            for (lcp05Node c : tmp.children) {
+                stack.push(c);
+            }
+            bitIdxMap.put(tmp.id, ctr++);
+        }
+
         List<Long> result = new LinkedList<>();
 
         for (int[] op : operations) {
             if (op[0] == 1) {
-                m.get(op[1]).coin += op[2];
+                bit.updateFromZero(bitIdxMap.get(op[1]), op[2]);
             } else if (op[0] == 2) {
-                Deque<lcp05Node> q = new LinkedList<>();
-                q.offer(m.get(op[1]));
-                while (!q.isEmpty()) {
-                    lcp05Node tmp = q.poll();
-                    for (lcp05Node c : tmp.children) {
-                        q.offer(c);
-                    }
-                    tmp.coin += op[2];
+                int childrenSize = m.get(op[1]).totalChildrenCount;
+                int selfIdx = bitIdxMap.get(op[1]);
+                for (int i = 0; i <= childrenSize; i++) {
+                    bit.updateFromZero(selfIdx + i, op[2]);
                 }
             } else if (op[0] == 3) {
-                Deque<lcp05Node> q = new LinkedList<>();
-                q.offer(m.get(op[1]));
-                long sum = 0;
-                while (!q.isEmpty()) {
-                    lcp05Node tmp = q.poll();
-                    for (lcp05Node c : tmp.children) {
-                        q.offer(c);
-                    }
-                    sum += tmp.coin;
+                int childrenSize = m.get(op[1]).totalChildrenCount;
+                int selfIdx = bitIdxMap.get(op[1]);
+                if (selfIdx != 0) {
+                    result.add(bit.sumFromZero(selfIdx + childrenSize) - bit.sumFromZero(selfIdx - 1));
+                } else {
+                    result.add(bit.sumFromZero(bit.len - 1));
                 }
-                result.add(sum);
             }
         }
         int[] resultArr = new int[result.size()];
@@ -65,6 +76,7 @@ class Scratch {
     class lcp05Node {
         lcp05Node parent;
         int id; // 从0开始
+        int totalChildrenCount;
         long coin;
         List<lcp05Node> children;
 
@@ -72,7 +84,21 @@ class Scratch {
             this.id = id;
             children = new LinkedList<>();
             coin = 0;
+            totalChildrenCount = 0;
         }
+    }
+
+    Map<lcp05Node, Integer> lcp05ChildrenCountMap = new HashMap<>();
+
+    private int sumOfChildren(lcp05Node node) {
+        if (node.children.size() == 0) return 0;
+        if (lcp05ChildrenCountMap.containsKey(node)) return lcp05ChildrenCountMap.get(node);
+        int result = node.children.size();
+        for (lcp05Node c : node.children) {
+            result += sumOfChildren(c);
+        }
+        lcp05ChildrenCountMap.put(node, result);
+        return result;
     }
 
     // LC1021
