@@ -13,6 +13,54 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1331
+    public int[] arrayRankTransform(int[] arr) {
+        int[] sorted = new int[arr.length];
+        System.arraycopy(arr, 0, sorted, 0, arr.length);
+        Arrays.sort(sorted);
+        Map<Integer, Integer> m = new HashMap<>();
+        int ctr = 1;
+        for (int i = 0; i < sorted.length; i++) {
+            if (!m.containsKey(sorted[i])) {
+                m.put(sorted[i], ctr);
+                ctr++;
+            }
+        }
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = m.get(arr[i]);
+        }
+        return arr;
+    }
+
+    // LC160
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+
+        int lenA = 0, lenB = 0;
+        ListNode ptrA = headA, ptrB = headB;
+        while (ptrA.next != null) {
+            ptrA = ptrA.next;
+            lenA++;
+        }
+        while (ptrB.next != null) {
+            ptrB = ptrB.next;
+            lenB++;
+        }
+        if (ptrA != ptrB) return null;
+        ListNode fast = lenA > lenB ? headA : headB;
+        ListNode slow = fast == headA ? headB : headA;
+        int aheadStep = Math.abs(lenA - lenB);
+        while (aheadStep != 0) {
+            fast = fast.next;
+            aheadStep--;
+        }
+        while (fast != slow) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return fast;
+
+    }
+
     // LC1125 状压DP 0/1背包
     public int[] smallestSufficientTeam(String[] reqSkills, List<List<String>> people) {
         Map<String, Integer> skillIdxMap = new HashMap<>();
