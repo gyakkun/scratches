@@ -1,5 +1,4 @@
 import javafx.util.*;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 
@@ -8,10 +7,72 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.removeOuterParentheses("(()())(())(()(()))"));
+        System.err.println(s.bonus(6, new int[][]{{1, 2}, {1, 6}, {2, 3}, {2, 5}, {1, 4}}, new int[][]{{1, 1, 500}, {2, 2, 50}, {3, 1}, {2, 6, 15}, {3, 1}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LCP05 TLE
+    public int[] bonus(int n, int[][] leadership, int[][] operations) {
+        int mod = 1000000007;
+        Map<Integer, lcp05Node> m = new HashMap<>(n);
+        for (int i = 0; i < n; i++) {
+            m.put(i + 1, new lcp05Node(i + 1));
+        }
+        for (int[] ls : leadership) {
+            lcp05Node p = m.get(ls[0]);
+            lcp05Node c = m.get(ls[1]);
+            p.children.add(c);
+            c.parent = p;
+        }
+        List<Long> result = new LinkedList<>();
+
+        for (int[] op : operations) {
+            if (op[0] == 1) {
+                m.get(op[1]).coin += op[2];
+            } else if (op[0] == 2) {
+                Deque<lcp05Node> q = new LinkedList<>();
+                q.offer(m.get(op[1]));
+                while (!q.isEmpty()) {
+                    lcp05Node tmp = q.poll();
+                    for (lcp05Node c : tmp.children) {
+                        q.offer(c);
+                    }
+                    tmp.coin += op[2];
+                }
+            } else if (op[0] == 3) {
+                Deque<lcp05Node> q = new LinkedList<>();
+                q.offer(m.get(op[1]));
+                long sum = 0;
+                while (!q.isEmpty()) {
+                    lcp05Node tmp = q.poll();
+                    for (lcp05Node c : tmp.children) {
+                        q.offer(c);
+                    }
+                    sum += tmp.coin;
+                }
+                result.add(sum);
+            }
+        }
+        int[] resultArr = new int[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            resultArr[i] = (int) (result.get(i) % mod);
+        }
+        return resultArr;
+    }
+
+    class lcp05Node {
+        lcp05Node parent;
+        int id; // 从0开始
+        long coin;
+        List<lcp05Node> children;
+
+        public lcp05Node(int id) {
+            this.id = id;
+            children = new LinkedList<>();
+            coin = 0;
+        }
     }
 
     // LC1021
@@ -1509,5 +1570,133 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+class BIT { // 树状数组: 单点查询, 单点修改, 区间求和 : O(logN)
+    int[] bit;
+    int len;
+
+    public BIT(int[] orig) {
+        len = orig.length;
+        bit = new int[len + 1];
+        for (int i = 0; i < len; i++) {
+            updateFromZero(i, orig[i]);
+        }
+    }
+
+    public BIT(int n) {
+        len = n;
+        bit = new int[len + 1];
+    }
+
+    public void setFromZero(int idx, int value) {
+        int delta = value - getFromZero(idx);
+        updateFromZero(idx, delta);
+    }
+
+    public void setFromOne(int idx, int value) {
+        setFromZero(idx - 1, value);
+    }
+
+    public int getFromZero(int idx) {
+        if (idx == 0) return sumFromZero(0);
+        return sumFromZero(idx) - sumFromZero(idx - 1);
+    }
+
+    public int getFromOne(int idx) {
+        return getFromZero(idx - 1);
+    }
+
+    public void updateFromZero(int idx, int delta) { // idx: 索引从0开始
+        updateFromOne(idx + 1, delta);
+    }
+
+    public void updateFromOne(int idx, int delta) { // idx: 索引从1开始
+        while (idx <= len) {
+            bit[idx] += delta;
+            idx += lowBit(idx);
+        }
+    }
+
+    public int sumFromZero(int idx) {
+        return sumFromOne(idx + 1);
+    }
+
+    public int sumFromOne(int idx) { // 从第一个元素到第p个元素的和
+        int sum = 0;
+        while (idx > 0) {
+            sum += bit[idx];
+            idx -= lowBit(idx);
+        }
+        return sum;
+    }
+
+    private int lowBit(int x) {
+        return x & (x ^ (x - 1));
+    }
+}
+
+class BITLong { // 树状数组: 单点查询, 单点修改, 区间求和 : O(logN)
+    long[] bit;
+    int len;
+
+    public BITLong(long[] orig) {
+        len = orig.length;
+        bit = new long[len + 1];
+        for (int i = 0; i < len; i++) {
+            updateFromZero(i, orig[i]);
+        }
+    }
+
+    public BITLong(int n) {
+        len = n;
+        bit = new long[len + 1];
+    }
+
+    public void setFromZero(int idx, long value) {
+        long delta = value - getFromZero(idx);
+        updateFromZero(idx, delta);
+    }
+
+    public void setFromOne(int idx, long value) {
+        setFromZero(idx - 1, value);
+    }
+
+    public long getFromZero(int idx) {
+        if (idx == 0) return sumFromZero(0);
+        return sumFromZero(idx) - sumFromZero(idx - 1);
+    }
+
+    public long getFromOne(int idx) {
+        return getFromZero(idx - 1);
+    }
+
+    public void updateFromZero(int idx, long delta) { // idx: 索引从0开始
+        updateFromOne(idx + 1, delta);
+    }
+
+    public void updateFromOne(int idx, long delta) { // idx: 索引从1开始
+        while (idx <= len) {
+            bit[idx] += delta;
+            idx += lowBit(idx);
+        }
+    }
+
+    public long sumFromZero(int idx) {
+        return sumFromOne(idx + 1);
+    }
+
+    public long sumFromOne(int idx) { // 从第一个元素到第p个元素的和
+        long sum = 0;
+        while (idx > 0) {
+            sum += bit[idx];
+            idx -= lowBit(idx);
+        }
+        return sum;
+    }
+
+    private long lowBit(long x) {
+        return x & (x ^ (x - 1));
     }
 }
