@@ -9,7 +9,9 @@ class Scratch {
 
         int var1 = 48240;
 
-        System.err.println(s.bonus(6, new int[][]{{1, 2}, {1, 6}, {2, 3}, {2, 5}, {1, 4}}, new int[][]{{1, 1, 500}, {2, 2, 50}, {3, 1}, {2, 6, 15}, {3, 1}}));
+//        System.err.println(s.bonus(6, new int[][]{{1, 2}, {1, 6}, {2, 3}, {2, 5}, {1, 4}}, new int[][]{{1, 1, 500}, {2, 2, 50}, {3, 1}, {2, 6, 15}, {3, 1}}));
+
+        BITLong rbitl = new BITLong(new long[5]);
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -53,6 +55,9 @@ class Scratch {
             } else if (op[0] == 2) {
                 int childrenSize = m.get(op[1]).totalChildrenCount;
                 int selfIdx = bitIdxMap.get(op[1]);
+
+//                bit.rangeUpdateFromZeroInclusive(selfIdx, selfIdx + childrenSize, op[2]);
+//
                 for (int i = 0; i <= childrenSize; i++) {
                     bit.updateFromZero(selfIdx + i, op[2]);
                 }
@@ -1722,7 +1727,8 @@ class BITLong { // 树状数组: 单点查询, 单点修改, 区间求和 : O(lo
         return sum;
     }
 
-    private long lowBit(long x) {
+    private int lowBit(int x) {
         return x & (x ^ (x - 1));
     }
 }
+
