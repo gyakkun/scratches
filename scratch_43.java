@@ -13,6 +13,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1331 Bucket
+    public int[] arrayRankTransformBucket(int[] arr) {
+        if (arr.length == 0) return arr;
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i : arr) {
+            min = Math.min(min, i);
+            max = Math.max(max, i);
+        }
+        int[] bucket = new int[max - min + 1];
+        for (int i : arr) {
+            bucket[i - min] = 1;
+        }
+        int[] prefix = new int[bucket.length + 1];
+        for (int i = 1; i <= bucket.length; i++) {
+            prefix[i] = prefix[i - 1] + bucket[i - 1];
+        }
+//        int[] result = new int[arr.length];
+
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = prefix[arr[i] - min] + 1;
+        }
+        return arr;
+    }
+
     // LC1331
     public int[] arrayRankTransform(int[] arr) {
         int[] sorted = new int[arr.length];
