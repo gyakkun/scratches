@@ -1,5 +1,5 @@
-import com.sun.istack.internal.NotNull;
 import javafx.util.*;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 
@@ -8,10 +8,57 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.visitOrder(new int[][]{{3, 2}, {1, 1}, {1, 4}, {2, 1}}, "LL"));
+        System.err.println(s.rectangleArea(new int[][]{{0, 0, 2, 2}, {1, 0, 2, 3}, {1, 0, 3, 1}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC850 扫描线法
+    public int rectangleArea(int[][] rectangles) {
+        final int OPEN = 0, CLOSE = 1;
+        int[][] events = new int[rectangles.length * 2][4];
+        int ctr = 0;
+        for (int[] rec : rectangles) {
+            events[ctr++] = new int[]{rec[1], OPEN, rec[0], rec[2]};
+            events[ctr++] = new int[]{rec[3], CLOSE, rec[0], rec[2]};
+        }
+        Arrays.sort(events, Comparator.comparingInt(o -> o[0]));
+        TreeMap<Pair<Integer, Integer>, Integer> activeXs = new TreeMap<>(new Comparator<Pair<Integer, Integer>>() {
+            @Override
+            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+                return o1.getKey() == o2.getKey() ? o1.getValue() - o2.getValue() : o1.getKey() - o2.getKey();
+            }
+        });
+        activeXs.put(new Pair<>(events[0][2], events[0][3]), 1);
+
+        long ans = 0;
+        int curY = events[0][0];
+
+        for (int i = 1; i < events.length; i++) {
+            long height = events[i][0] - curY;
+            long cur = -1;
+            long length = 0;
+            for (Pair<Integer, Integer> intv : activeXs.keySet()) {
+                cur = Math.max(intv.getKey(), cur);
+                length += Math.max(0, intv.getValue() - cur);
+                cur = Math.max(intv.getValue(), cur);
+            }
+            ans += height * length;
+            int x1 = events[i][2], x2 = events[i][3];
+            Pair<Integer, Integer> newXs = new Pair<>(x1, x2);
+            if (events[i][1] == OPEN) {
+                activeXs.put(newXs, activeXs.getOrDefault(newXs, 0) + 1);
+            } else {
+                activeXs.put(newXs, activeXs.get(newXs) - 1);
+                if (activeXs.get(newXs) == 0) {
+                    activeXs.remove(newXs);
+                }
+            }
+            curY = events[i][0];
+        }
+        ans = ans % 1000000007;
+        return (int) ans;
     }
 
     // LCP15 贪心
