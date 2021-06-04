@@ -1,3 +1,4 @@
+import com.sun.istack.internal.NotNull;
 import javafx.util.*;
 
 import java.util.*;
@@ -7,10 +8,96 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println("");
+        System.err.println(s.visitOrder(new int[][]{{3, 2}, {1, 1}, {1, 4}, {2, 1}}, "LL"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LCP15 贪心
+    public int[] visitOrder(int[][] points, String direction) {
+        int n = points.length;
+        boolean[] visited = new boolean[n];
+        List<PII> pp = new ArrayList<>(n);
+        List<Integer> order = new ArrayList<>(n);
+        char[] dir = direction.toCharArray();
+
+        for (int[] point : points) {
+            pp.add(new PII(point[0], point[1]));
+        }
+
+        // 找到最左边、最下边的点
+        int start = 0;
+        for (int i = 1; i < n; i++) {
+            if (pp.get(i).compareTo(pp.get(start)) < 0) {
+                start = i;
+            }
+        }
+        visited[start] = true;
+        order.add(start);
+
+        int cur = start;
+        for (int i = 0; i < dir.length; i++) {
+            int next = -1;
+            if (dir[i] == 'L') {
+                for (int j = 0; j < n; j++) {
+                    if (!visited[j]) {
+                        // 如果(下次)方向是左, 不断找从当前点出发最右侧(顺时针方向, 叉积小于0)的点, 确保下次的点都是左侧的点
+                        if (next == -1 || crossProduct(vec(pp.get(cur), pp.get(next)), vec(pp.get(cur), pp.get(j))) < 0) {
+                            next = j;
+                        }
+                    }
+                }
+            } else if (dir[i] == 'R') {
+                for (int j = 0; j < n; j++) {
+                    if (!visited[j]) {
+                        if (next == -1 || crossProduct(vec(pp.get(cur), pp.get(next)), vec(pp.get(cur), pp.get(j))) > 0) {
+                            next = j;
+                        }
+                    }
+                }
+            }
+            visited[next] = true;
+            order.add(next);
+            cur = next;
+        }
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                order.add(i);
+                break;
+            }
+        }
+        int[] result = new int[order.size()];
+        for (int i = 0; i < n; i++) {
+            result[i] = order.get(i);
+        }
+        return result;
+    }
+
+    class PII extends Pair<Integer, Integer> implements Comparable<PII> {
+        /**
+         * Creates a new pair
+         *
+         * @param key   The key for this pair
+         * @param value The value to use for this pair
+         */
+        public PII(Integer key, Integer value) {
+            super(key, value);
+        }
+
+        @Override
+        public int compareTo(Scratch.PII o) {
+            return this.getKey() == o.getKey() ? this.getValue() - o.getValue() : this.getKey() - o.getKey();
+        }
+    }
+
+
+    private PII vec(PII from, PII to) {
+        return new PII(to.getKey() - from.getKey(), to.getValue() - from.getValue());
+    }
+
+    private int crossProduct(PII a, PII b) {
+        return a.getKey() * b.getValue() - a.getValue() * b.getKey();
     }
 
     // LC1331 Bucket
