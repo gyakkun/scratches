@@ -16,38 +16,14 @@ class Scratch {
 
     // LC1021
     public String removeOuterParentheses(String s) {
-        char[] cArr = s.toCharArray();
-        Deque<Character> stack = new LinkedList<>();
-        List<StringBuilder> ans = new ArrayList<>();
-        int left = 0, right = 0;
-        for (char c : cArr) {
-            stack.push(c);
-            if (c == '(') left++;
-            else right++;
-            if (left == right) {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < left + right; i++) {
-                    sb.append(stack.pop());
-                }
-                ans.add(sb.reverse());
-                left = right = 0;
-            }
+        StringBuilder sb = new StringBuilder();
+        int level = 0;
+        for (char c : s.toCharArray()) {
+            if (c == ')') --level;
+            if (level >= 1) sb.append(c);
+            if (c == '(') ++level;
         }
-        for (int i = 0; i < ans.size(); i++) {
-            StringBuilder sb = ans.get(i);
-//            while (sb.length() >= 2 && sb.charAt(0) == '(' && sb.charAt(sb.length() - 1) == ')') {
-//                int leftIdx = 1, rightIdx = sb.length() - 2;
-//                if (leftIdx > rightIdx) break;
-//                if (sb.charAt(leftIdx) == '(' && sb.charAt(rightIdx) == ')') {
-                    sb.deleteCharAt(sb.length() - 1);
-                    sb.deleteCharAt(0);
-//                } else {
-//                    break;
-//                }
-//            }
-        }
-
-        return String.join("", ans);
+        return sb.toString();
     }
 
     // LC850 扫描线法
