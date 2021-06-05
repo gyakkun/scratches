@@ -12,6 +12,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC474
+    public int findMaxForm(String[] strs, int m, int n) {
+        int[] zeroCtr = new int[strs.length];
+        int[] oneCtr = new int[strs.length];
+        for (int i = 0; i < strs.length; i++) {
+            for (char c : strs[i].toCharArray()) {
+                if (c == '0') zeroCtr[i]++;
+            }
+            oneCtr[i] = strs[i].length() - zeroCtr[i];
+        }
+        int[][][] dp = new int[strs.length + 1][m + 1][n + 1];
+        for (int i = 1; i <= strs.length; i++) {
+            int zeroNum = zeroCtr[i - 1];
+            int oneNum = oneCtr[i - 1];
+            for (int j = 0; j <= m; j++) {
+                for (int k = 0; k <= n; k++) {
+                    int result = dp[i - 1][j][k];
+                    if (j - zeroNum >= 0 && k - oneNum >= 0) {
+                        result = Math.max(result, dp[i - 1][j - zeroNum][k - oneNum] + 1);// 选择这一个字符串
+                    }
+                    dp[i][j][k] = result;
+                }
+            }
+        }
+        return dp[strs.length][m][n];
+    }
+
     // JZOF51 HARD
     public int reversePairs(int[] nums) {
         int n = nums.length;
