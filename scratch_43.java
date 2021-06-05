@@ -1868,7 +1868,7 @@ class RangeBit { // 注意存入的是差分数组, 目标数组 a[i] 即对diff
     }
 
     private long getRangeSum(int l, int r) {
-        return (r + 1) * getSum(diff, r) - getSum(iDiff, r) - ((l - 1 + 1) * getSum(diff, l) - getSum(iDiff, l));
+        return (r + 1) * getSum(diff, r) - getSum(iDiff, r) - ((l - 1 + 1) * getSum(diff, l - 1) - getSum(iDiff, l - 1));
     }
 
     private int lowbit(int x) {
