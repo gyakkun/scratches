@@ -14,92 +14,82 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LCP05 TLE BIT Optimized
+    // LCP05 Range BIT Optimized
+    lcp05Node[] lcp05NodeArr;
+    Integer[] lcp05ChildrenCountMap;
+
     public int[] bonus(int n, int[][] leadership, int[][] operations) {
-        int mod = 1000000007;
-        Map<Integer, lcp05Node> m = new HashMap<>(n);
-        for (int i = 0; i < n; i++) {
-            m.put(i + 1, new lcp05Node(i + 1));
+        final long mod = 1000000007;
+        lcp05NodeArr = new lcp05Node[n + 1];
+        lcp05ChildrenCountMap = new Integer[n + 1];
+        int[] bitIdxMap = new int[n + 1];
+        RangeBit bit = new RangeBit(n);
+        Deque<lcp05Node> stack = new LinkedList<>();
+        int ctr = 0;
+        int[] result = new int[50000];
+        int resultCtr = 0;
+
+        for (int i = 1; i <= n; i++) {
+            lcp05NodeArr[i] = new lcp05Node(i);
         }
+
         for (int[] ls : leadership) {
-            lcp05Node p = m.get(ls[0]);
-            lcp05Node c = m.get(ls[1]);
+            lcp05Node p = lcp05NodeArr[ls[0]];
+            lcp05Node c = lcp05NodeArr[ls[1]];
             p.children.add(c);
-            c.parent = p;
         }
 
         for (int i = 1; i <= n; i++) {
-            m.get(i).totalChildrenCount = sumOfChildren(m.get(i));
+            lcp05NodeArr[i].totalChildrenCount = sumOfChildren(i);
         }
-        RangeBit bit = new RangeBit(n);
-        Map<Integer, Integer> bitIdxMap = new HashMap<>(); // key: id, value: bit中的数组下标
-        int ctr = 0;
-        Deque<lcp05Node> stack = new LinkedList<>();
-        stack.push(m.get(1));
+
+        stack.push(lcp05NodeArr[1]);
         while (!stack.isEmpty()) {
             lcp05Node tmp = stack.pop();
             for (lcp05Node c : tmp.children) {
                 stack.push(c);
             }
-            bitIdxMap.put(tmp.id, ctr++);
+            bitIdxMap[tmp.id] = ctr++;
         }
-
-        List<Long> result = new LinkedList<>();
 
         for (int[] op : operations) {
             if (op[0] == 1) {
-                bit.updateFromZero(bitIdxMap.get(op[1]), op[2]);
+                bit.updateFromZero(bitIdxMap[op[1]], op[2]);
             } else if (op[0] == 2) {
-                int childrenSize = m.get(op[1]).totalChildrenCount;
-                int selfIdx = bitIdxMap.get(op[1]);
-
+                int childrenSize = lcp05NodeArr[op[1]].totalChildrenCount;
+                int selfIdx = bitIdxMap[op[1]];
                 bit.rangeUpdateFromZero(selfIdx, selfIdx + childrenSize, op[2]);
-
-//                for (int i = 0; i <= childrenSize; i++) {
-//                    bit.updateFromZero(selfIdx + i, op[2]);
-//                }
             } else if (op[0] == 3) {
-                int childrenSize = m.get(op[1]).totalChildrenCount;
-                int selfIdx = bitIdxMap.get(op[1]);
-                if (selfIdx != 0) {
-                    result.add(bit.sumFromZero(selfIdx + childrenSize) - bit.sumFromZero(selfIdx - 1));
-                } else {
-                    result.add(bit.sumFromZero(bit.len - 1));
-                }
+                int childrenSize = lcp05NodeArr[op[1]].totalChildrenCount;
+                int selfIdx = bitIdxMap[op[1]];
+                result[resultCtr++] = (int) (bit.rangeSumFromZero(selfIdx, selfIdx + childrenSize) % mod);
             }
         }
-        int[] resultArr = new int[result.size()];
-        for (int i = 0; i < result.size(); i++) {
-            resultArr[i] = (int) (result.get(i) % mod);
-        }
-        return resultArr;
+        int[] ret = new int[resultCtr];
+        System.arraycopy(result, 0, ret, 0, resultCtr);
+        return ret;
     }
 
     class lcp05Node {
-        lcp05Node parent;
-        int id; // 从0开始
+        int id; // 从1开始
         int totalChildrenCount;
-        long coin;
         List<lcp05Node> children;
 
         public lcp05Node(int id) {
             this.id = id;
             children = new LinkedList<>();
-            coin = 0;
             totalChildrenCount = 0;
         }
     }
 
-    Map<lcp05Node, Integer> lcp05ChildrenCountMap = new HashMap<>();
-
-    private int sumOfChildren(lcp05Node node) {
-        if (node.children.size() == 0) return 0;
-        if (lcp05ChildrenCountMap.containsKey(node)) return lcp05ChildrenCountMap.get(node);
-        int result = node.children.size();
-        for (lcp05Node c : node.children) {
-            result += sumOfChildren(c);
+    private int sumOfChildren(int idxFromOne) {
+        if (lcp05NodeArr[idxFromOne].children.size() == 0) return 0;
+        if (lcp05ChildrenCountMap[idxFromOne] != null) return lcp05ChildrenCountMap[idxFromOne];
+        int result = lcp05NodeArr[idxFromOne].children.size();
+        for (lcp05Node c : lcp05NodeArr[idxFromOne].children) {
+            result += sumOfChildren(c.id);
         }
-        lcp05ChildrenCountMap.put(node, result);
+        lcp05ChildrenCountMap[idxFromOne] = result;
         return result;
     }
 
@@ -1813,7 +1803,7 @@ class RangeBit { // 注意存入的是差分数组, 目标数组 a[i] 即对diff
         update(r + 1, -delta);
     }
 
-    public long getRangeSum(int l, int r) {
+    private long getRangeSum(int l, int r) {
         return (r + 1) * getSum(diff, r) - getSum(iDiff, r) - ((l - 1 + 1) * getSum(diff, l) - getSum(iDiff, l));
     }
 
