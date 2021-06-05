@@ -7,7 +7,20 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.longestPrefix("level"));
+        RangeBit bit = new RangeBit(5);
+        for (int i = 0; i < 5; i++) {
+            bit.setFromZero(i, i + 1);
+            System.err.println(bit.getFromZero(i));
+        }
+
+        for (int i = 0; i < 5; i++) {
+            bit.updateFromZero(i, i + 1);
+            System.err.println(bit.getFromZero(i));
+        }
+        bit.setFromZero(0, 100);
+        System.err.println(bit.getFromZero(0));
+        bit.rangeUpdateFromZero(0, 4, 50);
+        System.err.println(bit.getFromZero(0));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -1805,11 +1818,11 @@ class RangeBit { // 注意存入的是差分数组, 目标数组 a[i] 即对diff
     }
 
     public long getFromZero(int idx) {
-        return rangeSumFromZero(idx, idx);
+        return getFromOne(idx + 1);
     }
 
     public long getFromOne(int idx) {
-        return rangeSumFromOne(idx, idx);
+        return getSum(diff, idx);
     }
 
     public void updateFromZero(int idx, long delta) {
