@@ -7,11 +7,8 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        int var1 = 48240;
+        System.err.println(s.bonus(6, new int[][]{{1, 2}, {1, 6}, {2, 3}, {2, 5}, {1, 4}}, new int[][]{{1, 1, 500}, {2, 2, 50}, {3, 1}, {2, 6, 15}, {3, 1}}));
 
-//        System.err.println(s.bonus(6, new int[][]{{1, 2}, {1, 6}, {2, 3}, {2, 5}, {1, 4}}, new int[][]{{1, 1, 500}, {2, 2, 50}, {3, 1}, {2, 6, 15}, {3, 1}}));
-
-        BITLong rbitl = new BITLong(new long[5]);
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -34,7 +31,7 @@ class Scratch {
         for (int i = 1; i <= n; i++) {
             m.get(i).totalChildrenCount = sumOfChildren(m.get(i));
         }
-        BITLong bit = new BITLong(n);
+        RangeBit bit = new RangeBit(n);
         Map<Integer, Integer> bitIdxMap = new HashMap<>(); // key: id, value: bit中的数组下标
         int ctr = 0;
         Deque<lcp05Node> stack = new LinkedList<>();
@@ -56,11 +53,11 @@ class Scratch {
                 int childrenSize = m.get(op[1]).totalChildrenCount;
                 int selfIdx = bitIdxMap.get(op[1]);
 
-//                bit.rangeUpdateFromZeroInclusive(selfIdx, selfIdx + childrenSize, op[2]);
-//
-                for (int i = 0; i <= childrenSize; i++) {
-                    bit.updateFromZero(selfIdx + i, op[2]);
-                }
+                bit.rangeUpdateFromZero(selfIdx, selfIdx + childrenSize, op[2]);
+
+//                for (int i = 0; i <= childrenSize; i++) {
+//                    bit.updateFromZero(selfIdx + i, op[2]);
+//                }
             } else if (op[0] == 3) {
                 int childrenSize = m.get(op[1]).totalChildrenCount;
                 int selfIdx = bitIdxMap.get(op[1]);
@@ -1732,3 +1729,95 @@ class BITLong { // 树状数组: 单点查询, 单点修改, 区间求和 : O(lo
     }
 }
 
+class RangeBit { // 注意存入的是差分数组, 目标数组 a[i] 即对diff数组求前缀和
+    long[] diff;
+    long[] iDiff;
+    int len;
+
+    public RangeBit(int len) {
+        this.len = len;
+        diff = new long[len + 1];
+        iDiff = new long[len + 1];
+    }
+
+    public void setFromZero(int idx, long value) {
+        long delta = value - getFromZero(idx);
+        updateFromZero(idx, delta);
+    }
+
+    public void setFromOne(int idx, long value) {
+        long delta = value - getFromOne(idx);
+        updateFromOne(idx, delta);
+    }
+
+    public long getFromZero(int idx) {
+        return rangeSumFromZero(idx, idx);
+    }
+
+    public long getFromOne(int idx) {
+        return rangeSumFromOne(idx, idx);
+    }
+
+    public void updateFromZero(int idx, long delta) {
+        rangeUpdate(idx + 1, idx + 1, delta);
+    }
+
+    public void updateFromOne(int idx, long delta) {
+        rangeUpdate(idx, idx, delta);
+    }
+
+    public void rangeUpdateFromZero(int l, int r, long delta) { // 对闭区间l,r进行更新, 即更新到差分数组上
+        rangeUpdate(l + 1, r + 1, delta);
+    }
+
+    public void rangeUpdateFromOne(int l, int r, long delta) { // 对闭区间l,r进行更新, 即更新到差分数组上
+        rangeUpdate(l, r, delta);
+    }
+
+    public long sumFromZero(int idx) {
+        return getRangeSum(1, idx + 1);
+    }
+
+    public long sumFromOne(int idx) {
+        return getRangeSum(1, idx);
+    }
+
+    public long rangeSumFromZero(int l, int r) {
+        return getRangeSum(l + 1, r + 1);
+    }
+
+    public long rangeSumFromOne(int l, int r) {
+        return getRangeSum(l, r);
+    }
+
+    private void update(int idx, long delta) { // update 的 是 差分数组, idx 从1开始算
+        long iDelta = idx * delta;
+        while (idx <= len) {
+            diff[idx] += delta;
+            iDiff[idx] += iDelta;
+            idx += lowbit(idx);
+        }
+    }
+
+    private long getSum(long[] treeArr, int idx) { // 对树状数组的第1到第idx项求和
+        long sum = 0;
+        while (idx > 0) {
+            sum += treeArr[idx];
+            idx -= lowbit(idx);
+        }
+        return sum;
+    }
+
+    private void rangeUpdate(int l, int r, long delta) { // 对闭区间l,r进行更新, 即更新到差分数组上
+        update(l, delta);
+        update(r + 1, -delta);
+    }
+
+    public long getRangeSum(int l, int r) {
+        return (r + 1) * getSum(diff, r) - getSum(iDiff, r) - ((l - 1 + 1) * getSum(diff, l) - getSum(iDiff, l));
+    }
+
+    private int lowbit(int x) {
+        return x & (x ^ (x - 1)); // 或 x& (-x)
+    }
+}
