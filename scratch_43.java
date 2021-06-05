@@ -7,11 +7,56 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.bonus(6, new int[][]{{1, 2}, {1, 6}, {2, 3}, {2, 5}, {1, 4}}, new int[][]{{1, 1, 500}, {2, 2, 50}, {3, 1}, {2, 6, 15}, {3, 1}}));
+        System.err.println(s.longestPrefix("level"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1392 String Hash
+    public String longestPrefix(String s) {
+        final long mod = 1000000007;
+        final int base = 31;
+        int n = s.length();
+        long prefixHash = 0;
+        long suffixHash = 0;
+        long mul = 1;
+        int happy = 0;
+        for (int i = 1; i < n; i++) {
+            prefixHash = (prefixHash * base + (s.charAt(i - 1) - 'a')) % mod;
+            suffixHash = (suffixHash + (s.charAt(n - i) - 'a') * mul) % mod;
+            if (prefixHash == suffixHash) {
+                happy = i;
+            }
+            mul = (mul * base) % mod;
+        }
+        return s.substring(0, happy);
+    }
+
+
+    // LC1392 TLE
+    public String longestPrefixTLE(String s) {
+        int len = s.length();
+        String lpf = s.replaceAll("^(\\w+).*\\1$", "$1");
+        if (lpf.length() == len) return "";
+        if (lpf.equals("")) return "";
+        String result = lpf;
+        int leftBound = lpf.length() - 1;
+        int rightBound = len - lpf.length();
+        int leftPtr = leftBound + 1, rightPtr = rightBound - 1;
+        StringBuilder leftSb = new StringBuilder(lpf), rightSb = new StringBuilder(lpf);
+        rightSb = rightSb.reverse();
+        while (rightPtr != 0) {
+            leftSb.append(s.charAt(leftPtr++));
+            rightSb.append(s.charAt(rightPtr--));
+            if (leftSb.toString().equals(rightSb.reverse().toString())) {
+                result = leftSb.toString();
+            }
+            rightSb.reverse();
+        }
+
+        return result;
     }
 
     // LC203
