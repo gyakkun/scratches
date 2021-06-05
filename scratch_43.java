@@ -7,24 +7,62 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        RangeBit bit = new RangeBit(5);
-        for (int i = 0; i < 5; i++) {
-            bit.setFromZero(i, i + 1);
-            System.err.println(bit.getFromZero(i));
-        }
-
-        for (int i = 0; i < 5; i++) {
-            bit.updateFromZero(i, i + 1);
-            System.err.println(bit.getFromZero(i));
-        }
-        bit.setFromZero(0, 100);
-        System.err.println(bit.getFromZero(0));
-        bit.rangeUpdateFromZero(0, 4, 50);
-        System.err.println(bit.getFromZero(0));
+        System.err.println(s.sumSubseqWidths(new int[]{2, 1, 3}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC891 TLE
+    int lc891Result;
+    final int lc891Mod = 1000000007;
+    final int lc891MaxN = 20001;
+
+    public int sumSubseqWidths(int[] nums) {
+        lc891Result = 0;
+        // 权值树状数组
+        BITLong bit = new BITLong(20001);
+        subsequenceGen(nums, 0, 0, bit);
+
+        return lc891Result;
+    }
+
+    public void subsequenceGen(int[] arr, int curIdx, int selectionCount, BITLong bit) {
+        if (curIdx == arr.length) return;
+        bit.updateFromZero(arr[curIdx], 1);
+
+        selectionCount++;
+        subsequenceGen(arr, curIdx + 1, selectionCount, bit);
+        // 找最大值, 即第selectionCount小的数
+        // 如 1 2 2 3, 找第1小的数 即 1
+        // 即找到权值和大于等于1的最小值的下标
+        int low = 0, high = 20001;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (bit.sumFromZero(mid) >= 1) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        int min = low;
+        low = 0;
+        high = 20001;
+        // 找到第selectionCount小的值
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (bit.sumFromZero(mid) >= selectionCount) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        int max = low;
+        lc891Result = (lc891Result + (max - min)) % lc891Mod;
+        selectionCount--;
+        bit.updateFromZero(arr[curIdx], -1);
+        subsequenceGen(arr, curIdx + 1, selectionCount, bit);
     }
 
     // LC1392 String Hash
