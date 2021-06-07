@@ -16,6 +16,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1109 区间修改 差分数组
+    public int[] corpFlightBookings(int[][] bookings, int n) {
+        int[] diff = new int[n + 1];
+        int[] result = new int[n];
+        for (int[] book : bookings) {
+            diff[book[0] - 1] += book[2];
+            diff[book[1]] -= book[2];
+        }
+        result[0] = diff[0];
+        for (int i = 1; i < n; i++) {
+            result[i] = diff[i] + result[i - 1];
+        }
+        return result;
+    }
+
     // LC1033
     public int[] numMovesStones(int a, int b, int c) {
         int[] abc = {a, b, c};
