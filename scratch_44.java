@@ -9,11 +9,43 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.simplePge(new int[]{1, 3, 6, 2, 1, 7, 0}));
+        System.err.println(s.fib(45));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1400 这都行???
+    public boolean canConstruct(String s, int k) {
+        if (s.length() < k) return false;
+        if (s.length() == k) return true;
+        int[] freq = new int[26];
+        char[] cArr = s.toCharArray();
+        for (char c : cArr) {
+            freq[c - 'a']++;
+        }
+
+        // 贪心: 尽量保证freq[i]是偶数, 最多有一个是奇数
+        int oddCtr = 0;
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] % 2 == 1) oddCtr++;
+        }
+        if (oddCtr > k) return false;
+
+        return true;
+    }
+
+    public int fib(int n) {
+        if (n == 0) return 0;
+        long prev = 0, cur = 1;
+        final long mod = 1000000007;
+        for (int i = 0; i < n - 1; i++) {
+            long tmp = cur;
+            cur = (prev + cur) % mod;
+            prev = tmp % mod;
+        }
+        return (int) cur;
     }
 
     // LC1109 区间修改 差分数组
