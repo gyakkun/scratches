@@ -18,6 +18,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF33 **
+    public boolean verifyPostorder(int[] postorder) {
+        return jzof33Helper(postorder, 0, postorder.length - 1);
+    }
+
+    private boolean jzof33Helper(int[] postorder, int start, int end) {
+        // 考虑最开始的情形,end即为root
+        if (start >= end) {
+            return true;
+        }
+        int ptr = start;
+        while (postorder[ptr] < postorder[end]) ptr++;
+        int rightStart = ptr; // 右子树的start
+        while (postorder[ptr] > postorder[end]) ptr++;
+        return ptr == end && jzof33Helper(postorder, start, rightStart - 1) && jzof33Helper(postorder, rightStart, end - 1);
+    }
+
     // LC669
     public TreeNode trimBST(TreeNode root, int low, int high) {
         if (root == null) return null;
