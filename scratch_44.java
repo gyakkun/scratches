@@ -16,6 +16,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC853 单调栈 + 排序 **
+    public int carFleet(int target, int[] position, int[] speed) {
+        int n = position.length;
+        TreeMap<Integer, Integer> posSpeedMap = new TreeMap<>();
+        for (int i = 0; i < n; i++) {
+            posSpeedMap.put(position[i], speed[i]);
+        }
+        Deque<Double> stack = new LinkedList<>(); // 栈顶时间小, 栈底时间大
+        for (Map.Entry<Integer, Integer> entry : posSpeedMap.entrySet()) {
+            int pos = entry.getKey();
+            int spd = entry.getValue();
+            double time = (target - pos + 0.0d) / (spd + 0.0d);
+            while (!stack.isEmpty() && stack.peek() <= time) { // 如果栈顶的到达时间比当前小, 则说明前方有一辆车比较慢, 会合并
+                stack.pop();
+            }
+            stack.push(time);
+        }
+        return stack.size();
+    }
+
     // LC1776 Hard 单调栈 **
     public double[] getCollisionTimes(int[][] cars) {
         int n = cars.length;
