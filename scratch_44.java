@@ -9,11 +9,65 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.maxScoreSightseeingPair(new int[]{8, 1, 5, 2, 6}));
+        System.err.println(s.simplePge(new int[]{1, 3, 6, 2, 1, 7, 0}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1776 Hard 单调栈 **
+    public double[] getCollisionTimes(int[][] cars) {
+        int n = cars.length;
+        double[] result = new double[n];
+        Arrays.fill(result, -1d);
+        Deque<Integer> stack = new LinkedList<>(); // 逆序遍历, 存下标右侧的车(的下标), 栈顶的车快, 栈底的车慢
+        for (int i = n - 1; i >= 0; i--) {
+            // 找下一个速度比当前小的车
+            while (!stack.isEmpty()) {
+                if (cars[stack.peek()][1] >= cars[i][1]) {
+                    stack.pop();
+                } else {
+                    // 如果栈顶的车辆没有追上下一辆车, 而当前车的速度比这辆车(右侧)大, 那必然能够追上
+                    if (result[stack.peek()] < 0) {
+                        break;
+                    } else { // 否则栈顶辆车能追上下一辆车, 需要计算: 在栈顶车追上下一辆车前, 当前车能不能追上栈顶的车辆
+                        double peekCollisionTime = result[stack.peek()];
+                        double myCollisionTime = (double) (cars[stack.peek()][0] - cars[i][0]) / (double) (cars[i][1] - cars[stack.peek()][1]);
+                        // 如果当前车追上栈顶车的时间小于等于栈顶车追上下一辆车, 则在栈顶车与下一辆车相撞前, 当前车能与栈顶车相撞
+                        if (myCollisionTime <= peekCollisionTime) {
+                            break;
+                        } else {
+                            stack.pop();
+                        }
+                    }
+                }
+            }
+            if (!stack.isEmpty()) {
+                result[i] = (double) (cars[stack.peek()][0] - cars[i][0]) / (double) (cars[i][1] - cars[stack.peek()][1]);
+            }
+            stack.push(i);
+        }
+        return result;
+    }
+
+    private int[] simplePge(int[] nums) {
+        // 单调栈: 找到上一个更大的元素, 底大, 顶小
+        int n = nums.length;
+        int[] pge = new int[n];
+        Arrays.fill(pge, -1);
+        Deque<Integer> stack = new LinkedList<>();
+        stack.push(nums[0]);
+        for (int i = 1; i < n; i++) {
+            while (!stack.isEmpty() && stack.peek() < nums[i]) {
+                stack.pop();
+            }
+            if (!stack.isEmpty()) {
+                pge[i] = stack.peek();
+            }
+            stack.push(nums[i]);
+        }
+        return pge;
     }
 
     // LC1014 利用数列的遍历顺序
