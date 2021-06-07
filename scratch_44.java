@@ -16,6 +16,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1033
+    public int[] numMovesStones(int a, int b, int c) {
+        int[] abc = {a, b, c};
+        Arrays.sort(abc);
+        a = abc[0];
+        b = abc[1];
+        c = abc[2];
+        int[] result = new int[2]; // [min,max]
+        // 最多步数
+        result[1] = (b - a - 1) + (c - b - 1);
+
+        // 最少步数: 最多2步
+        result[0] = 2;
+        if (b == a + 1) result[0]--;
+        if (c == b + 1) result[0]--;
+        if (result[0] == 1 || result[0] == 0) return result;
+
+        if (b == a + 2) {
+            result[0]--;
+        } else if (c == b + 2) {
+            result[0]--;
+        }
+
+        return result;
+    }
+
     // LC853 单调栈 + 排序 **
     public int carFleet(int target, int[] position, int[] speed) {
         int n = position.length;
