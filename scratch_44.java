@@ -1,4 +1,4 @@
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntConsumer;
@@ -8,17 +8,26 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode t1 = new TreeNode(1);
-        TreeNode t0 = new TreeNode(0);
-        TreeNode t2 = new TreeNode(2);
-        t1.left = t0;
-        t1.right = t2;
 
-        System.err.println(s.trimBST(t1, 1, 2));
+        System.err.println(s.maxScoreSightseeingPair(new int[]{8, 1, 5, 2, 6}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1014 利用数列的遍历顺序
+    public int maxScoreSightseeingPair(int[] values) {
+        // 两个数列 v[i] + i, v[j] - j
+        // j>i, 考虑顺序遍历, 动态更新v[i]+i
+        int result = Integer.MIN_VALUE;
+        int first = values[0] + 0;
+        for (int i = 1; i < values.length; i++) {
+            int second = values[i] - i;
+            result = Math.max(result, first + second);
+            first = Math.max(first, values[i] + i);
+        }
+        return result;
     }
 
     // JZOF33 **
