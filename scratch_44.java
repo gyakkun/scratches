@@ -214,49 +214,64 @@ class ZeroEvenOdd {
     // printNumber.accept(x) outputs "x", where x is an integer.
     public void zero(IntConsumer printNumber) throws InterruptedException {
         while (index < n) {
-            lock.lock();
-            try {
-                while (!zeroTurn) {
-                    zero.await();
+            boolean flag = false;
+            while (!flag) {
+                if (lock.tryLock()) { // 试着使用trylock
+                    flag = true;
+                    try {
+                        while (!zeroTurn) {
+                            zero.await();
+                        }
+                        printNumber.accept(0);
+                        zeroTurn = false;
+                        num.signalAll();
+                        index++;
+                    } finally {
+                        lock.unlock();
+                    }
                 }
-                printNumber.accept(0);
-                zeroTurn = false;
-                num.signalAll();
-                index++;
-            } finally {
-                lock.unlock();
             }
         }
     }
 
     public void even(IntConsumer printNumber) throws InterruptedException {
         for (int i = 2; i <= n; i += 2) {
-            lock.lock();
-            try {
-                while (zeroTurn || index % 2 == 1) {
-                    num.await();
+            boolean flag = false;
+            while (!flag) {
+                if (lock.tryLock()) {
+                    flag = true;
+                    try {
+                        while (zeroTurn || index % 2 == 1) {
+                            num.await();
+                        }
+                        printNumber.accept(i);
+                        zeroTurn = true;
+                        zero.signalAll();
+                    } finally {
+                        lock.unlock();
+                    }
                 }
-                printNumber.accept(i);
-                zeroTurn = true;
-                zero.signalAll();
-            } finally {
-                lock.unlock();
             }
         }
     }
 
     public void odd(IntConsumer printNumber) throws InterruptedException {
         for (int i = 1; i <= n; i += 2) {
-            lock.lock();
-            try {
-                while (zeroTurn || index % 2 == 0) {
-                    num.await();
+            boolean flag = false;
+            while (!flag) {
+                if (lock.tryLock()) {
+                    flag = true;
+                    try {
+                        while (zeroTurn || index % 2 == 0) {
+                            num.await();
+                        }
+                        printNumber.accept(i);
+                        zeroTurn = true;
+                        zero.signalAll();
+                    } finally {
+                        lock.unlock();
+                    }
                 }
-                printNumber.accept(i);
-                zeroTurn = true;
-                zero.signalAll();
-            } finally {
-                lock.unlock();
             }
         }
     }
