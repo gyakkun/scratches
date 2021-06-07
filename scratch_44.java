@@ -1,4 +1,7 @@
 import java.util.Arrays;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.IntConsumer;
 
 class Scratch {
     public static void main(String[] args) {
@@ -192,5 +195,69 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+// LC1116 多线程
+class ZeroEvenOdd {
+    private int n;
+    ReentrantLock lock = new ReentrantLock();
+    Condition zero = lock.newCondition();
+    Condition num = lock.newCondition();
+    volatile int index = 0;
+    boolean zeroTurn = true;
+
+    public ZeroEvenOdd(int n) {
+        this.n = n;
+    }
+
+    // printNumber.accept(x) outputs "x", where x is an integer.
+    public void zero(IntConsumer printNumber) throws InterruptedException {
+        while (index < n) {
+            lock.lock();
+            try {
+                while (!zeroTurn) {
+                    zero.await();
+                }
+                printNumber.accept(0);
+                zeroTurn = false;
+                num.signalAll();
+                index++;
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    public void even(IntConsumer printNumber) throws InterruptedException {
+        for (int i = 2; i <= n; i += 2) {
+            lock.lock();
+            try {
+                while (zeroTurn || index % 2 == 1) {
+                    num.await();
+                }
+                printNumber.accept(i);
+                zeroTurn = true;
+                zero.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    public void odd(IntConsumer printNumber) throws InterruptedException {
+        for (int i = 1; i <= n; i += 2) {
+            lock.lock();
+            try {
+                while (zeroTurn || index % 2 == 0) {
+                    num.await();
+                }
+                printNumber.accept(i);
+                zeroTurn = true;
+                zero.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 }
