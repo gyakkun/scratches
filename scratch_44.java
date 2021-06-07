@@ -5,11 +5,43 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.reversePairs(new int[]{2, 1, 4, 1, 3}));
+        TreeNode t1 = new TreeNode(1);
+        TreeNode t0 = new TreeNode(0);
+        TreeNode t2 = new TreeNode(2);
+        t1.left = t0;
+        t1.right = t2;
+
+        System.err.println(s.trimBST(t1, 1, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC669
+    public TreeNode trimBST(TreeNode root, int low, int high) {
+        if (root == null) return null;
+        TreeNode left = root.left, right = root.right; // 注意提前存下引用
+        root.left = trimBST(left, low, high);
+        root.right = trimBST(right, low, high);
+        if (root.val < low) { // 该节点的值比下界还小, 说明左子树不能要
+            if (root.right != null) {
+                root.val = right.val;
+                root.left = right.left;
+                root.right = right.right;
+            } else {
+                root = null;
+            }
+        } else if (root.val > high) {
+            if (root.left != null) {
+                root.val = left.val;
+                root.left = left.left;
+                root.right = left.right;
+            } else {
+                root = null;
+            }
+        }
+        return root;
     }
 
     // LC961
@@ -124,5 +156,24 @@ class BIT {
 
     private int lowbit(int x) {
         return x & (x ^ (x - 1));
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
