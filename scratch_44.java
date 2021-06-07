@@ -16,6 +16,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // INTERVIEW 16.15 **
+    public int[] masterMind(String solution, String guess) {
+        int[] freq = new int[26];
+        int real = 0, fake = 0;
+
+        for (int i = 0; i < 4; i++) {
+            char sol = solution.charAt(i), gue = guess.charAt(i);
+            if (sol == gue) real++;
+            else {
+                if (freq[sol - 'A'] < 0) fake++;
+                freq[sol - 'A']++;
+                if (freq[gue - 'A'] > 0) fake++;
+                freq[gue - 'A']--;
+            }
+        }
+        return new int[]{real, fake};
+    }
+
     // LC1400 这都行???
     public boolean canConstruct(String s, int k) {
         if (s.length() < k) return false;
