@@ -12,6 +12,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC494
+    public int findTargetSumWays(int[] nums, int target) {
+        int n = nums.length;
+        int sum = Arrays.stream(nums).sum();
+        if (sum < target) return 0;
+        int[][] dp = new int[n + 1][2 * sum + 1];
+        // dp[i][j] 表示加入前i个数到达和j的方案数
+        // 中点(0) 在 dp[sum]
+        dp[0][sum] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= 2 * sum; j++) {
+                int result = 0;
+                if (j - nums[i - 1] >= 0) {
+                    result += dp[i - 1][j - nums[i - 1]];
+                }
+                if (j + nums[i - 1] <= 2 * sum) {
+                    result += dp[i - 1][j + nums[i - 1]];
+                }
+                dp[i][j] = result;
+            }
+        }
+        return dp[n][sum + target];
+    }
+
     // LC474
     public int findMaxForm(String[] strs, int m, int n) {
         int[] zeroCtr = new int[strs.length];
