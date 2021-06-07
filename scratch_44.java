@@ -12,6 +12,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC961
+    public int repeatedNTimes(int[] nums) {
+        int len = nums.length;
+        int n = len / 2;
+        int[] freq = new int[10000];
+        for (int i : nums) {
+            freq[i]++;
+            if (freq[i] == n) return i;
+        }
+        return -1;
+    }
+
     // LC494
     public int findTargetSumWays(int[] nums, int target) {
         int n = nums.length;
