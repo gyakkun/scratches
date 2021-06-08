@@ -20,22 +20,21 @@ class Scratch {
     public int lastStoneWeightII(int[] stones) {
         // 目标: 找到绝对值差最小的一个划分
         int n = stones.length;
-        int sum = 0;
-        for (int i : stones) {
-            sum += i;
-        }
+        int sum = Arrays.stream(stones).sum();
         int bound = sum / 2;
-        boolean[] dp = new boolean[bound + 1];
-        dp[0] = true;
+        boolean[][] dp = new boolean[n + 1][bound + 1];
+        dp[0][0] = true;
         for (int i = 1; i <= n; i++) {
-            for (int j = bound; j >= 0; j--) {
-                if (stones[i - 1] <= j) {
-                    dp[j] = dp[j] || dp[j - stones[i - 1]];
+            for (int j = 0; j <= bound; j++) {
+                if (stones[i - 1] > j) {
+                    dp[i][j] = dp[i - 1][j];
+                } else {
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - stones[i - 1]];
                 }
             }
         }
         for (int i = bound; i >= 0; i--) {
-            if (dp[i]) return sum - 2 * i;
+            if (dp[n][i]) return sum - 2 * i;
         }
         return -1;
     }
