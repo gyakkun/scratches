@@ -16,7 +16,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC982 勉强能过, 优化后的枚举
+    // LC982 使用二进制子集算法优化
     public int countTriplets(int[] nums) {
         Map<Integer, Integer> m = new HashMap<>();
         for (int i : nums) {
@@ -26,11 +26,11 @@ class Scratch {
         }
         int result = 0;
         for (int i : nums) {
-            for (int j : m.keySet()) {
-                if ((i & j) == 0) {
-                    result += m.get(j);
-                }
+            int tmp = (1 << 16) - 1 - i;
+            for (int j = tmp; j != 0; j = (j - 1) & tmp) {
+                result += m.getOrDefault(j, 0);
             }
+            result += m.getOrDefault(0, 0);
         }
         return result;
     }
