@@ -579,3 +579,26 @@ class FooBar {
         }
     }
 }
+
+// LC1656
+class OrderedStream {
+    String[] m;
+    int ptr;
+    int n;
+
+    public OrderedStream(int n) {
+        this.n = n;
+        this.ptr = 1;
+        m = new String[n+1];
+    }
+
+    public List<String> insert(int idKey, String value) {
+        m[idKey] = value;
+        List<String> result = new ArrayList<>();
+        for(int i=ptr;i<=n;i++,ptr++){
+            if(m[i]==null) break;
+            result.add(m[i]);
+        }
+        return result;
+    }
+}
