@@ -9,7 +9,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.countTriplets(new int[]{2, 1, 3}));
+        System.err.println(s.countTriplets(new int[]{31}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -19,14 +19,18 @@ class Scratch {
     // LC982 使用二进制子集算法优化
     public int countTriplets(int[] nums) {
         Map<Integer, Integer> m = new HashMap<>();
+        int max = 2;
         for (int i : nums) {
+            while (max <= i) {
+                max = max << 1;
+            }
             for (int j : nums) {
                 m.put(i & j, m.getOrDefault(i & j, 0) + 1);
             }
         }
         int result = 0;
         for (int i : nums) {
-            int tmp = (1 << 16) - 1 - i;
+            int tmp = max - 1 - i;
             for (int j = tmp; j != 0; j = (j - 1) & tmp) {
                 result += m.getOrDefault(j, 0);
             }
