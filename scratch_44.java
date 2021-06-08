@@ -9,34 +9,35 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.lastStoneWeightII(new int[]{12, 35, 78, 10, 24, 37, 55, 66, 90, 10, 42, 44, 12, 35, 78, 10, 24,37, 55, 66,90, 10, 12, 35, 78, 10, 24, 37, 55, 66}));
+        System.err.println(s.lastStoneWeightII(new int[]{12, 35, 78, 10, 24, 37, 55, 66, 90, 10, 42, 44, 12, 35, 78, 10, 24, 37, 55, 66, 90, 10, 12, 35, 78, 10, 24, 37, 55, 66}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1049 TLE Bruce Force
+    // LC1049 DP
     public int lastStoneWeightII(int[] stones) {
+        // 目标: 找到绝对值差最小的一个划分
         int n = stones.length;
-        int maxMask = 1 << n;
-        int minDiff = Arrays.stream(stones).sum();
-        int minDiffMask = maxMask;
-        for (int i = 0; i < maxMask; i++) {
-            int sum1 = 0, sum0 = 0;
-            for (int j = 0; j < n; j++) {
-                if ((i >> j & 1) == 1) {
-                    sum1 += stones[j];
-                } else {
-                    sum0 += stones[j];
+        int sum = 0;
+        for (int i : stones) {
+            sum += i;
+        }
+        int bound = sum / 2;
+        boolean[] dp = new boolean[bound + 1];
+        dp[0] = true;
+        for (int i = 1; i <= n; i++) {
+            for (int j = bound; j >= 0; j--) {
+                if (stones[i - 1] <= j) {
+                    dp[j] = dp[j] || dp[j - stones[i - 1]];
                 }
             }
-            if (Math.abs(sum1 - sum0) < minDiff) {
-                minDiff = Math.abs(sum1 - sum0);
-                minDiffMask = i;
-            }
         }
-        return minDiff;
+        for (int i = bound; i >= 0; i--) {
+            if (dp[i]) return sum - 2 * i;
+        }
+        return -1;
     }
 
     // INTERVIEW 16.15 **
