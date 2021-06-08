@@ -9,11 +9,30 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.countNumbersWithUniqueDigits(4));
+        System.err.println(s.countTriplets(new int[]{2, 1, 3}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC982 勉强能过, 优化后的枚举
+    public int countTriplets(int[] nums) {
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i : nums) {
+            for (int j : nums) {
+                m.put(i & j, m.getOrDefault(i & j, 0) + 1);
+            }
+        }
+        int result = 0;
+        for (int i : nums) {
+            for (int j : m.keySet()) {
+                if ((i & j) == 0) {
+                    result += m.get(j);
+                }
+            }
+        }
+        return result;
     }
 
     // LC357 DP
