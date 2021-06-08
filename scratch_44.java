@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,6 +16,29 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1001 TLE
+    public int[] gridIllumination(int n, int[][] lamps, int[][] queries) {
+        Set<Pair<Integer, Integer>> s = new HashSet<>();
+        for (int[] l : lamps) {
+            s.add(new Pair<>(l[0], l[1]));
+        }
+        int[] result = new int[queries.length];
+        int[][] dir = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 0}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            for (Pair<Integer, Integer> p : s) {
+                if (p.getKey() == q[0] || p.getValue() == q[1] || (Math.abs(p.getKey() - q[0]) == Math.abs(p.getValue() - q[1]))) {
+                    result[i] = 1;
+                    break;
+                }
+            }
+            for (int[] d : dir) {
+                s.remove(new Pair(q[0] + d[0], q[1] + d[1]));
+            }
+        }
+        return result;
     }
 
     // LC982 使用二进制子集算法优化
