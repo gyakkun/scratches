@@ -9,11 +9,57 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.lastStoneWeightII(new int[]{12, 35, 78, 10, 24, 37, 55, 66, 90, 10, 42, 44, 12, 35, 78, 10, 24, 37, 55, 66, 90, 10, 12, 35, 78, 10, 24, 37, 55, 66}));
+        System.err.println(s.countNumbersWithUniqueDigits(4));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC357 DP
+    public int countNumbersWithUniqueDigits(int n) {
+        if (n == 0) return 1;
+        if (n == 1) return 10;
+        if (n == 2) return 91;
+        if (n >= 10) n = 10;
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = 0;
+        dp[2] = 9;
+        for (int i = 3; i <= n; i++) {
+            dp[i] = dp[i - 1] * 10 + (9 * (int) Math.pow(10, i - 2) - dp[i - 1]) * (i - 1);
+        }
+        int result = 0;
+        for (int i : dp) {
+            result += i;
+        }
+        return (int) Math.pow(10, n) - result;
+    }
+
+    // JZOF16 快速幂
+    public double myPow(double x, int n) {
+        if (x == 0d) return 0d;
+        boolean baseNegFlag = x < 0;
+        boolean expNegFlag = n < 0;
+        long longN = n;
+        x = Math.abs(x);
+        longN = Math.abs(longN);
+        Map<Integer, Double> m = new HashMap<>();
+        int logN = (int) (Math.log(longN) / Math.log(2));
+        m.put(0, x);
+        for (int i = 1; i <= logN + 1; i++, x *= x) {
+            m.put(i, x * x);
+        }
+        double result = 1;
+        for (int i = 0; i < 32; i++) {
+            if (((longN >> i) & 1) == 1) {
+                result *= m.get(i);
+            }
+        }
+        if (expNegFlag) result = 1 / result;
+        if (baseNegFlag && longN % 2 == 1) result = -result;
+
+        return result;
     }
 
     // LC1049 DP
