@@ -18,6 +18,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC879 多重背包 DFS TLE
+    long lc879Result = 0;
+    final int lc879Mod = 1000000007;
+
+    public int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
+        // n - num of people
+        if (minProfit == 0) lc879Result++; // 空集
+        lc879Helper(0, n, minProfit, group, profit, 0, 0);
+        return (int) (lc879Result % lc879Mod);
+    }
+
+    private void lc879Helper(int curIdx, int totalPeople, int minProfit, int[] group, int[] profit, int curProfit, int curNumPeople) {
+        if (curIdx == group.length) {
+            return;
+        }
+        // select the curIdx crime
+        if (curNumPeople + group[curIdx] <= totalPeople) {
+            if (curProfit + profit[curIdx] >= minProfit) {
+                lc879Result++;
+            }
+            lc879Helper(curIdx + 1, totalPeople, minProfit, group, profit, curProfit + profit[curIdx], curNumPeople + group[curIdx]);
+        }
+        lc879Helper(curIdx + 1, totalPeople, minProfit, group, profit, curProfit, curNumPeople);
+    }
+
     // LC1001 TLE
     public int[] gridIllumination(int n, int[][] lamps, int[][] queries) {
         Set<Pair<Integer, Integer>> s = new HashSet<>();
