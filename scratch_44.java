@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import org.apache.http.HeaderElement;
 
 import java.util.*;
 import java.util.concurrent.locks.Condition;
@@ -19,11 +18,41 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC879 DP
+    public int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
+        int mod = 1000000007;
+        int[] numPeoplePrefix = new int[group.length + 1];
+        for (int i = 1; i <= group.length; i++) {
+            numPeoplePrefix[i] = numPeoplePrefix[i - 1] + group[i - 1];
+        }
+        int gLen = group.length;
+        int[][][] dp = new int[gLen + 1][n + 1][minProfit + 1];
+        dp[0][0][0] = 1; // 空集 最小利润为0 有一种方案
+        for (int i = 1; i <= gLen; i++) {
+            int peo = group[i - 1], pro = profit[i - 1];
+            for (int j = 0; j <= n; j++) {
+                for (int k = 0; k <= minProfit; k++) {
+                    if (j < peo) {
+                        dp[i][j][k] = dp[i - 1][j][k];
+                    } else {
+                        dp[i][j][k] = (dp[i - 1][j][k] + dp[i - 1][j - peo][Math.max(0, k - pro)]) % mod;
+                    }
+                }
+            }
+        }
+        int sum = 0;
+        for (int i = 0; i <= n; i++) {
+            sum = (sum + dp[gLen][i][minProfit]) % mod;
+        }
+        return sum;
+    }
+
+
     // LC879 多重背包 DFS 记忆化
     final long lc879Mod = 1000000007;
     Long[][][] lc879Memo;
 
-    public int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
+    public int profitableSchemesMemo(int n, int minProfit, int[] group, int[] profit) {
         int[] numPeoplePrefix = new int[group.length + 1];
         for (int i = 1; i <= group.length; i++) {
             numPeoplePrefix[i] = numPeoplePrefix[i - 1] + group[i - 1];
