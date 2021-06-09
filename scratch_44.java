@@ -10,14 +10,28 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        int[] arr = {1, 2, 3, 4, 5, 6};
+        s.initBit(arr);
+//        for (int i = 0; i < 6; i++) {
+//            s.updateBit(i + 1, arr[i]);
+//        }
 
+<<<<<<< HEAD
         System.err.println(s.gridIllumination(5, new int[][]{{0, 0}, {0, 4}}, new int[][]{{0, 4}, {0, 1}, {1, 4}}));
+=======
+        for (int i = 0; i < 6; i++) {
+            System.err.println(s.getBit(i+1));
+        }
+
+//        System.err.println(s.countTriplets(new int[]{31}));
+>>>>>>> de1321b (new)
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+<<<<<<< HEAD
     // JZOF14 LC343
     public int cuttingRope(int n) {
         // 1:  避免出现
@@ -46,6 +60,45 @@ class Scratch {
     }
 
     // LC1001
+=======
+    // BIT EXPERIMENT
+    int[] bit;
+
+    public void initBit(int n) {
+        this.bit = new int[n + 1];
+    }
+
+    public void initBit(int[] nums) {
+        this.bit = new int[nums.length + 1];
+        for (int i = 1; i <= nums.length; i++) {
+            bit[i] += nums[i - 1];
+            int up = i + (i & -i);
+            if (up <= nums.length) bit[up] += bit[i];
+        }
+    }
+
+    public void updateBit(int idxFromOne, int delta) {
+        while (idxFromOne < bit.length) {
+            bit[idxFromOne] += delta;
+            idxFromOne += (idxFromOne & -idxFromOne);
+        }
+    }
+
+    public int sumBit(int idxFromOne) {
+        int sum = 0;
+        while (idxFromOne > 0) {
+            sum += bit[idxFromOne];
+            idxFromOne -= (idxFromOne & -idxFromOne);
+        }
+        return sum;
+    }
+
+    public int getBit(int idxFromOne){
+        return sumBit(idxFromOne) - sumBit(idxFromOne - 1);
+    }
+
+    // LC1001 TLE
+>>>>>>> de1321b (new)
     public int[] gridIllumination(int n, int[][] lamps, int[][] queries) {
 
         Map<Integer, Set<Integer>> row = new HashMap<>();
