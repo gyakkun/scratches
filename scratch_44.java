@@ -18,6 +18,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF14 LC343
+    public int cuttingRope(int n) {
+        // 1:  避免出现
+        // 2: 2 : 0
+        // 3: 3 : 0
+        // 4: 4 : 0
+        // 5: 2 3 : 1
+        // 7: 4 3 : 5
+        // 8: 3 3 2 : 10
+        // 9： 3 3 3 : 18
+        // 10： 3 3 4 : 26
+
+        if (n == 2) return 1;
+        if (n == 3) return 2;
+        if (n == 4) return 4;
+        int result = 1;
+        while (n % 3 != 0) {
+            n -= 2;
+            result *= 2;
+        }
+        while (n != 0) {
+            result *= 3;
+            n -= 3;
+        }
+        return result;
+    }
+
     // LC1001
     public int[] gridIllumination(int n, int[][] lamps, int[][] queries) {
 
