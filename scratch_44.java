@@ -26,23 +26,23 @@ class Scratch {
             numPeoplePrefix[i] = numPeoplePrefix[i - 1] + group[i - 1];
         }
         int gLen = group.length;
-        int[][][] dp = new int[gLen + 1][n + 1][minProfit + 1];
-        dp[0][0][0] = 1; // 空集 最小利润为0 有一种方案
+        int[][] dp = new int[n + 1][minProfit + 1];
+        dp[0][0] = 1; // 空集 最小利润为0 有一种方案
         for (int i = 1; i <= gLen; i++) {
             int peo = group[i - 1], pro = profit[i - 1];
-            for (int j = 0; j <= n; j++) {
-                for (int k = 0; k <= minProfit; k++) {
+            for (int j = n; j >= 0; j--) {
+                for (int k = minProfit; k >= 0; k--) {
                     if (j < peo) {
-                        dp[i][j][k] = dp[i - 1][j][k];
+                        dp[j][k] = dp[j][k];
                     } else {
-                        dp[i][j][k] = (dp[i - 1][j][k] + dp[i - 1][j - peo][Math.max(0, k - pro)]) % mod;
+                        dp[j][k] = (dp[j][k] + dp[j - peo][Math.max(0, k - pro)]) % mod;
                     }
                 }
             }
         }
         int sum = 0;
         for (int i = 0; i <= n; i++) {
-            sum = (sum + dp[gLen][i][minProfit]) % mod;
+            sum = (sum + dp[i][minProfit]) % mod;
         }
         return sum;
     }
