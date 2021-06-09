@@ -10,22 +10,44 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        int[] arr = {1, 2, 3, 4, 5, 6};
-        s.initBit(arr);
-//        for (int i = 0; i < 6; i++) {
-//            s.updateBit(i + 1, arr[i]);
-//        }
 
         System.err.println(s.gridIllumination(5, new int[][]{{0, 0}, {0, 4}}, new int[][]{{0, 4}, {0, 1}, {1, 4}}));
-        for (int i = 0; i < 6; i++) {
-            System.err.println(s.getBit(i+1));
-        }
-
-//        System.err.println(s.countTriplets(new int[]{31}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC10 Hard ** DP Solution
+    public boolean isMatch(String s, String p) {
+        int n = s.length(), m = p.length();
+        boolean[][] dp = new boolean[n + 1][m + 1];
+        dp[0][0] = true;
+        for (int i = 0; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (p.charAt(j - 1) != '*') {
+                    if (lc10Helper(s, p, i, j)) {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    }
+                } else {
+                    dp[i][j] = dp[i][j - 2];
+                    if (lc10Helper(s, p, i, j - 1)) {
+                        dp[i][j] = dp[i][j - 2] || dp[i - 1][j];
+                    }
+                }
+            }
+        }
+        return dp[n][m];
+    }
+
+    private boolean lc10Helper(String s, String p, int a, int b) { // a b 是从1开始算的, 指代s p 的下标
+        if (a == 0) {
+            return false;
+        }
+        if (p.charAt(b - 1) == '.') {
+            return true;
+        }
+        return s.charAt(a - 1) == p.charAt(b - 1);
     }
 
     // JZOF14 LC343
@@ -88,7 +110,7 @@ class Scratch {
         return sum;
     }
 
-    public int getBit(int idxFromOne){
+    public int getBit(int idxFromOne) {
         return sumBit(idxFromOne) - sumBit(idxFromOne - 1);
     }
 
