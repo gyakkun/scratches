@@ -19,20 +19,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC879 多重背包 DFS TLE
+    // LC879 多重背包 DFS 记忆化
     final long lc879Mod = 1000000007;
-    Map<Pair<Pair<Integer, Integer>, Integer>, Long> lc879Memo;
+    Long[][][] lc879Memo;
 
     public int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
-        int totalProfit = 0;
-        for (int i : profit) {
-            totalProfit += i;
-        }
         int[] numPeoplePrefix = new int[group.length + 1];
         for (int i = 1; i <= group.length; i++) {
             numPeoplePrefix[i] = numPeoplePrefix[i - 1] + group[i - 1];
         }
-        lc879Memo = new HashMap<>();
+        lc879Memo = new Long[group.length + 1][n + 1][minProfit + 1];
         return (int) (lc879Helper(0, n, 0, group, profit, minProfit, numPeoplePrefix, n) % lc879Mod);
     }
 
@@ -40,22 +36,22 @@ class Scratch {
         if (curIdx == group.length) {
             return curProfit >= minProfit ? 1 : 0;
         }
-        if (lc879Memo.containsKey(new Pair<>(new Pair<>(curIdx, leftPeople), curProfit))) {
-            return lc879Memo.get(new Pair<>(new Pair<>(curIdx, leftPeople), curProfit));
+        if (lc879Memo[curIdx][leftPeople][curProfit] != null) {
+            return lc879Memo[curIdx][leftPeople][curProfit];
         }
         if (leftPeople >= 0 && leftPeople < group[curIdx]) { // 如果有人剩但又不足够当前项目, 则跳过当前项目
-            long result = lc879Helper(curIdx + 1, leftPeople, curProfit, group, profit, minProfit, numPeoplePrefix, totalPeople) % lc879Mod;
-            lc879Memo.put(new Pair<>(new Pair<>(curIdx, leftPeople), curProfit), result);
-            return result;
+            lc879Memo[curIdx][leftPeople][curProfit] = lc879Helper(curIdx + 1, leftPeople, curProfit, group, profit, minProfit, numPeoplePrefix, totalPeople) % lc879Mod;
+            return lc879Memo[curIdx][leftPeople][curProfit];
         }
+
+        // 如果剩下的所有项目的所需人数比当前人数还要小, 则说明剩下的项目的"状态"中的"剩余人数"项应该是等价的, 规约为总人数即可
         if (leftPeople >= (numPeoplePrefix[group.length] - numPeoplePrefix[curIdx])) {
             leftPeople = totalPeople;
         }
-        long result =
+        lc879Memo[curIdx][leftPeople][curProfit] =
                 (lc879Helper(curIdx + 1, leftPeople - group[curIdx], Math.min(minProfit, curProfit + profit[curIdx]), group, profit, minProfit, numPeoplePrefix, totalPeople) % lc879Mod
                         + lc879Helper(curIdx + 1, leftPeople, curProfit, group, profit, minProfit, numPeoplePrefix, totalPeople) % lc879Mod) % lc879Mod;
-        lc879Memo.put(new Pair<>(new Pair<>(curIdx, leftPeople), curProfit), result);
-        return result;
+        return lc879Memo[curIdx][leftPeople][curProfit];
     }
 
     // LC1001 TLE
