@@ -11,11 +11,67 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.countTriplets(new int[]{31}));
+        System.err.println(s.gridIllumination(5, new int[][]{{0, 0}, {0, 4}}, new int[][]{{0, 4}, {0, 1}, {1, 4}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1001
+    public int[] gridIllumination(int n, int[][] lamps, int[][] queries) {
+
+        Map<Integer, Set<Integer>> row = new HashMap<>();
+        Map<Integer, Set<Integer>> col = new HashMap<>();
+        Map<Integer, Set<Integer>> leftCross = new HashMap<>();
+        Map<Integer, Set<Integer>> rightCross = new HashMap<>();
+
+        for (int[] l : lamps) {
+            row.putIfAbsent(l[0], new HashSet<>());
+            row.get(l[0]).add(l[1]);
+
+            col.putIfAbsent(l[1], new HashSet<>());
+            col.get(l[1]).add(l[0]);
+
+            leftCross.putIfAbsent(l[1] - l[0], new HashSet<>());
+            leftCross.get(l[1] - l[0]).add(l[0]);
+
+            rightCross.putIfAbsent(l[0] + l[1], new HashSet<>());
+            rightCross.get(l[0] + l[1]).add(l[0]);
+        }
+
+        int[] result = new int[queries.length];
+
+        int[][] dir = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 0}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            int r = q[0];
+            int c = q[1];
+            if ((row.containsKey(r) && !row.get(r).isEmpty())
+                    || (col.containsKey(c) && !col.get(c).isEmpty())
+                    || (leftCross.containsKey(c - r) && !leftCross.get(c - r).isEmpty())
+                    || (rightCross.containsKey(c + r) && !rightCross.get(c + r).isEmpty())) {
+                result[i] = 1;
+            }
+
+            for (int[] d : dir) {
+                int tmpRow = r + d[0];
+                int tmpCol = c + d[1];
+                if (row.containsKey(tmpRow)) {
+                    row.get(tmpRow).remove(tmpCol);
+                }
+                if (col.containsKey(tmpCol)) {
+                    col.get(tmpCol).remove(tmpRow);
+                }
+                if (leftCross.containsKey(tmpCol - tmpRow)) {
+                    leftCross.get(tmpCol - tmpRow).remove(tmpRow);
+                }
+                if (rightCross.containsKey(tmpCol + tmpRow)) {
+                    rightCross.get(tmpCol + tmpRow).remove(tmpRow);
+                }
+            }
+        }
+        return result;
     }
 
     // LC879 DP
@@ -83,28 +139,6 @@ class Scratch {
         return lc879Memo[curIdx][leftPeople][curProfit];
     }
 
-    // LC1001 TLE
-    public int[] gridIllumination(int n, int[][] lamps, int[][] queries) {
-        Set<Pair<Integer, Integer>> s = new HashSet<>();
-        for (int[] l : lamps) {
-            s.add(new Pair<>(l[0], l[1]));
-        }
-        int[] result = new int[queries.length];
-        int[][] dir = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 0}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
-        for (int i = 0; i < queries.length; i++) {
-            int[] q = queries[i];
-            for (Pair<Integer, Integer> p : s) {
-                if (p.getKey() == q[0] || p.getValue() == q[1] || (Math.abs(p.getKey() - q[0]) == Math.abs(p.getValue() - q[1]))) {
-                    result[i] = 1;
-                    break;
-                }
-            }
-            for (int[] d : dir) {
-                s.remove(new Pair(q[0] + d[0], q[1] + d[1]));
-            }
-        }
-        return result;
-    }
 
     // LC982 使用二进制子集算法优化
     public int countTriplets(int[] nums) {
