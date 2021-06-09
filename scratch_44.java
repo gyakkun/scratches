@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 import java.util.concurrent.locks.Condition;
@@ -16,6 +17,29 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1367
+//    Map<Pair<ListNode, TreeNode>, Boolean> lc1367Memo;
+
+    public boolean isSubPath(ListNode head, TreeNode root) {
+        if (head == null) return true;
+        if (root == null) return false;
+//        lc1367Memo = new HashMap<>();
+        return lc1367Helper(head, root, head) || isSubPath(head, root.left) || isSubPath(head, root.right);
+    }
+
+    private boolean lc1367Helper(ListNode cur, TreeNode root, ListNode head) {
+        if (cur == null) return true;
+        if (root == null) return false;
+//        Pair<ListNode, TreeNode> status = new Pair<>(cur, root);
+//        if (lc1367Memo.containsKey(status)) return lc1367Memo.get(status);
+        if (cur.val == root.val) {
+            boolean result = lc1367Helper(cur.next, root.left, head) || lc1367Helper(cur.next, root.right, head);
+//            lc1367Memo.put(status, result);
+            return result;
+        }
+        return false;
     }
 
     // LC10 Hard ** DP Solution
@@ -820,5 +844,22 @@ class OrderedStream {
             result.add(m[i]);
         }
         return result;
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
