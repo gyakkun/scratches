@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.apache.http.HeaderElement;
 
 import java.util.*;
 import java.util.concurrent.locks.Condition;
@@ -19,28 +20,42 @@ class Scratch {
     }
 
     // LC879 多重背包 DFS TLE
-    long lc879Result = 0;
-    final int lc879Mod = 1000000007;
+    final long lc879Mod = 1000000007;
+    Map<Pair<Pair<Integer, Integer>, Integer>, Long> lc879Memo;
 
     public int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
-        // n - num of people
-        if (minProfit == 0) lc879Result++; // 空集
-        lc879Helper(0, n, minProfit, group, profit, 0, 0);
-        return (int) (lc879Result % lc879Mod);
+        int totalProfit = 0;
+        for (int i : profit) {
+            totalProfit += i;
+        }
+        int[] numPeoplePrefix = new int[group.length + 1];
+        for (int i = 1; i <= group.length; i++) {
+            numPeoplePrefix[i] = numPeoplePrefix[i - 1] + group[i - 1];
+        }
+        lc879Memo = new HashMap<>();
+        return (int) (lc879Helper(0, n, 0, group, profit, minProfit, numPeoplePrefix, n) % lc879Mod);
     }
 
-    private void lc879Helper(int curIdx, int totalPeople, int minProfit, int[] group, int[] profit, int curProfit, int curNumPeople) {
+    private long lc879Helper(int curIdx, int leftPeople, int curProfit, int[] group, int[] profit, int minProfit, int[] numPeoplePrefix, int totalPeople) {
         if (curIdx == group.length) {
-            return;
+            return curProfit >= minProfit ? 1 : 0;
         }
-        // select the curIdx crime
-        if (curNumPeople + group[curIdx] <= totalPeople) {
-            if (curProfit + profit[curIdx] >= minProfit) {
-                lc879Result++;
-            }
-            lc879Helper(curIdx + 1, totalPeople, minProfit, group, profit, curProfit + profit[curIdx], curNumPeople + group[curIdx]);
+        if (lc879Memo.containsKey(new Pair<>(new Pair<>(curIdx, leftPeople), curProfit))) {
+            return lc879Memo.get(new Pair<>(new Pair<>(curIdx, leftPeople), curProfit));
         }
-        lc879Helper(curIdx + 1, totalPeople, minProfit, group, profit, curProfit, curNumPeople);
+        if (leftPeople >= 0 && leftPeople < group[curIdx]) { // 如果有人剩但又不足够当前项目, 则跳过当前项目
+            long result = lc879Helper(curIdx + 1, leftPeople, curProfit, group, profit, minProfit, numPeoplePrefix, totalPeople) % lc879Mod;
+            lc879Memo.put(new Pair<>(new Pair<>(curIdx, leftPeople), curProfit), result);
+            return result;
+        }
+        if (leftPeople >= (numPeoplePrefix[group.length] - numPeoplePrefix[curIdx])) {
+            leftPeople = totalPeople;
+        }
+        long result =
+                (lc879Helper(curIdx + 1, leftPeople - group[curIdx], Math.min(minProfit, curProfit + profit[curIdx]), group, profit, minProfit, numPeoplePrefix, totalPeople) % lc879Mod
+                        + lc879Helper(curIdx + 1, leftPeople, curProfit, group, profit, minProfit, numPeoplePrefix, totalPeople) % lc879Mod) % lc879Mod;
+        lc879Memo.put(new Pair<>(new Pair<>(curIdx, leftPeople), curProfit), result);
+        return result;
     }
 
     // LC1001 TLE
