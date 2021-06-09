@@ -16,22 +16,18 @@ class Scratch {
 //            s.updateBit(i + 1, arr[i]);
 //        }
 
-<<<<<<< HEAD
         System.err.println(s.gridIllumination(5, new int[][]{{0, 0}, {0, 4}}, new int[][]{{0, 4}, {0, 1}, {1, 4}}));
-=======
         for (int i = 0; i < 6; i++) {
             System.err.println(s.getBit(i+1));
         }
 
 //        System.err.println(s.countTriplets(new int[]{31}));
->>>>>>> de1321b (new)
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-<<<<<<< HEAD
     // JZOF14 LC343
     public int cuttingRope(int n) {
         // 1:  避免出现
@@ -60,7 +56,6 @@ class Scratch {
     }
 
     // LC1001
-=======
     // BIT EXPERIMENT
     int[] bit;
 
@@ -98,7 +93,6 @@ class Scratch {
     }
 
     // LC1001 TLE
->>>>>>> de1321b (new)
     public int[] gridIllumination(int n, int[][] lamps, int[][] queries) {
 
         Map<Integer, Set<Integer>> row = new HashMap<>();
