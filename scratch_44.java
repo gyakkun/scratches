@@ -18,6 +18,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1260
+    public List<List<Integer>> shiftGrid(int[][] grid, int k) {
+        int r = grid.length;
+        int c = grid[0].length;
+        k %= r * c;
+        List<List<Integer>> result = new ArrayList<>(r);
+        for (int i = 0; i < r; i++) {
+            List<Integer> tmp = new ArrayList<>(c);
+            for (int j = 0; j < c; j++) {
+                int ith = i * c + j;
+                ith = (ith - k + r * c) % (r * c);
+                tmp.add(grid[ith / c][ith % c]);
+            }
+            result.add(tmp);
+        }
+        return result;
+    }
+
     // LC1863
     public int subsetXORSum(int[] nums) {
         int mask = 1 << nums.length;
