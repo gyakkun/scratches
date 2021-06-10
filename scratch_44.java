@@ -11,11 +11,27 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.change(6, new int[]{1, 2, 5}));
+        System.err.println(s.subsetXORSum(new int[]{3, 4, 5, 6, 7, 8}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1863
+    public int subsetXORSum(int[] nums) {
+        int mask = 1 << nums.length;
+        int sum = 0;
+        for (int i = 0; i < mask; i++) {
+            int xor = 0;
+            for (int j = 0; j < nums.length; j++) {
+                if (((i >> j) & 1) == 1) {
+                    xor ^= nums[j];
+                }
+            }
+            sum += xor;
+        }
+        return sum;
     }
 
     // LC817
