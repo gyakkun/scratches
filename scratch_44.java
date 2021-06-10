@@ -18,6 +18,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC817
+    public int numComponents(ListNode head, int[] nums) {
+        Set<Integer> g = new HashSet<>();
+        for (int i : nums) {
+            g.add(i);
+        }
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        boolean inGear = false;
+        ListNode ptr = dummy;
+        int result = 0;
+        while (ptr != null) {
+            if (g.contains(ptr.val)) {
+                if (!inGear) {
+                    inGear = true;
+                    result++;
+                }
+            } else {
+                inGear = false;
+            }
+            ptr = ptr.next;
+        }
+        return result;
+    }
+
     // LC983
     Set<Integer> lc983DaySet;
 
