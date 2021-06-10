@@ -12,31 +12,50 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.gridIllumination(5, new int[][]{{0, 0}, {0, 4}}, new int[][]{{0, 4}, {0, 1}, {1, 4}}));
+        System.err.println(s.change(6, new int[]{1, 2, 5}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC518
+    public int change(int amount, int[] coins) {
+//        Arrays.sort(coins);
+        int[][] dp = new int[amount + 1][coins.length + 1];
+        // dp[i][j] 表示总额为i的金额使用第j个及其之前的硬币有多少种找换方案
+        for (int i = 0; i <= coins.length; i++) {
+            dp[0][i] = 1;
+        }
+        for (int i = 1; i <= amount; i++) {
+            for (int j = 1; j <= coins.length; j++) {
+                dp[i][j] = dp[i][j - 1];
+                if (i - coins[j - 1] >= 0) {
+                    dp[i][j] += dp[i - coins[j - 1]][j];
+                }
+            }
+        }
+        return dp[amount][coins.length];
+    }
+
     // LC1367
-//    Map<Pair<ListNode, TreeNode>, Boolean> lc1367Memo;
+    // Map<Pair<ListNode, TreeNode>, Boolean> lc1367Memo;
 
     public boolean isSubPath(ListNode head, TreeNode root) {
         if (head == null) return true;
         if (root == null) return false;
-//        lc1367Memo = new HashMap<>();
+        //  lc1367Memo = new HashMap<>();
         return lc1367Helper(head, root, head) || isSubPath(head, root.left) || isSubPath(head, root.right);
     }
 
     private boolean lc1367Helper(ListNode cur, TreeNode root, ListNode head) {
         if (cur == null) return true;
         if (root == null) return false;
-//        Pair<ListNode, TreeNode> status = new Pair<>(cur, root);
-//        if (lc1367Memo.containsKey(status)) return lc1367Memo.get(status);
+        //  Pair<ListNode, TreeNode> status = new Pair<>(cur, root);
+        //  if (lc1367Memo.containsKey(status)) return lc1367Memo.get(status);
         if (cur.val == root.val) {
             boolean result = lc1367Helper(cur.next, root.left, head) || lc1367Helper(cur.next, root.right, head);
-//            lc1367Memo.put(status, result);
+        //  lc1367Memo.put(status, result);
             return result;
         }
         return false;
