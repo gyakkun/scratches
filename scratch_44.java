@@ -18,6 +18,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC983
+    Set<Integer> lc983DaySet;
+
+    public int mincostTickets(int[] days, int[] costs) {
+        Integer[] memo = new Integer[366];
+        lc983DaySet = new HashSet<>();
+        for (int d : days) {
+            lc983DaySet.add(d);
+        }
+        return lc983Helper(1, costs, memo);
+    }
+
+    private int lc983Helper(int ithDay, int[] costs, Integer[] memo) {
+        if (ithDay > 365) {
+            return 0;
+        }
+        if (memo[ithDay] != null) return memo[ithDay];
+
+        if (lc983DaySet.contains(ithDay)) {
+            memo[ithDay] = Math.min(Math.min(
+                    costs[0] + lc983Helper(ithDay + 1, costs, memo),
+                    costs[1] + lc983Helper(ithDay + 7, costs, memo)),
+                    costs[2] + lc983Helper(ithDay + 30, costs, memo));
+        } else {
+            memo[ithDay] = lc983Helper(ithDay + 1, costs, memo);
+        }
+        return memo[ithDay];
+    }
+
     // LC322
     public int coinChange(int[] coins, int amount) {
         int[] dp = new int[amount + 1];
