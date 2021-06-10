@@ -21,6 +21,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC728
+    public List<Integer> selfDividingNumbers(int left, int right) {
+        List<Integer> ans = new ArrayList<>();
+        for (int i = left; i <= right; i++) {
+            if (lc728Judge(i)) {
+                ans.add(i);
+            }
+        }
+        return ans;
+    }
+
+    private boolean lc728Judge(int i) {
+        int orig = i;
+        while (i != 0) {
+            if (i % 10 == 0) return false;
+            if (orig % (i % 10) != 0) return false;
+            i /= 10;
+        }
+        return true;
+    }
+
     // LC507
     public boolean checkPerfectNumber(int num) {
         if (num == 1) return false;
