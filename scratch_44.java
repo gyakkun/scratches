@@ -10,15 +10,58 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        for (int i = 1; i <= 1e8; i++) {
-//            if (s.checkPerfectNumber(i))
-        System.err.println(s.checkPerfectNumber(33550336));
-//                System.err.println(i);
-//        }
+        System.err.println(s.shortestSuperstring(new String[]{"catg", "ctaagt", "gcta", "ttca", "atgcatc"}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC943 Hard WA
+    public String shortestSuperstring(String[] words) {
+        List<String> wordList = new ArrayList<>();
+        for (String word : words) {
+            wordList.add(word);
+        }
+
+        while (wordList.size() >= 2) {
+            int maxReduce = -1;
+            int maxReduceLeftIdx = -1;
+            int maxReduceRightIdx = -1;
+            String reduced = "";
+            for (int i = 0; i < wordList.size(); i++) {
+                for (int j = 0; j < wordList.size(); j++) {
+                    if (i != j) {
+                        for (int k = 1; k <= wordList.get(j).length(); k++) {
+                            if (wordList.get(i).length() >= k
+                                    && wordList.get(i).lastIndexOf(wordList.get(j).substring(0, k)) == wordList.get(i).length() - k) {
+
+                                int reduceCount = k;
+                                if (reduceCount > maxReduce) {
+                                    maxReduceLeftIdx = i;
+                                    maxReduceRightIdx = j;
+                                    maxReduce = reduceCount;
+                                    reduced = wordList.get(i) + wordList.get(j).substring(k);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (maxReduce == -1) {
+                return String.join("", wordList);
+            }
+            List<String> newList = new ArrayList<>();
+            for (int i = 0; i < wordList.size(); i++) {
+                if (i != maxReduceLeftIdx && i != maxReduceRightIdx) {
+                    newList.add(wordList.get(i));
+                }
+            }
+            if (!reduced.equals(""))
+                newList.add(reduced);
+            wordList = newList;
+        }
+        return String.join("", wordList);
     }
 
     // LC728
