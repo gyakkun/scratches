@@ -19,23 +19,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC518
+    // LC518 Learn from Solution
     public int change(int amount, int[] coins) {
-//        Arrays.sort(coins);
-        int[][] dp = new int[amount + 1][coins.length + 1];
-        // dp[i][j] 表示总额为i的金额使用第j个及其之前的硬币有多少种找换方案
-        for (int i = 0; i <= coins.length; i++) {
-            dp[0][i] = 1;
-        }
-        for (int i = 1; i <= amount; i++) {
-            for (int j = 1; j <= coins.length; j++) {
-                dp[i][j] = dp[i][j - 1];
-                if (i - coins[j - 1] >= 0) {
-                    dp[i][j] += dp[i - coins[j - 1]][j];
-                }
+        int[] dp = new int[amount + 1];
+        dp[0] = 1;
+        for (int coin : coins) {
+            for (int i = coin; i <= amount; i++) {
+                dp[i] = dp[i] + dp[i - coin];
             }
         }
-        return dp[amount][coins.length];
+        return dp[amount];
     }
 
     // LC1367
@@ -55,7 +48,7 @@ class Scratch {
         //  if (lc1367Memo.containsKey(status)) return lc1367Memo.get(status);
         if (cur.val == root.val) {
             boolean result = lc1367Helper(cur.next, root.left, head) || lc1367Helper(cur.next, root.right, head);
-        //  lc1367Memo.put(status, result);
+            //  lc1367Memo.put(status, result);
             return result;
         }
         return false;
