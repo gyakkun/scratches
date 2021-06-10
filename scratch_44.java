@@ -10,12 +10,32 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
-        System.err.println(s.subsetXORSum(new int[]{3, 4, 5, 6, 7, 8}));
+//        for (int i = 1; i <= 1e8; i++) {
+//            if (s.checkPerfectNumber(i))
+        System.err.println(s.checkPerfectNumber(33550336));
+//                System.err.println(i);
+//        }
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC507
+    public boolean checkPerfectNumber(int num) {
+        if (num == 1) return false;
+        int sqrt = (int) Math.sqrt(num);
+        int sum = 1;
+        for (int i = 2; i <= sqrt; i++) {
+            if (num % i == 0) {
+                sum += i;
+                if (num / i != i) {
+                    sum += num / i;
+                }
+            }
+            if (sum > num) return false;
+        }
+        return sum == num;
     }
 
     // LC1260
