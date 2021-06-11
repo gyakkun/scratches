@@ -10,11 +10,55 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.mincostToHireWorkers(new int[]{10, 20, 5}, new int[]{70, 50, 30}, 2));
+        System.err.println(s.removeDuplicateLetters("cbacdcbc"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC316 LC1081 WA
+    public String removeDuplicateLetters(String s) {
+        char[] cArr = s.toCharArray();
+        TreeMap<Character, TreeSet<Integer>> tm = new TreeMap<>();
+        for (int i = 0; i < cArr.length; i++) {
+            tm.putIfAbsent(cArr[i], new TreeSet<>());
+            tm.get(cArr[i]).add(i);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        int[] finalIdx = new int[26];
+        Arrays.fill(finalIdx, -1);
+
+        Map.Entry<Character, TreeSet<Integer>> firstEntry = tm.entrySet().iterator().next();
+        finalIdx[firstEntry.getKey() - 'a'] = firstEntry.getValue().iterator().next();
+        char firstCharacter = firstEntry.getKey();
+
+        for (Map.Entry<Character, TreeSet<Integer>> entry : tm.entrySet()) {
+            char c = entry.getKey();
+            if (c != firstCharacter) {
+                int minIdx = -1;
+                for (int i = 0; i < c - 'a'; i++) {
+                    if (tm.containsKey((char)(i + 'a'))) {
+                        Integer ceil = entry.getValue().ceiling(finalIdx[i]);
+                        if (ceil != null) {
+                            minIdx = Math.max(minIdx, ceil);
+                        }
+                    }
+                }
+                if (minIdx == -1) {
+                    minIdx = entry.getValue().last();
+                }
+                finalIdx[c - 'a'] = minIdx;
+            }
+        }
+        Arrays.sort(finalIdx);
+        for (int i : finalIdx) {
+            if (i != -1) {
+                sb.append(cArr[i]);
+            }
+        }
+        return sb.toString();
     }
 
     // LC857
