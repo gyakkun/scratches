@@ -25,7 +25,7 @@ class Scratch {
         return s1.length() < s2.length() || s1.length() == s2.length() && s1.compareTo(s2) < 0;
     }
 
-    String largestNumber(int[] cost, int target) {
+    public String largestNumber(int[] cost, int target) {
         String[] dp = new String[target + 1];
         dp[0] = "";
         for (int i = 0; i < 9; i++) {
