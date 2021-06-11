@@ -10,7 +10,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.largestNumber(new int[]{2, 4, 2, 5, 3, 2, 5, 5, 4},
+        System.err.println(s.largestNumber(new int[]{1,1,1,1,1,1,1,1,1},
                 5000
         ));
 
@@ -19,10 +19,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    //
+    // LC1449
+
+    private boolean lc1449Compare(String s1, String s2) {
+        return s1.length() < s2.length() || s1.length() == s2.length() && s1.compareTo(s2) < 0;
+    }
+
+    String largestNumber(int[] cost, int target) {
+        String[] dp = new String[target + 1];
+        dp[0] = "";
+        for (int i = 0; i < 9; i++) {
+            for (int j = cost[i]; j <= target; j++) {
+                if (dp[j - cost[i]] != null) {
+                    if (dp[j] == null) {
+                        dp[j] = "";
+                    }
+                    if (lc1449Compare(dp[j], (i + 1) + dp[j - cost[i]])) {
+                        dp[j] = (i + 1) + dp[j - cost[i]];
+                    }
+                }
+            }
+        }
+        return dp[target] == null ? "0" : dp[target];
+    }
 
     // LC1449 TLE
-    public String largestNumber(int[] cost, int target) {
+    public String largestNumberTLE(int[] cost, int target) {
         boolean[][] dp = new boolean[10][target + 1];
         // dp[i][j] 表示能否用前i个数字凑出j
         Map<Pair<Integer, Integer>, List<List<Integer>>> m = new HashMap<>();
@@ -667,7 +689,8 @@ class Scratch {
         return (int) (lc879Helper(0, n, 0, group, profit, minProfit, numPeoplePrefix, n) % lc879Mod);
     }
 
-    private long lc879Helper(int curIdx, int leftPeople, int curProfit, int[] group, int[] profit, int minProfit, int[] numPeoplePrefix, int totalPeople) {
+    private long lc879Helper(int curIdx, int leftPeople, int curProfit, int[] group, int[] profit, int minProfit,
+                             int[] numPeoplePrefix, int totalPeople) {
         if (curIdx == group.length) {
             return curProfit >= minProfit ? 1 : 0;
         }
