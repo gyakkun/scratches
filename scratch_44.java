@@ -10,11 +10,62 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.poorPigs(4, 15, 30));
+        System.err.println(s.mincostToHireWorkers(new int[]{10, 20, 5}, new int[]{70, 50, 30}, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC857
+    public double mincostToHireWorkers(int[] quality, int[] wage, int k) {
+        List<Worker> wl = new ArrayList<>(quality.length);
+        int minWage = Integer.MAX_VALUE;
+        for (int i = 0; i < quality.length; i++) {
+            wl.add(new Worker(i, quality[i], wage[i]));
+            minWage = Math.min(minWage, wage[i]);
+        }
+        if (k == 1) return minWage;
+        wl.sort(Comparator.comparingDouble(o -> o.getRatio()));
+        PriorityQueue<Worker> pq = new PriorityQueue<>(Comparator.comparingDouble(o -> -o.quality));
+
+        int sumQuality = 0;
+        double sumWage = Integer.MAX_VALUE;
+
+        for (Worker worker : wl) {
+            if (pq.size() < k - 1) {
+                pq.offer(worker);
+                sumQuality += worker.quality;
+            } else {
+                sumWage = Math.min(sumWage, (sumQuality + worker.quality) * worker.getRatio());
+                if (worker.quality < pq.peek().quality) {
+                    Worker tmp = pq.poll();
+                    sumQuality -= tmp.quality;
+                    sumQuality += worker.quality;
+                    pq.offer(worker);
+                }
+            }
+        }
+        return sumWage;
+    }
+
+    class Worker {
+        int id;
+        int quality;
+        int wage;
+        double ratio;
+
+        public Worker(int id, int quality, int wage) {
+            this.id = id;
+            this.quality = quality;
+            this.wage = wage;
+            this.ratio = (wage + 0.0) / (quality + 0.0);
+        }
+
+        double getRatio() {
+            return ratio;
+        }
+
     }
 
     // LC458
