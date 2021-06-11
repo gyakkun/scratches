@@ -10,11 +10,27 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.numSquares(1024));
+        System.err.println(s.poorPigs(4, 15, 30));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC458
+    public int poorPigs(int buckets, int minutesToDie, int minutesToTest) {
+        if (buckets == 1) return 0;
+        int shot = (int) Math.floor((minutesToTest + 0.0) / (minutesToDie + 0.0));
+        int low = 1, high = buckets;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if ((Math.pow(shot + 1, mid)) >= (double) buckets) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
     }
 
     // LC279 DP
