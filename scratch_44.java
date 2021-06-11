@@ -10,11 +10,30 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.shortestSuperstring(new String[]{"catg", "ctaagt", "gcta", "ttca", "atgcatc"}));
+        System.err.println(s.numSquares(1024));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC279 DP
+    public int numSquares(int n) {
+        int bound = (int) Math.sqrt(n);
+        int[][] dp = new int[n + 1][bound + 1];
+        // dp[i][j] 表示 i 用前j个完全平方数表示 最少需要几个
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= bound; j++) {
+                dp[i][j] = dp[i - 1][j] + 1; // 总能表示成上一个数 + 1*1, 也就是多一个平方数
+                if (j != 1) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][j - 1]);
+                }
+                if (i - j * j >= 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - j * j][j] + 1);
+                }
+            }
+        }
+        return dp[n][bound];
     }
 
     // LC943 Hard WA
