@@ -10,52 +10,37 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.removeDuplicateLetters("cbacdcbc"));
+        System.err.println(s.removeDuplicateLetters("abacb"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC316 LC1081 WA
+    // LC316 LC1081 Stack
     public String removeDuplicateLetters(String s) {
         char[] cArr = s.toCharArray();
-        TreeMap<Character, TreeSet<Integer>> tm = new TreeMap<>();
-        for (int i = 0; i < cArr.length; i++) {
-            tm.putIfAbsent(cArr[i], new TreeSet<>());
-            tm.get(cArr[i]).add(i);
+        int[] freq = new int[26];
+        boolean[] visited = new boolean[26];
+        for (char c : cArr) {
+            freq[c - 'a']++;
         }
 
         StringBuilder sb = new StringBuilder();
-        int[] finalIdx = new int[26];
-        Arrays.fill(finalIdx, -1);
-
-        Map.Entry<Character, TreeSet<Integer>> firstEntry = tm.entrySet().iterator().next();
-        finalIdx[firstEntry.getKey() - 'a'] = firstEntry.getValue().iterator().next();
-        char firstCharacter = firstEntry.getKey();
-
-        for (Map.Entry<Character, TreeSet<Integer>> entry : tm.entrySet()) {
-            char c = entry.getKey();
-            if (c != firstCharacter) {
-                int minIdx = -1;
-                for (int i = 0; i < c - 'a'; i++) {
-                    if (tm.containsKey((char)(i + 'a'))) {
-                        Integer ceil = entry.getValue().ceiling(finalIdx[i]);
-                        if (ceil != null) {
-                            minIdx = Math.max(minIdx, ceil);
-                        }
-                    }
+        for (char c : cArr) {
+            while (sb.length() != 0 && c < sb.charAt(sb.length() - 1) && !visited[c - 'a']) {
+                char tmp = sb.charAt(sb.length() - 1);
+                if (freq[tmp - 'a'] > 0) {
+                    sb.deleteCharAt(sb.length() - 1);
+                    visited[tmp - 'a'] = false;
+                } else {
+                    break;
                 }
-                if (minIdx == -1) {
-                    minIdx = entry.getValue().last();
-                }
-                finalIdx[c - 'a'] = minIdx;
             }
-        }
-        Arrays.sort(finalIdx);
-        for (int i : finalIdx) {
-            if (i != -1) {
-                sb.append(cArr[i]);
+            freq[c - 'a']--;
+            if (!visited[c - 'a']) {
+                sb.append(c);
+                visited[c - 'a'] = true;
             }
         }
         return sb.toString();
