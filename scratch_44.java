@@ -10,7 +10,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.largestNumber(new int[]{1,1,1,1,1,1,1,1,1},
+        System.err.println(s.largestNumber(new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1},
                 5000
         ));
 
@@ -19,8 +19,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1449
+    // LC1575 Hard
+    long lc1575Result = 0;
+    Integer[][] lc1575memo;
 
+    public int countRoutes(int[] locations, int start, int finish, int fuel) {
+        lc1575memo = new Integer[fuel + 1][locations.length + 1];
+        return lc1575Helper(fuel, start, locations, finish);
+    }
+
+    private int lc1575Helper(int curFuel, int curIdx, int[] locations, int finish) {
+        int result = 0;
+        if (curFuel < 0) return 0;
+        if (lc1575memo[curFuel][curIdx] != null) return lc1575memo[curFuel][curIdx];
+        if (curIdx == finish) {
+            result = 1;
+        }
+        for (int i = 0; i < locations.length; i++) {
+            if (i != curIdx) {
+                result = (result + lc1575Helper(curFuel - Math.abs(locations[curIdx] - locations[i]), i, locations, finish)) % 1000000007;
+            }
+        }
+        lc1575memo[curFuel][curIdx] = result;
+        return result;
+    }
+
+    // LC1449
     private boolean lc1449Compare(String s1, String s2) {
         return s1.length() < s2.length() || s1.length() == s2.length() && s1.compareTo(s2) < 0;
     }
