@@ -19,6 +19,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF46 LC91?
+    Integer[] jzof46Memo;
+
+    public int translateNum(int num) {
+        String s = String.valueOf(num);
+        char[] cArr = s.toCharArray();
+        jzof46Memo = new Integer[cArr.length + 1];
+        return jzof46Helper(cArr, 0);
+    }
+
+    private int jzof46Helper(char[] s, int curIdx) {
+        if (curIdx >= s.length) return 1;
+        if (jzof46Memo[curIdx] != null) return jzof46Memo[curIdx];
+        int result = 0;
+        if (curIdx == s.length - 1 || s[curIdx] == '0' || (curIdx < s.length - 1 && ("" + s[curIdx] + s[curIdx + 1]).compareTo("25") > 0)) {
+            jzof46Memo[curIdx] = jzof46Helper(s, curIdx + 1);
+            return jzof46Memo[curIdx];
+        }
+        jzof46Memo[curIdx] = jzof46Helper(s, curIdx + 1) + jzof46Helper(s, curIdx + 2);
+        return jzof46Memo[curIdx];
+    }
+
     // LC1575 Hard
     long lc1575Result = 0;
     Integer[][] lc1575memo;
