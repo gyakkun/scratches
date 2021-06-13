@@ -1,10 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 class Scratch {
 
@@ -18,11 +16,9 @@ class Scratch {
         String line;
         for (int i = 0; i < 10; i++) {
             if ((line = br.readLine()) != null) {
-                if (line.matches("^qq_group:\\d+$")) {
+                if (line.startsWith("q")) {
                     qIdx = i;
-                    Pattern pattern = Pattern.compile("[^\\d]");
-                    Matcher matcher = pattern.matcher(line);
-                    line = matcher.replaceAll("").trim();
+                    line = line.replaceAll("[^\\d]", "").trim();
                 }
                 input[i] = Integer.valueOf(line);
                 max = Math.max(max, input[i]);
@@ -33,11 +29,7 @@ class Scratch {
         NthPrime nthPrime = new NthPrime(max);
 
         for (int i = 0; i < 10; i++) {
-            if (i == qIdx) {
-                System.out.println("qq_group:" + nthPrime.getNthPrime(input[i]));
-            } else {
-                System.out.println(nthPrime.getNthPrime(input[i]));
-            }
+            System.out.println((i == qIdx ? "qq_group:" : "") + nthPrime.getNthPrime(input[i]));
         }
     }
 
@@ -45,13 +37,13 @@ class Scratch {
 
 class NthPrime {
     int maxNth;
-    TreeMap<Integer, Integer> result;
+    Map<Integer, Integer> result;
     Helper helper;
 
     public NthPrime(int maxNth) {
         this.maxNth = maxNth;
         helper = new Helper(maxNth);
-        result = new TreeMap<>();
+        result = new HashMap<>();
     }
 
     public int getNthPrime(int nth) {
@@ -60,25 +52,19 @@ class NthPrime {
         return calcNth(nth);
     }
 
-
     private int calcNth(int n) {
-        if (result.containsKey(n)) return result.get(n);
         // 以下估计参考了 Wikipedia - 素数计数函数
         int lb = (int) (n * ((Math.log(n) + Math.log(Math.log(n))) - 1)); // nth prime 的上界
-        int ub = lb + n; // 下届
+        int ub = lb + n; // 下界
         int approx = lb + (int) ((0.0 + n * Math.log(Math.log(n)) - 2 * n) / (Math.log(n))); // 一个估计
         int apPi = (int) helper.pi(approx);
         int low = lb, high = ub;
         if (apPi > n) high = approx;
         else low = approx;
 
-        Map.Entry<Integer, Integer> ce = result.ceilingEntry(n);
-        Map.Entry<Integer, Integer> fe = result.floorEntry(n);
-
-        if (ce != null && ce.getValue() < high) high = ce.getValue();
-        if (fe != null && fe.getValue() > low) low = fe.getValue();
         int target = n - 1;
 
+        // 二分 令下界lb逼近不超过nthPrime的一个值 使得pi(lb)==nth-1
         while (low <= high) {
             int mid = low + (high - low) / 2;
             int tmpPi = (int) helper.pi(mid);
@@ -91,6 +77,7 @@ class NthPrime {
                 low = mid + 1;
             }
         }
+
         if (lb % 2 == 1) lb--;
         int primeCount = (int) helper.pi(lb);
         // 开始从tmp筛, 埃筛
@@ -119,7 +106,7 @@ class NthPrime {
         int sqrtPc;
         int sqrtU;
         int[][] phiMemo;
-        TreeMap<Long, Long> piCache;
+        Map<Long, Long> piCache;
         int[] piCacheArray;
 
         Helper(int n) {
@@ -130,7 +117,7 @@ class NthPrime {
             sqrtU = (int) Math.sqrt(upper);
             phiMemo = new int[sqrtU + 1][sqrtPc + 1];
             initPhiMemo();
-            piCache = new TreeMap<>();
+            piCache = new HashMap<>();
         }
 
         private void initPrime() {
@@ -194,12 +181,7 @@ class NthPrime {
         public long pi(long m) {
             if (m <= prime[prime.length - 1]) return piCacheArray[(int) m];
             if (piCache.containsKey(m)) return piCache.get(m);
-            Map.Entry<Long, Long> ce = piCache.ceilingEntry(m);
-            Map.Entry<Long, Long> fe = piCache.floorEntry(m);
 
-            if (ce != null && fe != null && ce.getValue() == fe.getValue()) {
-                return fe.getValue();
-            }
             int y = (int) Math.cbrt(m);
             int n = piCacheArray[y];
             long result = phi(m, n) + n - 1;
