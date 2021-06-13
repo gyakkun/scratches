@@ -83,6 +83,8 @@ class NthPrime {
         int target = n - 1;
         int tmp = -1;
 
+        long origBST = biSearTiming;
+        long origPC = helper.piCount;
         long timing = System.currentTimeMillis();
         while (low <= high) {
             int mid = low + (high - low) / 2;
@@ -114,7 +116,15 @@ class NthPrime {
             }
             if (primeCount == n) break;
         }
+        System.err.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.err.println("BiSearchTiming: " + biSearTiming + "ms.");
+        System.err.println("piCount: " + helper.piCount + ".");
+        System.err.println("BiSearchTiming Delta: " + (biSearTiming - origBST) + "ms.");
+        System.err.println("piCount Delta: " + (helper.piCount - origPC) + ".");
+        System.err.println("avg pi consumes: " + ((biSearTiming - origBST + 0.0) / (helper.piCount - origPC + 0.0)) + ".");
+        System.err.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        System.err.println("");
+
         return result.get(n);
     }
 
@@ -196,8 +206,10 @@ class NthPrime {
             return low;
         }
 
+        long piCount = 0;
 
         public long pi(long m) {
+            piCount++;
             if (m <= prime[prime.length - 1]) return piLessPrimeMax(m);
             if (piCache.containsKey(m)) return piCache.get(m);
             Map.Entry<Long, Long> he = piCache.higherEntry(m);
