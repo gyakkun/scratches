@@ -80,7 +80,7 @@ class NthPrime {
 
         if (lb % 2 == 1) lb--;
         int primeCount = (int) helper.pi(lb);
-        // 开始从tmp筛, 埃筛
+        // 埃筛
         for (int i = lb; i <= ub; i++) {
             boolean isPrime = true;
             for (int j = 1; j < helper.prime.length && helper.prime[j] * helper.prime[j] <= i; j++) {
