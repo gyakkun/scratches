@@ -116,7 +116,6 @@ class NthPrime {
             sqrtPc = (int) Math.sqrt(2 * prime.length);
             sqrtU = (int) Math.sqrt(upper);
             phiMemo = new int[sqrtU + 1][sqrtPc + 1];
-            initPhiMemo();
             piCache = new HashMap<>();
         }
 
@@ -146,21 +145,16 @@ class NthPrime {
             }
         }
 
-        private void initPhiMemo() {
-            for (int i = 0; i <= sqrtU; i++) {
-                phiMemo[i][0] = i;
-                for (int j = 1; j <= sqrtPc; j++) {
-                    phiMemo[i][j] = phiMemo[i][j - 1] - phiMemo[i / prime[j]][j - 1];
-                }
-            }
-        }
-
         private long phi(long m, int n) {
             if (n == 0) return m;
             if (m == 0) return 0;
             if (prime[n] >= m) return 1;
-            if (m <= sqrtU && n <= sqrtPc) return phiMemo[(int) m][n];
-            return phi(m, n - 1) - phi((int) (m / prime[n]), n - 1);
+            if (m <= sqrtU && n <= sqrtPc && phiMemo[(int) m][n] != 0) return phiMemo[(int) m][n];
+            long result = phi(m, n - 1) - phi((int) (m / prime[n]), n - 1);
+            if (m <= sqrtU && n <= sqrtPc) {
+                phiMemo[(int) m][n] = (int) result;
+            }
+            return result;
         }
 
         private long piLessThanPrimeMax(long x) {
