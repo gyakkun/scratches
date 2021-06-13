@@ -1,3 +1,4 @@
+import javax.xml.transform.Result;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -36,8 +37,8 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
         NthPrime nthPrime = new NthPrime(max);
-        nthPrime.getNthPrime(min);
-        nthPrime.getNthPrime(max);
+//        nthPrime.getNthPrime(min);
+//        nthPrime.getNthPrime(max);
 
         for (int i = 0; i < 10; i++) {
             if (i == qIdx) {
@@ -47,7 +48,7 @@ class Scratch {
             }
         }
         timing = System.currentTimeMillis() - timing;
-        System.err.println("TIMING: " + timing + "ms.");
+//        System.err.println("TIMING: " + timing + "ms.");
     }
 
 }
@@ -72,12 +73,18 @@ class NthPrime {
     long biSearTiming = 0;
 
     private int calcNth(int n) {
+        if(result.containsKey(n)) return result.get(n);
         int lb = (int) (n * ((Math.log(n) + Math.log(Math.log(n))) - 1));
         int ub = lb + n;
+        int approximate = lb + (int) ((0.0 + n * Math.log(Math.log(n)) - 2 * n) / (Math.log(n)));
+        int apPi = (int) helper.pi(approximate);
+        int low = lb, high = ub;
+        if (apPi > n) high = approximate;
+        else low = approximate;
+
         Map.Entry<Integer, Integer> he = result.ceilingEntry(n);
         Map.Entry<Integer, Integer> le = result.floorEntry(n);
 
-        int low = lb, high = ub;
         if (he != null && he.getValue() < high) high = he.getValue();
         if (le != null && le.getValue() > low) low = le.getValue();
         int target = n - 1;
@@ -116,14 +123,14 @@ class NthPrime {
             }
             if (primeCount == n) break;
         }
-        System.err.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.err.println("BiSearchTiming: " + biSearTiming + "ms.");
-        System.err.println("piCount: " + helper.piCount + ".");
-        System.err.println("BiSearchTiming Delta: " + (biSearTiming - origBST) + "ms.");
-        System.err.println("piCount Delta: " + (helper.piCount - origPC) + ".");
-        System.err.println("avg pi consumes: " + ((biSearTiming - origBST + 0.0) / (helper.piCount - origPC + 0.0)) + ".");
-        System.err.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        System.err.println("");
+//        System.err.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//        System.err.println("BiSearchTiming: " + biSearTiming + "ms.");
+//        System.err.println("piCount: " + helper.piCount + ".");
+//        System.err.println("BiSearchTiming Delta: " + (biSearTiming - origBST) + "ms.");
+//        System.err.println("piCount Delta: " + (helper.piCount - origPC) + ".");
+//        System.err.println("avg pi consumes: " + ((biSearTiming - origBST + 0.0) / (helper.piCount - origPC + 0.0)) + ".");
+//        System.err.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+//        System.err.println("");
 
         return result.get(n);
     }
@@ -136,6 +143,7 @@ class NthPrime {
         int sqrtU;
         int[][] phiMemo;
         TreeMap<Long, Long> piCache;
+        int[] piCacheArray;
 
         Helper(int n) {
             this.upper = (long) (n * Math.log(n) + n * Math.log(Math.log(n))); // 对第n个质数的最大值的估算
@@ -168,6 +176,13 @@ class NthPrime {
             }
             prime = new int[pc + 1];
             System.arraycopy(pl, 0, prime, 0, pc + 1);
+            piCacheArray = new int[prime[prime.length - 1] + 1];
+            long timing = System.currentTimeMillis();
+            for (int i = 0; i <= prime[prime.length - 1]; i++) {
+                piCacheArray[i] = (int) piLessPrimeMax(i);
+            }
+            timing = System.currentTimeMillis() - timing;
+//            System.err.println("init pi cache timing: " + timing + "ms.");
         }
 
         private void initPhiMemo() {
@@ -210,7 +225,7 @@ class NthPrime {
 
         public long pi(long m) {
             piCount++;
-            if (m <= prime[prime.length - 1]) return piLessPrimeMax(m);
+            if (m <= prime[prime.length - 1]) return piCacheArray[(int) m];
             if (piCache.containsKey(m)) return piCache.get(m);
             Map.Entry<Long, Long> he = piCache.higherEntry(m);
             Map.Entry<Long, Long> le = piCache.lowerEntry(m);
