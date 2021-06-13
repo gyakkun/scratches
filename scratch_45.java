@@ -1,5 +1,3 @@
-import com.sun.javafx.sg.prism.NGText;
-
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -71,6 +69,8 @@ class NthPrime {
         return calcNth(nth);
     }
 
+    long biSearTiming = 0;
+
     private int calcNth(int n) {
         int lb = (int) (n * ((Math.log(n) + Math.log(Math.log(n))) - 1));
         int ub = lb + n;
@@ -82,6 +82,8 @@ class NthPrime {
         if (le != null && le.getValue() > low) low = le.getValue();
         int target = n - 1;
         int tmp = -1;
+
+        long timing = System.currentTimeMillis();
         while (low <= high) {
             int mid = low + (high - low) / 2;
             int tmpPi = (int) helper.pi(mid);
@@ -94,6 +96,8 @@ class NthPrime {
                 low = mid + 1;
             }
         }
+        timing = System.currentTimeMillis() - timing;
+        biSearTiming += timing;
         if (tmp % 2 == 1) tmp--;
         int primeCount = (int) helper.pi(tmp);
         // 开始从tmp筛, 先使用埃筛
@@ -110,6 +114,7 @@ class NthPrime {
             }
             if (primeCount == n) break;
         }
+        System.err.println("BiSearchTiming: " + biSearTiming + "ms.");
         return result.get(n);
     }
 
@@ -119,7 +124,7 @@ class NthPrime {
         int[] prime;
         int sqrtPc;
         int sqrtU;
-        Integer[][] phiMemo;
+        int[][] phiMemo;
         TreeMap<Long, Long> piCache;
 
         Helper(int n) {
@@ -128,14 +133,14 @@ class NthPrime {
             initPrime();
             sqrtPc = (int) Math.sqrt(2 * prime.length);
             sqrtU = (int) Math.sqrt(upper);
-            phiMemo = new Integer[sqrtU + 1][sqrtPc + 1];
-            phi(sqrtU, sqrtPc);
+            phiMemo = new int[sqrtU + 1][sqrtPc + 1];
+            initPhiMemo();
             piCache = new TreeMap<>();
         }
 
         private void initPrime() {
             // 求出sqrt(upper)以内的所有素数
-            int up = (int) (1.5 * Math.max(100, (int) Math.sqrt(upper) + 1));
+            int up = Math.max(100, (int) Math.sqrt(upper) + 1);
             // 埃筛
             int[] pl = new int[1 + up / 2];
             boolean[] isNotPrime = new boolean[up + 1];
@@ -155,10 +160,20 @@ class NthPrime {
             System.arraycopy(pl, 0, prime, 0, pc + 1);
         }
 
+        private void initPhiMemo() {
+            for (int i = 0; i <= sqrtU; i++) {
+                phiMemo[i][0] = i;
+                for (int j = 1; j <= sqrtPc; j++) {
+                    phiMemo[i][j] = phiMemo[i][j - 1] - phiMemo[i / prime[j]][j - 1];
+                }
+            }
+        }
+
         private long phi(long m, int n) {
             if (n == 0) return m;
             if (m == 0) return 0;
-            if (m <= sqrtU && n <= sqrtPc && phiMemo[(int) m][n] != null) return phiMemo[(int) m][n];
+            if (prime[n] >= m) return 1;
+            if (m <= sqrtU && n <= sqrtPc) return phiMemo[(int) m][n];
             long result = phi(m, n - 1) - phi((int) (m / prime[n]), n - 1);
             if (m <= sqrtU && n <= sqrtPc) {
                 phiMemo[(int) m][n] = (int) result;
