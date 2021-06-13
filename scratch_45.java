@@ -1,19 +1,53 @@
+import com.sun.javafx.sg.prism.NGText;
+
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class Scratch {
 
-    // PRIME OJ 1000
+    public static void main1(String[] args) {
+        NthPrime nthPrime = new NthPrime(100000000);
+        System.out.println(nthPrime.getNthPrime(22222222));
 
+    }
+
+    // PRIME OJ 1000
     public static void main(String[] args) {
+        int[] input = new int[10];
+        int qIdx = -1;
+        int max = 0;
+        int min = Integer.MAX_VALUE;
+        Scanner scan = new Scanner(System.in);
+        for (int i = 0; i < 10; i++) {
+            if (scan.hasNextLine()) {
+                String tmp = scan.nextLine();
+                if (tmp.matches("^qq_group:\\d+$")) {
+                    qIdx = i;
+                    Pattern pattern = Pattern.compile("[^\\d]");
+                    Matcher matcher = pattern.matcher(tmp);
+                    tmp = matcher.replaceAll("").trim();
+                }
+                input[i] = Integer.valueOf(tmp);
+                max = Math.max(max, input[i]);
+                min = Math.min(min, input[i]);
+            }
+        }
         long timing = System.currentTimeMillis();
 
-        NthPrime ntp = new NthPrime(100000000);
-        System.out.println(ntp.getNthPrime(1));
-        System.out.println(ntp.getNthPrime(100000000));
-        System.out.println(ntp.getNthPrime(99999997));
-        System.out.println(ntp.getNthPrime(99999999));
-        System.out.println(ntp.getNthPrime(99999998));
+        NthPrime nthPrime = new NthPrime(max);
+        nthPrime.getNthPrime(min);
+        nthPrime.getNthPrime(max);
+
+        for (int i = 0; i < 10; i++) {
+            if (i == qIdx) {
+                System.out.println("qq_group:" + nthPrime.getNthPrime(input[i]));
+            } else {
+                System.out.println(nthPrime.getNthPrime(input[i]));
+            }
+        }
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -40,12 +74,12 @@ class NthPrime {
     private int calcNth(int n) {
         int lb = (int) (n * ((Math.log(n) + Math.log(Math.log(n))) - 1));
         int ub = lb + n;
-        Map.Entry<Integer, Integer> he = result.higherEntry(n);
-        Map.Entry<Integer, Integer> le = result.lowerEntry(n);
+        Map.Entry<Integer, Integer> he = result.ceilingEntry(n);
+        Map.Entry<Integer, Integer> le = result.floorEntry(n);
 
         int low = lb, high = ub;
-        if (he != null) high = he.getValue();
-        if (le != null) low = le.getValue();
+        if (he != null && he.getValue() < high) high = he.getValue();
+        if (le != null && le.getValue() > low) low = le.getValue();
         int target = n - 1;
         int tmp = -1;
         while (low <= high) {
@@ -60,6 +94,7 @@ class NthPrime {
                 low = mid + 1;
             }
         }
+        if (tmp % 2 == 1) tmp--;
         int primeCount = (int) helper.pi(tmp);
         // 开始从tmp筛, 先使用埃筛
         for (int i = tmp; i <= ub; i++) {
@@ -100,7 +135,7 @@ class NthPrime {
 
         private void initPrime() {
             // 求出sqrt(upper)以内的所有素数
-            int up = (int) (1.5 * Math.max(20, (int) Math.sqrt(upper) + 1));
+            int up = (int) (1.5 * Math.max(100, (int) Math.sqrt(upper) + 1));
             // 埃筛
             int[] pl = new int[1 + up / 2];
             boolean[] isNotPrime = new boolean[up + 1];
