@@ -54,48 +54,26 @@ class NthPrime {
 
     private int calcNth(int n) {
         // 以下估计参考了 Wikipedia - 素数计数函数
-        int lb = (int) (n * ((Math.log(n) + Math.log(Math.log(n))) - 1)); // nth prime 的上界
-        int ub = lb + n; // 下界
+        int lb = (int) (n * ((Math.log(n) + Math.log(Math.log(n))) - 1)); // nth prime 的下界
+        int ub = lb + n; // 上界
         int approx = lb + (int) ((0.0 + n * Math.log(Math.log(n)) - 2 * n) / (Math.log(n))); // 一个估计
         int apPi = (int) helper.pi(approx);
         int low = lb, high = ub;
         if (apPi > n) high = approx;
         else low = approx;
 
-        int target = n - 1;
-
-        // 二分 令下界lb逼近不超过nthPrime的一个值 使得pi(lb)==nth-1
-        while (low <= high) {
+        while (low < high) {
             int mid = low + (high - low) / 2;
             int tmpPi = (int) helper.pi(mid);
-            if (tmpPi == target) {
-                lb = mid;
-                break;
-            } else if (tmpPi > target) {
-                high = mid - 1;
+            if (tmpPi >= n) {
+                high = mid;
             } else {
                 low = mid + 1;
             }
         }
+        result.put(n, low);
 
-        if (lb % 2 == 1) lb--;
-        int primeCount = (int) helper.pi(lb);
-        // 埃筛
-        for (int i = lb; i <= ub; i++) {
-            boolean isPrime = true;
-            for (int j = 1; j < helper.prime.length && helper.prime[j] * helper.prime[j] <= i; j++) {
-                if (i % helper.prime[j] == 0) {
-                    isPrime = false;
-                    break;
-                }
-            }
-            if (isPrime) {
-                result.put(++primeCount, i);
-            }
-            if (primeCount == n) break;
-        }
-
-        return result.get(n);
+        return low;
     }
 
     // Meissel-Lehmer 法求素数计数函数
@@ -186,5 +164,4 @@ class NthPrime {
             return result;
         }
     }
-
 }
