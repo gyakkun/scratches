@@ -11,7 +11,6 @@ class Scratch {
         int[] input = new int[10];
         int qIdx = -1;
         int max = 0;
-        int min = Integer.MAX_VALUE;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String line;
         for (int i = 0; i < 10; i++) {
@@ -22,7 +21,6 @@ class Scratch {
                 }
                 input[i] = Integer.valueOf(line);
                 max = Math.max(max, input[i]);
-                min = Math.min(min, input[i]);
             }
         }
 
