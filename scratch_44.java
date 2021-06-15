@@ -10,10 +10,37 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.minAbsDifference(new int[]{5, -7, 3, 5}, 6));
+        System.err.println(s.maxSumOfThreeSubarrays(new int[]{1, 2, 1, 2, 6, 7, 5, 1}, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC689 TLE
+    public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+        int[] prefix = new int[1 + nums.length];
+        int[] ans = new int[3];
+        int max = Integer.MIN_VALUE;
+        Arrays.fill(ans, -1);
+        for (int i = 1; i <= nums.length; i++) {
+            prefix[i] = prefix[i - 1] + nums[i - 1];
+        }
+        Integer[][] memo = new Integer[nums.length][nums.length];
+
+        for (int i = 0; i + k - 1 < nums.length; i++) {
+            int first = prefix[i + k] - prefix[i];
+            for (int j = i + k; j + k - 1 < nums.length; j++) {
+                int second = prefix[j + k] - prefix[j];
+                for (int p = j + k; p + k - 1 < nums.length; p++) {
+                    int third = prefix[p + k] - prefix[p];
+                    if (first + second + third > max) {
+                        max = first + second + third;
+                        ans = new int[]{i, j, p};
+                    }
+                }
+            }
+        }
+        return ans;
     }
 
     // LC1755 显式二分 更省内存
@@ -28,7 +55,7 @@ class Scratch {
         int[] leftSum = new int[1 << left.length];
         int[] rightSum = new int[1 << right.length];
         int minAbs = Integer.MAX_VALUE;
-        
+
         for (int i = 0; i < (1 << left.length); i++) {
             int sum = 0;
             for (int j = 0; j < left.length; j++) {
@@ -53,7 +80,7 @@ class Scratch {
 
         for (int i : leftSum) {
             int target = goal - i;
-            
+
             // ceil
             int low = 0, high = rightSum.length - 1;
             while (low < high) {
@@ -66,7 +93,7 @@ class Scratch {
             }
             int ceil = low;
             if (rightSum[ceil] < target) ceil = -1;
-            
+
             // floor
             low = 0;
             high = rightSum.length - 1;
@@ -80,7 +107,7 @@ class Scratch {
             }
             int floor = low;
             if (rightSum[floor] > target) floor = -1;
-            
+
             // update
             if (ceil != -1) {
                 minAbs = Math.min(minAbs, Math.abs(rightSum[ceil] + i - goal));
