@@ -17,6 +17,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 10.01
+    public void merge(int[] A, int m, int[] B, int n) {
+        // m + n == A.length
+        int p1 = m - 1, p2 = n - 1;
+        int mockPtr = m + n - 1;
+        while (p1 >= 0 && p2 >= 0) {
+            if (A[p1] > B[p2]) {
+                A[mockPtr--] = A[p1--];
+            } else {
+                A[mockPtr--] = B[p2--];
+            }
+        }
+        while (p1 >= 0) {
+            A[mockPtr--] = A[p1--];
+        }
+        while (p2 >= 0) {
+            A[mockPtr--] = B[p2--];
+        }
+    }
+
     // LC145 后序遍历 迭代
     public List<Integer> postorderTraversal(TreeNode root) {
         List<Integer> result = new LinkedList<>();
