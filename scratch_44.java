@@ -17,7 +17,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1658 **
+    // LC1658 ** 二分 找前后缀和
+    public int minOperationsBinarySearch(int[] nums, int x) {
+        int[] prefix = new int[nums.length + 1];
+        for (int i = 1; i <= nums.length; i++) {
+            prefix[i] = prefix[i - 1] + nums[i - 1];
+        }
+        int sum = prefix[nums.length];
+        if (sum < x) return -1;
+        int ans = Integer.MAX_VALUE;
+        for (int right = 0; right <= nums.length; right++) {
+            // 对于每一个后缀和 都希望找到一个前缀和 使得 前缀和+后缀和 = x
+            // 后缀和: sum - prefix[right]
+            // target = x - sum + prefix[right]
+            int target = x - sum + prefix[right];
+            int low = 0, high = right;
+            int idx = -1;
+            while (low <= high) {
+                int mid = low + (high - low) / 2;
+                if (prefix[mid] == target) {
+                    idx = mid;
+                    break;
+                } else if (prefix[mid] < target) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            if (idx != -1) {
+                // 找到对应的前缀和下标
+                ans = Math.min(ans, idx + nums.length - right);
+            }
+        }
+        if (ans == Integer.MAX_VALUE) return -1;
+        return ans;
+    }
+
+    // LC1658 ** 滑动窗口
     public int minOperations(int[] nums, int x) {
         int sum = 0;
         for (int i : nums) sum += i;
