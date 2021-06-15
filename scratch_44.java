@@ -10,34 +10,54 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.maxSumOfThreeSubarrays(new int[]{1, 2, 1, 2, 6, 7, 5, 1}, 2));
+        System.err.println(s.maxSumOfThreeSubarrays(new int[]{1, 2, 1, 2, 1, 2, 1, 2, 1}, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC689 TLE
+    // LC689 DP
     public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
-        int[] prefix = new int[1 + nums.length];
-        int[] ans = new int[3];
-        int max = Integer.MIN_VALUE;
-        Arrays.fill(ans, -1);
-        for (int i = 1; i <= nums.length; i++) {
-            prefix[i] = prefix[i - 1] + nums[i - 1];
+        int[] ans = new int[]{-1, -1, -1};
+        int[] group = new int[nums.length - k + 1];
+        int[] left = new int[nums.length - k + 1];
+        int[] right = new int[nums.length - k + 1];
+        int sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += nums[i];
         }
-        Integer[][] memo = new Integer[nums.length][nums.length];
-
-        for (int i = 0; i + k - 1 < nums.length; i++) {
-            int first = prefix[i + k] - prefix[i];
-            for (int j = i + k; j + k - 1 < nums.length; j++) {
-                int second = prefix[j + k] - prefix[j];
-                for (int p = j + k; p + k - 1 < nums.length; p++) {
-                    int third = prefix[p + k] - prefix[p];
-                    if (first + second + third > max) {
-                        max = first + second + third;
-                        ans = new int[]{i, j, p};
-                    }
-                }
+        group[0] = sum;
+        for (int i = 1; i < nums.length - k + 1; i++) {
+            sum -= nums[i - 1];
+            sum += nums[i + k - 1];
+            group[i] = sum;
+        }
+        int tmpMaxIdx = 0;
+        for (int i = 0; i < group.length; i++) {
+            if (group[i] > group[tmpMaxIdx]) { // 下标尽可能小, 所以用小于号, 遇到比他大的才更新
+                left[i] = i;
+                tmpMaxIdx = i;
+            } else {
+                left[i] = tmpMaxIdx;
+            }
+        }
+        tmpMaxIdx = group.length - 1;
+        for (int i = group.length - 1; i >= 0; i--) {
+            if (group[i] >= group[tmpMaxIdx]) { // 下标尽可能小, 逆序遍历, 所以用大于等于, 下标等于的也更新
+                right[i] = i;
+                tmpMaxIdx = i;
+            } else {
+                right[i] = tmpMaxIdx;
+            }
+        }
+        int max = Integer.MIN_VALUE;
+        for (int i = k; i < group.length - k; i++) {
+            int firstIdx = left[i - k];
+            int secondIdx = i;
+            int thirdIdx = right[i + k];
+            if (group[firstIdx] + group[secondIdx] + group[thirdIdx] > max) {
+                ans = new int[]{firstIdx, secondIdx, thirdIdx};
+                max = group[firstIdx] + group[secondIdx] + group[thirdIdx];
             }
         }
         return ans;
