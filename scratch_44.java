@@ -40,14 +40,6 @@ class Scratch {
         return result;
     }
 
-    private void pot(TreeNode root) {
-        if (root == null) return;
-        pot(root.left);
-        pot(root.right);
-        ;
-        return;
-    }
-
     // LC94 中序遍历 迭代
     public List<Integer> inorderTraversal(TreeNode root) {
         List<Integer> result = new LinkedList<>();
