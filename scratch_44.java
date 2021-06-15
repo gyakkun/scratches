@@ -10,11 +10,32 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.minOperations(new int[]{1, 1, 4, 2, 3}, 5));
-
+        System.err.println(s.matrixBlockSum(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1314
+    public int[][] matrixBlockSum(int[][] mat, int k) {
+        int m = mat.length, n = mat[0].length;
+        int[][] prefix = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                prefix[i][j] = mat[i - 1][j - 1] + prefix[i - 1][j] + prefix[i][j - 1] - prefix[i - 1][j - 1];
+            }
+        }
+        int[][] answer = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int left = Math.max(0, j - k);
+                int right = Math.min(n - 1, j + k);
+                int up = Math.max(0, i - k);
+                int down = Math.min(m - 1, i + k);
+                answer[i][j] = prefix[down + 1][right + 1] - prefix[down + 1][left] - prefix[up][right + 1] + prefix[up][left];
+            }
+        }
+        return answer;
     }
 
     // Interview 10.01
