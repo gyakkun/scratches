@@ -10,10 +10,81 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.matrixBlockSum(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, 2));
+        System.err.println(s.minAbsDifference(new int[]{5, -7, 3, 5}, 6));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1755 显式二分 更省内存
+    public int minAbsDifference(int[] nums, int goal) {
+        // 1<=nums.length<=40
+
+        int n = nums.length;
+        int mid = n / 2;
+        int[] left = new int[mid];
+        int[] right = new int[n - mid];
+        System.arraycopy(nums, 0, left, 0, mid);
+        System.arraycopy(nums, mid, right, 0, n - mid);
+        int[] leftSum = new int[1 << left.length];
+        int[] rightSum = new int[1 << right.length];
+        int minAbs = Integer.MAX_VALUE;
+        for (int i = 0; i < (1 << left.length); i++) {
+            int sum = 0;
+            for (int j = 0; j < left.length; j++) {
+                if (((i >> j) & 1) == 1) {
+                    sum += left[j];
+                }
+            }
+            leftSum[i] = sum;
+        }
+        for (int i = 0; i < (1 << right.length); i++) {
+            int sum = 0;
+            for (int j = 0; j < right.length; j++) {
+                if (((i >> j) & 1) == 1) {
+                    sum += right[j];
+                }
+            }
+            rightSum[i] = sum;
+        }
+        Arrays.sort(leftSum);
+        Arrays.sort(rightSum);
+
+        for (int i : leftSum) {
+            int target = goal - i;
+            // ceil
+            int low = 0, high = rightSum.length - 1;
+            while (low < high) {
+                int m = low + (high - low) / 2;
+                if (rightSum[m] >= target) {
+                    high = m;
+                } else {
+                    low = m + 1;
+                }
+            }
+            int ceil = low;
+            if (rightSum[ceil] < target) ceil = -1;
+            low = 0;
+            high = rightSum.length - 1;
+            while (low < high) {
+                int m = low + (high - low + 1) / 2;
+                if (rightSum[m] <= target) {
+                    low = m;
+                } else {
+                    high = m - 1;
+                }
+            }
+            int floor = low;
+            if (rightSum[floor] > target) floor = -1;
+            if (ceil != -1) {
+                minAbs = Math.min(minAbs, Math.abs(rightSum[ceil] + i - goal));
+            }
+            if (floor != -1) {
+                minAbs = Math.min(minAbs, Math.abs(rightSum[floor] + i - goal));
+            }
+        }
+
+        return minAbs;
     }
 
     // LC925
