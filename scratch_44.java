@@ -16,6 +16,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC925
+    public boolean isLongPressedName(String name, String typed) {
+        char[] nArr = name.toCharArray();
+        char[] tArr = typed.toCharArray();
+        int pn = 0, pt = 0;
+        while (pn < name.length() && pt < typed.length()) {
+            if (nArr[pn] == tArr[pt]) {
+                pn++;
+                pt++;
+            } else {
+                if (pt >= 1 && tArr[pt] == tArr[pt - 1]) {
+                    pt++;
+                } else {
+                    return false;
+                }
+            }
+        }
+        while (pt >= 1 && pt != typed.length() && tArr[pt] == tArr[pt - 1]) {
+            pt++;
+        }
+        if (pn == name.length() && pt == typed.length()) {
+            return true;
+        }
+        return false;
+    }
+
     // LC1314
     public int[][] matrixBlockSum(int[][] mat, int k) {
         int m = mat.length, n = mat[0].length;
