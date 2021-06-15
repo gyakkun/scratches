@@ -17,6 +17,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC145 后序遍历 迭代
+    public List<Integer> postorderTraversal(TreeNode root) {
+        List<Integer> result = new LinkedList<>();
+        Deque<TreeNode> stack = new LinkedList<>();
+        TreeNode lastVisit = root;
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.peek();
+            if (root.right == null || root.right == lastVisit) {
+                result.add(root.val);
+                stack.pop();
+                lastVisit = root;
+                root = null;
+            } else {
+                root = root.right;
+            }
+        }
+        return result;
+    }
+
+    private void pot(TreeNode root) {
+        if (root == null) return;
+        pot(root.left);
+        pot(root.right);
+        ;
+        return;
+    }
+
     // LC94 中序遍历 迭代
     public List<Integer> inorderTraversal(TreeNode root) {
         List<Integer> result = new LinkedList<>();
