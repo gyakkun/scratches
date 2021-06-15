@@ -10,37 +10,35 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.minOperations(new int[]{1241, 8769, 9151, 3211, 2314, 8007, 3713, 5835, 2176, 8227, 5251, 9229, 904, 1899, 5513, 7878, 8663, 3804, 2685, 3501, 1204, 9742, 2578, 8849, 1120, 4687, 5902, 9929, 6769, 8171, 5150, 1343, 9619, 3973, 3273, 6427, 47, 8701, 2741, 7402, 1412, 2223, 8152, 805, 6726, 9128, 2794, 7137, 6725, 4279, 7200, 5582, 9583, 7443, 6573, 7221, 1423, 4859, 2608, 3772, 7437, 2581, 975, 3893, 9172, 3, 3113, 2978, 9300, 6029, 4958, 229, 4630, 653, 1421, 5512, 5392, 7287, 8643, 4495, 2640, 8047, 7268, 3878, 6010, 8070, 7560, 8931, 76, 6502, 5952, 4871, 5986, 4935, 3015, 8263, 7497, 8153, 384, 1136
-        }, 894887480));
+        System.err.println(s.minOperations(new int[]{1, 1, 4, 2, 3}, 5));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1658 TLE
-    Map<Pair<Integer, Integer>, Integer> lc1658Memo;
-
+    // LC1658 **
     public int minOperations(int[] nums, int x) {
-        int low = 0, high = nums.length - 1;
-        lc1658Memo = new HashMap<>();
-        return lc1658Helper(nums, 0, low, high, x);
-    }
-
-    private int lc1658Helper(int[] arr, int numOper, int low, int high, int x) {
-        if (x == 0) return numOper;
-        if (low == high && x - arr[low] != 0) return -1;
-        if (low == high && x - arr[low] == 0) return numOper + 1;
-        Pair<Integer, Integer> state = new Pair<>(low, high);
-        if (lc1658Memo.containsKey(state)) return lc1658Memo.get(state);
-        int left = -1, right = -1;
-        if (x - arr[low] >= 0) left = lc1658Helper(arr, numOper + 1, low + 1, high, x - arr[low]);
-        if (x - arr[high] >= 0) right = lc1658Helper(arr, numOper + 1, low, high - 1, x - arr[high]);
-        if (left != -1 && right != -1) lc1658Memo.put(state, Math.min(left, right));
-        else if (left == -1) lc1658Memo.put(state, right);
-        else lc1658Memo.put(state, left);
-
-        return lc1658Memo.get(state);
+        int sum = 0;
+        for (int i : nums) sum += i;
+        int target = sum - x;
+        if (target < 0) return -1;
+        int left = 0, right = 0;
+        int maxLen = -1;
+        int curSum = 0;
+        while (right < nums.length) {
+            curSum += nums[right];
+            while (curSum > target) {
+                curSum -= nums[left];
+                left++;
+            }
+            if (curSum == target) {
+                maxLen = Math.max(maxLen, right - left + 1);
+            }
+            right++;
+        }
+        if (maxLen == -1) return -1;
+        return nums.length - maxLen;
     }
 
     // LC852
