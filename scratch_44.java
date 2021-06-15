@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -10,13 +8,27 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.largestNumber(new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1},
-                5000
-        ));
+        System.err.println(s.peakIndexInMountainArray(new int[]{3, 5, 3, 2, 0}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC852
+    public int peakIndexInMountainArray(int[] arr) {
+        int n = arr.length;
+        int low = 1, high = n - 2, max = 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] > arr[mid + 1]) {
+                max = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return max;
     }
 
     // JZOF46 LC91?
