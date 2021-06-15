@@ -17,6 +17,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC94 中序遍历 迭代
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new LinkedList<>();
+        Deque<TreeNode> stack = new LinkedList<>();
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            result.add(root.val);
+            root = root.right;
+        }
+        return result;
+    }
+
     // LC1658 ** 二分 找前后缀和
     public int minOperationsBinarySearch(int[] nums, int x) {
         int[] prefix = new int[nums.length + 1];
