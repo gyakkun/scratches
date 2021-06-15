@@ -115,9 +115,12 @@ class NthPrime {
             }
             prime = new int[pc + 1];
             System.arraycopy(pl, 0, prime, 0, pc + 1);
+
             piCacheArray = new int[prime[prime.length - 1] + 1];
+            int primeIdx = 0;
             for (int i = 0; i <= prime[prime.length - 1]; i++) {
-                piCacheArray[i] = (int) piLessThanPrimeMax(i);
+                if (i == prime[primeIdx]) piCacheArray[i] = primeIdx++;
+                else piCacheArray[i] = piCacheArray[i - 1];
             }
         }
 
@@ -131,21 +134,6 @@ class NthPrime {
                 phiMemo[(int) m][n] = (int) result;
             }
             return result;
-        }
-
-        private long piLessThanPrimeMax(long x) {
-            if (x == 1) return 0;
-            if (x == 2) return 1;
-            int low = 1, high = prime.length - 1;
-            while (low < high) {
-                int mid = low + (high - low + 1) / 2;
-                if (prime[mid] <= x) {
-                    low = mid;
-                } else {
-                    high = mid - 1;
-                }
-            }
-            return low;
         }
 
         public long pi(long m) {
