@@ -10,10 +10,32 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.PredictTheWinner(new int[]{1, 5, 233, 7}));
+        System.err.println(s.getMoneyAmount(100));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC375 Minmax
+    Integer[][] lc375Memo;
+
+    public int getMoneyAmount(int n) {
+        lc375Memo = new Integer[n + 1][n + 1];
+        return lc375Helper(1, n);
+    }
+
+    private int lc375Helper(int low, int high) {
+        if (low >= high) {
+            return 0;
+        }
+        if (lc375Memo[low][high] != null) return lc375Memo[low][high];
+        int minCost = Integer.MAX_VALUE;
+        for (int i = low; i <= high; i++) {
+            int cost = i + Math.max(lc375Helper(i + 1, high), lc375Helper(low, i - 1));
+            minCost = Math.min(minCost, cost);
+        }
+        lc375Memo[low][high] = minCost;
+        return minCost;
     }
 
     // LC486 DP
