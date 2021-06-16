@@ -10,11 +10,32 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.maxSumOfThreeSubarrays(new int[]{1, 2, 1, 2, 1, 2, 1, 2, 1}, 2));
+        System.err.println(s.PredictTheWinner(new int[]{1, 5, 2}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC486 AlphaGo???
+    Integer[][][] lc486Memo;
+
+    public boolean PredictTheWinner(int[] nums) {
+        lc486Memo = new Integer[nums.length + 1][nums.length + 1][2];
+        return total(nums, 0, nums.length - 1, 1) >= 0;
+    }
+
+    public int total(int[] nums, int start, int end, int turn) {
+        if (start == end) {
+            return nums[start] * turn;
+        }
+        int th = turn == -1 ? 0 : 1;
+        if (lc486Memo[start][end][th] != null) return lc486Memo[start][end][th];
+        int scoreStart = nums[start] * turn + total(nums, start + 1, end, -turn);
+        int scoreEnd = nums[end] * turn + total(nums, start, end - 1, -turn);
+        lc486Memo[start][end][th] = Math.max(scoreStart * turn, scoreEnd * turn) * turn; // 极大化极小
+        return lc486Memo[start][end][th];
+    }
+
 
     // LC689 DP
     public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
