@@ -10,7 +10,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.getMoneyAmount(100));
+        System.err.println(s.getMoneyAmount(200));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -31,7 +31,7 @@ class Scratch {
         if (lc375Memo[low][high] != null) return lc375Memo[low][high];
         int minCost = Integer.MAX_VALUE;
         for (int i = low; i <= high; i++) {
-            int cost = i + Math.max(lc375Helper(i + 1, high), lc375Helper(low, i - 1));
+            int cost = i + Math.max(lc375Helper(low, i - 1), lc375Helper(i + 1, high));
             minCost = Math.min(minCost, cost);
         }
         lc375Memo[low][high] = minCost;
