@@ -32,7 +32,7 @@ class Scratch {
         if (lc486Memo[start][end][th] != null) return lc486Memo[start][end][th];
         int scoreStart = nums[start] * turn + total(nums, start + 1, end, -turn);
         int scoreEnd = nums[end] * turn + total(nums, start, end - 1, -turn);
-        lc486Memo[start][end][th] = Math.max(scoreStart * turn, scoreEnd * turn) * turn; // 极大化极小
+        lc486Memo[start][end][th] = Math.max(scoreStart * turn, scoreEnd * turn) * turn; // 极小化极大
         return lc486Memo[start][end][th];
     }
 
