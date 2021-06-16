@@ -10,7 +10,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.PredictTheWinner(new int[]{1, 5, 2}));
+        System.err.println(s.PredictTheWinner(new int[]{1, 5, 233, 7}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -19,15 +19,15 @@ class Scratch {
     // LC486 DP
     public boolean PredictTheWinner(int[] nums) {
         int n = nums.length;
-        int[][] dp = new int[n][n];
+        int[][] dp = new int[2][n];
         // dp[i][j], 0<=i<=j<n, 表示在还剩下[i,j]范围内的数字的时候, 当前玩家A与另一玩家B的分数之差的最大值
         // dp[i][j] = Math.max(nums[i] - dp[i+1][j], nums[j] - dp[i][j-1])
         for (int i = 0; i < n; i++) {
-            dp[i][i] = nums[i];
+            dp[i % 2][i] = nums[i];
         }
         for (int i = n - 2; i >= 0; i--) {
             for (int j = i + 1; j < n; j++) {
-                dp[i][j] = Math.max(nums[i] - dp[i + 1][j], nums[j] - dp[i][j - 1]);
+                dp[i % 2][j] = Math.max(nums[i] - dp[(i + 1) % 2][j], nums[j] - dp[i % 2][j - 1]);
             }
         }
         return dp[0][n - 1] >= 0;
