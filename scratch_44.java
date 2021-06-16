@@ -19,18 +19,18 @@ class Scratch {
     // LC486 DP
     public boolean PredictTheWinner(int[] nums) {
         int n = nums.length;
-        int[][] dp = new int[2][n];
+        int[] dp = new int[n];
         // dp[i][j], 0<=i<=j<n, 表示在还剩下[i,j]范围内的数字的时候, 当前玩家A与另一玩家B的分数之差的最大值
         // dp[i][j] = Math.max(nums[i] - dp[i+1][j], nums[j] - dp[i][j-1])
         for (int i = 0; i < n; i++) {
-            dp[i % 2][i] = nums[i];
+            dp[i] = nums[i];
         }
         for (int i = n - 2; i >= 0; i--) {
             for (int j = i + 1; j < n; j++) {
-                dp[i % 2][j] = Math.max(nums[i] - dp[(i + 1) % 2][j], nums[j] - dp[i % 2][j - 1]);
+                dp[j] = Math.max(nums[i] - dp[j], nums[j] - dp[j - 1]);
             }
         }
-        return dp[0][n - 1] >= 0;
+        return dp[n - 1] >= 0;
     }
 
 
