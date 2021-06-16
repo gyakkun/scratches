@@ -16,24 +16,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC486 AlphaGo???
-    Integer[][][] lc486Memo;
-
+    // LC486 DP
     public boolean PredictTheWinner(int[] nums) {
-        lc486Memo = new Integer[nums.length + 1][nums.length + 1][2];
-        return total(nums, 0, nums.length - 1, 1) >= 0;
-    }
-
-    public int total(int[] nums, int start, int end, int turn) {
-        if (start == end) {
-            return nums[start] * turn;
+        int n = nums.length;
+        int[][] dp = new int[n][n];
+        // dp[i][j], 0<=i<=j<n, 表示在还剩下[i,j]范围内的数字的时候, 当前玩家A与另一玩家B的分数之差的最大值
+        // dp[i][j] = Math.max(nums[i] - dp[i+1][j], nums[j] - dp[i][j-1])
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = nums[i];
         }
-        int th = turn == -1 ? 0 : 1;
-        if (lc486Memo[start][end][th] != null) return lc486Memo[start][end][th];
-        int scoreStart = nums[start] * turn + total(nums, start + 1, end, -turn);
-        int scoreEnd = nums[end] * turn + total(nums, start, end - 1, -turn);
-        lc486Memo[start][end][th] = Math.max(scoreStart * turn, scoreEnd * turn) * turn; // 极小化极大
-        return lc486Memo[start][end][th];
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                dp[i][j] = Math.max(nums[i] - dp[i + 1][j], nums[j] - dp[i][j - 1]);
+            }
+        }
+        return dp[0][n - 1] >= 0;
     }
 
 
