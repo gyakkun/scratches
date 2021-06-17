@@ -12,6 +12,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1010
+    public int numPairsDivisibleBy60(int[] time) {
+        int[] modFreq = new int[60];
+        for (int i : time) {
+            modFreq[i % 60]++;
+        }
+        int result = 0;
+        // mod == 0
+        result += ((modFreq[0] - 1) * modFreq[0]) / 2;
+        // mod == 30
+        result += ((modFreq[30] - 1) * modFreq[30]) / 2;
+        for (int i = 1; i <= 29; i++) {
+            result += modFreq[i] * modFreq[60 - i];
+        }
+        return result;
+    }
+
     // LC495
     public int findPoisonedDuration(int[] timeSeries, int duration) {
         int total = 0;
