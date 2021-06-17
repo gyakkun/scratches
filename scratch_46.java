@@ -1,8 +1,53 @@
+import java.awt.*;
 import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
 
+    }
+
+    // LC913 Minmax
+
+    final int TIE = 0, CAT_WIN = 2, MOUSE_WIN = 1;
+    Integer[][][] lc913Memo;
+
+    public int catMouseGame(int[][] graph) {
+        lc913Memo = new Integer[graph.length * 2 + 1][graph.length + 1][graph.length + 1];
+        return lc913Helper(0, graph, 1, 2);
+    }
+
+    private int lc913Helper(int steps, int[][] graph, int mousePoint, int catPoint) {
+        if (steps >= 2 * graph.length) return TIE;
+        if (lc913Memo[steps][mousePoint][catPoint] != null) return lc913Memo[steps][mousePoint][catPoint];
+        if (mousePoint == catPoint) return lc913Memo[steps][mousePoint][catPoint] = CAT_WIN;
+        if (mousePoint == 0) return lc913Memo[steps][mousePoint][catPoint] = MOUSE_WIN;
+        boolean isMouse = steps % 2 == 0;
+        if (isMouse) {
+            boolean catCanWin = true;
+            for (int i : graph[mousePoint]) {
+                int nextResult = lc913Helper(steps + 1, graph, i, catPoint);
+                if (nextResult == MOUSE_WIN) {
+                    return lc913Memo[steps][mousePoint][catPoint] = MOUSE_WIN;
+                } else if (nextResult == TIE) {   // 极小化极大: 猫嬴是一个极大值, 如果nextResult == CAT_WIN, 但是此前nextWin取到较小值TIE, 则选TIE不选CAT_WIN
+                    catCanWin = false;
+                }
+            }
+            if (catCanWin) return lc913Memo[steps][mousePoint][catPoint] = CAT_WIN;
+            return lc913Memo[steps][mousePoint][catPoint] = TIE;
+        } else {
+            boolean mouseCanWin = true;
+            for (int i : graph[catPoint]) {
+                if (i == 0) continue;
+                int nextResult = lc913Helper(steps + 1, graph, mousePoint, i);
+                if (nextResult == CAT_WIN) {
+                    return lc913Memo[steps][mousePoint][catPoint] = CAT_WIN;
+                } else if (nextResult == TIE) {
+                    mouseCanWin = false;
+                }
+            }
+            if (mouseCanWin) return lc913Memo[steps][mousePoint][catPoint] = MOUSE_WIN;
+            return lc913Memo[steps][mousePoint][catPoint] = TIE;
+        }
     }
 
 
