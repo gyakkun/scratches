@@ -1,13 +1,42 @@
-import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 class Scratch {
     public static void main(String[] args) {
+        Scratch s = new Scratch();
+        long timing = System.currentTimeMillis();
 
+        System.err.println(s.asteroidCollision(new int[]{5, 10, -5}));
+
+        timing = System.currentTimeMillis() - timing;
+        System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC735
+    public int[] asteroidCollision(int[] asteroids) {
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i : asteroids) {
+            boolean collision = false;
+            while (!stack.isEmpty() && i < 0 && stack.peek() > 0) {
+                if (stack.peek() < -i) {
+                    stack.pop();
+                    continue;
+                } else if (stack.peek() == -i) {
+                    stack.pop();
+                }
+                collision = true;
+                break;
+            }
+            if (!collision) stack.push(i);
+        }
+        int[] result = new int[stack.size()];
+        for (int i = result.length - 1; i >= 0; i--) {
+            result[i] = stack.pop();
+        }
+        return result;
     }
 
     // LC913 Minmax
-
     final int TIE = 0, CAT_WIN = 2, MOUSE_WIN = 1;
     Integer[][][] lc913Memo;
 
