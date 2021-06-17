@@ -12,6 +12,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC495
+    public int findPoisonedDuration(int[] timeSeries, int duration) {
+        int total = 0;
+        int expire = 0;
+        for (int attackTime : timeSeries) {
+            if (attackTime < expire) {
+                total += (attackTime + duration - expire);
+            } else {
+                total += duration;
+            }
+            expire = Math.max(expire, attackTime + duration);
+        }
+        return total;
+    }
+
     // LC605
     public boolean canPlaceFlowers(int[] flowerbed, int n) {
         int zeroCount = 0;
