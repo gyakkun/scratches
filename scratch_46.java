@@ -6,10 +6,32 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.asteroidCollision(new int[]{5, 10, -5}));
+        System.err.println(s.canPlaceFlowers(new int[]{0}, 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC605
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        int zeroCount = 0;
+        int total = 0;
+        for (int i = -1; i <= flowerbed.length; i++) {
+            if (i == -1) {
+                zeroCount++;
+            } else if (i == flowerbed.length) {
+                zeroCount++;
+                total += Math.max(0, (zeroCount - 1) / 2);
+            } else {
+                if (flowerbed[i] == 1) {
+                    total += Math.max(0, (zeroCount - 1) / 2);
+                    zeroCount = 0;
+                } else {
+                    zeroCount++;
+                }
+            }
+        }
+        return total >= n;
     }
 
     // LC735
