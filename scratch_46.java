@@ -1,9 +1,94 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
 
+    }
+
+
+    // LC843 Minmax **
+    public void findSecretWord(String[] wordlist, Master master) {
+        int[][] H;
+        int n = wordlist.length;
+        H = new int[n][n];
+        for (int i = 0; i < n; ++i) {
+            for (int j = i; j < n; ++j) {
+                int match = 0;
+                for (int k = 0; k < 6; ++k) {
+                    if (wordlist[i].charAt(k) == wordlist[j].charAt(k))
+                        match++;
+                }
+                H[i][j] = H[j][i] = match;
+            }
+        }
+
+        Set<Integer> possible = new HashSet();
+        Set<Integer> selected = new HashSet<>();
+        for (int i = 0; i < n; ++i) {
+            possible.add(i);
+        }
+
+        while (!possible.isEmpty()) {
+            int guess = guess(possible, selected, H);
+            int match = master.guess(wordlist[guess]);
+            if (match == 6) return;
+            Set<Integer> alterPossible = new HashSet<>();
+            possible.remove(guess);
+            for (int i : possible) {
+                if (H[guess][i] == match) {
+                    alterPossible.add(i);
+                }
+            }
+            if (match == 0) {
+                for (int i : possible) {
+                    if (H[guess][i] != 0) {
+                        selected.add(i);
+                    }
+                }
+            }
+            selected.add(guess);
+            possible = alterPossible;
+        }
+    }
+
+    private int guess(Set<Integer> possible, Set<Integer> selected, int[][] H) {
+        int ansGuess = -1;
+        Set<Integer> ansGroup = possible;
+
+        for (int guess = 0; guess < H.length; guess++) {
+            if (!selected.contains(guess)) {
+                Set<Integer>[] groups = new Set[7];
+                for (int j = 0; j < 7; j++) {
+                    groups[j] = new HashSet<>();
+                }
+
+                for (int j : possible) {
+                    if (j != guess) {
+                        groups[H[guess][j]].add(j);
+                    }
+                }
+
+                Set<Integer> maxGroup = groups[0];
+                for (int i = 1; i < 7; i++) {
+                    if (groups[i].size() > maxGroup.size()) { // 最大化
+                        maxGroup = groups[i];
+                    }
+                }
+
+                if (maxGroup.size() < ansGroup.size()) { // 最小化
+                    ansGroup = maxGroup;
+                    ansGuess = guess;
+                }
+            }
+        }
+        return ansGuess;
+    }
+}
+
+// LC843
+interface Master {
+    public default int guess(String word) {
+        return -1;
     }
 }
 
