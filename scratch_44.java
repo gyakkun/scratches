@@ -10,10 +10,36 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.getMoneyAmount(200));
+        System.err.println(s.canIWin(20, 210));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC464 **
+    public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
+        if (maxChoosableInteger >= desiredTotal) return true;
+        int sum = 0;
+        for (int i = 1; i <= maxChoosableInteger; i++) {
+            sum += i;
+        }
+        if (sum < desiredTotal) return false;
+        return lc464Helper(new Boolean[1 << maxChoosableInteger], 0, desiredTotal, maxChoosableInteger);
+    }
+
+    private boolean lc464Helper(Boolean[] memo, int state, int remain, int maxChoosableInteger) {
+        if (memo[state] != null) return memo[state];
+        for (int i = 1; i <= maxChoosableInteger; i++) {
+            int cur = 1 << (i - 1);
+            if (((state >> (i - 1)) & 1) == 1) {
+                continue;
+            }
+
+            if (i >= remain || !lc464Helper(memo, cur | state, remain - i, maxChoosableInteger)) { // 自己能赢 或者下一手不能赢
+                return memo[state] = true;
+            }
+        }
+        return memo[state] = false;
     }
 
     // LC375 Minmax
