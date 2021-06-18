@@ -7,11 +7,56 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.makeConnected(5,
-                new int[][]{{0, 1}, {0, 2}, {3, 4}, {2, 3}}));
+        System.err.println(s.stoneGameV(new int[]{6, 2, 3, 4, 5, 5}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1563 理解错了题目, 以为是任意选择分成两堆, 使得绝对值的差最小; 实际是分成左右两半, 使得绝对值的差最小
+    public int stoneGameV(int[] stoneValue) {
+        int gain = 0;
+        while (stoneValue.length > 1) {
+            int n = stoneValue.length;
+            int sum = Arrays.stream(stoneValue).sum();
+            int bound = sum / 2;
+            int[][] dpFrom = new int[n + 1][bound + 1];
+            boolean[][] dp = new boolean[n + 1][bound + 1];
+            dp[0][0] = true;
+            for (int i = 1; i <= n; i++) {
+                for (int j = 0; j <= bound; j++) {
+                    if (dp[i - 1][j]) {
+                        dp[i][j] = true;
+                        dpFrom[i][j] = dpFrom[i - 1][j];
+                    } else {
+                        if (j - stoneValue[i - 1] >= 0) {
+                            dp[i][j] = dp[i - 1][j - stoneValue[i - 1]];
+                        }
+                        if (dp[i][j]) {
+                            dpFrom[i][j] = i;
+                        }
+                    }
+                }
+            }
+            int maxReachable;
+            for (maxReachable = bound; maxReachable >= 0; maxReachable--) {
+                if (dp[n][maxReachable]) break;
+            }
+            gain += maxReachable;
+            List<Integer> selectedIdx = new ArrayList<>();
+            int ptrIdx = maxReachable;
+            while (dpFrom[n][ptrIdx] != 0) {
+                selectedIdx.add(dpFrom[n][ptrIdx]);
+                ptrIdx = ptrIdx - stoneValue[dpFrom[n][ptrIdx] - 1];
+            }
+            int[] alterSV = new int[selectedIdx.size()];
+            int ctr = 0;
+            for (int i = 0; i < selectedIdx.size(); i++) {
+                alterSV[ctr++] = stoneValue[selectedIdx.get(i) - 1];
+            }
+            stoneValue = alterSV;
+        }
+        return gain;
     }
 
     // LC1191 这都可以???
