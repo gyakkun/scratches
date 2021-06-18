@@ -7,14 +7,50 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.stoneGameV(new int[]{6, 2, 3, 4, 5, 5}));
+        System.err.println(s.stoneGameV(new int[]{17, 29, 398, 10, 19023, 48, 3189, 19, 290}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1563 理解错了题目, 以为是任意选择分成两堆, 使得绝对值的差最小; 实际是分成左右两半, 使得绝对值的差最小
+    // LC1563 WA
     public int stoneGameV(int[] stoneValue) {
+        int[] prefix = new int[stoneValue.length + 1];
+        for (int i = 1; i <= stoneValue.length; i++) {
+            prefix[i] = prefix[i - 1] + stoneValue[i - 1];
+        }
+        int gain = 0;
+        int left = 0, right = stoneValue.length - 1;
+        while (left != right) {
+            int sum = prefix[right + 1] - prefix[left];
+            int accumulate = 0;
+            int minDiffIdx = -1;
+            int minDiff = Integer.MAX_VALUE;
+            for (int i = left; i <= right; i++) {
+                accumulate += stoneValue[i];
+                int curDiff = Math.abs(accumulate - (sum - accumulate));
+                if (curDiff < minDiff) {
+                    minDiff = curDiff;
+                    minDiffIdx = i;
+                }
+            }
+            int leftSideSum = prefix[minDiffIdx + 1] - prefix[left];
+            int rightSideSum = prefix[right + 1] - prefix[minDiffIdx + 1];
+            if (leftSideSum > rightSideSum) {
+                gain += rightSideSum;
+                left = minDiffIdx + 1;
+            } else {
+                gain += leftSideSum;
+                right = minDiffIdx;
+            }
+            // TODO: 处理左右相等的情况, 进行递归取最大值
+        }
+        return gain;
+    }
+
+
+    // LC1563 理解错了题目, 以为是任意选择分成两堆, 使得绝对值的差最小; 实际是分成左右两半, 使得绝对值的差最小
+    public int stoneGameVWA(int[] stoneValue) {
         int gain = 0;
         while (stoneValue.length > 1) {
             int n = stoneValue.length;
