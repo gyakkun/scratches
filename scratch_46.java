@@ -7,7 +7,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.stoneGameV(new int[]{1, 1, 2}));
+        System.err.println(s.stoneGameV(new int[]{68,75,25,50,34,29,77,1,2,69}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -48,7 +48,7 @@ class Scratch {
                 right = minDiffIdx;
             } else {
                 gain += leftSideSum;
-                int leftFinalGain = lc1563Helper(stoneValue, prefix, left, minDiff, gain);
+                int leftFinalGain = lc1563Helper(stoneValue, prefix, left, minDiffIdx, gain);
                 int rightFinalGain = lc1563Helper(stoneValue, prefix, minDiffIdx + 1, right, gain);
                 return Math.max(leftFinalGain, rightFinalGain);
             }
