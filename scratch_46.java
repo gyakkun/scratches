@@ -7,53 +7,47 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.stoneGameV(new int[]{68,75,25,50,34,29,77,1,2,69}));
+        System.err.println(s.stoneGameV(new int[]{68, 75, 25, 50, 34, 29, 77, 1, 2, 69}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1563 WA
+    // LC1563
+    Integer[][] lc1563Memo;
     public int stoneGameV(int[] stoneValue) {
+        int n = stoneValue.length;
+        lc1563Memo = new Integer[n][n];
         int[] prefix = new int[stoneValue.length + 1];
         for (int i = 1; i <= stoneValue.length; i++) {
             prefix[i] = prefix[i - 1] + stoneValue[i - 1];
         }
-        int gain = 0;
         int left = 0, right = stoneValue.length - 1;
-        return lc1563Helper(stoneValue, prefix, left, right, gain);
+        return lc1563Helper(stoneValue, prefix, left, right);
     }
 
-    private int lc1563Helper(int[] stoneValue, int[] prefix, int left, int right, int gain) {
-        while (left >= 0 && left < stoneValue.length && right >= 0 && right < stoneValue.length && left < right) {
-            int sum = prefix[right + 1] - prefix[left];
-            int accumulate = 0;
-            int minDiffIdx = -1;
-            int minDiff = Integer.MAX_VALUE;
-            for (int i = left; i <= right; i++) {
-                accumulate += stoneValue[i];
-                int curDiff = Math.abs(accumulate - (sum - accumulate));
-                if (curDiff < minDiff) {
-                    minDiff = curDiff;
-                    minDiffIdx = i;
+    private int lc1563Helper(int[] stoneValue, int[] prefix, int left, int right) {
+        if (left >= right) return 0;
+        if (lc1563Memo[left][right] != null) return lc1563Memo[left][right];
+        int max = 0;
+        if (left >= 0 && left < stoneValue.length && right >= 0 && right < stoneValue.length && left < right) {
+            for (int i = left; i < right; i++) {
+                int midLeft = i;
+                int midRight = i + 1;
+                int sumLeft = prefix[midLeft + 1] - prefix[left];
+                int sumRight = prefix[right + 1] - prefix[midRight];
+                int tmpResult;
+                if (sumLeft < sumRight) {
+                    tmpResult = sumLeft + lc1563Helper(stoneValue, prefix, left, midLeft);
+                } else if (sumLeft > sumRight) {
+                    tmpResult = sumRight + lc1563Helper(stoneValue, prefix, midRight, right);
+                } else {
+                    tmpResult = sumLeft + Math.max(lc1563Helper(stoneValue, prefix, left, midLeft), lc1563Helper(stoneValue, prefix, midRight, right));
                 }
-            }
-            int leftSideSum = prefix[minDiffIdx + 1] - prefix[left];
-            int rightSideSum = prefix[right + 1] - prefix[minDiffIdx + 1];
-            if (leftSideSum > rightSideSum) {
-                gain += rightSideSum;
-                left = minDiffIdx + 1;
-            } else if (leftSideSum < rightSideSum) {
-                gain += leftSideSum;
-                right = minDiffIdx;
-            } else {
-                gain += leftSideSum;
-                int leftFinalGain = lc1563Helper(stoneValue, prefix, left, minDiffIdx, gain);
-                int rightFinalGain = lc1563Helper(stoneValue, prefix, minDiffIdx + 1, right, gain);
-                return Math.max(leftFinalGain, rightFinalGain);
+                max = Math.max(tmpResult, max);
             }
         }
-        return gain;
+        return lc1563Memo[left][right] = max;
     }
 
 
