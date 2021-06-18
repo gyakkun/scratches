@@ -6,10 +6,33 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.canPlaceFlowers(new int[]{0}, 1));
+        System.err.println(s.smallestGoodBase("1023"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC483
+    public String smallestGoodBase(String n) {
+        long num = Long.valueOf(n);
+        // num = (ans^k)-1
+        // (num+1) = ans ^ k
+        // Math.log(num+1) = k * Math.log(ans) // k不会超过63
+        int kMax = (int) Math.floor(Math.log(num + 1) / Math.log(2));
+        long min = num;
+        for (int i = kMax; i >= 0; i--) {
+            long posAns = (long) Math.pow(num + 1, (double) (1 / (i + 0.0)));
+            long mul = 1, sum = 1;
+            for (int j = 0; j < i; j++) {
+                mul *= posAns;
+                sum += mul;
+            }
+            if (sum == num) {
+                return String.valueOf(posAns);
+            }
+        }
+        return String.valueOf(num - 1);
+
     }
 
     // LC1010
