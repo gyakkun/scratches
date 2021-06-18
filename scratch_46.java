@@ -7,13 +7,75 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.nthMagicalNumber(
-
-                1000000000, 39999, 40000));
+        System.err.println(s.maxLength(Arrays.asList(new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"})));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1239
+    int lc1239Result;
+
+    public int maxLength(List<String> arr) {
+        lc1239Result = 0;
+        List<Integer> maskArr = new ArrayList<>(arr.size());
+        for (int i = 0; i < arr.size(); i++) {
+            int mask = 0;
+            boolean repeatFlag = false;
+            for (char c : arr.get(i).toCharArray()) {
+                int idx = c - 'a';
+                if (((mask >> idx) & 1) == 1) {
+                    mask = Integer.MAX_VALUE;
+                    repeatFlag = true;
+                    break;
+                }
+                mask |= 1 << idx;
+            }
+            if (!repeatFlag) {
+                maskArr.add(mask);
+            }
+        }
+        if (maskArr.size() == 0) return 0;
+        lc1239Backtrack(0, arr, 0, maskArr);
+        return lc1239Result;
+    }
+
+    private void lc1239Backtrack(int mask, List<String> arr, int curIdx, List<Integer> maskArr) {
+        lc1239Result = Math.max(lc1239Result, Integer.bitCount(mask));
+        for (int i = curIdx; i < maskArr.size(); i++) {
+            if ((mask & maskArr.get(i)) != 0) {
+                continue;
+            }
+            mask ^= maskArr.get(i);
+            lc1239Backtrack(mask, arr, i + 1, maskArr);
+            mask ^= maskArr.get(i);
+        }
+    }
+
+    // LC818
+    Integer[] lc818Memo;
+
+    public int racecar(int target) {
+        lc818Memo = new Integer[2 * target];
+        return lc818Helper(target);
+    }
+
+    private int lc818Helper(int target) {
+        if (lc818Memo[target] != null) return lc818Memo[target];
+        int twoPowCeil = Integer.SIZE - Integer.numberOfLeadingZeros(target);
+        if (target == (1 << twoPowCeil) - 1) {
+            return twoPowCeil;
+        }
+        // Case 1 超越然后再返回
+        int min = twoPowCeil + 1 + lc818Helper(((1 << twoPowCeil) - 1) - target);
+        // Case 2 不超越 先掉头(R) 然后加速若干次(-1/-3/-7...)(A*back) 再掉头(R) 再加速
+        for (int back = 0; back < twoPowCeil - 1; back++) {
+            int distance = target - (1 << (twoPowCeil - 1)) + (1 << back);
+            min = Math.min(min, (twoPowCeil - 1) + 2 + back + lc818Helper(distance));
+        }
+        return lc818Memo[target] = min;
+    }
+
 
     // LC878
     public int nthMagicalNumber(int n, int a, int b) {
