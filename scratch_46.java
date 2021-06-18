@@ -1,15 +1,31 @@
 import java.util.*;
-import java.util.List;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.checkRecord(100000));
+        System.err.println(s.makeConnected(5,
+                new int[][]{{0, 1}, {0, 2}, {3, 4}, {2, 3}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1319
+    public int makeConnected(int n, int[][] connections) {
+        int totalEdges = connections.length;
+        if (totalEdges < (n - 1)) return -1;
+        DisjointSetUnion dsu = new DisjointSetUnion();
+        for (int i = 0; i < n; i++) {
+            dsu.add(i);
+        }
+        for (int[] i : connections) {
+            dsu.merge(i[0], i[1]);
+            dsu.merge(i[1], i[0]);
+        }
+        Map<Integer, Set<Integer>> groups = dsu.getAllGroups();
+        return groups.size() - 1;
     }
 
     // LC552 ** DP
@@ -434,3 +450,59 @@ class IsNumber {
         return state == INState.INTEGERING || state == INState.WITH_INT_DEC || state == INState.DECIMALING || state == INState.EXPING;
     }
 }
+
+class DisjointSetUnion {
+    Map<Integer, Integer> parent;
+
+    DisjointSetUnion() {
+        parent = new HashMap<>();
+    }
+
+    public boolean add(int i) {
+        if (parent.containsKey(i)) {
+            return false;
+        }
+        parent.put(i, i);
+        return true;
+    }
+
+    public void merge(int i, int j) {
+        int jParent = find(j);
+        int iParent = find(i);
+        if (iParent == jParent) return;
+        parent.put(iParent, jParent);
+    }
+
+    public int find(int i) {
+        int root = i;
+        while (parent.get(root) != root) {
+            root = parent.get(root);
+        }
+        int ptr = i;
+        while (parent.get(ptr) != root) { // 路径压缩
+            int tmp = parent.get(ptr);
+            parent.put(ptr, root);
+            ptr = tmp;
+        }
+        return root;
+    }
+
+    public boolean isConnect(int i, int j) {
+        return find(i) == find(j);
+    }
+
+    public Map<Integer, Set<Integer>> getAllGroups() {
+        Map<Integer, Set<Integer>> result = new HashMap<>();
+        for (int i : parent.keySet()) {
+            result.putIfAbsent(find(i), new HashSet<>());
+            result.get(find(i)).add(i);
+        }
+        return result;
+    }
+
+    public int getGroupCount() {
+        return getAllGroups().size();
+    }
+
+}
+
