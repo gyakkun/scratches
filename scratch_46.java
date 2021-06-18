@@ -6,10 +6,28 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.findPeakGrid(new int[][]{{1, 4}, {3, 2}}));
+        System.err.println(s.checkRecord(100000));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC552 ** DP
+    public int checkRecord(int n) {
+        final long mod = 1000000007;
+        long[] lc552Memo = new long[n + 1];
+        lc552Memo[0] = 1;
+        lc552Memo[1] = 2;
+        lc552Memo[2] = 4;
+        lc552Memo[3] = 7;
+        for (int i = 4; i <= n; i++) {
+            lc552Memo[i] = ((((2 * lc552Memo[i - 1]) % mod) - lc552Memo[i - 4]) + mod) % mod;
+        }
+        long sum = lc552Memo[n];
+        for (int i = 1; i <= n; i++) {
+            sum += (lc552Memo[i - 1] * lc552Memo[n - i]) % mod;
+        }
+        return (int) (sum % mod);
     }
 
     // LC1901
