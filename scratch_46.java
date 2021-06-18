@@ -7,14 +7,46 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.stoneGameV(new int[]{68, 75, 25, 50, 34, 29, 77, 1, 2, 69}));
+        System.err.println(s.nthMagicalNumber(
+
+                1000000000, 39999, 40000));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC878
+    public int nthMagicalNumber(int n, int a, int b) {
+        final long mod = 1000000007;
+        int gcd = gcd(a, b);
+        int lcm = a * b / gcd;
+        TreeSet<Integer> ts = new TreeSet<>();
+        int aTimes = a;
+        while (aTimes <= lcm) {
+            ts.add(aTimes);
+            aTimes += a;
+        }
+        int bTimes = b;
+        while (bTimes <= lcm) {
+            ts.add(bTimes);
+            bTimes += b;
+        }
+        List<Integer> l = new ArrayList<>(ts);
+        n--;
+        int nthCycle = n / l.size();
+        int m = n % l.size();
+        long result = (((lcm % mod) * (nthCycle % mod)) % mod + l.get(m) % mod) % mod;
+        return (int) result;
+    }
+
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+
     // LC1563
     Integer[][] lc1563Memo;
+
     public int stoneGameV(int[] stoneValue) {
         int n = stoneValue.length;
         lc1563Memo = new Integer[n][n];
