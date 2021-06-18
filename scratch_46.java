@@ -14,6 +14,45 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1191 这都可以???
+    public int kConcatenationMaxSum(int[] arr, int k) {
+        final long mod = 1000000007;
+        long dp = 0;
+        long max = 0;
+        for (int i = 1; i <= arr.length; i++) {
+            dp = Math.max(dp + arr[i - 1], arr[i - 1]);
+            max = Math.max(dp, max);
+        }
+        if (k == 1) return (int) (max % mod);
+        Pair<Long, Pair<Integer, Integer>> doubleDp = new Pair<>(0l, new Pair<>(0, 0));
+        Pair<Long, Pair<Integer, Integer>> doubleMax = new Pair<>(0l, new Pair<>(0, 0));
+        for (int i = 1; i <= 2 * arr.length; i++) {
+            if (doubleDp.getKey() + arr[(i - 1) % arr.length] > arr[(i - 1) % arr.length]) {
+                doubleDp = new Pair<>(doubleDp.getKey() + +arr[(i - 1) % arr.length], new Pair<>(doubleDp.getValue().getKey(), i));
+            } else {
+                doubleDp = new Pair<>((long) arr[(i - 1) % arr.length], new Pair<>(i, i));
+            }
+//            doubleDp = Math.max(doubleDp + arr[(i - 1 % arr.length)], arr[(i - 1) % arr.length]);
+            if (doubleDp.getKey() > doubleMax.getKey()) {
+                doubleMax = new Pair<>(doubleDp.getKey(), new Pair<>(doubleDp.getValue().getKey(), doubleDp.getValue().getValue()));
+            }
+        }
+        if (doubleMax.getKey() == max) return (int) (max % mod);
+        int left = doubleMax.getValue().getKey(), right = doubleMax.getValue().getValue();
+        if (left == 0) left = 1;
+        left--;
+        right--;
+        if (right - left + 1 < arr.length) {
+            return (int) (doubleMax.getKey() % mod);
+        } else if (right - left + 1 >= arr.length && right - left + 1 < 2 * arr.length) {
+            // doubleMax = max*2-k -> k=max*2-doubleMax
+            long gap = max * 2 - doubleMax.getKey();
+            return (int) ((max * k - gap * (k - 1)) % mod);
+        } else {
+            return (int) ((k * max) % mod);
+        }
+    }
+
     // LC1614
     public int maxDepth(String s) {
         Deque<Character> stack = new LinkedList<>();
