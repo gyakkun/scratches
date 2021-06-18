@@ -14,6 +14,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1614
+    public int maxDepth(String s) {
+        Deque<Character> stack = new LinkedList<>();
+        char[] cArr = s.toCharArray();
+        int maxDepth = 0;
+        for (char c : cArr) {
+            if (c == '(') {
+                stack.push(c);
+                maxDepth = Math.max(maxDepth, stack.size());
+            } else if (c == ')') {
+                stack.pop();
+            }
+        }
+        return maxDepth;
+    }
+
     // LC990 并查集
     public boolean equationsPossible(String[] equations) {
         DisjointSetUnion dsu = new DisjointSetUnion();
