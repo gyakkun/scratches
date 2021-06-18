@@ -6,10 +6,101 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.smallestGoodBase("1023"));
+        System.err.println(s.findPeakGrid(new int[][]{{1, 4}, {3, 2}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1901
+    public int[] findPeakGrid(int[][] mat) {
+        int rowNum = mat.length, colNum = mat[0].length;
+        if (colNum >= rowNum) {
+            int left = -1, right = colNum;
+            while (left >= -1 && right <= colNum) {
+                int centerColIdx = (left + right) / 2;
+                int leftColIdx = centerColIdx - 1;
+                int rightColIdx = centerColIdx + 1;
+                int max = Integer.MIN_VALUE;
+                int maxColIdx = -1;
+                int maxRowIdx = -1;
+                for (int i = leftColIdx; i <= rightColIdx; i++) {
+                    for (int j = 0; j < rowNum; j++) {
+                        int curEle;
+                        if (i == -1 || i == colNum) curEle = -1;
+                        else curEle = mat[j][i];
+                        if (curEle >= max) {
+                            max = curEle;
+                        }
+                    }
+                }
+                for (int i = leftColIdx; i <= rightColIdx; i++) {
+                    for (int j = 0; j < rowNum; j++) {
+                        int curEle;
+                        if (i == -1 || i == colNum) curEle = -1;
+                        else curEle = mat[j][i];
+                        if (curEle == max) {
+                            if (i != -1 && i != colNum) {
+                                if (i == centerColIdx) {
+                                    return new int[]{j, i};
+                                } else {
+                                    maxRowIdx = j;
+                                    maxColIdx = i;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (maxColIdx == leftColIdx) {
+                    right = centerColIdx;
+                } else {
+                    left = centerColIdx;
+                }
+            }
+        } else {
+            int up = -1, down = rowNum;
+            while (up >= -1 && down <= rowNum) {
+                int centerRowIdx = (up + down) / 2;
+                int upRowIdx = centerRowIdx - 1;
+                int downRowIdx = centerRowIdx + 1;
+                int max = Integer.MIN_VALUE;
+                int maxColIdx = -1;
+                int maxRowIdx = -1;
+                for (int i = upRowIdx; i <= downRowIdx; i++) {
+                    for (int j = 0; j < colNum; j++) {
+                        int curEle;
+                        if (i == -1 || i == rowNum) curEle = -1;
+                        else curEle = mat[i][j];
+                        if (curEle >= max) {
+                            max = curEle;
+                        }
+                    }
+                }
+                for (int i = upRowIdx; i <= downRowIdx; i++) {
+                    for (int j = 0; j < colNum; j++) {
+                        int curEle;
+                        if (i == -1 || i == rowNum) curEle = -1;
+                        else curEle = mat[i][j];
+                        if (curEle == max) {
+                            if (i != -1 && i != rowNum) {
+                                if (i == centerRowIdx) {
+                                    return new int[]{i, j};
+                                } else {
+                                    maxRowIdx = i;
+                                    maxColIdx = j;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (maxRowIdx == upRowIdx) {
+                    down = centerRowIdx;
+                } else {
+                    up = centerRowIdx;
+                }
+            }
+        }
+        return new int[]{-1, -1};
     }
 
     // LC483
