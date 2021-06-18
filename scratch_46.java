@@ -7,7 +7,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.stoneGameV(new int[]{17, 29, 398, 10, 19023, 48, 3189, 19, 290}));
+        System.err.println(s.stoneGameV(new int[]{1, 1, 2}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -21,7 +21,11 @@ class Scratch {
         }
         int gain = 0;
         int left = 0, right = stoneValue.length - 1;
-        while (left != right) {
+        return lc1563Helper(stoneValue, prefix, left, right, gain);
+    }
+
+    private int lc1563Helper(int[] stoneValue, int[] prefix, int left, int right, int gain) {
+        while (left >= 0 && left < stoneValue.length && right >= 0 && right < stoneValue.length && left < right) {
             int sum = prefix[right + 1] - prefix[left];
             int accumulate = 0;
             int minDiffIdx = -1;
@@ -39,11 +43,15 @@ class Scratch {
             if (leftSideSum > rightSideSum) {
                 gain += rightSideSum;
                 left = minDiffIdx + 1;
-            } else {
+            } else if (leftSideSum < rightSideSum) {
                 gain += leftSideSum;
                 right = minDiffIdx;
+            } else {
+                gain += leftSideSum;
+                int leftFinalGain = lc1563Helper(stoneValue, prefix, left, minDiff, gain);
+                int rightFinalGain = lc1563Helper(stoneValue, prefix, minDiffIdx + 1, right, gain);
+                return Math.max(leftFinalGain, rightFinalGain);
             }
-            // TODO: 处理左右相等的情况, 进行递归取最大值
         }
         return gain;
     }
