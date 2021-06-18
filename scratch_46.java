@@ -15,40 +15,38 @@ class Scratch {
 
     // LC1239
     int lc1239Result;
+    List<Integer> lc1239MaskArr;
 
     public int maxLength(List<String> arr) {
         lc1239Result = 0;
-        List<Integer> maskArr = new ArrayList<>(arr.size());
+        lc1239MaskArr = new ArrayList<>(arr.size());
         for (int i = 0; i < arr.size(); i++) {
             int mask = 0;
-            boolean repeatFlag = false;
             for (char c : arr.get(i).toCharArray()) {
                 int idx = c - 'a';
                 if (((mask >> idx) & 1) == 1) {
                     mask = Integer.MAX_VALUE;
-                    repeatFlag = true;
                     break;
                 }
                 mask |= 1 << idx;
             }
-            if (!repeatFlag) {
-                maskArr.add(mask);
+            if (mask != Integer.MAX_VALUE) {
+                lc1239MaskArr.add(mask);
             }
         }
-        if (maskArr.size() == 0) return 0;
-        lc1239Backtrack(0, arr, 0, maskArr);
+        if (lc1239MaskArr.size() == 0) return 0;
+        lc1239Backtrack(0, 0);
         return lc1239Result;
     }
 
-    private void lc1239Backtrack(int mask, List<String> arr, int curIdx, List<Integer> maskArr) {
+    private void lc1239Backtrack(int mask, int curIdx) {
         lc1239Result = Math.max(lc1239Result, Integer.bitCount(mask));
-        for (int i = curIdx; i < maskArr.size(); i++) {
-            if ((mask & maskArr.get(i)) != 0) {
-                continue;
+        for (int i = curIdx; i < lc1239MaskArr.size(); i++) {
+            if ((mask & lc1239MaskArr.get(i)) == 0) {
+                mask ^= lc1239MaskArr.get(i);
+                lc1239Backtrack(mask, i + 1);
+                mask ^= lc1239MaskArr.get(i);
             }
-            mask ^= maskArr.get(i);
-            lc1239Backtrack(mask, arr, i + 1, maskArr);
-            mask ^= maskArr.get(i);
         }
     }
 
