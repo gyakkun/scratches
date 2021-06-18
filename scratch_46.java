@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -12,7 +14,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1319
+    // LC990 并查集
+    public boolean equationsPossible(String[] equations) {
+        DisjointSetUnion dsu = new DisjointSetUnion();
+        Set<Pair<Integer, Integer>> notEqual = new HashSet<>();
+        for (String e : equations) {
+            dsu.add(e.charAt(0));
+            dsu.add(e.charAt(3));
+            if (e.charAt(1) == '=') {
+                dsu.merge(e.charAt(0), e.charAt(3));
+            } else {
+                notEqual.add(new Pair<>((int) e.charAt(0), (int) e.charAt(3)));
+            }
+        }
+        for (Pair<Integer, Integer> p : notEqual) {
+            if (dsu.find(p.getKey()) == dsu.find(p.getValue())) return false;
+        }
+        return true;
+    }
+
+    // LC1319 并查集
     public int makeConnected(int n, int[][] connections) {
         int totalEdges = connections.length;
         if (totalEdges < (n - 1)) return -1;
