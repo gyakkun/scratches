@@ -7,11 +7,22 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.maxLength(Arrays.asList(new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"})));
+        ThroneInheritance t = new ThroneInheritance("king"); // 继承顺序：king
+        t.birth("king", "andy"); // 继承顺序：king > andy
+        t.birth("king", "bob"); // 继承顺序：king > andy > bob
+        t.birth("king", "catherine"); // 继承顺序：king > andy > bob > catherine
+        t.birth("andy", "matthew"); // 继承顺序：king > andy > matthew > bob > catherine
+        t.birth("bob", "alex"); // 继承顺序：king > andy > matthew > bob > alex > catherine
+        t.birth("bob", "asha"); // 继承顺序：king > andy > matthew > bob > alex > asha > catherine
+        System.err.println(t.getInheritanceOrder()); // 返回 ["king", "andy", "matthew", "bob", "alex", "asha", "catherine"]
+        t.death("bob"); // 继承顺序：king > andy > matthew > bob（已经去世）> alex > asha > catherine
+        System.err.println(t.getInheritanceOrder()); // 返回 ["king", "andy", "matthew", "bob", "alex", "asha", "catherine"]
+
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
 
     // LC1239
     int lc1239Result;
@@ -757,3 +768,105 @@ class DisjointSetUnion {
 
 }
 
+// LC1600 lc判题有问题
+class ThroneInheritance {
+    Node king;
+    List<Node> curNodeList;
+    Set<Node> curNodeSet;
+
+    public ThroneInheritance(String kingName) {
+        king = new Node(kingName);
+    }
+
+    public void birth(String parentName, String childName) {
+        Deque<Node> stack = new LinkedList<>();
+        stack.push(king);
+        while (!stack.isEmpty()) {
+            Node top = stack.pop();
+            if (top.name == parentName) {
+                Node child = new Node(childName);
+                child.parent = top;
+                top.children.add(child);
+                return;
+            }
+            for (Node n : top.children) {
+                stack.push(n);
+            }
+        }
+    }
+
+    public void death(String name) {
+        Deque<Node> stack = new LinkedList<>();
+        stack.push(king);
+        while (!stack.isEmpty()) {
+            Node top = stack.pop();
+            if (top.name == name) {
+                top.isDead = true;
+                return;
+            }
+            for (Node n : top.children) {
+                stack.push(n);
+            }
+        }
+    }
+
+    public List<String> getInheritanceOrder() {
+        curNodeList = new LinkedList<>();
+        curNodeSet = new HashSet<>();
+        curNodeSet.add(king);
+        curNodeList.add(king);
+        Node tmp = king;
+        List<Node> nl = new LinkedList<>();
+        while (tmp != null) {
+            nl.add(tmp);
+            tmp = getSuccessor(tmp);
+        }
+        List<String> result = new ArrayList<>(curNodeList.size());
+        for (Node n : nl) {
+            if (!n.isDead) {
+                result.add(n.name);
+            }
+        }
+        return result;
+    }
+
+    private Node getSuccessor(Node x) {
+        if (x == null) return null;
+
+        int childCtr = 0;
+        for (Node child : x.children) {
+            if (curNodeSet.contains(child)) {
+                childCtr++;
+            }
+        }
+        boolean isAllChildrenInSet = childCtr == x.children.size();
+
+        if (x.children.size() == 0 || isAllChildrenInSet) {
+            if (x == king) {
+                return null;
+            } else return getSuccessor(x.parent);
+        } else {
+            for (Node child : x.children) {
+                if (!curNodeSet.contains(child)) {
+                    curNodeList.add(child);
+                    curNodeSet.add(child);
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
+    class Node {
+        String name;
+        Node parent;
+        boolean isDead;
+        List<Node> children;
+
+        public Node(String name) {
+            this.name = name;
+            isDead = false;
+            children = new LinkedList<>();
+        }
+    }
+}
