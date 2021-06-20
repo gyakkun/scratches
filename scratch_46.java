@@ -768,105 +768,49 @@ class DisjointSetUnion {
 
 }
 
-// LC1600 lc判题有问题
+// LC1600
 class ThroneInheritance {
-    Node king;
-    List<Node> curNodeList;
-    Set<Node> curNodeSet;
+    String king;
+    Map<String, List<String>> children;
+    Set<String> death;
 
     public ThroneInheritance(String kingName) {
-        king = new Node(kingName);
+        king = kingName;
+        children = new HashMap<>();
+        death = new HashSet<>();
+        children.put(kingName, new LinkedList<>());
     }
 
     public void birth(String parentName, String childName) {
-        Deque<Node> stack = new LinkedList<>();
-        stack.push(king);
-        while (!stack.isEmpty()) {
-            Node top = stack.pop();
-            if (top.name == parentName) {
-                Node child = new Node(childName);
-                child.parent = top;
-                top.children.add(child);
-                return;
-            }
-            for (Node n : top.children) {
-                stack.push(n);
-            }
-        }
+        children.put(childName, new LinkedList<>());
+        children.get(parentName).add(childName);
     }
 
     public void death(String name) {
-        Deque<Node> stack = new LinkedList<>();
-        stack.push(king);
-        while (!stack.isEmpty()) {
-            Node top = stack.pop();
-            if (top.name == name) {
-                top.isDead = true;
-                return;
-            }
-            for (Node n : top.children) {
-                stack.push(n);
-            }
-        }
+        death.add(name);
     }
 
     public List<String> getInheritanceOrder() {
-        curNodeList = new LinkedList<>();
-        curNodeSet = new HashSet<>();
-        curNodeSet.add(king);
-        curNodeList.add(king);
-        Node tmp = king;
-        List<Node> nl = new LinkedList<>();
-        while (tmp != null) {
-            nl.add(tmp);
-            tmp = getSuccessor(tmp);
-        }
-        List<String> result = new ArrayList<>(curNodeList.size());
-        for (Node n : nl) {
-            if (!n.isDead) {
-                result.add(n.name);
+        return preorder();
+    }
+
+    private List<String> preorder(){
+        List<String> result = new LinkedList<>();
+        Deque<String> stack = new LinkedList<>();
+        stack.add(king);
+        while (!stack.isEmpty()) {
+            String top = stack.pop();
+            if (!death.contains(top)) {
+                result.add(top);
+            }
+            Deque<String> tmpS = new LinkedList<>();
+            for (String c : children.get(top)) { // 注意这里要倒序往栈里推孩子, 这里用了一个临时栈来倒序
+                tmpS.push(c);
+            }
+            while(!tmpS.isEmpty()){
+                stack.push(tmpS.pop());
             }
         }
         return result;
-    }
-
-    private Node getSuccessor(Node x) {
-        if (x == null) return null;
-
-        int childCtr = 0;
-        for (Node child : x.children) {
-            if (curNodeSet.contains(child)) {
-                childCtr++;
-            }
-        }
-        boolean isAllChildrenInSet = childCtr == x.children.size();
-
-        if (x.children.size() == 0 || isAllChildrenInSet) {
-            if (x == king) {
-                return null;
-            } else return getSuccessor(x.parent);
-        } else {
-            for (Node child : x.children) {
-                if (!curNodeSet.contains(child)) {
-                    curNodeList.add(child);
-                    curNodeSet.add(child);
-                    return child;
-                }
-            }
-        }
-        return null;
-    }
-
-    class Node {
-        String name;
-        Node parent;
-        boolean isDead;
-        List<Node> children;
-
-        public Node(String name) {
-            this.name = name;
-            isDead = false;
-            children = new LinkedList<>();
-        }
     }
 }
