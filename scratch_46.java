@@ -768,7 +768,7 @@ class DisjointSetUnion {
 
 }
 
-// LC1600
+// LC1600 lc判题有问题
 class ThroneInheritance {
     String king;
     Map<String, List<String>> children;
@@ -783,7 +783,7 @@ class ThroneInheritance {
 
     public void birth(String parentName, String childName) {
         children.put(childName, new LinkedList<>());
-        children.get(parentName).add(childName);
+        children.get(parentName).add(0, childName); // 倒序插入孩子
     }
 
     public void death(String name) {
@@ -794,7 +794,7 @@ class ThroneInheritance {
         return preorder();
     }
 
-    private List<String> preorder(){
+    private List<String> preorder() {
         List<String> result = new LinkedList<>();
         Deque<String> stack = new LinkedList<>();
         stack.add(king);
@@ -803,12 +803,8 @@ class ThroneInheritance {
             if (!death.contains(top)) {
                 result.add(top);
             }
-            Deque<String> tmpS = new LinkedList<>();
-            for (String c : children.get(top)) { // 注意这里要倒序往栈里推孩子, 这里用了一个临时栈来倒序
-                tmpS.push(c);
-            }
-            while(!tmpS.isEmpty()){
-                stack.push(tmpS.pop());
+            for (String c : children.get(top)) {
+                stack.push(c);
             }
         }
         return result;
