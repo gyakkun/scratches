@@ -8,12 +8,22 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.drawLine(
-                1, 32, 30, 31, 0));
+        System.err.println(s.maxSubArray(new int[]{-1}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 16.17 非空子序列
+    public int maxSubArray(int[] nums) {
+        int dp = 0;
+        int max = nums[0];
+        for (int i : nums) {
+            dp = Math.max(dp + i, i);
+            max = Math.max(dp, max);
+        }
+        return max;
     }
 
     // Interview 05.08
