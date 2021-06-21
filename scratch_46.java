@@ -8,11 +8,31 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.readBinaryWatch(1));
+        System.err.println(s.repeatedSubstringPattern("abcabcabcabc"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC459
+    public boolean repeatedSubstringPattern(String s) {
+        for (int i = 1; i <= (s.length() / 2); i++) {
+            if (s.length() % i != 0) continue;
+            int ctr = 0;
+            boolean flag = true;
+            while (ctr * i < s.length()) {
+                if (s.indexOf(s.substring(0, i), i * ctr) != i * ctr) {
+                    flag = false;
+                    break;
+                }
+                ctr++;
+            }
+            if (flag) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // LC401
