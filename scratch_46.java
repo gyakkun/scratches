@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.apache.activemq.transport.discovery.zeroconf.ZeroconfDiscoveryAgent;
 
 import java.util.*;
 
@@ -17,30 +18,17 @@ class Scratch {
 
     // LC1493
     public int longestSubarray(int[] nums) {
-        Map<Integer, Integer> frontContinuousOne = new HashMap<>();
-        Map<Integer, Integer> rearContinuousOne = new HashMap<>();
-        int oneCtr = 0;
-        int oneCtrRear = 0;
-        for (int i = 0; i < nums.length; i++) {
-            if (nums[i] == 0) {
-                frontContinuousOne.put(i, oneCtr);
-                oneCtr = 0;
-            } else {
-                oneCtr++;
-            }
-
-            if (nums[nums.length - 1 - i] == 0) {
-                rearContinuousOne.put(nums.length - 1 - i, oneCtrRear);
-                oneCtrRear = 0;
-            } else {
-                oneCtrRear++;
-            }
-        }
-        if (frontContinuousOne.size() == 0) return nums.length - 1;
+        int left = 0, right = 0;
         int max = 0;
-        for (int i : frontContinuousOne.keySet()) {
-            max = Math.max(max, frontContinuousOne.get(i) + rearContinuousOne.get(i));
+        int[] count = new int[2];
+        while (left < nums.length && right < nums.length) {
+            count[nums[right++]]++;
+            while (count[0] > 1) {
+                count[nums[left++]]--;
+            }
+            max = Math.max(max, count[1]);
         }
+        if (max == nums.length) return max - 1;
         return max;
     }
 
