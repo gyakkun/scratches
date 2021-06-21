@@ -8,13 +8,39 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.findRotateSteps(
-                "rtmdx",
-                "dmrtx"));
+        System.err.println(s.drawLine(
+                1, 32, 30, 31, 0));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 05.08
+    public int[] drawLine(int length, int w, int x1, int x2, int y) {
+        final int full = 0xffffffff;
+        int height = length * 32 / w;
+        int width = w / 32;
+        int[] result = new int[length];
+        int startIdxOfLine = y * width;
+        if (x2 < x1) {
+            int tmp = x1;
+            x1 = x2;
+            x2 = tmp;
+        }
+        int first = x1 / 32;
+        int last = x2 / 32;
+        for (int i = first + 1; i <= last; i++) {
+            result[startIdxOfLine + i] = full;
+        }
+        for (int i = x1 % 32; i < 32; i++) {
+            result[startIdxOfLine + first] |= 1 << (32 - i - 1); // 置1
+        }
+        for (int i = (x2 % 32) + 1; i < 32; i++) {
+            result[startIdxOfLine + last] &= ~(1 << (32 - i - 1)); // 置0
+        }
+
+        return result;
     }
 
     // LC514
