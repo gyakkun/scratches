@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import org.apache.activemq.transport.discovery.zeroconf.ZeroconfDiscoveryAgent;
 
 import java.util.*;
 
@@ -9,17 +8,51 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.repeatedSubstringPattern("abcabcabcabc"));
+        System.err.println(s.findRotateSteps(
+                "rtmdx",
+                "dmrtx"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC514
+    Integer[][] lc514Memo;
+    Map<Character, List<Integer>> lc514Pos;
+
+    public int findRotateSteps(String ring, String key) {
+        lc514Memo = new Integer[key.length() + 1][ring.length() + 1];
+        lc514Pos = new HashMap<>();
+        char[] ringArr = ring.toCharArray();
+        char[] keyArr = key.toCharArray();
+        for (char c : keyArr) {
+            lc514Pos.putIfAbsent(c, new ArrayList<>());
+        }
+        for (int i = 0; i < ringArr.length; i++) {
+            if (lc514Pos.containsKey(ringArr[i])) {
+                lc514Pos.get(ringArr[i]).add(i);
+            }
+        }
+        return lc514Helper(0, 0, keyArr, ringArr) + key.length();
+    }
+
+    private int lc514Helper(int keyIdx, int ringIdx, char[] key, char[] ring) {
+        if (keyIdx == key.length) return 0;
+        if (lc514Memo[keyIdx][ringIdx] != null) return lc514Memo[keyIdx][ringIdx];
+        int result = Integer.MAX_VALUE / 2;
+        // keyIdx: 目标字符位置, ringIdx: 当前位置
+        for (int i : lc514Pos.get(key[keyIdx])) {
+            result = Math.min(result, Math.min(Math.abs(ringIdx - i), ring.length - Math.abs(ringIdx - i)) + lc514Helper(keyIdx + 1, i, key, ring));
+        }
+        return lc514Memo[keyIdx][ringIdx] = result;
+    }
+
     // LC1493
     public int longestSubarray(int[] nums) {
         int left = 0, right = 0;
         int max = 0;
+        int result = 0x3f3f3f3f;
         int[] count = new int[2];
         while (left < nums.length && right < nums.length) {
             count[nums[right++]]++;
