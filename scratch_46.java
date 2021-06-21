@@ -7,22 +7,28 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        ThroneInheritance t = new ThroneInheritance("king"); // 继承顺序：king
-        t.birth("king", "andy"); // 继承顺序：king > andy
-        t.birth("king", "bob"); // 继承顺序：king > andy > bob
-        t.birth("king", "catherine"); // 继承顺序：king > andy > bob > catherine
-        t.birth("andy", "matthew"); // 继承顺序：king > andy > matthew > bob > catherine
-        t.birth("bob", "alex"); // 继承顺序：king > andy > matthew > bob > alex > catherine
-        t.birth("bob", "asha"); // 继承顺序：king > andy > matthew > bob > alex > asha > catherine
-        System.err.println(t.getInheritanceOrder()); // 返回 ["king", "andy", "matthew", "bob", "alex", "asha", "catherine"]
-        t.death("bob"); // 继承顺序：king > andy > matthew > bob（已经去世）> alex > asha > catherine
-        System.err.println(t.getInheritanceOrder()); // 返回 ["king", "andy", "matthew", "bob", "alex", "asha", "catherine"]
+
+        System.err.println(s.readBinaryWatch(1));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC401
+    public List<String> readBinaryWatch(int turnedOn) {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < (1 << 10); i++) {
+            if (Integer.bitCount(i) == turnedOn) {
+                int hour = (i >> 6);
+                int minute = i - (hour << 6);
+                if (hour >= 0 && hour < 12 && minute >= 0 && minute < 60) {
+                    result.add(String.format("%d:%02d", hour, minute));
+                }
+            }
+        }
+        return result;
+    }
 
     // LC1239
     int lc1239Result;
