@@ -15,6 +15,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1493
+    public int longestSubarray(int[] nums) {
+        Map<Integer, Integer> frontContinuousOne = new HashMap<>();
+        Map<Integer, Integer> rearContinuousOne = new HashMap<>();
+        int oneCtr = 0;
+        int oneCtrRear = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                frontContinuousOne.put(i, oneCtr);
+                oneCtr = 0;
+            } else {
+                oneCtr++;
+            }
+
+            if (nums[nums.length - 1 - i] == 0) {
+                rearContinuousOne.put(nums.length - 1 - i, oneCtrRear);
+                oneCtrRear = 0;
+            } else {
+                oneCtrRear++;
+            }
+        }
+        if (frontContinuousOne.size() == 0) return nums.length - 1;
+        int max = 0;
+        for (int i : frontContinuousOne.keySet()) {
+            max = Math.max(max, frontContinuousOne.get(i) + rearContinuousOne.get(i));
+        }
+        return max;
+    }
+
     // LC459
     public boolean repeatedSubstringPattern(String s) {
         for (int i = 1; i <= (s.length() / 2); i++) {
