@@ -15,6 +15,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC891
+    public int sumSubseqWidths(int[] nums) {
+        final long mod = 1000000007;
+        int n = nums.length;
+        Arrays.sort(nums);
+        // nums[i]的贡献 = nums[i] * (2^(i)-2^(n-i-1))
+        long[] powTwo = new long[n];
+        powTwo[0] = 1;
+        for (int i = 1; i < n; i++) {
+            powTwo[i] = 2 * powTwo[i - 1] % mod;
+        }
+        long result = 0;
+        for (int i = 0; i < n; i++) {
+            result = (result + (nums[i] * (powTwo[i] - powTwo[n - i - 1])) % mod) % mod;
+        }
+        return (int) (result % mod);
+
+    }
+
     // LC685
     public int[] findRedundantDirectedConnection(int[][] edges) {
         // Case 1: 所有节点都有父节点, 此时需要删去成环的最后一条边
