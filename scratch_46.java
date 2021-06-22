@@ -16,17 +16,17 @@ class Scratch {
     }
 
     // LC1029
-    Integer[][][] lc1029Memo;
+    Integer[][] lc1029Memo;
 
     public int twoCitySchedCost(int[][] costs) {
         int n = costs.length / 2;
-        lc1029Memo = new Integer[n * 2 + 1][n + 1][n + 1];
+        lc1029Memo = new Integer[n * 2 + 1][n + 1];
         return lc1029Helper(0, 0, 0, n, costs);
     }
 
     private int lc1029Helper(int i, int aCtr, int bCtr, int n, int[][] costs) {
         if (i == 2 * n) return 0;
-        if (lc1029Memo[i][aCtr][bCtr] != null) return lc1029Memo[i][aCtr][bCtr];
+        if (lc1029Memo[i][aCtr] != null) return lc1029Memo[i][aCtr];
         int a = Integer.MAX_VALUE;
         int b = Integer.MAX_VALUE;
         if (aCtr < n) {
@@ -35,7 +35,7 @@ class Scratch {
         if (bCtr < n) {
             b = costs[i][1] + lc1029Helper(i + 1, aCtr, bCtr + 1, n, costs);
         }
-        return lc1029Memo[i][aCtr][bCtr] = Math.min(a, b);
+        return lc1029Memo[i][aCtr] = Math.min(a, b);
     }
 
     // LC891
