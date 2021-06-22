@@ -15,6 +15,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 04.12
+    Map<Integer, Integer> itv0412PrefixMap;
+
+    public int pathSum(TreeNode root, int sum) {
+        itv0412PrefixMap = new HashMap<>();
+        itv0412PrefixMap.put(0, 1);
+        return itv0412Helper(root, sum, 0);
+    }
+
+    private int itv0412Helper(TreeNode root, int target, int curSum) {
+        if (root == null) return 0;
+        int result = 0;
+        curSum += root.val;
+
+        result += itv0412PrefixMap.getOrDefault(curSum - target, 0);
+        itv0412PrefixMap.put(curSum, itv0412PrefixMap.getOrDefault(curSum, 0) + 1);
+
+        result += itv0412Helper(root.left, target, curSum);
+        result += itv0412Helper(root.right, target, curSum);
+
+        itv0412PrefixMap.put(curSum, itv0412PrefixMap.get(curSum) - 1);
+        return result;
+    }
+
     // LC1029 Sort
     public int twoCitySchedCostSort(int[][] costs) {
         int sum = 0;
@@ -1046,5 +1070,24 @@ class ThroneInheritance {
             }
         }
         return result;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
