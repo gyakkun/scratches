@@ -6,13 +6,54 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
+        TreeNode n1 = new TreeNode(1);
+        TreeNode n2 = new TreeNode(2);
+        TreeNode n3 = new TreeNode(3);
+        TreeNode n4 = new TreeNode(4);
+        TreeNode n5 = new TreeNode(5);
+
+        n1.right = n2;
+        n2.right = n3;
+        n3.right = n4;
+        n4.right = n5;
 
 
-        System.err.println(s.findRedundantDirectedConnection(new int[][]{{5, 2}, {5, 1}, {3, 1}, {3, 4}, {3, 5}}));
+        TreeNode n0 = s.balanceBST(n1);
+        System.err.println(n0);
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1382
+    List<Integer> lc1382List;
+
+    public TreeNode balanceBST(TreeNode root) {
+        lc1382List = new ArrayList<>();
+        inOrder(root);
+        return buildBalanceBst(0, lc1382List.size() - 1);
+    }
+
+    private TreeNode buildBalanceBst(int start, int end) {
+        if (start > end) return null;
+        if (start == end) {
+            return new TreeNode(lc1382List.get(start));
+        }
+
+        int mid = (start + end) / 2;
+
+        TreeNode root = new TreeNode(lc1382List.get(mid));
+        root.left = buildBalanceBst(start, mid - 1);
+        root.right = buildBalanceBst(mid + 1, end);
+        return root;
+    }
+
+    private void inOrder(TreeNode root) {
+        if (root == null) return;
+        inOrder(root.left);
+        lc1382List.add(root.val);
+        inOrder(root.right);
     }
 
     // Interview 04.12 Double DFS **
