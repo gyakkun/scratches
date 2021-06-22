@@ -8,11 +8,28 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.numSpecial(new int[][]{{0, 0, 0, 0, 0}, {1, 0, 0, 0, 0}, {0, 1, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 1, 1}}));
+        System.err.println(s.ipv4Parser("0.0.0.1"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // IPv4 Parser
+    public int ipv4Parser(String ip) {
+        final int err = 0xffffffff;
+        String[] groups = ip.split("\\.", -1);
+        if (groups.length != 4) return err;
+        int result = 0;
+        int ctr = 0;
+        for (String part : groups) {
+            if (part.length() > 3 || part.length() == 0) return err;
+            if (part.charAt(0) == '0' && part.length() != 1) return err;
+            if (Integer.valueOf(part) > 255 || Integer.valueOf(part) < 0) return err;
+            result |= Integer.valueOf(part) << ((3 - ctr) * 8);
+            ctr++;
+        }
+        return result;
     }
 
     // LC1582
