@@ -1150,3 +1150,26 @@ class TreeNode {
         this.right = right;
     }
 }
+
+// LC1845
+class SeatManager {
+
+    TreeSet<Integer> ts;
+
+    public SeatManager(int n) {
+        ts = new TreeSet<>();
+        for (int i = 1; i <= n; i++) {
+            ts.add(i);
+        }
+    }
+
+    public int reserve() {
+        int result = ts.first();
+        ts.remove(result);
+        return result;
+    }
+
+    public void unreserve(int seatNumber) {
+        ts.add(seatNumber);
+    }
+}
