@@ -8,11 +8,40 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.maxSubArray(new int[]{-1}));
+        System.err.println(s.permutation("1223"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZ Offer 38
+    public String[] permutation(String s) {
+        int size = 1;
+        for (int i = 1; i <= s.length(); i++) size *= i;
+        List<String> result = new ArrayList<>(size);
+        char[] cArr = s.toCharArray();
+        permutation(cArr, 0, result);
+        return result.toArray(new String[result.size()]);
+    }
+
+    private void permutation(char[] s, int start, List<String> result) {
+        if (start == s.length) {
+            result.add(new String(s));
+            return;
+        }
+        Set<Character> set = new HashSet<>();
+        for (int i = start; i < s.length; i++) {
+            if (set.contains(s[i])) continue;
+            set.add(s[i]);
+            char tmp = s[start];
+            s[start] = s[i];
+            s[i] = tmp;
+            permutation(s, start + 1, result);
+            tmp = s[start];
+            s[start] = s[i];
+            s[i] = tmp;
+        }
     }
 
     // Interview 16.17 非空子序列
