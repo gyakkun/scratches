@@ -15,6 +15,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC24
+    public ListNode swapPairs(ListNode head) {
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode cur = dummy;
+        while (cur.next != null && cur.next.next != null) {
+            ListNode close = cur.next;
+            ListNode far = cur.next.next;
+
+            ListNode farNext = far.next;
+            far.next = close;
+            close.next = farNext;
+            cur.next = far;
+
+            cur = cur.next.next;
+        }
+        return dummy.next;
+    }
+
     // IPv4 Parser
     public int ipv4Parser(String ip) {
         final int err = 0xffffffff;
@@ -1213,5 +1232,22 @@ class SeatManager {
 
     public void unreserve(int seatNumber) {
         pq.offer(seatNumber);
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
