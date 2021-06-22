@@ -15,7 +15,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // Interview 04.12
+    // Interview 04.12 Double DFS **
+    public int pathSumDfs(TreeNode root, int sum) {
+        if (root == null) return 0;
+        int r = pathSumDfsHelper(root, sum);
+        int left = pathSumDfs(root.left, sum);
+        int right = pathSumDfs(root.right, sum);
+        return left + r + right;
+    }
+
+    public int pathSumDfsHelper(TreeNode root, int sum) {
+        if (root == null) return 0;
+        int r = 0;
+        if (root.val == sum) r = 1;
+        int left = pathSumDfsHelper(root.left, sum - root.val);
+        int right = pathSumDfsHelper(root.right, sum - root.val);
+        return left + r + right;
+    }
+
+    // Interview 04.12 **
     Map<Integer, Integer> itv0412PrefixMap;
 
     public int pathSum(TreeNode root, int sum) {
