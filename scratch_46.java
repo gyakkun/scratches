@@ -6,29 +6,51 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        TreeNode n1 = new TreeNode(1);
-        TreeNode n2 = new TreeNode(2);
-        TreeNode n3 = new TreeNode(3);
-        TreeNode n4 = new TreeNode(4);
-        TreeNode n5 = new TreeNode(5);
-
-        n1.right = n2;
-        n2.right = n3;
-        n3.right = n4;
-        n4.right = n5;
 
 
-        TreeNode n0 = s.balanceBST(n1);
-        System.err.println(n0);
+        System.err.println(s.numSpecial(new int[][]{{0, 0, 0, 0, 0}, {1, 0, 0, 0, 0}, {0, 1, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 1, 1}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1582
+    public int numSpecial(int[][] mat) {
+        int[] posRowColIdx = new int[mat.length];
+        Set<Integer> posRowSet = new HashSet<>();
+        int result = 0;
+        for (int i = 0; i < mat.length; i++) {
+            boolean flag = true;
+            for (int j = 0; j < mat[0].length; j++) {
+                if (mat[i][j] == 1) {
+                    if (flag) {
+                        posRowColIdx[i] = j;
+                        posRowSet.add(i);
+                        flag = false;
+                    } else {
+                        posRowColIdx[i] = -1;
+                        posRowSet.remove(i);
+                        break;
+                    }
+                }
+            }
+        }
+        for (int i : posRowSet) {
+            int colNum = posRowColIdx[i];
+            int sum = 0;
+            for (int j = 0; j < mat.length; j++) {
+                sum += mat[j][colNum];
+                if (sum == 2) break;
+            }
+            if (sum == 1) result++;
+        }
+        return result;
+    }
+
     // Interview 01.09
     public boolean isFlipedString(String s1, String s2) {
-        if(s1.length()!=s2.length()) return false;
+        if (s1.length() != s2.length()) return false;
         return (s1 + s1).indexOf(s2) != -1;
     }
 
