@@ -8,11 +8,48 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.permutation("1223"));
+        System.err.println(s.findRedundantDirectedConnection(new int[][]{{5, 2}, {5, 1}, {3, 1}, {3, 4}, {3, 5}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC685
+    public int[] findRedundantDirectedConnection(int[][] edges) {
+        // Case 1: 所有节点都有父节点, 此时需要删去成环的最后一条边
+        // Case 2: 有一个节点入度为2, 此时需要删去其中一条边
+        // 如果有节点入度为2 且图成环 需要删去造成入度为2且成环的边
+        DisjointSetUnion dsu = new DisjointSetUnion();
+        Map<Integer, Integer> parent = new HashMap<>();
+        boolean isConflict = false, isCircle = false;
+        int[] circle = null, conflict = null;
+        for (int[] e : edges) {
+            dsu.add(e[0]);
+            dsu.add(e[1]);
+
+            if (parent.containsKey(e[1])) { // 标记冲突边, 最多有一条
+                isConflict = true;
+                conflict = e;
+            } else {
+                parent.put(e[1], e[0]);
+                if (dsu.isConnect(e[1], e[0])) {  // 成环就不加这条边了, 标记为最后一条可能导致成环的边
+                    isCircle = true;
+                    circle = e;
+                } else {
+                    dsu.merge(e[0], e[1]);
+                }
+            }
+        }
+        if (!isConflict) {
+            return circle;
+        } else {
+            if (isCircle) { // 如果有冲突边且成环, 那必然是在环上导致入度为2的边要被删除, 也就是第一条标记入度为2的点的父节点构成的边
+                return new int[]{parent.get(conflict[1]), conflict[1]};
+            } else {
+                return conflict; // 否则直接返回冲突边
+            }
+        }
     }
 
     // JZ Offer 38
@@ -26,7 +63,7 @@ class Scratch {
     }
 
     private void permutation(char[] s, int start, List<String> result) {
-        if (start == s.length) {
+        if (start == s.length - 1) {
             result.add(new String(s));
             return;
         }
