@@ -15,6 +15,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1029 Sort
+    public int twoCitySchedCostSort(int[][] costs) {
+        int sum = 0;
+        for (int[] c : costs) {
+            sum += c[1];
+        }
+        Arrays.sort(costs, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return (o1[0] - o1[1]) - (o2[0] - o2[1]);
+            }
+        });
+        for (int i = 0; i < costs.length / 2; i++) {
+            sum += costs[i][0] - costs[i][1];
+        }
+        return sum;
+    }
+
     // LC1029
     Integer[][] lc1029Memo;
 
