@@ -15,6 +15,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1029
+    Integer[][][] lc1029Memo;
+
+    public int twoCitySchedCost(int[][] costs) {
+        int n = costs.length / 2;
+        lc1029Memo = new Integer[n * 2 + 1][n + 1][n + 1];
+        return lc1029Helper(0, 0, 0, n, costs);
+    }
+
+    private int lc1029Helper(int i, int aCtr, int bCtr, int n, int[][] costs) {
+        if (i == 2 * n) return 0;
+        if (lc1029Memo[i][aCtr][bCtr] != null) return lc1029Memo[i][aCtr][bCtr];
+        int a = Integer.MAX_VALUE;
+        int b = Integer.MAX_VALUE;
+        if (aCtr < n) {
+            a = costs[i][0] + lc1029Helper(i + 1, aCtr + 1, bCtr, n, costs);
+        }
+        if (bCtr < n) {
+            b = costs[i][1] + lc1029Helper(i + 1, aCtr, bCtr + 1, n, costs);
+        }
+        return lc1029Memo[i][aCtr][bCtr] = Math.min(a, b);
+    }
+
     // LC891
     public int sumSubseqWidths(int[] nums) {
         final long mod = 1000000007;
