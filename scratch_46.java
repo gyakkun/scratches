@@ -26,6 +26,12 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 01.09
+    public boolean isFlipedString(String s1, String s2) {
+        if(s1.length()!=s2.length()) return false;
+        return (s1 + s1).indexOf(s2) != -1;
+    }
+
     // LC1382
     List<Integer> lc1382List;
 
