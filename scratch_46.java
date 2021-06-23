@@ -15,6 +15,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZ 57
+    public int[] twoSum(int[] nums, int target) {
+        Set<Integer> set = new HashSet<>();
+        for (int i : nums) {
+            if (set.contains(target - i)) return new int[]{i, target - i};
+            set.add(i);
+        }
+        return new int[]{-1, -1};
+    }
+
     // LC24
     public ListNode swapPairs(ListNode head) {
         ListNode dummy = new ListNode(-1);
