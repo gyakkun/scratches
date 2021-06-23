@@ -15,6 +15,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC942
+    public int[] diStringMatch(String s) {
+        int n = s.length();
+        int[] result = new int[n + 1];
+        char[] cArr = s.toCharArray();
+        int ptr1 = n, ptr2 = 0;
+        for (int i = 0; i <= n; i++) {
+            if (i != n && cArr[i] == 'D') {
+                result[i] = ptr1--;
+            } else if (i == n && cArr[n - 1] == 'D') {
+                result[n] = ptr1--;
+            }
+            if (i != n && cArr[i] == 'I') {
+                result[i] = ptr2++;
+            } else if (i == n && cArr[n - 1] == 'I') {
+                result[n] = ptr2++;
+            }
+        }
+        return result;
+    }
+
     // JZ 57
     public int[] twoSum(int[] nums, int target) {
         Arrays.sort(nums);
