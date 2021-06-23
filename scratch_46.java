@@ -17,10 +17,11 @@ class Scratch {
 
     // JZ 57
     public int[] twoSum(int[] nums, int target) {
-        Set<Integer> set = new HashSet<>();
+        Arrays.sort(nums);
         for (int i : nums) {
-            if (set.contains(target - i)) return new int[]{i, target - i};
-            set.add(i);
+            if (Arrays.binarySearch(nums, target - i) >= 0) {
+                return new int[]{i, target - i};
+            }
         }
         return new int[]{-1, -1};
     }
