@@ -8,7 +8,9 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.diStringMatch("DIDIDIIIIIDDIDI"));
+        System.err.println(s.numMagicSquaresInside(new int[][]{{4, 3, 8, 4},
+                {9, 5, 1, 9},
+                {2, 7, 6, 2}}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -17,10 +19,59 @@ class Scratch {
 
     // LC840 TBD
     public int numMagicSquaresInside(int[][] grid) {
+        final int LINE_SUM = 15;
         int m = grid.length;
         int n = grid[0].length;
         if (m < 3 || n < 3) return 0;
         int result = 0;
+        for (int i = 0; i < m - 3 + 1; i++) {
+            for (int j = 0; j < n - 3 + 1; j++) {
+                boolean legal = true;
+                boolean[] visited = new boolean[10];
+                // legal matrix
+                for (int k = 0; k < 3; k++) {
+                    for (int o = 0; o < 3; o++) {
+                        if ((grid[i + k][j + o] > 9 || grid[i + k][j + o] < 1) || visited[grid[i + k][j + o]]) {
+                            legal = false;
+                            break;
+                        }
+                        visited[grid[i + k][j + o]] = true;
+                    }
+                    if (!legal) break;
+                }
+                if (!legal) continue;
+                for (int k = 1; k <= 9; k++) {
+                    if (!visited[k]) {
+                        legal = false;
+                    }
+                }
+                if (!legal) continue;
+
+                // 行和
+                for (int k = 0; k < 3; k++) {
+                    if (grid[i + k][j] + grid[i + k][j + 1] + grid[i + k][j + 2] != LINE_SUM) {
+                        legal = false;
+                    }
+                }
+                if (!legal) continue;
+
+                // 列和
+                for (int k = 0; k < 3; k++) {
+                    if (grid[i][j + k] + grid[i + 1][j + k] + grid[i + 2][j + k] != LINE_SUM) {
+                        legal = false;
+                    }
+                }
+                if (!legal) continue;
+
+                // 对角线和
+                if (grid[i][j] + grid[i + 1][j + 1] + grid[i + 2][j + 2] != LINE_SUM) legal = false;
+                if (grid[i + 2][j] + grid[i + 1][j + 1] + grid[i][j + 2] != LINE_SUM) legal = false;
+                if (!legal) continue;
+
+                if (legal) result++;
+            }
+        }
+
         return result;
     }
 
