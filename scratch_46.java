@@ -8,13 +8,54 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.numMagicSquaresInside(new int[][]{{4, 3, 8, 4},
-                {9, 5, 1, 9},
-                {2, 7, 6, 2}}));
+        System.err.println(s.hasAllCodes("1010001011000000001010010111011011100110000011101111110100010111011001111000010011010010011111110101001111001101000001011100010110011010101010000011000111100011"
+                , 5));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1461
+    public boolean hasAllCodes(String s, int k) {
+        if (k >= 17) return false;
+        if (s.length() - k + 1 < (1 << k)) return false;
+        if (s.length() <= k) return false;
+        char[] cArr = s.toCharArray();
+        int n = cArr.length;
+        if (k <= 5) {
+            int[] correctArr = new int[]{0, (1 << (1 << 1)) - 1, (1 << (1 << 2)) - 1, (1 << (1 << 3)) - 1, (1 << (1 << 4)) - 1, -1};
+            int correct = correctArr[k];
+            int count = 0;
+            int allBitMask = (1 << k) - 1;
+            int cur = 0;
+            for (int i = 0; i < k; i++) {
+                cur = (cur << 1) | (cArr[i] == '1' ? 1 : 0);
+            }
+            count |= (1 << cur);
+            for (int i = k; i < n; i++) {
+                cur = ((cur << 1) & allBitMask) | (cArr[i] == '1' ? 1 : 0);
+                count |= (1 << cur);
+                if (count == correct) return true;
+            }
+            return false;
+        } else {
+            int[] bitmap = new int[1 << (k - 5)];
+            int allBitMask = (1 << k) - 1;
+            int cur = 0;
+            for (int i = 0; i < k; i++) {
+                cur = (cur << 1) | (cArr[i] == '1' ? 1 : 0);
+            }
+            bitmap[cur / 32] |= 1 << (cur % 32);
+            for (int i = k; i < n; i++) {
+                cur = ((cur << 1) & allBitMask) | (cArr[i] == '1' ? 1 : 0);
+                bitmap[cur / 32] |= 1 << (cur % 32);
+            }
+            for (int i : bitmap) {
+                if (i != -1) return false;
+            }
+            return true;
+        }
     }
 
     // LC1222
