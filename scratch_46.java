@@ -8,7 +8,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.ipv4Parser("0.0.0.1"));
+        System.err.println(s.diStringMatch("DIDIDIIIIIDDIDI"));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -21,17 +21,17 @@ class Scratch {
         int[] result = new int[n + 1];
         char[] cArr = s.toCharArray();
         int ptr1 = n, ptr2 = 0;
-        for (int i = 0; i <= n; i++) {
-            if (i != n && cArr[i] == 'D') {
+        for (int i = 0; i < n; i++) {
+            if (cArr[i] == 'D') {
                 result[i] = ptr1--;
-            } else if (i == n && cArr[n - 1] == 'D') {
-                result[n] = ptr1--;
-            }
-            if (i != n && cArr[i] == 'I') {
+            } else {
                 result[i] = ptr2++;
-            } else if (i == n && cArr[n - 1] == 'I') {
-                result[n] = ptr2++;
             }
+        }
+        if (cArr[n - 1] == 'I') {
+            result[n] = ptr2++;
+        } else {
+            result[n] = ptr1++;
         }
         return result;
     }
