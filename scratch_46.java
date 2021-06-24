@@ -17,7 +17,105 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC840 TBD
+    // LC1222
+    public List<List<Integer>> queensAttacktheKing(int[][] queens, int[] king) {
+        Set<Pair<Integer, Integer>> s = new HashSet<>();
+        List<List<Integer>> result = new ArrayList<>(8);
+        for (int[] q : queens) {
+            s.add(new Pair<>(q[0], q[1]));
+        }
+        int kingLeft = king[1], kingRight = 8 - king[1] - 1;
+        int kingUp = king[0], kingDown = 8 - king[0] - 1;
+        int kingX = king[1], kingY = king[0];
+        for (int i = 1; i <= kingUp; i++) {
+            if (s.contains(new Pair<>(kingY - i, kingX))) {
+                int finalI = i;
+                result.add(new ArrayList<Integer>(2) {{
+                    add(kingY - finalI);
+                    add(kingX);
+                }});
+                break;
+            }
+        }
+        for (int i = 1; i <= kingDown; i++) {
+            if (s.contains(new Pair<>(kingY + i, kingX))) {
+                int finalI = i;
+                result.add(new ArrayList<Integer>(2) {{
+                    add(kingY + finalI);
+                    add(kingX);
+                }});
+                break;
+            }
+        }
+        for (int i = 1; i <= kingLeft; i++) {
+            if (s.contains(new Pair<>(kingY, kingX - i))) {
+                int finalI = i;
+                result.add(new ArrayList<Integer>(2) {{
+                    add(kingY);
+                    add(kingX - finalI);
+                }});
+                break;
+            }
+        }
+        for (int i = 1; i <= kingRight; i++) {
+            if (s.contains(new Pair<>(kingY, kingX + i))) {
+                int finalI = i;
+                result.add(new ArrayList<Integer>(2) {{
+                    add(kingY);
+                    add(kingX + finalI);
+                }});
+                break;
+            }
+        }
+
+        // 左上
+        for (int i = 1; i <= Math.min(kingLeft, kingUp); i++) {
+            if (s.contains(new Pair<>(kingY - i, kingX - i))) {
+                int finalI = i;
+                result.add(new ArrayList<Integer>(2) {{
+                    add(kingY - finalI);
+                    add(kingX - finalI);
+                }});
+                break;
+            }
+        }
+
+        for (int i = 1; i <= Math.min(kingRight, kingUp); i++) {
+            if (s.contains(new Pair<>(kingY - i, kingX + i))) {
+                int finalI = i;
+                result.add(new ArrayList<Integer>(2) {{
+                    add(kingY - finalI);
+                    add(kingX + finalI);
+                }});
+                break;
+            }
+        }
+
+        for (int i = 1; i <= Math.min(kingLeft, kingDown); i++) {
+            if (s.contains(new Pair<>(kingY + i, kingX - i))) {
+                int finalI = i;
+                result.add(new ArrayList<Integer>(2) {{
+                    add(kingY + finalI);
+                    add(kingX - finalI);
+                }});
+                break;
+            }
+        }
+
+        for (int i = 1; i <= Math.min(kingRight, kingDown); i++) {
+            if (s.contains(new Pair<>(kingY + i, kingX + i))) {
+                int finalI = i;
+                result.add(new ArrayList<Integer>(2) {{
+                    add(kingY + finalI);
+                    add(kingX + finalI);
+                }});
+                break;
+            }
+        }
+        return result;
+    }
+
+    // LC840
     public int numMagicSquaresInside(int[][] grid) {
         final int LINE_SUM = 15;
         int m = grid.length;
