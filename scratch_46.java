@@ -24,17 +24,21 @@ class Scratch {
         char[] cArr = s.toCharArray();
         int n = cArr.length;
         if (k <= 5) {
-            int[] correctArr = new int[]{0, (1 << (1 << 1)) - 1, (1 << (1 << 2)) - 1, (1 << (1 << 3)) - 1, (1 << (1 << 4)) - 1, -1};
-            int correct = correctArr[k];
+            int correct;
+            if (k != 5) {
+                correct = (1 << (1 << k)) - 1;
+            } else {
+                correct = -1;
+            }
             int count = 0;
             int allBitMask = (1 << k) - 1;
             int cur = 0;
             for (int i = 0; i < k; i++) {
-                cur = (cur << 1) | (cArr[i] == '1' ? 1 : 0);
+                cur = (cur << 1) | (cArr[i] - '0');
             }
             count |= (1 << cur);
             for (int i = k; i < n; i++) {
-                cur = ((cur << 1) & allBitMask) | (cArr[i] == '1' ? 1 : 0);
+                cur = ((cur << 1) & allBitMask) | (cArr[i] - '0');
                 count |= (1 << cur);
                 if (count == correct) return true;
             }
@@ -43,13 +47,14 @@ class Scratch {
             int[] bitmap = new int[1 << (k - 5)];
             int allBitMask = (1 << k) - 1;
             int cur = 0;
+            int modAnd = ~((1 << 32) - 1);  // 神秘加速, 理论上应该是 modAnd=31的
             for (int i = 0; i < k; i++) {
-                cur = (cur << 1) | (cArr[i] == '1' ? 1 : 0);
+                cur = (cur << 1) | (cArr[i] - '0');
             }
-            bitmap[cur / 32] |= 1 << (cur % 32);
+            bitmap[cur >> 5] |= 1 << (cur & modAnd);
             for (int i = k; i < n; i++) {
-                cur = ((cur << 1) & allBitMask) | (cArr[i] == '1' ? 1 : 0);
-                bitmap[cur / 32] |= 1 << (cur % 32);
+                cur = ((cur << 1) & allBitMask) | (cArr[i] - '0');
+                bitmap[cur >> 5] |= 1 << (cur & modAnd);
             }
             for (int i : bitmap) {
                 if (i != -1) return false;
