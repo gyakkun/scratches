@@ -15,6 +15,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC840 TBD
+    public int numMagicSquaresInside(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if (m < 3 || n < 3) return 0;
+        int result = 0;
+        return result;
+    }
+
     // LC942
     public int[] diStringMatch(String s) {
         int n = s.length();
