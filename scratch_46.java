@@ -29,9 +29,9 @@ class Scratch {
             }
         }
         if (cArr[n - 1] == 'I') {
-            result[n] = ptr2++;
+            result[n] = ptr2;
         } else {
-            result[n] = ptr1++;
+            result[n] = ptr1;
         }
         return result;
     }
