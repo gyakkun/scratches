@@ -8,11 +8,24 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.hasAllCodesBitset("00110110", 2));
+        System.err.println(s.numberOfSteps(1));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1342
+    public int numberOfSteps(int num) {
+//        int step = 0;
+//        while (num != 0) {
+//            if((num&1)==1) num--;
+//            else num >>= 1;
+//            step++;
+//        }
+//        return step;
+        if(num==0) return 0;
+        return Integer.SIZE - Integer.numberOfLeadingZeros(num) + Integer.bitCount(num) - 1;
     }
 
     // LC752 BFS
