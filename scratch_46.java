@@ -8,12 +8,73 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.hasAllCodes("1010001011000000001010010111011011100110000011101111110100010111011001111000010011010010011111110101001111001101000001011100010110011010101010000011000111100011"
-                , 5));
+        System.err.println(s.openLock(new String[]{"8887", "8889", "8878", "8898", "8788", "8988", "7888", "9888"}, "8888"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC752 BFS
+    public int openLock(String[] deadends, String target) {
+        boolean[][][][] visited = new boolean[10][10][10][10];
+        int[] t = new int[]{(target.charAt(0) - '0'), (target.charAt(1) - '0'), (target.charAt(2) - '0'), (target.charAt(3) - '0')};
+
+        for (String d : deadends) {
+            int[] idxes = new int[]{d.charAt(0) - '0', d.charAt(1) - '0', d.charAt(2) - '0', d.charAt(3) - '0'};
+            visited[idxes[0]][idxes[1]][idxes[2]][idxes[3]] = true;
+        }
+        int[] init = new int[]{0, 0, 0, 0};
+        Deque<int[]> q = new LinkedList<>();
+        int layer = -1;
+        q.offer(init);
+        while (!q.isEmpty()) {
+            layer++;
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
+                int[] p = q.poll();
+                if (p[0] == t[0] && p[1] == t[1] && p[2] == t[2] && p[3] == t[3]) {
+                    return layer;
+                }
+                if (visited[p[0]][p[1]][p[2]][p[3]]) continue; // 注意这里剪枝时机
+                visited[p[0]][p[1]][p[2]][p[3]] = true;
+                for (int j = 0; j < 4; j++) {
+                    int[] n = new int[]{p[0], p[1], p[2], p[3]};
+                    n[j] = (n[j] + 1) % 10;
+                    if (!visited[n[0]][n[1]][n[2]][n[3]]) {
+                        q.offer(n);
+                    }
+                }
+                for (int j = 0; j < 4; j++) {
+                    int[] n = new int[]{p[0], p[1], p[2], p[3]};
+                    n[j] = (n[j] + 10 - 1) % 10;
+                    if (!visited[n[0]][n[1]][n[2]][n[3]]) {
+                        q.offer(n);
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    // LC1461 Bitset 超出长度限制
+    public boolean hasAllCodesBitset(String s, int k) {
+        if (k >= 17) return false;
+        if (s.length() - k + 1 < (1 << k)) return false;
+        char[] cArr = s.toCharArray();
+        int n = cArr.length;
+        BitSet bs = new BitSet(1 << (1 << k) - 1);
+        int cur = 0;
+        for (int i = 0; i < k; i++) {
+            cur = (cur << 1) | (cArr[i] - '0');
+        }
+        bs.set(cur);
+        int allBitMask = (1 << k) - 1;
+        for (int i = k; i < n; i++) {
+            cur = ((cur << 1) & allBitMask) | (cArr[i] - '0');
+            bs.set(cur);
+        }
+        return bs.cardinality() == (1 << (1 << k) - 1);
     }
 
     // LC1461
