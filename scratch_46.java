@@ -8,7 +8,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.openLock(new String[]{"8887", "8889", "8878", "8898", "8788", "8988", "7888", "9888"}, "8888"));
+        System.err.println(s.hasAllCodesBitset("00110110", 2));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -57,13 +57,13 @@ class Scratch {
         return -1;
     }
 
-    // LC1461 Bitset 超出长度限制
+    // LC1461 Bitset
     public boolean hasAllCodesBitset(String s, int k) {
         if (k >= 17) return false;
         if (s.length() - k + 1 < (1 << k)) return false;
         char[] cArr = s.toCharArray();
         int n = cArr.length;
-        BitSet bs = new BitSet(1 << (1 << k) - 1);
+        BitSet bs = new BitSet((1 << k));
         int cur = 0;
         for (int i = 0; i < k; i++) {
             cur = (cur << 1) | (cArr[i] - '0');
@@ -74,7 +74,7 @@ class Scratch {
             cur = ((cur << 1) & allBitMask) | (cArr[i] - '0');
             bs.set(cur);
         }
-        return bs.cardinality() == (1 << (1 << k) - 1);
+        return bs.cardinality() == (1 << k);
     }
 
     // LC1461
