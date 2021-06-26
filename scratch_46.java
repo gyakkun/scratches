@@ -1640,3 +1640,74 @@ class ListNode {
         this.next = next;
     }
 }
+
+// LC427
+// Definition for a QuadTree node.
+class Node {
+    public boolean val;
+    public boolean isLeaf;
+    public Node topLeft;
+    public Node topRight;
+    public Node bottomLeft;
+    public Node bottomRight;
+
+
+    public Node() {
+        this.val = false;
+        this.isLeaf = false;
+        this.topLeft = null;
+        this.topRight = null;
+        this.bottomLeft = null;
+        this.bottomRight = null;
+    }
+
+    public Node(boolean val, boolean isLeaf) {
+        this.val = val;
+        this.isLeaf = isLeaf;
+        this.topLeft = null;
+        this.topRight = null;
+        this.bottomLeft = null;
+        this.bottomRight = null;
+    }
+
+    public Node(boolean val, boolean isLeaf, Node topLeft, Node topRight, Node bottomLeft, Node bottomRight) {
+        this.val = val;
+        this.isLeaf = isLeaf;
+        this.topLeft = topLeft;
+        this.topRight = topRight;
+        this.bottomLeft = bottomLeft;
+        this.bottomRight = bottomRight;
+    }
+};
+
+
+class Solution {
+    public Node construct(int[][] grid) {
+        return helper(grid, 0, grid.length - 1, 0, grid[0].length - 1);
+    }
+
+    private Node helper(int[][] grid, int up, int down, int left, int right) {
+        Node n = new Node();
+        if (isSame(grid, up, down, left, right)) {
+            n.isLeaf = true;
+            n.val = grid[up][left] == 1 ? true : false;
+            return n;
+        }
+        n.isLeaf = false;
+        n.topLeft = helper(grid, up, (up + down) / 2, left, (left + right) / 2);
+        n.topRight = helper(grid, up, (up + down) / 2, ((left + right) / 2) + 1, right);
+        n.bottomLeft = helper(grid, ((up + down) / 2) + 1, down, left, (left + right) / 2);
+        n.bottomRight = helper(grid, ((up + down) / 2) + 1, down, ((left + right) / 2) + 1, right);
+        return n;
+    }
+
+    private boolean isSame(int[][] grid, int up, int down, int left, int right) {
+        int val = grid[up][left];
+        for (int i = up; i <= down; i++) {
+            for (int j = left; j <= right; j++) {
+                if (grid[i][j] != val) return false;
+            }
+        }
+        return true;
+    }
+}
