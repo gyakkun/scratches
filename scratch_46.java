@@ -8,13 +8,43 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.slidingPuzzle(new int[][]{{1, 2, 3}, {4, 0, 5}}));
+        System.err.println(s.monotoneIncreasingDigits(1234565432));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC738
+    public int monotoneIncreasingDigits(int n) {
+        Deque<Integer> stack = new LinkedList<>();
+        while (n != 0) {
+            stack.add(n % 10);
+            n /= 10;
+        }
+        LinkedList<Integer> result = new LinkedList<>();
+        while (!stack.isEmpty()) {
+            int last = stack.pop();
+            if (!stack.isEmpty() && last < stack.peek()) {
+                last = 9;
+                int rs = result.size();
+                result.clear();
+                for (int i = 0; i < rs; i++) {
+                    result.add(9);
+                }
+                int lastButOne = stack.pop();
+                lastButOne--;
+                stack.push(lastButOne);
+            }
+            result.push(last);
+        }
+
+        int ret = 0;
+        while (!result.isEmpty()) {
+            ret = ret * 10 + result.pop();
+        }
+        return ret;
+    }
 
     // LC402 Solution **
     public String removeKdigits(String num, int k) {
