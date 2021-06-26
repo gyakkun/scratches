@@ -8,11 +8,90 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.numberOfSteps(1));
+        System.err.println(s.slidingPuzzle(new int[][]{{1, 2, 3}, {4, 0, 5}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC773
+    public int slidingPuzzle(int[][] board) {
+        boolean[][][][][] visited = new boolean[6][6][6][6][6]; // 第六个格子可以由前5个推出
+        final int[][] directs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        Deque<int[][]> q = new LinkedList<>();
+        q.offer(board);
+        int layer = -1;
+        while (!q.isEmpty()) {
+            layer++;
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
+                int[][] b = q.poll();
+
+                if (b[0][0] == 1 && b[0][1] == 2 && b[0][2] == 3 && b[1][0] == 4 && b[1][1] == 5) return layer;
+
+                if (visited[b[0][0]][b[0][1]][b[0][2]][b[1][0]][b[1][1]]) {
+                    continue;
+                }
+                visited[b[0][0]][b[0][1]][b[0][2]][b[1][0]][b[1][1]] = true;
+                int zX = -1, zY = -1;
+                for (int j = 0; j < 2; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        if (b[j][k] == 0) {
+                            zX = j;
+                            zY = k;
+                            break;
+                        }
+                    }
+                }
+                if (zX != -1 && zY != -1) {
+                    for (int[] d : directs) {
+                        int x = zX + d[0];
+                        int y = zY + d[1];
+                        if (x >= 0 && x < 2 && y >= 0 && y < 3) {
+                            int[][] e = {{b[0][0], b[0][1], b[0][2]}, {b[1][0], b[1][1], b[1][2]}};
+                            int tmp = e[x][y];
+                            e[x][y] = 0;
+                            e[zX][zY] = tmp;
+                            if (!visited[e[0][0]][e[0][1]][e[0][2]][e[1][0]][e[1][1]]) {
+                                q.offer(e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    // LC402 Solution ** TBD
+    public String removeKdigits(String num, int k) {
+        Deque<Character> deque = new LinkedList<Character>();
+        int length = num.length();
+        for (int i = 0; i < length; ++i) {
+            char digit = num.charAt(i);
+            while (!deque.isEmpty() && k > 0 && deque.peekLast() > digit) {
+                deque.pollLast();
+                k--;
+            }
+            deque.offerLast(digit);
+        }
+
+        for (int i = 0; i < k; ++i) {
+            deque.pollLast();
+        }
+
+        StringBuilder ret = new StringBuilder();
+        boolean leadingZero = true;
+        while (!deque.isEmpty()) {
+            char digit = deque.pollFirst();
+            if (leadingZero && digit == '0') {
+                continue;
+            }
+            leadingZero = false;
+            ret.append(digit);
+        }
+        return ret.length() == 0 ? "0" : ret.toString();
     }
 
     // LC1342
@@ -24,7 +103,7 @@ class Scratch {
 //            step++;
 //        }
 //        return step;
-        if(num==0) return 0;
+        if (num == 0) return 0;
         return Integer.SIZE - Integer.numberOfLeadingZeros(num) + Integer.bitCount(num) - 1;
     }
 
