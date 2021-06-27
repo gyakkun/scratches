@@ -8,11 +8,52 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.monotoneIncreasingDigits(1234565432));
+        System.err.println(s.snakesAndLadders(new int[][]{{-1, 1, 2, -1}, {2, 13, 15, -1}, {-1, 10, -1, -1}, {-1, 6, 2, 8}}
+        ));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC909
+    public int snakesAndLadders(int[][] board) {
+        int n = board.length;
+        boolean[] visited = new boolean[n * n + 1];
+        int[] target = lc909IdxConverter(n * n, n);
+        Deque<int[]> q = new LinkedList<>(); // entity: [num, steps]
+        q.offer(new int[]{1, 0});
+        while (!q.isEmpty()) {
+            int[] t = q.poll();
+            if (t[0] == n * n) return t[1];
+            if (visited[t[0]]) continue;
+            visited[t[0]] = true;
+            for (int j = t[0] + 1; j <= Math.min(t[0] + 6, n * n); j++) {
+                int[] nextIdx = lc909IdxConverter(j, n);
+                if (board[nextIdx[0]][nextIdx[1]] != -1) {
+//                    visited[j] = true;
+                    nextIdx = lc909IdxConverter(board[nextIdx[0]][nextIdx[1]], n);
+                }
+                if (lc909IdxConverter(nextIdx, n) == n * n) return t[1] + 1;
+                if (!visited[lc909IdxConverter(nextIdx, n)]) {
+                    q.offer(new int[]{lc909IdxConverter(nextIdx, n), t[1] + 1});
+                }
+            }
+        }
+        return -1;
+    }
+
+    private int[] lc909IdxConverter(int idx, int n) {
+        int row = (n - 1) - (idx - 1) / n;
+        int col = (n + row) % 2 == 1 ? ((idx - 1) % n) : ((n - 1) - ((idx - 1) % n));
+        return new int[]{row, col};
+    }
+
+    private int lc909IdxConverter(int[] idx, int n) {
+        int row = idx[0], col = idx[1];
+        int numRow = (n - 1 - row) * n;
+        int numCol = (n + row) % 2 == 1 ? col : n - 1 - col;
+        return numRow + numCol + 1;
     }
 
     // LC738
