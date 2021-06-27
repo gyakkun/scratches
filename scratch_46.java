@@ -19,24 +19,33 @@ class Scratch {
     // LC909
     public int snakesAndLadders(int[][] board) {
         int n = board.length;
-        boolean[] visited = new boolean[n * n + 1];
-        int[] target = lc909IdxConverter(n * n, n);
-        Deque<int[]> q = new LinkedList<>(); // entity: [num, steps]
-        q.offer(new int[]{1, 0});
+        boolean[][] visited = new boolean[n][n];
+        Deque<int[]> q = new LinkedList<>();
+        q.offer(lc909IdxConverter(1, n));
+        int layer = -1;
         while (!q.isEmpty()) {
-            int[] t = q.poll();
-            if (t[0] == n * n) return t[1];
-            if (visited[t[0]]) continue;
-            visited[t[0]] = true;
-            for (int j = t[0] + 1; j <= Math.min(t[0] + 6, n * n); j++) {
-                int[] nextIdx = lc909IdxConverter(j, n);
-                if (board[nextIdx[0]][nextIdx[1]] != -1) {
-//                    visited[j] = true;
-                    nextIdx = lc909IdxConverter(board[nextIdx[0]][nextIdx[1]], n);
-                }
-                if (lc909IdxConverter(nextIdx, n) == n * n) return t[1] + 1;
-                if (!visited[lc909IdxConverter(nextIdx, n)]) {
-                    q.offer(new int[]{lc909IdxConverter(nextIdx, n), t[1] + 1});
+            layer++;
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
+                int[] t = q.poll();
+                // 在下一层返回
+                // if (lc909IdxConverter(t, n) == n * n) return layer;
+                if (visited[t[0]][t[1]]) continue;
+                visited[t[0]][t[1]] = true;
+                int num = lc909IdxConverter(t, n);
+                for (int j = num + 1; j <= Math.min(num + 6, n * n); j++) {
+                    int[] next = lc909IdxConverter(j, n);
+                    if (board[next[0]][next[1]] != -1) {
+                        // 注意不能提前标记已访问, 因为每次都最多只能访问下一格, 所以这一格仍有可能被访问到
+                        // visited[next[0]][next[1]] = true; WRONG!!!
+                        next = lc909IdxConverter(board[next[0]][next[1]], n);
+                    }
+                    // 提前返回, 不用等到下一层
+                    if (lc909IdxConverter(next, n) == n * n) return layer + 1;
+
+                    if (!visited[next[0]][next[1]]) {
+                        q.offer(next);
+                    }
                 }
             }
         }
