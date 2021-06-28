@@ -53,7 +53,6 @@ class Scratch {
         for (int i : sourceRouteSet) {
             q.offer(i);
         }
-        int result = Integer.MAX_VALUE;
         while (!q.isEmpty()) {
             layer++;
             int qSize = q.size();
