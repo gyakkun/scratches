@@ -8,12 +8,68 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.snakesAndLadders(new int[][]{{-1, 1, 2, -1}, {2, 13, 15, -1}, {-1, 10, -1, -1}, {-1, 6, 2, 8}}
+        System.err.println(s.numBusesToDestination(new int[][]{{1, 2, 7}, {3, 6, 7}},
+                1,
+                6
         ));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC815
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        // routes.length <=500
+        if (source == target) return 0;
+        Map<Integer, Set<Integer>> stationRouteMap = new HashMap<>();
+        for (int i = 0; i < routes.length; i++) {
+            for (int j : routes[i]) {
+                stationRouteMap.putIfAbsent(j, new HashSet<>());
+                stationRouteMap.get(j).add(i);
+            }
+        }
+
+        Map<Integer, Set<Integer>> routeEdge = new HashMap<>();
+        for (int i : stationRouteMap.keySet()) {
+            Set<Integer> routeSet = stationRouteMap.get(i);
+            for (int j : routeSet) {
+                for (int k : routeSet) {
+                    if (j != k) {
+                        routeEdge.putIfAbsent(j, new HashSet<>());
+                        routeEdge.get(j).add(k);
+                    }
+                }
+            }
+        }
+
+        Set<Integer> targetRouteSet = stationRouteMap.get(target);
+        if (targetRouteSet == null) return -1;
+        Set<Integer> sourceRouteSet = stationRouteMap.get(source);
+        Set<Integer> visited = new HashSet<>();
+
+        int layer = 0;
+        Deque<Integer> q = new LinkedList<>();
+        for (int i : sourceRouteSet) {
+            q.offer(i);
+        }
+        int result = Integer.MAX_VALUE;
+        while (!q.isEmpty()) {
+            layer++;
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
+                int p = q.poll();
+                if (targetRouteSet.contains(p)) return layer;
+                if (visited.contains(p)) continue;
+                visited.add(p);
+                if (!routeEdge.containsKey(p)) continue;
+                for (int j : routeEdge.get(p)) {
+                    if (!visited.contains(j)) q.offer(j);
+                }
+            }
+        }
+
+        return -1;
     }
 
     // LC909
