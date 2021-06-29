@@ -8,7 +8,8 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.convertToTitle(Integer.MAX_VALUE));
+        System.err.println(s.findPairs(new int[]{
+                1, 2, 4, 4, 3, 3, 0, 9, 2, 3}, 3));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -16,6 +17,22 @@ class Scratch {
     }
 
     // LC321 TBD
+
+    // LC532
+    public int findPairs(int[] nums, int k) {
+        Set<Integer> iterSet = new HashSet<>();
+        Set<Integer> visited = new HashSet<>();
+        for (int i : nums) {
+            if (iterSet.contains(i + k)) {
+                visited.add(i);
+            }
+            if (iterSet.contains(i - k)) {
+                visited.add(i - k);
+            }
+            iterSet.add(i);
+        }
+        return visited.size();
+    }
 
     // LC168
     public String convertToTitle(int columnNumber) {
