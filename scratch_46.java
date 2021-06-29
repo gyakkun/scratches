@@ -8,14 +8,24 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.numBusesToDestination(new int[][]{{1, 2, 7}, {3, 6, 7}},
-                1,
-                6
-        ));
+        System.err.println(s.convertToTitle(Integer.MAX_VALUE));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC321 TBD
+
+    // LC168
+    public String convertToTitle(int columnNumber) {
+        StringBuilder sb = new StringBuilder();
+        while (columnNumber != 0) {
+            columnNumber--;
+            sb.insert(0, (char) (columnNumber % 26 + 'A'));
+            columnNumber /= 26;
+        }
+        return sb.toString();
     }
 
     // LC815
