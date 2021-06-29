@@ -8,15 +8,82 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.findPairs(new int[]{
-                1, 2, 4, 4, 3, 3, 0, 9, 2, 3}, 3));
+        System.err.println(s.maxNumber(
+                new int[]{8, 6, 9},
+                new int[]{1, 7, 5},
+                3
+        ));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC321 TBD
+    // LC321 **
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+        // 总共出k个数字
+        int n1l = nums1.length, n2l = nums2.length;
+        int start, end;
+        if (n2l >= k) start = 0; // 如果n2l都比k大, 则n1可以一个都不出
+        else start = k - n2l; // 否则, n1最少要出k-n2l个数
+        if (n1l >= k) end = k; // 如果n1l比k大, 则最后n1可以出k个数, n2一个都不出
+        else end = n1l; // 否则n1最后至少要出所有数, 剩下的数从n2出
+        int[] maxSequence = new int[k];
+        Arrays.fill(maxSequence, -1);
+        for (int i = start; i <= end; i++) {
+            int[] n1s = maxSequence(nums1, i);
+            int[] n2s = maxSequence(nums2, k - i);
+            int[] mergeSequence = mergeSequence(n1s, n2s);
+            if (sequenceCompare(maxSequence, 0, mergeSequence, 0) < 0) {
+                maxSequence = mergeSequence;
+            }
+        }
+        return maxSequence;
+    }
+
+    private int[] maxSequence(int[] arr, int size) {
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < arr.length; i++) {
+            int remain = arr.length - i; // 还剩下多少数可以加到栈里
+            // int lack = size - stack.size(); // 栈里还缺多少个数, 这个要动态算!
+            // 如果lack>=remain, 就不能pop()了, 只能push, 否则栈里的数的数量不够
+            while (!stack.isEmpty() && stack.peek() < arr[i] && remain > (size - stack.size())) {
+                stack.pop();
+            }
+            stack.push(arr[i]);
+        }
+        int[] result = new int[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = stack.pollLast();
+        }
+        return result;
+    }
+
+    private int[] mergeSequence(int[] arr1, int[] arr2) {
+        int[] result = new int[arr1.length + arr2.length];
+        int idx1 = 0, idx2 = 0;
+        for (int i = 0; i < result.length; i++) {
+            if (sequenceCompare(arr1, idx1, arr2, idx2) > 0) {
+                result[i] = arr1[idx1++];
+            } else {
+                result[i] = arr2[idx2++];
+            }
+        }
+        return result;
+    }
+
+    private int sequenceCompare(int[] arr1, int startIdx1, int[] arr2, int startIdx2) {
+        int idx1 = startIdx1, idx2 = startIdx2;
+        while (idx1 < arr1.length && idx2 < arr2.length) {
+            if (arr1[idx1] == arr2[idx2]) {
+                idx1++;
+                idx2++;
+                continue;
+            }
+            return arr1[idx1] - arr2[idx2];
+        }
+        return arr1.length - startIdx1 - (arr2.length - startIdx2);
+    }
 
     // LC532
     public int findPairs(int[] nums, int k) {
