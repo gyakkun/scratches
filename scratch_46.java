@@ -8,15 +8,87 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.maxNumber(
-                new int[]{8, 6, 9},
-                new int[]{1, 7, 5},
-                3
-        ));
+        System.err.println(s.maximumSwap(11119999));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC670
+    public int maximumSwap(int num) {
+        int orig = num;
+        int numDigit = getNumDigit(num);
+        if (numDigit == 1) return num;
+
+        int[] arr = new int[numDigit];
+        int[] max = new int[numDigit];
+        for (int i = numDigit - 1; i >= 0; i--) {
+            arr[i] = num % 10;
+            num /= 10;
+        }
+        System.arraycopy(arr, 0, max, 0, numDigit);
+
+        for (int i = 0; i < numDigit; i++) {
+            for (int j = i + 1; j < numDigit; j++) {
+                if (arr[j] > arr[i]) {
+                    int[] tmp = new int[numDigit];
+                    System.arraycopy(arr, 0, tmp, 0, numDigit);
+                    int t = tmp[i];
+                    tmp[i] = tmp[j];
+                    tmp[j] = t;
+                    if (sequenceCompare(max, 0, tmp, 0) < 0) {
+                        System.arraycopy(tmp, 0, max, 0, numDigit);
+                    }
+                }
+            }
+        }
+
+        int result = 0;
+        for (int i = 0; i < numDigit; i++) {
+            result *= 10;
+            result += max[i];
+        }
+
+        // nums <=10^8
+        return result;
+    }
+
+    private int swapInteger(int i, int idx1, int idx2) {
+        int numDigit = getNumDigit(i);
+        if (idx1 < 0 || idx1 >= numDigit || idx2 < 0 || idx2 >= numDigit) return i;
+        int dig1 = getDigit(i, idx1, numDigit);
+        int dig2 = getDigit(i, idx2, numDigit);
+        int pow1 = numDigit - idx1 - 1;
+        int pow2 = numDigit - idx2 - 1;
+        i -= (int) (Math.pow(10, pow1)) * dig1;
+        i += (int) (Math.pow(10, pow1)) * dig2;
+        i -= (int) (Math.pow(10, pow2)) * dig2;
+        i += (int) (Math.pow(10, pow2)) * dig1;
+        return i;
+    }
+
+    private int getDigit(int i, int idx, int numDigit) {
+        int ctr = numDigit - idx;
+        while (ctr != 1) {
+            ctr--;
+            i /= 10;
+        }
+        return i % 10;
+    }
+
+    private int getDigit(int i, int idx) {
+        return getDigit(i, idx, getNumDigit(i));
+    }
+
+    private int getNumDigit(int i) {
+        if (i == 0) return 1;
+        int result = 0;
+        while (i != 0) {
+            result++;
+            i /= 10;
+        }
+        return result;
     }
 
     // LC321 **
