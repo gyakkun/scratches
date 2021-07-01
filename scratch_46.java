@@ -7,12 +7,55 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        TreeNode n8 = new TreeNode(8);
+        TreeNode n3 = new TreeNode(3);
+        TreeNode n10 = new TreeNode(10);
+        TreeNode n1 = new TreeNode(1);
+        TreeNode n6 = new TreeNode(6);
+        TreeNode n14 = new TreeNode(14);
+        TreeNode n4 = new TreeNode(4);
+        TreeNode n7 = new TreeNode(7);
+        TreeNode n13 = new TreeNode(13);
+        n8.left = n3;
+        n8.right = n10;
+        n3.left = n1;
+        n3.right = n6;
+        n6.left = n4;
+        n6.right = n7;
+        n10.right = n14;
+        n14.left = n13;
 
-        System.err.println(s.maximumSwap(11119999));
+        System.err.println(s.maxAncestorDiff(n8));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1027
+    private TreeMap<Integer, Integer> lc1027Ts;
+    private int lc1027Result = 0;
+
+    public int maxAncestorDiff(TreeNode root) {
+        lc1027Ts = new TreeMap<>();
+        lc1027Helper(root);
+        return lc1027Result;
+    }
+
+    private void lc1027Helper(TreeNode root) {
+        if (root == null) {
+            if (lc1027Ts.size() != 0) {
+                lc1027Result = Math.max(lc1027Result, Math.abs(lc1027Ts.firstKey() - lc1027Ts.lastKey()));
+            }
+            return;
+        }
+        lc1027Ts.put(root.val, lc1027Ts.getOrDefault(root.val, 0) + 1);
+        lc1027Helper(root.left);
+        lc1027Helper(root.right);
+        lc1027Ts.put(root.val, lc1027Ts.get(root.val) - 1);
+        if (lc1027Ts.get(root.val) == 0) {
+            lc1027Ts.remove(root.val);
+        }
     }
 
     // LCP07
