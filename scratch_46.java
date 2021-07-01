@@ -16,6 +16,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1529
+    public int minFlips(String target) {
+        int flag = 0;
+        int result = 0;
+        char[] cArr = target.toCharArray();
+        for (char c : cArr) {
+            int status = c - '0';
+            if (status == flag) continue;
+            result++;
+            flag = 1 - flag;
+        }
+        return result;
+    }
+
     // Interview 16.21
     public int[] findSwapValues(int[] array1, int[] array2) {
         int[] min = array1.length < array2.length ? array1 : array2;
