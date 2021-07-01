@@ -15,6 +15,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP07
+    public int numWays(int n, int[][] relation, int k) {
+        Map<Integer, Set<Integer>> rm = new HashMap<>();
+        for (int[] r : relation) {
+            rm.putIfAbsent(r[0], new HashSet<>());
+            rm.get(r[0]).add(r[1]);
+        }
+        int layer = -1;
+        Deque<Integer> q = new LinkedList<>();
+        q.offer(0);
+        int result = 0;
+        while (!q.isEmpty()) {
+            layer++;
+            if (layer == k) {
+                while (!q.isEmpty()) {
+                    if (q.poll() == n - 1) result++;
+                }
+                return result;
+            }
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
+                int p = q.poll();
+                if (rm.containsKey(p)) {
+                    for (int j : rm.get(p)) {
+                        q.offer(j);
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
     // LC670
     public int maximumSwap(int num) {
         int orig = num;
