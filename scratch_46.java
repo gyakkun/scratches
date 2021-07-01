@@ -18,27 +18,25 @@ class Scratch {
 
     // Interview 16.21
     public int[] findSwapValues(int[] array1, int[] array2) {
-        Arrays.sort(array1);
-        Arrays.sort(array2);
-        int[] minArr = array1.length < array2.length ? array1 : array2;
-        int[] maxArr = minArr == array1 ? array2 : array1;
-        boolean flag = minArr == array1 ? true : false;
-        int minSum = Arrays.stream(minArr).sum();
-        int maxSum = Arrays.stream(maxArr).sum();
-        int diff = minSum - maxSum;
-        if (Math.abs(diff) % 2 == 1) return new int[]{};
-        diff /= 2;
-        for (int i : minArr) {
-            int maxIdx = -1;
-            if ((maxIdx = Arrays.binarySearch(maxArr, i - diff)) >= 0) {
-                if (flag) {
-                    return new int[]{i, maxArr[maxIdx]};
-                } else {
-                    return new int[]{maxArr[maxIdx], i};
-                }
+        int[] min = array1.length < array2.length ? array1 : array2;
+        int[] max = min == array1 ? array2 : array1;
+        Set<Integer> maxSet = new HashSet<>();
+        boolean flag = min == array1;
+        int sumMin = 0, sumMax = 0;
+        for (int i : min) sumMin += i;
+        for (int i : max) {
+            sumMax += i;
+            maxSet.add(i);
+        }
+        if ((sumMax + sumMin) % 2 == 1) return new int[0];
+        int diff = (sumMin - sumMax) / 2;
+        for (int i : min) {
+            if (maxSet.contains(i - diff)) {
+                if (flag) return new int[]{i, i - diff};
+                return new int[]{i - diff, i};
             }
         }
-        return new int[]{};
+        return new int[0];
     }
 
     // LC1027
