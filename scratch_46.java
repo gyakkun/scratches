@@ -7,29 +7,38 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode n8 = new TreeNode(8);
-        TreeNode n3 = new TreeNode(3);
-        TreeNode n10 = new TreeNode(10);
-        TreeNode n1 = new TreeNode(1);
-        TreeNode n6 = new TreeNode(6);
-        TreeNode n14 = new TreeNode(14);
-        TreeNode n4 = new TreeNode(4);
-        TreeNode n7 = new TreeNode(7);
-        TreeNode n13 = new TreeNode(13);
-        n8.left = n3;
-        n8.right = n10;
-        n3.left = n1;
-        n3.right = n6;
-        n6.left = n4;
-        n6.right = n7;
-        n10.right = n14;
-        n14.left = n13;
 
-        System.err.println(s.maxAncestorDiff(n8));
+        System.err.println(s.findSwapValues(new int[]{4, 1, 2, 1, 1, 2},
+                new int[]{3, 6, 3, 3}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 16.21
+    public int[] findSwapValues(int[] array1, int[] array2) {
+        Arrays.sort(array1);
+        Arrays.sort(array2);
+        int[] minArr = array1.length < array2.length ? array1 : array2;
+        int[] maxArr = minArr == array1 ? array2 : array1;
+        boolean flag = minArr == array1 ? true : false;
+        int minSum = Arrays.stream(minArr).sum();
+        int maxSum = Arrays.stream(maxArr).sum();
+        int diff = minSum - maxSum;
+        if (Math.abs(diff) % 2 == 1) return new int[]{};
+        diff /= 2;
+        for (int i : minArr) {
+            int maxIdx = -1;
+            if ((maxIdx = Arrays.binarySearch(maxArr, i - diff)) >= 0) {
+                if (flag) {
+                    return new int[]{i, maxArr[maxIdx]};
+                } else {
+                    return new int[]{maxArr[maxIdx], i};
+                }
+            }
+        }
+        return new int[]{};
     }
 
     // LC1027
