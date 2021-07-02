@@ -16,6 +16,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1833 TBD
+    public int maxIceCream(int[] costs, int coins) {
+        Arrays.sort(costs);
+        for (int i = 1; coins >= 0 && i <= costs.length; i++) {
+            coins -= costs[i - 1];
+            if (coins < 0) return i - 1;
+        }
+        if (coins >= 0) return costs.length;
+        return 0;
+    }
+
+    // LC672 TBD
+    public int flipLights(int n, int presses) {
+        return 0;
+    }
+
+    // LC321 TBD
+
     // LC1529
     public int minFlips(String target) {
         int flag = 0;
