@@ -8,15 +8,38 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.findSwapValues(new int[]{4, 1, 2, 1, 1, 2},
-                new int[]{3, 6, 3, 3}));
+        System.err.println(s.findErrorNums(new int[]{1, 5, 3, 2, 2, 7, 6, 4, 8, 9}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1833 TBD
+    // LC645
+    public int[] findErrorNums(int[] nums) {
+        int len = nums.length;
+        int sum = 0;
+        for (int i : nums) {
+            sum += Math.abs(i);
+            nums[Math.abs(i) - 1] *= -1;
+        }
+        int[] suspect = new int[2];
+        int sctr = 0;
+        for (int i = 1; i <= len; i++) {
+            if (nums[i - 1] > 0) {
+                suspect[sctr++] = i;
+                if (sctr == 2) break;
+            }
+        }
+        int expectSum = (1 + len) * len / 2;
+        if (sum - suspect[0] + suspect[1] == expectSum) {
+            return new int[]{suspect[0], suspect[1]};
+        }
+        return new int[]{suspect[1], suspect[0]};
+
+    }
+
+    // LC1833
     public int maxIceCream(int[] costs, int coins) {
         Arrays.sort(costs);
         for (int i = 1; coins >= 0 && i <= costs.length; i++) {
