@@ -8,11 +8,32 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.eliminateMaximum(new int[]{3, 2, 4}, new int[]{5, 3, 2}));
+        System.err.println(s.countGoodNumbers(1924));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1922 快速幂
+    final long lc1922Mod = 1000000007l;
+
+    public int countGoodNumbers(long n) {
+        return (int) ((quickPow(5, ((n + 1) / 2)) % lc1922Mod) * (quickPow(4, (n / 2)) % lc1922Mod) % lc1922Mod);
+    }
+
+    public long quickPow(long x, long pow) {
+        if (pow == 0) return 1L;
+        long xCon = x;
+        long result = 1l;
+        while (pow != 0) {
+            if (pow % 2 == 1) {
+                result = (result * xCon) % lc1922Mod;
+            }
+            xCon = (xCon * xCon) % lc1922Mod;
+            pow >>= 1;
+        }
+        return result;
     }
 
     // LC1921
