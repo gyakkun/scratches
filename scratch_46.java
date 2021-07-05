@@ -22,23 +22,16 @@ class Scratch {
         for (int i = 0; i < n; i++) {
             time[i] = (0.0d + dist[i]) / (0.0d + speed[i]);
         }
-        PriorityQueue<Integer> pq = new PriorityQueue<>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (o1 < 0 || o1 > n || o2 < 0 || o2 > n) return Integer.MAX_VALUE;
-                return time[o1] - time[o2] < 0 ? -1 : 1;
-            }
-        });
-        for (int i = 0; i < n; i++) pq.offer(i);
+        Arrays.sort(time);
         int min = 0;
-        int result = 0;
-        while (!pq.isEmpty()) {
-            double t = time[pq.poll()];
-            if ((double) min < t) result++;
-            else return result;
-            min++;
+        for (double i : time) {
+            if (min < i) {
+                min++;
+                continue;
+            }
+            return min;
         }
-        return result;
+        return n;
     }
 
     // LC672 **
