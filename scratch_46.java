@@ -51,7 +51,6 @@ class Scratch {
                         if (!atomCtrSb.toString().equals("")) {
                             atomCtr = Integer.valueOf(atomCtrSb.toString());
                         }
-                        if (atomCtr == 0) atomCtr = 1;
                         mStack.peek().put(atom, mStack.peek().getOrDefault(atom, 0) + atomCtr);
                         atomCtrSb = new StringBuilder();
                         atomString = new StringBuilder(2);
