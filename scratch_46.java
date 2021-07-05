@@ -8,12 +8,39 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.countOfAtoms("Be32"));
+        System.err.println(s.flipLights(2, 1));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC672 **
+    public int flipLights(int n, int presses) {
+        int origN = n;
+        n = Math.min(n, 6);
+        int zeroMask = 0;
+        for (int i = 0; i < n; i++) zeroMask |= 1 << i;
+        int[] ops = new int[]{0b101010, 0b010101, 0b001001, 0b111111};
+        Set<Integer> visited = new HashSet<>();
+        // 最多有2^4=16种操作法, 即一个操作执行1次或0次, 用1表示执行了1次, 0表示执行了偶数次(0次)
+        // 整体操作次数的奇偶性应当与presses的奇偶性相同, 且不超过presses次
+        for (int i = 0; i < (1 << 4); i++) {
+            if (Integer.bitCount(i) % 2 == presses % 2 && Integer.bitCount(i) <= presses) {
+                int status = zeroMask;
+                for (int j = 0; j < ops.length; j++) {
+                    if ((((i >> j) & 1)) == 1) {
+                        status ^= ops[j];
+                    }
+                }
+                visited.add(status & zeroMask);
+            }
+        }
+        return visited.size();
+    }
+
+
+    // LC321 TBD
 
     // LC726
     public String countOfAtoms(String formula) {
@@ -79,12 +106,6 @@ class Scratch {
         return sb.toString();
     }
 
-    // LC672 TBD
-    public int flipLights(int n, int presses) {
-        return 0;
-    }
-
-    // LC321 TBD
 
     // LC645
     public int[] findErrorNums(int[] nums) {
