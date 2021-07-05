@@ -8,12 +8,84 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.findErrorNums(new int[]{1, 5, 3, 2, 2, 7, 6, 4, 8, 9}));
+        System.err.println(s.countOfAtoms("Be32"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC726
+    public String countOfAtoms(String formula) {
+        formula = '(' + formula + ')';
+        char[] cArr = formula.toCharArray();
+        Deque<Character> stack = new LinkedList<>();
+        Deque<Map<String, Integer>> mStack = new LinkedList<>();
+        mStack.push(new HashMap<>()); // root counter map
+        for (int i = 0; i < cArr.length; i++) {
+            char c = cArr[i];
+            if (c == '(') {
+                mStack.push(new HashMap<>());
+                stack.push(c);
+            } else if (c == ')') {
+                int parenthesesCtr = 0;
+                while (i + 1 < cArr.length && Character.isDigit(cArr[i + 1])) {
+                    i++;
+                    parenthesesCtr *= 10;
+                    parenthesesCtr += cArr[i] - '0';
+                }
+                if (parenthesesCtr == 0) parenthesesCtr = 1;
+
+                StringBuilder atomCtrSb = new StringBuilder();
+                StringBuilder atomString = new StringBuilder(2);
+                // 开始出栈, 并逐个处理
+                while (!stack.isEmpty() && stack.peek() != '(') {
+                    if (Character.isDigit(stack.peek())) {
+                        atomCtrSb.insert(0, stack.pop());
+                    } else if (Character.isLowerCase(stack.peek())) {
+                        atomString.insert(0, stack.pop());
+                    } else if (Character.isUpperCase(stack.peek())) {
+                        atomString.insert(0, stack.pop());
+                        String atom = atomString.toString();
+                        int atomCtr = 1;
+                        if (!atomCtrSb.toString().equals("")) {
+                            atomCtr = Integer.valueOf(atomCtrSb.toString());
+                        }
+                        if (atomCtr == 0) atomCtr = 1;
+                        mStack.peek().put(atom, mStack.peek().getOrDefault(atom, 0) + atomCtr);
+                        atomCtrSb = new StringBuilder();
+                        atomString = new StringBuilder(2);
+                    }
+                }
+                if (!stack.isEmpty() && stack.peek() == '(') {
+                    stack.pop();
+                    Map<String, Integer> mTop = mStack.pop();
+                    for (String atom : mTop.keySet()) {
+                        mStack.peek().put(atom, mStack.peek().getOrDefault(atom, 0) + parenthesesCtr * mTop.get(atom));
+                    }
+                }
+            } else {
+                stack.push(c);
+            }
+        }
+        if (mStack.size() != 1) return "";
+        TreeMap<String, Integer> tm = new TreeMap<>(mStack.pop());
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : tm.entrySet()) {
+            sb.append(entry.getKey());
+            if (entry.getValue() != 1) {
+                sb.append(entry.getValue());
+            }
+        }
+        return sb.toString();
+    }
+
+    // LC672 TBD
+    public int flipLights(int n, int presses) {
+        return 0;
+    }
+
+    // LC321 TBD
 
     // LC645
     public int[] findErrorNums(int[] nums) {
@@ -49,13 +121,6 @@ class Scratch {
         if (coins >= 0) return costs.length;
         return 0;
     }
-
-    // LC672 TBD
-    public int flipLights(int n, int presses) {
-        return 0;
-    }
-
-    // LC321 TBD
 
     // LC1529
     public int minFlips(String target) {
