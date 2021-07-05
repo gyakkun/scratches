@@ -79,9 +79,6 @@ class Scratch {
         return visited.size();
     }
 
-
-    // LC321 TBD
-
     // LC726
     public String countOfAtoms(String formula) {
         formula = '(' + formula + ')';
