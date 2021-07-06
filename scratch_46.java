@@ -8,11 +8,55 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.minFallingPathSum(new int[][]{{-80, -13, 22}, {83, 94, -5}, {73, -48, 61}}));
+        System.err.println(s.numWays("0000"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1573
+    public int numWays(String s) {
+        final long mod = 1000000007;
+        int n = s.length();
+        char[] cArr = s.toCharArray();
+        int oneCount = 0;
+        for (char c : cArr) oneCount += c - '0';
+        if (oneCount % 3 != 0) return 0;
+        if (oneCount == 0) {
+            long result = 0;
+            int numGap = n - 1;
+            for (int i = 1; i <= numGap - 1; i++) {
+                int j = numGap - i;
+                result = (result + j) % mod;
+            }
+            return (int) (result % mod);
+        }
+        int oneThird = oneCount / 3;
+        int i = 0, ctr = 0;
+        for (; i < n; i++) {
+            ctr += cArr[i] - '0';
+            if (ctr == oneThird) break;
+        }
+        int leftLeftPoint = i;
+        for (i = leftLeftPoint; i < n - 1; i++) {
+            if (cArr[i + 1] == '1') break;
+        }
+        int leftRightPoint = i;
+        i = n - 1;
+        ctr = 0;
+        for (; i >= 0; i--) {
+            ctr += cArr[i] - '0';
+            if (ctr == oneThird) break;
+        }
+        int rightRightPoint = i;
+        for (i = rightRightPoint; i >= 1; i--) {
+            if (cArr[i - 1] == '1') break;
+        }
+        int rightLeftPoint = i;
+        long result = ((long) (leftRightPoint - leftLeftPoint + 1) * (long) (rightRightPoint - rightLeftPoint + 1)) % mod;
+
+        return (int) result;
     }
 
     // LC931
