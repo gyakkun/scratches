@@ -8,11 +8,28 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.countLargestGroup(10000));
+        System.err.println(s.convertToBase7(10000000));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC504
+    public String convertToBase7(int num) {
+        if (num == 0) return "0";
+        boolean negFlag = num < 0;
+        num = Math.abs(num);
+
+        Deque<Integer> stack = new LinkedList<>();
+        while (num != 0) {
+            stack.push(num % 7);
+            num /= 7;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) sb.append(stack.pop());
+
+        return negFlag ? "-" + sb.toString() : sb.toString();
     }
 
     // LC1399
