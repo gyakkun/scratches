@@ -17,7 +17,7 @@ class Scratch {
 
     // LC1418
     public List<List<String>> displayTable(List<List<String>> orders) {
-        List<List<String>> result = new ArrayList<>();
+        List<List<String>> result = new LinkedList<>();
         // orders: customer, table num, dish
         Map<String, Map<String, Integer>> m = new HashMap<>();
         for (List<String> order : orders) {
@@ -30,7 +30,7 @@ class Scratch {
                 dishes.add(dish);
             }
         }
-        List<String> tableHead = new LinkedList<>();
+        List<String> tableHead = new ArrayList<>(dishes.size()+1);
         tableHead.add("Table");
         for (String dish : dishes) {
             tableHead.add(dish);
