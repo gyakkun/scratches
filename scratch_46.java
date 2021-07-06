@@ -8,11 +8,26 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.convertToBase7(10000000));
+        System.err.println(s.thousandSeparator(987));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1556
+    public String thousandSeparator(int n) {
+        if (n == 0) return "0";
+        StringBuilder sb = new StringBuilder();
+        int digit = 0;
+        while (n != 0) {
+            sb.insert(0, n % 10);
+            n /= 10;
+            digit++;
+            if (digit % 3 == 0) sb.insert(0, ".");
+        }
+        if (sb.charAt(0) == '.') sb.deleteCharAt(0);
+        return sb.toString();
     }
 
     // LC504
