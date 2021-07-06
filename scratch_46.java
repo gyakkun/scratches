@@ -15,6 +15,45 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1418
+    public List<List<String>> displayTable(List<List<String>> orders) {
+        List<List<String>> result = new ArrayList<>();
+        // orders: customer, table num, dish
+        Map<String, Map<String, Integer>> m = new HashMap<>();
+        for (List<String> order : orders) {
+            m.putIfAbsent(order.get(1), new HashMap<>());
+            m.get(order.get(1)).put(order.get(2), m.get(order.get(1)).getOrDefault(order.get(2), 0) + 1);
+        }
+        TreeSet<String> dishes = new TreeSet<>();
+        for (String table : m.keySet()) {
+            for (String dish : m.get(table).keySet()) {
+                dishes.add(dish);
+            }
+        }
+        List<String> tableHead = new LinkedList<>();
+        tableHead.add("Table");
+        for (String dish : dishes) {
+            tableHead.add(dish);
+        }
+        for (String table : m.keySet()) {
+            List<String> thisTable = new ArrayList<>(dishes.size() + 1);
+            thisTable.add(table);
+            for (String dish : dishes) {
+                thisTable.add(String.valueOf(m.get(table).getOrDefault(dish, 0)));
+            }
+            result.add(thisTable);
+        }
+        result.sort(new Comparator<List<String>>() {
+            @Override
+            public int compare(List<String> o1, List<String> o2) {
+                return Integer.valueOf(o1.get(0)) - Integer.valueOf(o2.get(0));
+            }
+        });
+        result.add(0, tableHead);
+
+        return result;
+    }
+
     // LC1922 快速幂
     final long lc1922Mod = 1000000007l;
 
