@@ -31,7 +31,7 @@ class Scratch {
         Arrays.sort(count);
         int result = 1;
         for (int i = 35; i >= 0; i--) {
-            if(count[i]==count[i+1]) result ++;
+            if (count[i] == count[i + 1]) result++;
             else break;
         }
         return result;
@@ -52,7 +52,7 @@ class Scratch {
                 dishes.add(dish);
             }
         }
-        List<String> tableHead = new ArrayList<>(dishes.size()+1);
+        List<String> tableHead = new ArrayList<>(dishes.size() + 1);
         tableHead.add("Table");
         for (String dish : dishes) {
             tableHead.add(dish);
