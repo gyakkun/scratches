@@ -8,11 +8,33 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.thousandSeparator(987));
+        System.err.println(s.minFallingPathSum(new int[][]{{-80, -13, 22}, {83, 94, -5}, {73, -48, 61}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC931
+    public int minFallingPathSum(int[][] matrix) {
+        int n = matrix.length;
+        if (n == 1) return matrix[0][0];
+        int[][] dp = new int[2][n];
+        for (int i = 0; i < n; i++) dp[(n - 1) % 2][i] = matrix[n - 1][i];
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = 0; j < n; j++) {
+                if (j == 0) {
+                    dp[i % 2][j] = matrix[i][j] + Math.min(dp[(i + 1) % 2][j], dp[(i + 1) % 2][j + 1]);
+                } else if (j == n - 1) {
+                    dp[i % 2][j] = matrix[i][j] + Math.min(dp[(i + 1) % 2][j], dp[(i + 1) % 2][j - 1]);
+                } else {
+                    dp[i % 2][j] = matrix[i][j] + Math.min(Math.min(dp[(i + 1) % 2][j], dp[(i + 1) % 2][j + 1]), dp[(i + 1) % 2][j - 1]);
+                }
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) min = Math.min(dp[0][i], min);
+        return min;
     }
 
     // LC1556
