@@ -8,11 +8,33 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.countGoodNumbers(1924));
+        System.err.println(s.countLargestGroup(10000));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1399
+    public int countLargestGroup(int n) {
+        int[] count = new int[37];
+
+        for (int i = 1; i <= n; i++) {
+            int num = i;
+            int sum = 0;
+            while (num != 0) {
+                sum += num % 10;
+                num /= 10;
+            }
+            count[sum]++;
+        }
+        Arrays.sort(count);
+        int result = 1;
+        for (int i = 35; i >= 0; i--) {
+            if(count[i]==count[i+1]) result ++;
+            else break;
+        }
+        return result;
     }
 
     // LC1418
