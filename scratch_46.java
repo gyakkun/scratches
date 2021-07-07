@@ -8,11 +8,68 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.isRectangleCover(new int[][]{{1, 1, 3, 3}, {3, 1, 4, 2}, {3, 2, 4, 4}, {1, 3, 2, 4}, {2, 3, 3, 4}}));
+        System.err.println(s.circularArrayLoop(new int[]{-2,-3,-9}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC457
+    public boolean circularArrayLoop(int[] nums) {
+        int numsLen1000 = nums.length;
+        while (numsLen1000 < 1000) {
+            numsLen1000 += nums.length;
+        }
+        Set<Integer> s = new HashSet<>();
+        while (s.size() != nums.length) {
+            int first = -1;
+            for (int i = 0; i < nums.length; i++) {
+                if (!s.contains(i)) {
+                    first = i;
+                    break;
+                }
+            }
+            s.add(first);
+            int fast = first, slow = first;
+            do {
+                fast = (fast + nums[fast] + numsLen1000) % nums.length;
+                fast = (fast + nums[fast] + numsLen1000) % nums.length; // 走两步
+                slow = (slow + nums[slow] + numsLen1000) % nums.length; // 走一步
+                s.add(fast);
+                s.add(slow); // 加入已经走过的点
+            } while (fast != slow);
+            // 最终在环中相遇 fast==slow
+            Set<Integer> loopSet = new HashSet<>();
+            boolean posFlag = nums[fast] > 0;
+            int start = fast, ptr = fast;
+            do {
+                loopSet.add(ptr);
+                ptr = (ptr + nums[ptr] + numsLen1000) % nums.length;
+            } while (ptr != start);
+
+            if (loopSet.size() <= 1) {
+                continue;
+            }
+            boolean constFlag = true;
+            for (int i : loopSet) {
+                if (posFlag) {
+                    if (nums[i] < 0) {
+                        constFlag = false;
+                        break;
+                    }
+                } else {
+                    if (nums[i] > 0) {
+                        constFlag = false;
+                        break;
+                    }
+                }
+            }
+            if (!constFlag) continue;
+            return true;
+        }
+
+        return false;
     }
 
     // LC391 作图找规律
