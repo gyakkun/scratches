@@ -8,7 +8,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.numWays("0000"));
+        System.err.println(s.countPairs(new int[]{64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -17,16 +17,22 @@ class Scratch {
 
     // LC1711
     public int countPairs(int[] deliciousness) {
-        int max = -1;
-        for (int i : deliciousness) max = Math.max(max, i);
-        int maxSum = max * 2;
-        long result = 0;
-        Map<Integer, Integer> m = new HashMap<>();
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
         for (int i : deliciousness) {
-            for (int sum = 1; sum <= maxSum; sum *= 2) {
-                result += m.getOrDefault(sum - i, 0);
+            min = Math.min(i, min);
+            max = Math.max(i, max);
+        }
+        int maxSum = max * 2;
+        int[] map = new int[max - min + 1];
+        int mapLen = max - min + 1;
+        long result = 0;
+        for (int i : deliciousness) {
+            for (int j = 1; j <= maxSum; j <<= 1) {
+                if (j - i - min >= 0 && j - i - min < mapLen) {
+                    result += map[j - i - min];
+                }
             }
-            m.put(i, m.getOrDefault(i, 0) + 1);
+            map[i - min]++;
         }
         return (int) (result % 1000000007L);
     }
