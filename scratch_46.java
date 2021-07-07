@@ -15,7 +15,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC391 尝试扫描线
+    // LC391 作图找规律
+    public boolean isRectangleCoverYA(int[][] rectangles) {
+        Set<Pair<Integer, Integer>> point = new HashSet<>();
+        long area = 0;
+        for (int[] i : rectangles) {
+            area += (long) (i[2] - i[0]) * (long) (i[3] - i[1]);
+            if (!point.add(new Pair<>(i[0], i[1]))) {
+                point.remove(new Pair<>(i[0], i[1]));
+            }
+            if (!point.add(new Pair<>(i[2], i[1]))) {
+                point.remove(new Pair<>(i[2], i[1]));
+            }
+            if (!point.add(new Pair<>(i[0], i[3]))) {
+                point.remove(new Pair<>(i[0], i[3]));
+            }
+            if (!point.add(new Pair<>(i[2], i[3]))) {
+                point.remove(new Pair<>(i[2], i[3]));
+            }
+        }
+        if (point.size() != 4) return false;
+        int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+        for (Pair<Integer, Integer> p : point) {
+            minX = Math.min(minX, p.getKey());
+            minY = Math.min(minY, p.getValue());
+            maxX = Math.max(maxX, p.getKey());
+            maxY = Math.max(maxY, p.getValue());
+        }
+        return area == (long) (maxY - minY) * (long) (maxX - minX);
+    }
+
+    // LC391 扫描线 (可优化: 使用差分数组而非RangeBit)
     public boolean isRectangleCover(int[][] rectangles) {
         // event: int[4] {y, TYPE, x0, x1}
         // TYPE: IN, OUT
