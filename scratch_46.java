@@ -18,20 +18,14 @@ class Scratch {
     // LC391 作图找规律
     public boolean isRectangleCoverYA(int[][] rectangles) {
         Set<Pair<Integer, Integer>> point = new HashSet<>();
+        int[][] idxPair = {{0, 1}, {2, 1}, {0, 3}, {2, 3}};
         long area = 0;
         for (int[] i : rectangles) {
             area += (long) (i[2] - i[0]) * (long) (i[3] - i[1]);
-            if (!point.add(new Pair<>(i[0], i[1]))) {
-                point.remove(new Pair<>(i[0], i[1]));
-            }
-            if (!point.add(new Pair<>(i[2], i[1]))) {
-                point.remove(new Pair<>(i[2], i[1]));
-            }
-            if (!point.add(new Pair<>(i[0], i[3]))) {
-                point.remove(new Pair<>(i[0], i[3]));
-            }
-            if (!point.add(new Pair<>(i[2], i[3]))) {
-                point.remove(new Pair<>(i[2], i[3]));
+            for (int[] ip : idxPair) {
+                if (!point.add(new Pair<>(i[ip[0]], i[ip[1]]))) {
+                    point.remove(new Pair<>(i[ip[0]], i[ip[1]]));
+                }
             }
         }
         if (point.size() != 4) return false;
