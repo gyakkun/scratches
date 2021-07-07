@@ -15,6 +15,48 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1851 **
+    public int[] minInterval(int[][] intervals, int[] queries) {
+        class Event {
+            static final int IN = 1, QUERY = 2, OUT = 3;
+
+            int type, idx, param;
+
+            public Event(int type, int idx, int param) {
+                this.type = type;
+                this.idx = idx;
+                this.param = param;
+            }
+        }
+        List<Event> l = new ArrayList<>(intervals.length * 2 + queries.length);
+        for (int[] i : intervals) {
+            l.add(new Event(Event.IN, i[0], i[1]));
+            l.add(new Event(Event.OUT, i[1], i[0]));
+        }
+        for (int i = 0; i < queries.length; i++) {
+            l.add(new Event(Event.QUERY, queries[i], i));
+        }
+        l.sort(new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                return o1.idx == o2.idx ? o1.type - o2.type : o1.idx - o2.idx;
+            }
+        });
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        int[] result = new int[queries.length];
+        for (Event e : l) {
+            if (e.type == Event.IN) {
+                tm.put(e.param - e.idx + 1, tm.getOrDefault(e.param - e.idx + 1, 0) + 1);
+            } else if (e.type == Event.QUERY) {
+                result[e.param] = tm.isEmpty() ? -1 : tm.firstKey();
+            } else if (e.type == Event.OUT) {
+                tm.put(e.idx - e.param + 1, tm.get(e.idx - e.param + 1) - 1);
+                if (tm.get(e.idx - e.param + 1) == 0) tm.remove(e.idx - e.param + 1);
+            }
+        }
+        return result;
+    }
+
     // LC1711
     public int countPairs(int[] deliciousness) {
         int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
