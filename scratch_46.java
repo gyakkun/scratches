@@ -8,11 +8,84 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.countPairs(new int[]{64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64}));
+        System.err.println(s.isRectangleCover(new int[][]{{1, 1, 3, 3}, {3, 1, 4, 2}, {3, 2, 4, 4}, {1, 3, 2, 4}, {2, 3, 3, 4}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC391 尝试扫描线
+    public boolean isRectangleCover(int[][] rectangles) {
+        // event: int[4] {y, TYPE, x0, x1}
+        // TYPE: IN, OUT
+        final int IN = 0, OUT = 1;
+        List<int[]> events = new ArrayList<>(rectangles.length * 2);
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
+        for (int[] r : rectangles) {
+            events.add(new int[]{r[1], IN, r[0], r[2]});
+            events.add(new int[]{r[3], OUT, r[0], r[2]});
+            minX = Math.min(r[0], minX);
+            maxX = Math.max(r[2], maxX);
+        }
+        RangeBit bit = new RangeBit(maxX - minX + 1);
+        events.sort(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        });
+        int maxY = events.get(events.size() - 1)[0];
+        int[] curIntv = new int[]{0, 0};
+        boolean init = false;
+        for (int i = 0; i < events.size(); ) {
+            int y = events.get(i)[0];
+            List<int[]> sameY = new ArrayList<>();
+            while (i < events.size() && events.get(i)[0] == y) {
+                sameY.add(events.get(i++));
+            }
+
+            if (!init) {
+                curIntv[0] = sameY.get(0)[2];
+                curIntv[1] = sameY.get(0)[3];
+                bit.rangeUpdateFromZero(curIntv[0] + 1 - minX, curIntv[1] - minX, 1);
+                for (int j = 1; j < sameY.size(); j++) {
+                    curIntv[0] = Math.min(curIntv[0], sameY.get(j)[2]);
+                    curIntv[1] = Math.max(curIntv[1], sameY.get(j)[3]);
+                    bit.rangeUpdateFromZero(sameY.get(j)[2] + 1 - minX, sameY.get(j)[3] - minX, 1);
+                }
+                init = true;
+            } else {
+                for (int j = 0; j < sameY.size(); j++) {
+                    if (sameY.get(j)[2] < curIntv[0]) {
+                        return false;
+                    }
+                    if (sameY.get(j)[3] > curIntv[1]) {
+                        return false;
+                    }
+                    if (sameY.get(j)[1] == OUT) {
+                        bit.rangeUpdateFromZero(sameY.get(j)[2] + 1 - minX, sameY.get(j)[3] - minX, -1);
+                    } else if (sameY.get(j)[1] == IN) {
+                        bit.rangeUpdateFromZero(sameY.get(j)[2] + 1 - minX, sameY.get(j)[3] - minX, 1);
+                    }
+                }
+            }
+            if (y != maxY) {
+                for (int j = curIntv[0] + 1; j <= curIntv[1]; j++) {
+                    if (bit.getFromZero(j - minX) != 1) {
+                        return false;
+                    }
+                }
+            } else {
+                for (int j = curIntv[0] + 1; j <= curIntv[1]; j++) {
+                    if (bit.getFromZero(j - minX) != 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     // LC1851 ** 离线算法
@@ -2476,5 +2549,98 @@ class Solution {
             }
         }
         return true;
+    }
+}
+
+class RangeBit { // 注意存入的是差分数组, 目标数组 a[i] 即对diff数组求前缀和
+    long[] diff;
+    long[] iDiff;
+    int len;
+
+    public RangeBit(int len) {
+        this.len = len;
+        diff = new long[len + 1];
+        iDiff = new long[len + 1];
+    }
+
+    public void setFromZero(int idx, long value) {
+        long delta = value - getFromZero(idx);
+        updateFromZero(idx, delta);
+    }
+
+    public void setFromOne(int idx, long value) {
+        long delta = value - getFromOne(idx);
+        updateFromOne(idx, delta);
+    }
+
+    public long getFromZero(int idx) {
+        return getFromOne(idx + 1);
+    }
+
+    public long getFromOne(int idx) {
+        return getSum(diff, idx);
+    }
+
+    public void updateFromZero(int idx, long delta) {
+        rangeUpdate(idx + 1, idx + 1, delta);
+    }
+
+    public void updateFromOne(int idx, long delta) {
+        rangeUpdate(idx, idx, delta);
+    }
+
+    public void rangeUpdateFromZero(int l, int r, long delta) { // 对闭区间l,r进行更新, 即更新到差分数组上
+        rangeUpdate(l + 1, r + 1, delta);
+    }
+
+    public void rangeUpdateFromOne(int l, int r, long delta) { // 对闭区间l,r进行更新, 即更新到差分数组上
+        rangeUpdate(l, r, delta);
+    }
+
+    public long sumFromZero(int idx) {
+        return getRangeSum(1, idx + 1);
+    }
+
+    public long sumFromOne(int idx) {
+        return getRangeSum(1, idx);
+    }
+
+    public long rangeSumFromZero(int l, int r) {
+        return getRangeSum(l + 1, r + 1);
+    }
+
+    public long rangeSumFromOne(int l, int r) {
+        return getRangeSum(l, r);
+    }
+
+    private void update(int idx, long delta) { // update 的 是 差分数组, idx 从1开始算
+        long iDelta = idx * delta;
+        while (idx <= len) {
+            diff[idx] += delta;
+            iDiff[idx] += iDelta;
+            idx += lowbit(idx);
+        }
+    }
+
+    private long getSum(long[] treeArr, int idx) { // 对树状数组的第1到第idx项求和
+        long sum = 0;
+        while (idx > 0) {
+            sum += treeArr[idx];
+            idx -= lowbit(idx);
+        }
+        return sum;
+    }
+
+    private void rangeUpdate(int l, int r, long delta) { // 对闭区间l,r进行更新, 即更新到差分数组上
+        update(l, delta);
+        update(r + 1, -delta);
+    }
+
+    private long getRangeSum(int l, int r) {
+        return (r + 1) * getSum(diff, r) - getSum(iDiff, r) - ((l - 1 + 1) * getSum(diff, l - 1) - getSum(iDiff, l - 1));
+    }
+
+    private int lowbit(int x) {
+        return x & (x ^ (x - 1)); // 或 x& (-x)
     }
 }
