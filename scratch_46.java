@@ -15,6 +15,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1711
+    public int countPairs(int[] deliciousness) {
+        int max = -1;
+        for (int i : deliciousness) max = Math.max(max, i);
+        int maxSum = max * 2;
+        long result = 0;
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i : deliciousness) {
+            for (int sum = 1; sum <= maxSum; sum *= 2) {
+                result += m.getOrDefault(sum - i, 0);
+            }
+            m.put(i, m.getOrDefault(i, 0) + 1);
+        }
+        return (int) (result % 1000000007L);
+    }
+
     // LC1573
     public int numWays(String s) {
         final long mod = 1000000007;
