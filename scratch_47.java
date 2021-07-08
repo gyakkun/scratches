@@ -26,6 +26,36 @@ class Scratch {
     }
 }
 
+// JZOF 59
+class MaxQueue {
+
+    Deque<Integer> q;
+    TreeMap<Integer,Integer> tm;
+
+    public MaxQueue() {
+        q = new LinkedList<>();
+        tm = new TreeMap<>();
+    }
+
+    public int max_value() {
+        if (q.size() == 0) return -1;
+        return tm.lastKey();
+    }
+
+    public void push_back(int value) {
+        tm.put(value, tm.getOrDefault(value, 0) + 1);
+        q.offer(value);
+    }
+
+    public int pop_front() {
+        if (q.size() == 0) return -1;
+        int victim = q.poll();
+        tm.put(victim, tm.get(victim) - 1);
+        if(tm.get(victim)==0) tm.remove(victim);
+        return victim;
+    }
+}
+
 // LC460
 class LFUCache {
     Map<Integer, Node> keyValue;
