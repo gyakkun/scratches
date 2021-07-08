@@ -5,21 +5,21 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        WordDictionary wd = new WordDictionary();
-        WordDictionary wordDictionary = new WordDictionary();
-        wordDictionary.addWord("a");
-
-        Trie trie = new Trie();
-        trie.addWord("word");
-        trie.addWord("wo");
-
-        System.out.println(wordDictionary.search(".a")); // return True
-
-        System.err.println("");
-
+        System.out.println(s.largestAltitude(new int[]{-4, -3, -2, -1, 4, 3, 2}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1732
+    public int largestAltitude(int[] gain) {
+        int cur = 0;
+        int max = 0;
+        for (int i : gain) {
+            cur += i;
+            max = Math.max(max, cur);
+        }
+        return max;
     }
 }
 
