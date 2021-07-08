@@ -8,11 +8,25 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.circularArrayLoop(new int[]{-2,-3,-9}));
+        System.err.println(s.numSubarraysWithSum(new int[]{0,0,0,0,0}, 0));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC930
+    public int numSubarraysWithSum(int[] nums, int goal) {
+        Map<Integer, Integer> prefix = new HashMap<>();
+        prefix.put(0, 1);
+        int prefixSum = 0;
+        int result = 0;
+        for (int i : nums) {
+            prefixSum += i;
+            result += prefix.getOrDefault(prefixSum - goal, 0);
+            prefix.put(prefixSum, prefix.getOrDefault(prefixSum, 0) + 1);
+        }
+        return result;
     }
 
     // LC457
