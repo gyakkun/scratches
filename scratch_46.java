@@ -8,7 +8,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.err.println(s.numSubarraysWithSum(new int[]{0,0,0,0,0}, 0));
+        System.err.println(s.numSubarraysWithSum(new int[]{0, 0, 0, 0, 0}, 0));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -17,14 +17,16 @@ class Scratch {
 
     // LC930
     public int numSubarraysWithSum(int[] nums, int goal) {
-        Map<Integer, Integer> prefix = new HashMap<>();
-        prefix.put(0, 1);
+        int sum = 0;
+        for (int i : nums) sum += i;
+        int[] prefix = new int[sum + 1];
+        prefix[0] = 1;
         int prefixSum = 0;
         int result = 0;
         for (int i : nums) {
             prefixSum += i;
-            result += prefix.getOrDefault(prefixSum - goal, 0);
-            prefix.put(prefixSum, prefix.getOrDefault(prefixSum, 0) + 1);
+            result += (prefixSum - goal >= 0 && prefixSum - goal <= sum) ? prefix[prefixSum - goal] : 0;
+            prefix[prefixSum]++;
         }
         return result;
     }
