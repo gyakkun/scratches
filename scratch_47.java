@@ -5,24 +5,95 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        LFUCache lfuCache = new LFUCache(2);
-        lfuCache.put(1, 1);
-        lfuCache.put(2, 2);
-        lfuCache.get(1);
-        lfuCache.put(3, 3);
-        lfuCache.get(2);
-        lfuCache.get(3);
-        lfuCache.put(4, 4);
-        lfuCache.get(1);
-        lfuCache.get(3);
-        lfuCache.get(4);
+        WordDictionary wd = new WordDictionary();
+        WordDictionary wordDictionary = new WordDictionary();
+        wordDictionary.addWord("a");
 
+        Trie trie = new Trie();
+        trie.addWord("word");
+        trie.addWord("wo");
+
+        System.out.println(wordDictionary.search(".a")); // return True
 
         System.err.println("");
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+}
+
+// LC211
+class WordDictionary {
+
+    Set<String> s;
+    Trie trie;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public WordDictionary() {
+        s = new HashSet<>();
+        trie = new Trie();
+    }
+
+    public void addWord(String word) {
+        s.add(word);
+        trie.addWord(word);
+    }
+
+    public boolean search(String word) {
+        return searchHelper("", word);
+    }
+
+    private boolean searchHelper(String prefix, String suffix) {
+        if (suffix.equals("")) {
+            return s.contains(prefix);
+        }
+        StringBuilder prefixSb = new StringBuilder(prefix);
+        for (int i = 0; i < suffix.length(); i++) {
+            if (suffix.charAt(i) != '.') {
+                prefixSb.append(suffix.charAt(i));
+            } else {
+                for (int j = 0; j < 26; j++) {
+                    prefixSb.append((char) ('a' + j));
+                    if (!trie.beginWith(prefixSb.toString())) { // 用Trie剪枝
+                        prefixSb.deleteCharAt(prefixSb.length() - 1);
+                        continue;
+                    }
+                    String suf = suffix.substring(i + 1);
+                    if (searchHelper(prefixSb.toString(), suf)) return true;
+                    prefixSb.deleteCharAt(prefixSb.length() - 1);
+                }
+                return false;
+            }
+        }
+        return s.contains(prefixSb.toString());
+    }
+}
+
+class Trie {
+    Map<String, Boolean> m;
+
+    public Trie() {
+        m = new HashMap<>();
+    }
+
+    public void addWord(String word) {
+        for (int i = 1; i < word.length(); i++) {
+            if (!m.getOrDefault(word.substring(0, i), false)) {
+                m.put(word.substring(0, i), false);
+            }
+        }
+        m.put(word, true);
+    }
+
+    public boolean search(String word) {
+        return m.getOrDefault(word, false);
+    }
+
+    public boolean beginWith(String word) {
+        return m.containsKey(word);
     }
 }
 
