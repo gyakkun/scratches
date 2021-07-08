@@ -26,6 +26,7 @@ class Scratch {
     }
 }
 
+// LC460
 class LFUCache {
     Map<Integer, Node> keyValue;
     TreeMap<Integer, LinkedList<Node>> freqMap;
