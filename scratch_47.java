@@ -30,28 +30,30 @@ class Scratch {
 class MaxQueue {
 
     Deque<Integer> q;
-    TreeMap<Integer,Integer> tm;
+    Deque<Integer> dq;
 
     public MaxQueue() {
         q = new LinkedList<>();
-        tm = new TreeMap<>();
+        dq = new LinkedList<>();
     }
 
     public int max_value() {
         if (q.size() == 0) return -1;
-        return tm.lastKey();
+        return dq.peekFirst();
     }
 
     public void push_back(int value) {
-        tm.put(value, tm.getOrDefault(value, 0) + 1);
+        while (!dq.isEmpty() && dq.peekLast() < value) {
+            dq.pollLast();
+        }
+        dq.offer(value);
         q.offer(value);
     }
 
     public int pop_front() {
-        if (q.size() == 0) return -1;
+        if (q.isEmpty()) return -1;
         int victim = q.poll();
-        tm.put(victim, tm.get(victim) - 1);
-        if(tm.get(victim)==0) tm.remove(victim);
+        if (victim == dq.peekFirst()) dq.pollFirst();
         return victim;
     }
 }
