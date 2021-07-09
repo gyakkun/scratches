@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.bouncycastle.asn1.cmc.PopLinkWitnessV2;
 
 import java.util.*;
 
@@ -20,6 +21,40 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1048
+    Map<String, Integer> lc1048Map;
+    Map<Integer, Set<String>> lc1048tm;
+
+    public int longestStrChain(String[] words) {
+        lc1048Map = new HashMap<>();
+        lc1048tm = new TreeMap<>((o1, o2) -> o2 - o1);
+        for (String w : words) {
+            lc1048Map.put(w, 1);
+            lc1048tm.putIfAbsent(w.length(), new HashSet<>());
+            lc1048tm.get(w.length()).add(w);
+        }
+        // Hint: For each word in order of length, for each word2 which is word with one character removed, length[word2] = max(length[word2], length[word] + 1).
+        Iterator<Integer> it = lc1048tm.keySet().iterator();
+        int max = 1;
+        while (it.hasNext()) {
+            for (String w : lc1048tm.get(it.next())) {
+                max = Math.max(max, lc1048Helper(w));
+            }
+        }
+        return max;
+    }
+
+    private int lc1048Helper(String word) {
+        for (int i = 1; i <= word.length(); i++) {
+            String removed = word.substring(0, i - 1) + word.substring(i);
+            if (lc1048Map.containsKey(removed)) {
+                int lw2 = Math.max(lc1048Map.get(removed), lc1048Map.get(word) + 1);
+                lc1048Map.put(removed, lw2);
+            }
+        }
+        return lc1048Map.get(word);
     }
 
     // Interview 17.10 ** 摩尔投票算法
