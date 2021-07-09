@@ -55,6 +55,52 @@ class Scratch {
     }
 }
 
+// LC715 ** from Solution
+class RangeModule {
+    TreeSet<Pair<Integer, Integer>> ts;
+
+    public RangeModule() {
+        ts = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
+            @Override
+            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+                return o1.getValue() == o2.getValue() ? o1.getKey() - o2.getKey() : o1.getValue() - o2.getValue();
+            }
+        });
+    }
+
+    public void addRange(int left, int right) {
+        Iterator<Pair<Integer, Integer>> it = ts.tailSet(new Pair<>(0, left), false).iterator();
+        while (it.hasNext()) {
+            Pair<Integer, Integer> r = it.next();
+            if (right < r.getKey()) break;
+            left = Math.min(r.getKey(), left);
+            right = Math.max(r.getValue(), right);
+            it.remove();
+            ts.remove(r);
+        }
+        ts.add(new Pair<>(left, right));
+    }
+
+    public boolean queryRange(int left, int right) {
+        Pair<Integer, Integer> r = ts.higher(new Pair<>(0, left));
+        return r != null && r.getKey() <= left && right <= r.getValue();
+    }
+
+    public void removeRange(int left, int right) {
+        Iterator<Pair<Integer, Integer>> it = ts.tailSet(new Pair<>(0, left), true).iterator();
+        List<Pair<Integer, Integer>> toAdd = new LinkedList<>();
+        while (it.hasNext()) {
+            Pair<Integer, Integer> r = it.next();
+            if (r.getKey() > right) break;
+            if (r.getKey() < left) toAdd.add(new Pair<>(r.getKey(), left));
+            if (r.getValue() > right) toAdd.add(new Pair<>(right, r.getValue()));
+            it.remove();
+            ts.remove(r);
+        }
+        for (Pair<Integer, Integer> p : toAdd) ts.add(p);
+    }
+}
+
 // LC352
 class SummaryRanges {
 
