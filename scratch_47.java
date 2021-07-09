@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -5,7 +7,12 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.largestAltitude(new int[]{-4, -3, -2, -1, 4, 3, 2}));
+        SummaryRanges sr = new SummaryRanges();
+        sr.addNum(1);
+        sr.addNum(9);
+        sr.addNum(2);
+        sr.getIntervals();
+//        System.out.println(s.largestAltitude(new int[]{-4, -3, -2, -1, 4, 3, 2}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -45,6 +52,74 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC352
+class SummaryRanges {
+
+    TreeSet<Pair<Integer, Integer>> leftSide;
+    TreeSet<Pair<Integer, Integer>> rightSide;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public SummaryRanges() {
+        leftSide = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
+            @Override
+            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+                return o1.getKey().compareTo(o2.getKey());
+            }
+        });
+        rightSide = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
+            @Override
+            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+    }
+
+    public void addNum(int val) {
+        Pair<Integer, Integer> p = new Pair<>(val, val);
+        Pair<Integer, Integer> lsf = leftSide.floor(p);
+        Pair<Integer, Integer> rsc = rightSide.ceiling(p);
+        if (lsf != null && rsc != null && lsf.getValue() + 1 == val && rsc.getKey() - 1 == val) {
+            // merge lsf rsc
+            leftSide.remove(rsc);
+            leftSide.remove(lsf);
+            rightSide.remove(rsc);
+            rightSide.remove(lsf);
+            Pair<Integer, Integer> n = new Pair<>(lsf.getKey(), rsc.getValue());
+            leftSide.add(n);
+            rightSide.add(n);
+        } else if (lsf != null && lsf.getValue() + 1 == val) {
+            leftSide.remove(lsf);
+            rightSide.remove(lsf);
+            Pair<Integer, Integer> n = new Pair<>(lsf.getKey(), val);
+            leftSide.add(n);
+            rightSide.add(n);
+        } else if (rsc != null && rsc.getKey() - 1 == val) {
+            leftSide.remove(rsc);
+            rightSide.remove(rsc);
+            Pair<Integer, Integer> n = new Pair<>(val, rsc.getValue());
+            leftSide.add(n);
+            rightSide.add(n);
+        } else if ((lsf != null && val <= lsf.getValue()) || (rsc != null && val >= rsc.getKey())) {
+            ;
+        } else {
+            leftSide.add(p);
+            rightSide.add(p);
+        }
+
+    }
+
+    public int[][] getIntervals() {
+        int[][] result = new int[leftSide.size()][];
+        int ctr = 0;
+        for (Pair<Integer, Integer> p : leftSide) {
+            result[ctr++] = new int[]{p.getKey(), p.getValue()};
+        }
+        return result;
     }
 }
 
@@ -228,12 +303,16 @@ class LFUCache {
 class MyStack {
     Queue<Integer> q;
 
-    /** Initialize your data structure here. */
+    /**
+     * Initialize your data structure here.
+     */
     public MyStack() {
         q = new LinkedList<>();
     }
 
-    /** Push element x onto stack. */
+    /**
+     * Push element x onto stack.
+     */
     public void push(int x) {
         int size = q.size();
         q.offer(x);
@@ -242,17 +321,23 @@ class MyStack {
         }
     }
 
-    /** Removes the element on top of the stack and returns that element. */
+    /**
+     * Removes the element on top of the stack and returns that element.
+     */
     public int pop() {
         return q.poll();
     }
 
-    /** Get the top element. */
+    /**
+     * Get the top element.
+     */
     public int top() {
         return q.peek();
     }
 
-    /** Returns whether the stack is empty. */
+    /**
+     * Returns whether the stack is empty.
+     */
     public boolean empty() {
         return q.isEmpty();
     }
