@@ -11,6 +11,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 17.10 ** 摩尔投票算法
+    public int majorityElement(int[] nums) {
+        int count = 0;
+        int major = -1;
+        for (int i : nums) {
+            if (count == 0) {
+                major = i;
+                count = 1;
+            } else {
+                if (i == major) {
+                    count++;
+                } else {
+                    count--;
+                }
+            }
+        }
+        if (count <= 0) return -1;
+        count = 0;
+        for (int i : nums) {
+            if (i == major) count++;
+        }
+        if (count > (nums.length / 2)) return major;
+        return -1;
+    }
+
     // LC1732
     public int largestAltitude(int[] gain) {
         int cur = 0;
