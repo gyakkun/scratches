@@ -7,11 +7,15 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        SummaryRanges sr = new SummaryRanges();
-        sr.addNum(1);
-        sr.addNum(9);
-        sr.addNum(2);
-        sr.getIntervals();
+        Twitter t = new Twitter();
+        t.postTweet(1, 1);
+        t.getNewsFeed(1);
+        t.follow(2, 1);
+        t.getNewsFeed(2);
+        t.unfollow(2, 1);
+        t.getNewsFeed(2);
+
+
 //        System.out.println(s.largestAltitude(new int[]{-4, -3, -2, -1, 4, 3, 2}));
 
         timing = System.currentTimeMillis() - timing;
@@ -52,6 +56,91 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC355
+class Twitter {
+
+    Map<Integer, Set<Integer>> follow;
+    Map<Integer, List<Pair<Long, Integer>>> tweets;
+    long time;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public Twitter() {
+        time = 0;
+        follow = new HashMap<>();
+        tweets = new HashMap<>();
+    }
+
+    /**
+     * Compose a new tweet.
+     */
+    public void postTweet(int userId, int tweetId) {
+        if (!follow.containsKey(userId)) follow.put(userId, new HashSet<>());
+        if (!tweets.containsKey(userId)) tweets.put(userId, new LinkedList<>());
+
+        tweets.get(userId).add(0, new Pair<>(getTime(), tweetId));
+    }
+
+    /**
+     * Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent.
+     */
+    public List<Integer> getNewsFeed(int userId) {
+        if (!follow.containsKey(userId)) follow.put(userId, new HashSet<>());
+        if (!tweets.containsKey(userId)) tweets.put(userId, new LinkedList<>());
+        PriorityQueue<Pair<Long, Integer>> pq = new PriorityQueue<>(Comparator.comparingLong(o -> o.getKey()));
+        final int maxSize = 10;
+        for (Pair<Long, Integer> t : tweets.get(userId)) {
+            if (pq.size() < maxSize) {
+                pq.offer(t);
+            }
+        }
+        for (int fid : follow.get(userId)) {
+            for (Pair<Long, Integer> t : tweets.get(fid)) {
+                if (pq.size() < maxSize) {
+                    pq.offer(t);
+                } else {
+                    if (pq.peek().getKey() < t.getKey()) {
+                        pq.poll();
+                        pq.offer(t);
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        List<Integer> result = new LinkedList<>();
+        while (!pq.isEmpty()) {
+            result.add(0, pq.poll().getValue());
+        }
+        return result;
+    }
+
+    /**
+     * Follower follows a followee. If the operation is invalid, it should be a no-op.
+     */
+    public void follow(int followerId, int followeeId) {
+        if (!follow.containsKey(followerId)) follow.put(followerId, new HashSet<>());
+        if (!follow.containsKey(followeeId)) follow.put(followeeId, new HashSet<>());
+        if (!tweets.containsKey(followerId)) tweets.put(followerId, new LinkedList<>());
+        if (!tweets.containsKey(followeeId)) tweets.put(followeeId, new LinkedList<>());
+
+        follow.get(followerId).add(followeeId);
+    }
+
+    /**
+     * Follower unfollows a followee. If the operation is invalid, it should be a no-op.
+     */
+    public void unfollow(int followerId, int followeeId) {
+        if (!follow.containsKey(followerId)) return;
+        follow.get(followerId).remove(followeeId);
+    }
+
+    private long getTime() {
+        return time++;
     }
 }
 
