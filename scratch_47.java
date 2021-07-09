@@ -24,6 +24,27 @@ class Scratch {
         return h;
     }
 
+    // LC467 **
+    public int findSubstringInWraproundString(String p) {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        char[] al = alphabet.toCharArray();
+        int[] dp = new int[26];
+        char[] cArr = p.toCharArray();
+        dp[cArr[0] - 'a'] = 1;
+        int k = 1;
+        for (int i = 1; i < cArr.length; i++) {
+            if (al[(cArr[i - 1] - 'a' + 1) % 26] == cArr[i]) {
+                k++;
+            } else {
+                k = 1;
+            }
+            dp[cArr[i] - 'a'] = Math.max(dp[cArr[i] - 'a'], k);
+        }
+        int sum = 0;
+        for (int i : dp) sum += i;
+        return sum;
+    }
+
     // LC1048
     Map<String, Integer> lc1048Map;
     Map<Integer, Set<String>> lc1048tm;
