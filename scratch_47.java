@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import org.bouncycastle.asn1.cmc.PopLinkWitnessV2;
 
 import java.util.*;
 
@@ -91,6 +90,28 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC981
+class TimeMap {
+    Map<String, TreeMap<Integer, String>> m;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public TimeMap() {
+        m = new HashMap<>();
+    }
+
+    public void set(String key, String value, int timestamp) {
+        m.putIfAbsent(key, new TreeMap<>());
+        m.get(key).put(timestamp, value);
+    }
+
+    public String get(String key, int timestamp) {
+        if (!m.containsKey(key)) return "";
+        return m.get(key).floorEntry(timestamp) == null ? "" : m.get(key).floorEntry(timestamp).getValue();
     }
 }
 
