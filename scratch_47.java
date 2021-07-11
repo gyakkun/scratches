@@ -7,19 +7,21 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        Twitter t = new Twitter();
-        t.postTweet(1, 1);
-        t.getNewsFeed(1);
-        t.follow(2, 1);
-        t.getNewsFeed(2);
-        t.unfollow(2, 1);
-        t.getNewsFeed(2);
 
+        System.out.println(s.hIndex(new int[]{7, 7, 7, 7, 7, 7, 7}));
 
-//        System.out.println(s.largestAltitude(new int[]{-4, -3, -2, -1, 4, 3, 2}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC274 275 **
+    public int hIndex(int[] citations) {
+        int n = citations.length;
+        Arrays.sort(citations);
+        int h = 0;
+        for (int i = n - 1; i >= 0 && citations[i] > h; h++, i--) ;
+        return h;
     }
 
     // LC1048
