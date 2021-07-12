@@ -8,11 +8,31 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.arrangeWords("To be or not to be"));
+        System.out.println(s.maxProduct(new String[]{"a", "aa", "aaa", "aaaa"}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC318
+    public int maxProduct(String[] words) {
+        int n = words.length;
+        int[] bitArr = new int[n];
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            for (char c : words[i].toCharArray()) {
+                bitArr[i] |= 1 << (c - 'a');
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if ((bitArr[i] & bitArr[j]) == 0) {
+                    max = Math.max(words[i].length() * words[j].length(), max);
+                }
+            }
+        }
+        return max;
     }
 
     // LC1451
