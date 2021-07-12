@@ -8,11 +8,30 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maxProduct(new String[]{"a", "aa", "aaa", "aaaa"}));
+        System.out.println(s.singleNumbers(new int[]{1, 2, 10, 4, 1, 4, 3, 3}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF 56 **
+    public int[] singleNumbers(int[] nums) {
+        int victimXor = 0;
+        for (int i : nums) victimXor ^= i;
+        int div = 1;
+        for (int i = 0; i < Integer.SIZE; i++, div <<= 1) {
+            if ((div & victimXor) == div) break;
+        }
+        int groupA = 0, groupB = 0;
+        for (int i : nums) {
+            if ((i & div) == div) {
+                groupA ^= i;
+            } else {
+                groupB ^= i;
+            }
+        }
+        return new int[]{groupA, groupB};
     }
 
     // LC318
