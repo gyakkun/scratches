@@ -7,6 +7,16 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        RandomizedCollection rc = new RandomizedCollection();
+        rc.insert(1);
+        rc.remove(2);
+        rc.insert(2);
+        rc.getRandom();
+
+        rc.remove(1);
+        rc.insert(2);
+        rc.getRandom();
+
 
         System.out.println(s.singleNumbers(new int[]{1, 2, 10, 4, 1, 4, 3, 3}));
 
@@ -192,6 +202,61 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC381 ** from Solution
+class RandomizedCollection {
+    List<Integer> nums;
+    Map<Integer, Set<Integer>> idx;
+    Random r;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public RandomizedCollection() {
+        r = new Random();
+        idx = new HashMap<>();
+        nums = new ArrayList<>();
+    }
+
+    /**
+     * Inserts a value to the collection. Returns true if the collection did not already contain the specified element.
+     */
+    public boolean insert(int val) {
+        idx.putIfAbsent(val, new HashSet<>());
+        nums.add(val);
+        idx.get(val).add(nums.size() - 1);
+        return idx.get(val).size() == 1;
+    }
+
+    /**
+     * Removes a value from the collection. Returns true if the collection contained the specified element.
+     */
+    public boolean remove(int val) {
+        if (!idx.containsKey(val)) {
+            return false;
+        }
+        Iterator<Integer> it = idx.get(val).iterator();
+        int possibleIdx = it.next();
+        int lastNum = nums.get(nums.size() - 1);
+        nums.set(possibleIdx, lastNum);
+        idx.get(val).remove(possibleIdx);
+        idx.get(lastNum).remove(nums.size() - 1);
+        if (possibleIdx != nums.size() - 1) { // 注意合理值判断, 如果取到的待删除下标恰好是列表的最后一个数的下标, 则不需要录入新的下标信息
+            idx.get(lastNum).add(possibleIdx);
+        }
+        nums.remove(nums.size() - 1);
+        if (idx.get(val).size() == 0) idx.remove(val);
+        return true;
+    }
+
+    /**
+     * Get a random element from the collection.
+     */
+    public int getRandom() {
+        int idx = r.nextInt(nums.size());
+        return nums.get(idx);
     }
 }
 
