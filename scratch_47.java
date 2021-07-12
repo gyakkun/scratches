@@ -8,11 +8,30 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.hIndex(new int[]{7, 7, 7, 7, 7, 7, 7}));
+        System.out.println(s.checkZeroOnes("110100010"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1869
+    public boolean checkZeroOnes(String s) {
+        int[] count = new int[]{0, 0};
+        char[] cArr = s.toCharArray();
+        char cur = cArr[0];
+        int tmpCounter = 1;
+        count[cArr[0] - '0'] = 1;
+        for (int i = 1; i < cArr.length; i++) {
+            if (cur != cArr[i]) {
+                cur = cArr[i];
+                tmpCounter = 1;
+            } else {
+                tmpCounter++;
+            }
+            count[cArr[i] - '0'] = Math.max(count[cArr[i] - '0'], tmpCounter);
+        }
+        return count[1] > count[0];
     }
 
     // LC274 275 **
