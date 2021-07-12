@@ -8,11 +8,32 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.checkZeroOnes("110100010"));
+        System.out.println(s.arrangeWords("To be or not to be"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1451
+    public String arrangeWords(String text) {
+        String[] arr = text.toLowerCase().split(" ");
+        Integer[] relPos = new Integer[arr.length];
+        for (int i = 0; i < arr.length; i++) relPos[i] = i;
+        Arrays.sort(relPos, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return arr[o1].length() == arr[o2].length() ? o1 - o2 : arr[o1].length() - arr[o2].length();
+            }
+        });
+        StringBuilder sb = new StringBuilder(text.length() + 2);
+        for (int i : relPos) {
+            sb.append(arr[i]);
+            sb.append(" ");
+        }
+        sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
     }
 
     // LC1869
