@@ -205,6 +205,82 @@ class Scratch {
     }
 }
 
+// LC432 没有全O(1), 插入删除O(logN) ; 全O(1)要手写双向链表
+class AllOne {
+    Map<String, Integer> map;
+    TreeMap<Integer, Set<String>> treeMap;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public AllOne() {
+        map = new HashMap<>();
+        treeMap = new TreeMap<>();
+    }
+
+    /**
+     * Inserts a new key <Key> with value 1. Or increments an existing key by 1.
+     */
+    public void inc(String key) {
+        if (map.containsKey(key)) {
+            treeMap.get(map.get(key)).remove(key);
+            if (treeMap.get(map.get(key)).size() == 0) treeMap.remove(map.get(key));
+            map.put(key, map.get(key) + 1);
+            treeMap.putIfAbsent(map.get(key), new HashSet<>());
+            treeMap.get(map.get(key)).add(key);
+        } else {
+            map.put(key, 1);
+            treeMap.putIfAbsent(1, new HashSet<>());
+            treeMap.get(1).add(key);
+        }
+    }
+
+    /**
+     * Decrements an existing key by 1. If Key's value is 1, remove it from the data structure.
+     */
+    public void dec(String key) {
+        if (map.containsKey(key)) {
+            treeMap.get(map.get(key)).remove(key);
+            if (treeMap.get(map.get(key)).size() == 0) treeMap.remove(map.get(key));
+            map.put(key, map.get(key) - 1);
+            if (map.get(key) == 0) {
+                map.remove(key);
+            } else {
+                treeMap.putIfAbsent(map.get(key), new HashSet<>());
+                treeMap.get(map.get(key)).add(key);
+            }
+        }
+    }
+
+    /**
+     * Returns one of the keys with maximal value.
+     */
+    public String getMaxKey() {
+        try {
+            Integer maxVal = treeMap.lastKey();
+            if (maxVal == null) return "";
+            Iterator<String> it = treeMap.get(maxVal).iterator();
+            return it.next();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Returns one of the keys with Minimal value.
+     */
+    public String getMinKey() {
+        try {
+            Integer minVal = treeMap.firstKey();
+            if (minVal == null) return "";
+            Iterator<String> it = treeMap.get(minVal).iterator();
+            return it.next();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+}
+
 // LC381 ** from Solution
 class RandomizedCollection {
     List<Integer> nums;
