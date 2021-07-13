@@ -230,6 +230,48 @@ class Scratch {
     }
 }
 
+// LC729
+class MyCalendar {
+
+    TreeSet<Pair<Integer, Integer>> leftSide;
+    TreeSet<Pair<Integer, Integer>> rightSide;
+
+    public MyCalendar() {
+        leftSide = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
+            @Override
+            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+                return o1.getKey() == o2.getKey() ? o1.getValue() - o2.getValue() : o1.getKey() - o2.getKey();
+            }
+        });
+        rightSide = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
+            @Override
+            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+                return o1.getValue() == o2.getValue() ? o1.getKey() - o2.getKey() : o1.getValue() - o2.getValue();
+            }
+        });
+    }
+
+    // 前闭后开
+    public boolean book(int start, int end) {
+        Pair<Integer, Integer> l = new Pair<>(start, start);
+        Pair<Integer, Integer> r = new Pair<>(end, end);
+        // 左侧
+        Pair<Integer, Integer> lsf = leftSide.floor(l);
+        Pair<Integer, Integer> lsc = leftSide.ceiling(l);
+        // 右侧
+        Pair<Integer, Integer> rsf = rightSide.floor(r);
+        Pair<Integer, Integer> rsc = rightSide.ceiling(r);
+
+        if ((lsf == null || lsf.getValue() <= start) && (lsc == null || lsc.getKey() >= end) && (rsf == null || rsf.getValue() <= start) && (rsc == null || rsc.getKey() >= end)) {
+            Pair<Integer, Integer> n = new Pair<>(start, end);
+            leftSide.add(n);
+            rightSide.add(n);
+            return true;
+        }
+        return false;
+    }
+}
+
 // LC677
 class MapSum {
     Trie trie;
@@ -265,7 +307,6 @@ class MapSum {
         return result;
     }
 }
-
 
 // LC676 比较慢
 class MagicDictionary {
