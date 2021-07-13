@@ -7,22 +7,44 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        RandomizedCollection rc = new RandomizedCollection();
-        rc.insert(1);
-        rc.remove(2);
-        rc.insert(2);
-        rc.getRandom();
 
-        rc.remove(1);
-        rc.insert(2);
-        rc.getRandom();
-
-
-        System.out.println(s.singleNumbers(new int[]{1, 2, 10, 4, 1, 4, 3, 3}));
+        System.out.println(s.getSkyline(new int[][]{{1, 2, 1}, {1, 2, 2}, {1, 2, 3}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC218
+    public List<List<Integer>> getSkyline(int[][] buildings) {
+        // buildings[i] = [left_i,right_i,height_i]
+        // event = [x, y, in/out]
+        List<List<Integer>> result = new ArrayList<>();
+        final int IN = -1, OUT = 1;
+        // X轴靠左的优先, IN事件优先, IN事件高度相同时候高度越高(越负,越小)的优先
+        PriorityQueue<int[]> events = new PriorityQueue<>((o1, o2) -> o1[0] == o2[0] ? o1[2] * o1[1] - o2[2] * o2[1] : o1[0] - o2[0]);
+        for (int[] b : buildings) {
+            events.offer(new int[]{b[0], b[2], IN});
+            events.offer(new int[]{b[1], b[2], OUT});
+        }
+        TreeMap<Integer, Integer> height = new TreeMap<>();
+        height.put(0, 1);
+        int formerMaxHeight = 0;
+        while (!events.isEmpty()) {
+            int[] tuple = events.poll();
+            if (tuple[2] == IN) {
+                height.put(tuple[1], height.getOrDefault(tuple[1], 0) + 1);
+            } else if (tuple[2] == OUT) {
+                height.put(tuple[1], height.get(tuple[1]) - 1);
+                if (height.get(tuple[1]) == 0) height.remove(tuple[1]);
+            }
+            int maxHeight = height.lastKey();
+            if (maxHeight != formerMaxHeight) {
+                formerMaxHeight = maxHeight;
+                result.add(Arrays.asList(tuple[0], maxHeight));
+            }
+        }
+        return result;
     }
 
     // JZOF 56 **
