@@ -7,6 +7,9 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        MapSum ms = new MapSum();
+        ms.insert("apple", 3);
+        ms.sum("apple");
 
         System.out.println(s.getSkyline(new int[][]{{1, 2, 1}, {1, 2, 2}, {1, 2, 3}}));
 
@@ -227,11 +230,47 @@ class Scratch {
     }
 }
 
+// LC677
+class MapSum {
+    Trie trie;
+    Map<String, Integer> m;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public MapSum() {
+        trie = new Trie();
+        m = new HashMap<>();
+    }
+
+    public void insert(String key, int val) {
+        m.put(key, val);
+        trie.addWord(key);
+    }
+
+    public int sum(String prefix) {
+        if (!trie.beginWith(prefix)) return 0;
+        return m.getOrDefault(prefix, 0) + dfs(prefix);
+    }
+
+    private int dfs(String prefix) {
+        if (prefix.length() > 50) return 0;
+        int result = 0;
+        for (int i = 0; i < 26; i++) {
+            String newPrefix = prefix + (char) (i + 'a');
+            if (!trie.beginWith(newPrefix)) continue;
+            if (trie.search(newPrefix)) result += m.get(newPrefix);
+            result += dfs(newPrefix);
+        }
+        return result;
+    }
+}
+
+
 // LC676 比较慢
 class MagicDictionary {
 
     Trie trie;
-    Set<String> set;
     Set<Integer> length;
 
     /**
@@ -239,7 +278,6 @@ class MagicDictionary {
      */
     public MagicDictionary() {
         trie = new Trie();
-        set = new HashSet<>();
         length = new HashSet<>();
     }
 
@@ -247,7 +285,6 @@ class MagicDictionary {
     public void buildDict(String[] dictionary) {
         for (String word : dictionary) {
             trie.addWord(word);
-            set.add(word);
             length.add(word.length());
         }
     }
@@ -263,7 +300,7 @@ class MagicDictionary {
             for (int j = 0; j < 26; j++) {
                 if (curChar == (char) ('a' + j)) continue;
                 String newWord = prefix + (char) ('a' + j) + suffix;
-                if (set.contains(newWord)) return true;
+                if (trie.search(newWord)) return true;
             }
         }
         return false;
