@@ -65,6 +65,7 @@ class Scratch {
             return dfsDes(l);
         }
 
+        // 空叶子数量 = 非空节点数量 + 1 **
         private boolean isValidSerializationCtr(String preorder) {
             String[] list = preorder.split(",");
             if (list.length > 1 && list[0].equals("#")) return false;
