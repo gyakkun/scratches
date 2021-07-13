@@ -227,6 +227,49 @@ class Scratch {
     }
 }
 
+// LC676 比较慢
+class MagicDictionary {
+
+    Trie trie;
+    Set<String> set;
+    Set<Integer> length;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public MagicDictionary() {
+        trie = new Trie();
+        set = new HashSet<>();
+        length = new HashSet<>();
+    }
+
+
+    public void buildDict(String[] dictionary) {
+        for (String word : dictionary) {
+            trie.addWord(word);
+            set.add(word);
+            length.add(word.length());
+        }
+    }
+
+    public boolean search(String searchWord) {
+        if (!length.contains(searchWord.length())) return false;
+
+        for (int i = 0; i < searchWord.length(); i++) {
+            String prefix = searchWord.substring(0, i);
+            if (prefix.length() != 0 && !trie.beginWith(prefix)) break;
+            char curChar = searchWord.charAt(i);
+            String suffix = searchWord.substring(i + 1);
+            for (int j = 0; j < 26; j++) {
+                if (curChar == (char) ('a' + j)) continue;
+                String newWord = prefix + (char) ('a' + j) + suffix;
+                if (set.contains(newWord)) return true;
+            }
+        }
+        return false;
+    }
+}
+
 // LC449 BST Serialize / Deserialized
 class Codec {
 
@@ -287,7 +330,6 @@ class TreeNode {
         this.right = right;
     }
 }
-
 
 // LC432 没有全O(1), 插入删除O(logN) ; 全O(1)要手写双向链表
 class AllOne {
@@ -815,7 +857,6 @@ class LFUCache {
         }
     }
 }
-
 
 // LC225
 class MyStack {
