@@ -227,6 +227,68 @@ class Scratch {
     }
 }
 
+// LC449 BST Serialize / Deserialized
+class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        preOrder(root, sb);
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
+
+    private void preOrder(TreeNode root, StringBuilder sb) {
+        if (root == null) {
+            sb.append("#,");
+            return;
+        }
+        sb.append(root.val + ",");
+        preOrder(root.left, sb);
+        preOrder(root.right, sb);
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] split = data.split(",");
+        List<String> list = new LinkedList<>();
+        for (String s : split) list.add(s);
+        return preOrderDes(list);
+    }
+
+    private TreeNode preOrderDes(List<String> list) {
+        if (list.get(0).equals("#")) {
+            list.remove(0);
+            return null;
+        }
+        TreeNode root = new TreeNode(Integer.valueOf(list.get(0)));
+        list.remove(0);
+        root.left = preOrderDes(list);
+        root.right = preOrderDes(list);
+        return root;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+
+
 // LC432 没有全O(1), 插入删除O(logN) ; 全O(1)要手写双向链表
 class AllOne {
     Map<String, Integer> map;
