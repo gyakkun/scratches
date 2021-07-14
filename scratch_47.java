@@ -7,13 +7,21 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        MyLinkedList ml = new MyLinkedList();
-        ml.addAtHead(1);
-        ml.addAtTail(2);
-        ml.addAtIndex(0, 3);
-        System.out.println(ml.get(2));
-        ml.deleteAtIndex(0);
-        System.out.println(ml.get(1));
+        //["FreqStack","push","push","push","push","push","push","pop","pop","pop","pop"]
+        //[[],[5],[7],[5],[7],[4],[5],[],[],[],[]]
+
+        FreqStack fs = new FreqStack();
+        fs.push(5);
+        fs.push(7);
+        fs.push(5);
+        fs.push(7);
+        fs.push(4);
+        fs.push(5);
+        System.out.println(fs.pop());
+        System.out.println(fs.pop());
+        System.out.println(fs.pop());
+        System.out.println(fs.pop());
+
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -263,6 +271,58 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC895 很慢
+class FreqStack {
+
+    Map<Integer, Deque<Integer>> numTimestampStackMap;
+    Map<Integer, Integer> numFreqMap;
+    TreeMap<Integer, PriorityQueue<Integer>> freqNumSetMap;
+    int timestamp = 0;
+
+    public FreqStack() {
+        numTimestampStackMap = new HashMap<>();
+        numFreqMap = new HashMap<>();
+        freqNumSetMap = new TreeMap<>(Comparator.comparingInt(o -> -o));
+    }
+
+    public void push(int val) {
+        numTimestampStackMap.putIfAbsent(val, new LinkedList<>());
+        numTimestampStackMap.get(val).push(getTime());
+
+        int oldFreq = numFreqMap.getOrDefault(val, 0);
+        int newFreq = oldFreq + 1;
+        if (oldFreq != 0) {
+            freqNumSetMap.get(oldFreq).remove(val);
+            if (freqNumSetMap.get(oldFreq).size() == 0) freqNumSetMap.remove(oldFreq);
+        }
+        freqNumSetMap.putIfAbsent(newFreq, new PriorityQueue<>(Comparator.comparingLong(o -> -numTimestampStackMap.get(o).peek())));
+        freqNumSetMap.get(newFreq).offer(val);
+        numFreqMap.put(val, newFreq);
+    }
+
+    public int pop() {
+        int topFreq = freqNumSetMap.firstKey();
+        PriorityQueue<Integer> topFreqNumSet = freqNumSetMap.get(topFreq);
+        Integer victim = topFreqNumSet.poll();
+
+        numTimestampStackMap.get(victim).pop();
+        int oldFreq = topFreq;
+        int newFreq = topFreq - 1;
+        if (newFreq != 0) {
+            freqNumSetMap.putIfAbsent(newFreq, new PriorityQueue<>(Comparator.comparingLong(o -> -numTimestampStackMap.get(o).peek())));
+            freqNumSetMap.get(newFreq).offer(victim);
+        }
+        freqNumSetMap.get(oldFreq).remove(victim);
+        if (freqNumSetMap.get(oldFreq).size() == 0) freqNumSetMap.remove(oldFreq);
+        numFreqMap.put(victim, newFreq);
+        return victim;
+    }
+
+    private int getTime() {
+        return timestamp++;
     }
 }
 
