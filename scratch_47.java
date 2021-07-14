@@ -27,6 +27,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1503 脑筋急转弯还行
+    public int getLastMoment(int n, int[] left, int[] right) {
+        int max = 0;
+        for (int i : left) {
+            max = Math.max(max, i);
+        }
+        for (int i : right) {
+            max = Math.max(max, n - i);
+        }
+        return max;
+    }
+
     // LC1818
     public int minAbsoluteSumDiff(int[] nums1, int[] nums2) {
         int n = nums1.length;
