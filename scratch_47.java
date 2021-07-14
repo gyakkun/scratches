@@ -7,14 +7,8 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        MapSum ms = new MapSum();
-        ms.insert("apple", 3);
-        ms.sum("apple");
-
-
-        //[1,28,21]
-        //[9,21,20]
-        System.out.println(s.minAbsoluteSumDiff(new int[]{1, 28, 21}, new int[]{9, 21, 20}));
+        WordFilter wf = new WordFilter(new String[]{"apple"});
+        System.out.println(wf.f("a", "e"));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -266,6 +260,51 @@ class Scratch {
         }
         return max;
     }
+}
+
+// LC745 **
+class WordFilter {
+
+    TrieNode trie;
+
+    public WordFilter(String[] words) {
+        trie = new TrieNode();
+        for (int i = 0; i < words.length; i++) {
+            String tmpWord = words[i] + "#";
+            for (int j = 0; j < words[i].length(); j++) {
+                TrieNode cur = trie;
+                cur.idx = i;
+                for (int k = j; k < 2 * tmpWord.length() - 1; k++) {
+                    char x = tmpWord.charAt(k % tmpWord.length()); // (apple#) 循环两次, 终止于第二次到达#前
+                    if (cur.children.get(x) == null) {
+                        cur.children.put(x, new TrieNode());
+                    }
+                    cur = cur.children.get(x);
+                    cur.idx = i; // 这里这个node自然存的就是下标最大的值
+                }
+            }
+        }
+    }
+
+    public int f(String prefix, String suffix) {
+        TrieNode cur = trie;
+        for (char letter : (suffix + "#" + prefix).toCharArray()) {
+            if (cur.children.get(letter) == null) return -1;
+            cur = cur.children.get(letter);
+        }
+        return cur.idx;
+    }
+
+    class TrieNode {
+        Map<Character, TrieNode> children;
+        int idx;
+
+        public TrieNode() {
+            children = new HashMap<>();
+            idx = 0;
+        }
+    }
+
 }
 
 // LC732
