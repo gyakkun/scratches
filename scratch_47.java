@@ -268,6 +268,29 @@ class Scratch {
     }
 }
 
+// LC732
+class MyCalendarThree {
+    TreeMap<Integer, Integer> delta; // 相当于差分数组
+
+
+    public MyCalendarThree() {
+        delta = new TreeMap<>();
+    }
+
+    public int book(int start, int end) {
+        delta.put(start, delta.getOrDefault(start, 0) + 1);
+        delta.put(end, delta.getOrDefault(end, 0) - 1);
+
+        int active = 0;
+        int max = 0;
+        for (int i : delta.values()) {
+            active += i;
+            max = Math.max(active, max);
+        }
+        return max;
+    }
+}
+
 // LC731 **
 class MyCalendarTwo {
 
