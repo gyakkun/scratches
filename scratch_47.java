@@ -274,56 +274,37 @@ class Scratch {
     }
 }
 
-// LC895 很慢
+// LC895 from Solution
 class FreqStack {
-
-    Map<Integer, Deque<Integer>> numTimestampStackMap;
-    Map<Integer, Integer> numFreqMap;
-    TreeMap<Integer, PriorityQueue<Integer>> freqNumSetMap;
-    int timestamp = 0;
+    int maxFreq;
+    HashMap<Integer, Integer> numFreqMap;
+    HashMap<Integer, Deque<Integer>> freqNumSetMap;
 
     public FreqStack() {
-        numTimestampStackMap = new HashMap<>();
+        maxFreq = 0;
         numFreqMap = new HashMap<>();
-        freqNumSetMap = new TreeMap<>(Comparator.comparingInt(o -> -o));
+        freqNumSetMap = new HashMap<>();
     }
 
     public void push(int val) {
-        numTimestampStackMap.putIfAbsent(val, new LinkedList<>());
-        numTimestampStackMap.get(val).push(getTime());
-
-        int oldFreq = numFreqMap.getOrDefault(val, 0);
-        int newFreq = oldFreq + 1;
-        if (oldFreq != 0) {
-            freqNumSetMap.get(oldFreq).remove(val);
-            if (freqNumSetMap.get(oldFreq).size() == 0) freqNumSetMap.remove(oldFreq);
-        }
-        freqNumSetMap.putIfAbsent(newFreq, new PriorityQueue<>(Comparator.comparingLong(o -> -numTimestampStackMap.get(o).peek())));
-        freqNumSetMap.get(newFreq).offer(val);
-        numFreqMap.put(val, newFreq);
+        int freq = numFreqMap.getOrDefault(val, 0) + 1;
+        numFreqMap.put(val, freq);
+        freqNumSetMap.putIfAbsent(freq, new LinkedList<>());
+        freqNumSetMap.get(freq).push(val);
+        maxFreq = Math.max(maxFreq, freq);
     }
 
     public int pop() {
-        int topFreq = freqNumSetMap.firstKey();
-        PriorityQueue<Integer> topFreqNumSet = freqNumSetMap.get(topFreq);
-        Integer victim = topFreqNumSet.poll();
-
-        numTimestampStackMap.get(victim).pop();
-        int oldFreq = topFreq;
-        int newFreq = topFreq - 1;
-        if (newFreq != 0) {
-            freqNumSetMap.putIfAbsent(newFreq, new PriorityQueue<>(Comparator.comparingLong(o -> -numTimestampStackMap.get(o).peek())));
-            freqNumSetMap.get(newFreq).offer(victim);
+        Deque<Integer> stack = freqNumSetMap.get(maxFreq);
+        int victim = stack.pop();
+        int freq = numFreqMap.get(victim);
+        numFreqMap.put(victim, freq - 1);
+        if (stack.isEmpty()) {
+            maxFreq--;
         }
-        freqNumSetMap.get(oldFreq).remove(victim);
-        if (freqNumSetMap.get(oldFreq).size() == 0) freqNumSetMap.remove(oldFreq);
-        numFreqMap.put(victim, newFreq);
         return victim;
     }
 
-    private int getTime() {
-        return timestamp++;
-    }
 }
 
 // LC707
