@@ -7,9 +7,13 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        WordFilter wf = new WordFilter(new String[]{"apple"});
-        System.out.println(wf.f("a", "e"));
-
+        MyLinkedList ml = new MyLinkedList();
+        ml.addAtHead(1);
+        ml.addAtTail(2);
+        ml.addAtIndex(0, 3);
+        System.out.println(ml.get(2));
+        ml.deleteAtIndex(0);
+        System.out.println(ml.get(1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -259,6 +263,129 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC707
+class MyLinkedList {
+    Node dummyHead;
+    Node dummyTail;
+    int size;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public MyLinkedList() {
+        dummyHead = new Node(-1);
+        dummyTail = new Node(-1);
+        size = 0;
+        dummyHead.next = dummyTail;
+        dummyTail.prev = dummyHead;
+    }
+
+    /**
+     * Get the value of the index-th node in the linked list. If the index is invalid, return -1.
+     */
+    public int get(int index) {
+        Node n = getNode(index);
+        if (n == null) return -1;
+        return n.val;
+    }
+
+    /**
+     * Add a node of value val before the first element of the linked list. After the insertion, the new node will be the first node of the linked list.
+     */
+    public void addAtHead(int val) {
+        Node n = new Node(val);
+        Node origFirst = dummyHead.next;
+        dummyHead.next = n;
+        n.prev = dummyHead;
+        n.next = origFirst;
+        origFirst.prev = n;
+        size++;
+    }
+
+    /**
+     * Append a node of value val to the last element of the linked list.
+     */
+    public void addAtTail(int val) {
+        Node n = new Node(val);
+        Node origLast = dummyTail.prev;
+        dummyTail.prev = n;
+        n.next = dummyTail;
+        n.prev = origLast;
+        origLast.next = n;
+        size++;
+    }
+
+    /**
+     * Add a node of value val before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list. If index is greater than the length, the node will not be inserted.
+     */
+    public void addAtIndex(int index, int val) {
+        if (index > size || index < 0) return;
+        if (index == size) {
+            addAtTail(val);
+            return;
+        }
+        Node n = new Node(val);
+        Node curIdx = getNode(index);
+        Node origPrev = curIdx.prev;
+        origPrev.next = n;
+        n.prev = origPrev;
+        n.next = curIdx;
+        curIdx.prev = n;
+        size++;
+    }
+
+    /**
+     * Delete the index-th node in the linked list, if the index is valid.
+     */
+    public void deleteAtIndex(int index) {
+        if (index >= size || index < 0) return;
+        Node victim = getNode(index);
+        unlink(victim);
+        size--;
+    }
+
+    private void unlink(Node node) {
+        Node origNext = node.next;
+        Node origPrev = node.prev;
+        origPrev.next = origNext;
+        origNext.prev = origPrev;
+    }
+
+    private Node getNode(int index) {
+        int oneBaseIdx = index + 1;
+        if (oneBaseIdx > size) return null;
+        if (oneBaseIdx < size - oneBaseIdx) {
+            // 从头
+            int ctr = oneBaseIdx;
+            Node cur = dummyHead;
+            while (ctr != 0) {
+                ctr--;
+                cur = cur.next;
+            }
+            return cur;
+        } else {
+            // 从尾
+            int ctr = size - oneBaseIdx;
+            Node cur = dummyTail.prev;
+            while (ctr != 0) {
+                ctr--;
+                cur = cur.prev;
+            }
+            return cur;
+        }
+    }
+
+    class Node {
+        Node prev;
+        Node next;
+        int val;
+
+        public Node(int val) {
+            this.val = val;
+        }
     }
 }
 
