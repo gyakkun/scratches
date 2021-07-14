@@ -18,6 +18,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
     // LC218
     public List<List<Integer>> getSkyline(int[][] buildings) {
         // buildings[i] = [left_i,right_i,height_i]
@@ -230,42 +231,50 @@ class Scratch {
     }
 }
 
+// LC731 **
+class MyCalendarTwo {
+
+    TreeMap<Integer, Integer> delta; // 相当于差分数组
+
+    public MyCalendarTwo() {
+        delta = new TreeMap<>();
+    }
+
+    public boolean book(int start, int end) {
+        delta.put(start, delta.getOrDefault(start, 0) + 1);
+        delta.put(end, delta.getOrDefault(end, 0) - 1);
+
+        int active = 0;
+        for (int i : delta.values()) {
+            active += i;
+            if (active >= 3) {
+                delta.put(start, delta.get(start) - 1);
+                delta.put(end, delta.get(end) + 1);
+                if (delta.get(start) == 0) {
+                    delta.remove(start);
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 // LC729
 class MyCalendar {
 
-    TreeSet<Pair<Integer, Integer>> leftSide;
-    TreeSet<Pair<Integer, Integer>> rightSide;
+    TreeMap<Integer, Integer> tm;
 
     public MyCalendar() {
-        leftSide = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
-            @Override
-            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                return o1.getKey() == o2.getKey() ? o1.getValue() - o2.getValue() : o1.getKey() - o2.getKey();
-            }
-        });
-        rightSide = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
-            @Override
-            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                return o1.getValue() == o2.getValue() ? o1.getKey() - o2.getKey() : o1.getValue() - o2.getValue();
-            }
-        });
+        tm = new TreeMap<>();
     }
 
     // 前闭后开
     public boolean book(int start, int end) {
-        Pair<Integer, Integer> l = new Pair<>(start, start);
-        Pair<Integer, Integer> r = new Pair<>(end, end);
-        // 左侧
-        Pair<Integer, Integer> lsf = leftSide.floor(l);
-        Pair<Integer, Integer> lsc = leftSide.ceiling(l);
-        // 右侧
-        Pair<Integer, Integer> rsf = rightSide.floor(r);
-        Pair<Integer, Integer> rsc = rightSide.ceiling(r);
-
-        if ((lsf == null || lsf.getValue() <= start) && (lsc == null || lsc.getKey() >= end) && (rsf == null || rsf.getValue() <= start) && (rsc == null || rsc.getKey() >= end)) {
-            Pair<Integer, Integer> n = new Pair<>(start, end);
-            leftSide.add(n);
-            rightSide.add(n);
+        Integer prev = tm.floorKey(start);
+        Integer next = tm.ceilingKey(start);
+        if ((prev == null || tm.get(prev) <= start) && (next == null || end <= tm.get(next))) {
+            tm.put(start, end);
             return true;
         }
         return false;
