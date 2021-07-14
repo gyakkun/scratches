@@ -11,13 +11,50 @@ class Scratch {
         ms.insert("apple", 3);
         ms.sum("apple");
 
-        System.out.println(s.getSkyline(new int[][]{{1, 2, 1}, {1, 2, 2}, {1, 2, 3}}));
+
+        //[1,28,21]
+        //[9,21,20]
+        System.out.println(s.minAbsoluteSumDiff(new int[]{1, 28, 21}, new int[]{9, 21, 20}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1818
+    public int minAbsoluteSumDiff(int[] nums1, int[] nums2) {
+        int n = nums1.length;
+        final long mod = 1_000_000_007;
+        int[] absDiff = new int[n];
+        long result = 0;
+        TreeSet<Integer> nums1Ts = new TreeSet<>();
+        Map<Integer, Set<Integer>> diffIdxMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            nums1Ts.add(nums1[i]);
+            absDiff[i] = Math.abs(nums1[i] - nums2[i]);
+            diffIdxMap.putIfAbsent(absDiff[i], new HashSet<>());
+            diffIdxMap.get(absDiff[i]).add(i);
+            result += absDiff[i];
+        }
+        int maxReduce = 0;
+        Iterator<Integer> it = diffIdxMap.keySet().iterator();
+        while (it.hasNext()) {
+            int next = it.next();
+            Set<Integer> nums2Idxes = diffIdxMap.get(next);
+            for (int i : nums2Idxes) {
+                Integer ceiling = nums1Ts.ceiling(nums2[i]);
+                Integer floor = nums1Ts.floor(nums2[i]);
+                if (ceiling != null) {
+                    maxReduce = Math.max(maxReduce, Math.abs(nums1[i] - nums2[i]) - Math.abs(ceiling - nums2[i]));
+                }
+                if (floor != null) {
+                    maxReduce = Math.max(maxReduce, Math.abs(nums1[i] - nums2[i]) - Math.abs(floor - nums2[i]));
+                }
+            }
+        }
+        result -= maxReduce;
+        return (int) (result % mod);
+    }
 
     // LC218
     public List<List<Integer>> getSkyline(int[][] buildings) {
