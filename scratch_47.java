@@ -286,6 +286,58 @@ class Scratch {
     }
 }
 
+// LC307 复习 Fenwick Tree / 树状数组 / BIT (Bit Index Tree)
+class NumArray {
+
+    long[] bit;
+    int size;
+
+    public NumArray(int[] nums) {
+        size = nums.length;
+        bit = new long[size + 1];
+        for (int i = 0; i < nums.length; i++) {
+            update(i, nums[i]);
+        }
+    }
+
+    public void update(int index, int val) {
+        setFromOne(index + 1, val);
+    }
+
+    public int sumRange(int left, int right) {
+        return sumFromOne(right + 1) - sumFromOne(left);
+    }
+
+    private void updateFromOne(int idxFromOne, int delta) {
+        while (idxFromOne <= size) {
+            bit[idxFromOne] += delta;
+            idxFromOne += lowbit(idxFromOne);
+        }
+    }
+
+    private int getFromOne(int idxFromOne) {
+        return sumFromOne(idxFromOne) - sumFromOne(idxFromOne - 1);
+    }
+
+    private void setFromOne(int idxFromOne, int target) {
+        int delta = target - getFromOne(idxFromOne);
+        updateFromOne(idxFromOne, delta);
+    }
+
+    private int sumFromOne(int end) {
+        long sum = 0;
+        while (end > 0) {
+            sum += bit[end];
+            end -= lowbit(end);
+        }
+        return (int) sum;
+    }
+
+    private int lowbit(int x) {
+        return x & -x;
+    }
+}
+
 // LC895 from Solution
 class FreqStack {
     int maxFreq;
