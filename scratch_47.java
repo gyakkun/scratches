@@ -320,6 +320,22 @@ class Scratch {
     }
 }
 
+// LC933
+class RecentCounter {
+
+    Deque<Integer> q;
+
+    public RecentCounter() {
+        q = new LinkedList<>();
+    }
+
+    public int ping(int t) {
+        q.offer(t);
+        while (q.peek() < t - 3000) q.poll();
+        return q.size();
+    }
+}
+
 // LC307 复习 Fenwick Tree / 树状数组 / BIT (Bit Index Tree)
 class NumArray {
 
