@@ -7,11 +7,33 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println(s.maximumElementAfterDecrementingAndRearranging(new int[]{9, 2478, 38, 19, 23}));
+        System.err.println("");
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC120 Top Down
+    Integer[][] lc120Memo;
+
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int n = triangle.size();
+        int land = triangle.get(n - 1).size();
+        lc120Memo = new Integer[n + 1][land + 1];
+        int result = lc120Helper(0, 0, triangle);
+        return result;
+    }
+
+    private int lc120Helper(int floor, int idx, List<List<Integer>> triangle) {
+        if (floor == triangle.size()) {
+            return 0;
+        }
+        if (lc120Memo[floor][idx] != null) {
+            return lc120Memo[floor][idx];
+        }
+
+        return lc120Memo[floor][idx] = Math.min(lc120Helper(floor + 1, idx, triangle), lc120Helper(floor + 1, idx + 1, triangle)) + triangle.get(floor).get(idx);
     }
 
     // LC1846
