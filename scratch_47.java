@@ -7,24 +7,24 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        //["FreqStack","push","push","push","push","push","push","pop","pop","pop","pop"]
-        //[[],[5],[7],[5],[7],[4],[5],[],[],[],[]]
-
-        FreqStack fs = new FreqStack();
-        fs.push(5);
-        fs.push(7);
-        fs.push(5);
-        fs.push(7);
-        fs.push(4);
-        fs.push(5);
-        System.out.println(fs.pop());
-        System.out.println(fs.pop());
-        System.out.println(fs.pop());
-        System.out.println(fs.pop());
+        System.err.println(s.maximumElementAfterDecrementingAndRearranging(new int[]{9, 2478, 38, 19, 23}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1846
+    public int maximumElementAfterDecrementingAndRearranging(int[] arr) {
+        Arrays.sort(arr);
+        int n = arr.length;
+        if (arr[0] != 1) arr[0] = 1;
+        for (int i = 1; i < n; i++) {
+            if (arr[i] - arr[i - 1] > 1) {
+                arr[i] = arr[i - 1] + 1;
+            }
+        }
+        return arr[n - 1];
     }
 
     // LC1503 脑筋急转弯还行
