@@ -362,39 +362,24 @@ class Scratch {
 class TopVotedCandidate {
     TreeMap<Integer, Integer> timeCanMap;
 
-
     public TopVotedCandidate(int[] persons, int[] times) {
         timeCanMap = new TreeMap<>();
-        Map<Integer, Integer> canFreqMap = new HashMap<>();
-        Map<Integer, Integer> canTimeMap = new HashMap<>();
-        TreeMap<Integer, TreeSet<Integer>> freqCanMap = new TreeMap<>();
         int n = persons.length;
+        int[] canFreqMap = new int[n + 1];
+        TreeMap<Integer, Deque<Integer>> freqCanMap = new TreeMap<>();
         for (int i = 0; i < n; i++) {
-            int oldFreq = canFreqMap.getOrDefault(persons[i], 0);
+            int oldFreq = canFreqMap[persons[i]];
             int newFreq = oldFreq + 1;
-            canTimeMap.put(persons[i], times[i]);
-            canFreqMap.put(persons[i], newFreq);
-            if (oldFreq != 0) {
-                freqCanMap.get(oldFreq).remove(persons[i]);
-                if (freqCanMap.get(oldFreq).size() == 0) {
-                    freqCanMap.remove(oldFreq);
-                }
-            }
-            freqCanMap.putIfAbsent(newFreq, new TreeSet<>(new Comparator<Integer>() {
-                @Override
-                public int compare(Integer o1, Integer o2) {
-                    return canTimeMap.getOrDefault(o2, 0) - canTimeMap.getOrDefault(o1, 0);
-                }
-            }));
-            freqCanMap.get(newFreq).add(persons[i]);
-            timeCanMap.put(times[i], freqCanMap.lastEntry().getValue().first());
+            canFreqMap[persons[i]] = newFreq;
+            freqCanMap.putIfAbsent(newFreq, new LinkedList<>());
+            freqCanMap.get(newFreq).push(persons[i]);
+            timeCanMap.put(times[i], freqCanMap.lastEntry().getValue().peek());
         }
     }
 
     public int q(int t) {
         return timeCanMap.floorEntry(t).getValue();
     }
-
 }
 
 // LC901 ** 单调栈
