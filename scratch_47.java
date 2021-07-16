@@ -7,25 +7,8 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode n1 = new TreeNode(1);
-        TreeNode n2 = new TreeNode(2);
-        TreeNode n3 = new TreeNode(3);
-        TreeNode n4 = new TreeNode(4);
-        TreeNode n5 = new TreeNode(5);
-        TreeNode n6 = new TreeNode(6);
-        n1.left = n2;
-        n1.right = n3;
-        n2.left = n4;
-        n2.right = n5;
-        n3.left = n6;
-        CBTInserter ci = new CBTInserter(n1);
-        System.out.println(ci.insert(7));
-        System.out.println(ci.insert(8));
-        System.out.println(ci.insert(9));
-        System.out.println(ci.insert(10));
-        System.out.println(ci.insert(11));
-        System.out.println(ci.insert(12));
-        ci.get_root();
+        CombinationIterator ci = new CombinationIterator("abc", 2);
+        ci.hasNext();
 
 
         timing = System.currentTimeMillis() - timing;
@@ -373,6 +356,40 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC1286
+class CombinationIterator {
+    TreeSet<String> ts;
+    Iterator<String> it;
+
+    public CombinationIterator(String characters, int combinationLength) {
+        ts = new TreeSet<>();
+        int n = characters.length();
+        char[] cset = characters.toCharArray();
+        Arrays.sort(cset);
+        int allmask = (1 << n) - 1;
+        for (int i = allmask; i >= 0; i--) {
+            if (Integer.bitCount(i) == combinationLength) {
+                StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < n; j++) {
+                    if (((i >> j) & 1) == 1) {
+                        sb.append(cset[j]);
+                    }
+                }
+                ts.add(sb.toString());
+            }
+        }
+        it = ts.iterator();
+    }
+
+    public String next() {
+        return it.next();
+    }
+
+    public boolean hasNext() {
+        return it.hasNext();
     }
 }
 
