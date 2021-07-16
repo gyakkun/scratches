@@ -366,14 +366,13 @@ class TopVotedCandidate {
         timeCanMap = new TreeMap<>();
         int n = persons.length;
         int[] canFreqMap = new int[n + 1];
-        TreeMap<Integer, Deque<Integer>> freqCanMap = new TreeMap<>();
+        TreeMap<Integer, Integer> freqCanMap = new TreeMap<>();
         for (int i = 0; i < n; i++) {
             int oldFreq = canFreqMap[persons[i]];
             int newFreq = oldFreq + 1;
             canFreqMap[persons[i]] = newFreq;
-            freqCanMap.putIfAbsent(newFreq, new LinkedList<>());
-            freqCanMap.get(newFreq).push(persons[i]);
-            timeCanMap.put(times[i], freqCanMap.lastEntry().getValue().peek());
+            freqCanMap.put(newFreq, persons[i]);
+            timeCanMap.put(times[i], freqCanMap.lastEntry().getValue());
         }
     }
 
