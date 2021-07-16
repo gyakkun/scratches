@@ -364,25 +364,26 @@ class Scratch {
     }
 }
 
-// LC901 朴素方法
+// LC901 ** 单调栈
 class StockSpanner {
 
-    LinkedList<Integer> stack;
+    Deque<Integer> price;
+    Deque<Integer> weight;
 
     public StockSpanner() {
-        stack = new LinkedList<>();
+        price = new LinkedList<>();
+        weight = new LinkedList<>();
     }
 
-    public int next(int price) {
-        // 上一个更小的值所在的下标
-        int result = 0;
-        stack.add(price);
-        Iterator<Integer> it = stack.descendingIterator();
-        while (it.hasNext()) {
-            if (it.next() <= price) result++;
-            else break;
+    public int next(int p) {
+        int w = 1;
+        while (!price.isEmpty() && price.peek() <= p) {
+            price.pop();
+            w += weight.pop();
         }
-        return result;
+        price.push(p);
+        weight.push(w);
+        return w;
     }
 }
 
