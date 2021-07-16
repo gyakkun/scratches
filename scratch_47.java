@@ -364,6 +364,28 @@ class Scratch {
     }
 }
 
+// LC901 朴素方法
+class StockSpanner {
+
+    LinkedList<Integer> stack;
+
+    public StockSpanner() {
+        stack = new LinkedList<>();
+    }
+
+    public int next(int price) {
+        // 上一个更小的值所在的下标
+        int result = 0;
+        stack.add(price);
+        Iterator<Integer> it = stack.descendingIterator();
+        while (it.hasNext()) {
+            if (it.next() <= price) result++;
+            else break;
+        }
+        return result;
+    }
+}
+
 // LC900
 class RLEIterator {
 
