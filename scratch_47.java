@@ -7,7 +7,25 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TopVotedCandidate tvc = new TopVotedCandidate(new int[]{0, 1, 1, 0, 0, 1, 0}, new int[]{0, 5, 10, 15, 20, 25, 30});
+        TreeNode n1 = new TreeNode(1);
+        TreeNode n2 = new TreeNode(2);
+        TreeNode n3 = new TreeNode(3);
+        TreeNode n4 = new TreeNode(4);
+        TreeNode n5 = new TreeNode(5);
+        TreeNode n6 = new TreeNode(6);
+        n1.left = n2;
+        n1.right = n3;
+        n2.left = n4;
+        n2.right = n5;
+        n3.left = n6;
+        CBTInserter ci = new CBTInserter(n1);
+        System.out.println(ci.insert(7));
+        System.out.println(ci.insert(8));
+        System.out.println(ci.insert(9));
+        System.out.println(ci.insert(10));
+        System.out.println(ci.insert(11));
+        System.out.println(ci.insert(12));
+        ci.get_root();
 
 
         timing = System.currentTimeMillis() - timing;
@@ -355,6 +373,79 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC919
+class CBTInserter {
+
+    LinkedList<TreeNode> lastButOneLayer;
+    LinkedList<TreeNode> lastLayer;
+    TreeNode root;
+
+    public CBTInserter(TreeNode r) {
+        LinkedList<TreeNode> q = new LinkedList<>();
+        q.offer(r);
+        root = r;
+        while (!q.isEmpty()) {
+            int qSize = q.size();
+            lastButOneLayer = new LinkedList<>(q);
+            boolean endFlag = false;
+            int i = 0;
+            for (; i < qSize; i++) {
+                TreeNode p = q.poll();
+                if (p.left != null && p.right != null) {
+                    q.offer(p.left);
+                    q.offer(p.right);
+                } else if (p.left != null) {
+                    q.offer(p.left);
+                    endFlag = true;
+                    break;
+                } else {
+                    endFlag = true;
+                    break;
+                }
+            }
+            if (endFlag) {
+                lastLayer = new LinkedList<>();
+                ListIterator<TreeNode> it = lastButOneLayer.listIterator();
+                while(it.hasNext()){
+                    TreeNode t = it.next();
+                    if (t.left != null && t.right != null) {
+                        lastLayer.offer(t.left);
+                        lastLayer.offer(t.right);
+                        it.remove();
+                    } else if (t.left != null) {
+                        lastLayer.offer(t.left);
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    public int insert(int v) {
+        TreeNode n = new TreeNode(v);
+        TreeNode p = lastButOneLayer.peek();
+        lastLayer.offer(n);
+        if (p.left == null) {
+            p.left = n;
+        } else if (p.right == null) {
+            p.right = n;
+            lastButOneLayer.poll();
+        }
+        if (lastButOneLayer.isEmpty()) {
+            lastButOneLayer = lastLayer;
+            lastLayer = new LinkedList<>();
+        }
+        return p.val;
+    }
+
+    public TreeNode get_root() {
+        return root;
     }
 }
 
