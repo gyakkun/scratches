@@ -378,14 +378,14 @@ class Scratch {
 
 // LC1032 逆序Trie 没想到吧 (
 class StreamChecker {
-    Trie trie;
+    TrieNode root;
     StringBuilder stream;
 
     public StreamChecker(String[] words) {
         stream = new StringBuilder();
-        trie = new Trie();
+        root = new TrieNode();
         for (String word : words) {
-            trie.addWord(new StringBuilder(word).reverse().toString());
+            addWord(new StringBuilder(word).reverse().toString());
         }
     }
 
@@ -394,14 +394,52 @@ class StreamChecker {
         StringBuilder suffix = new StringBuilder();
         for (int i = stream.length() - 1; i >= 0; i--) {
             suffix.append(stream.charAt(i));
-            if (!trie.beginWith(suffix.toString())) {
+            if (!beginWith(suffix.toString())) {
                 return false;
             }
-            if (trie.search(suffix.toString())) {
+            if (search(suffix.toString())) {
                 return true;
             }
         }
         return false;
+    }
+
+    private void addWord(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            cur.children.putIfAbsent(c, new TrieNode());
+            cur = cur.children.get(c);
+        }
+        cur.isEnd = true;
+    }
+
+    private boolean beginWith(String prefix) {
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (cur.children.get(c) == null) return false;
+            cur = cur.children.get(c);
+        }
+        return true;
+    }
+
+    private boolean search(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children.get(c) == null) return false;
+            cur = cur.children.get(c);
+        }
+        return cur.isEnd;
+    }
+
+    // 改手写TrieNode
+    class TrieNode {
+        Map<Character, TrieNode> children;
+        boolean isEnd;
+
+        public TrieNode() {
+            children = new HashMap<>(26);
+            isEnd = false;
+        }
     }
 }
 
