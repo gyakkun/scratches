@@ -15,6 +15,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC929
+    public int numUniqueEmails(String[] emails) {
+        Set<String> set = new HashSet<>();
+        for (String ad : emails) {
+            String[] byAt = ad.split("@");
+            String[] byPlus = byAt[0].split("\\+");
+            String clean = byPlus[0].replaceAll("\\.", "");
+            set.add(clean + "@" + byAt[1]);
+        }
+        return set.size();
+    }
+
     // JZOF 53
     public int search(int[] nums, int target) {
         if (nums.length == 0) return 0;
