@@ -7,6 +7,12 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        RLEIterator ri = new RLEIterator(new int[]{3, 8, 0, 9, 2, 5});
+        System.out.println(ri.next(2));
+        System.out.println(ri.next(1));
+        System.out.println(ri.next(1));
+        System.out.println(ri.next(2));
+
         System.err.println(s.search(new int[]{5, 7, 7, 8, 8, 10}, 7));
 
 
@@ -355,6 +361,33 @@ class Scratch {
             max = Math.max(max, cur);
         }
         return max;
+    }
+}
+
+// LC900
+class RLEIterator {
+
+    Deque<Pair<Integer, Integer>> l;
+    int offset;
+
+    public RLEIterator(int[] encoding) {
+        l = new LinkedList<>();
+        for (int i = 0; i < encoding.length; i += 2) {
+            l.offer(new Pair<>(encoding[i], encoding[i + 1]));
+        }
+        offset = 0;
+    }
+
+    public int next(int n) {
+        // 8 8 8 5 5
+        n += offset;
+        while (!l.isEmpty() && n > l.peek().getKey()) {
+            Pair<Integer, Integer> p = l.poll();
+            n -= p.getKey();
+        }
+        offset = n;
+        if (l.isEmpty()) return -1;
+        return l.peek().getValue();
     }
 }
 
