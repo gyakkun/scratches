@@ -7,11 +7,49 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.err.println("");
+        System.err.println(s.search(new int[]{5, 7, 7, 8, 8, 10}, 7));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF 53
+    public int search(int[] nums, int target) {
+        if (nums.length == 0) return 0;
+        int n = nums.length;
+        int l = 0, h = n - 1;
+        int floor = -1, ceiling = -1;
+        while (l < h) {
+            int mid = l + (h - l + 1) / 2;
+            if (nums[mid] <= target - 1) {
+                l = mid;
+            } else {
+                h = mid - 1;
+            }
+        }
+        if (nums[l] > target - 1) {
+            floor = -1;
+        } else {
+            floor = l;
+        }
+        l = 0;
+        h = n - 1;
+        while (l < h) {
+            int mid = l + (h - l) / 2;
+            if (nums[mid] >= target + 1) {
+                h = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        if (nums[l] < target + 1) {
+            ceiling = n;
+        } else {
+            ceiling = l;
+        }
+
+        return ceiling - floor - 1;
     }
 
     // LC120 Bottom Up
