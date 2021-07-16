@@ -376,6 +376,35 @@ class Scratch {
     }
 }
 
+// LC1032 逆序Trie 没想到吧 (
+class StreamChecker {
+    Trie trie;
+    StringBuilder stream;
+
+    public StreamChecker(String[] words) {
+        stream = new StringBuilder();
+        trie = new Trie();
+        for (String word : words) {
+            trie.addWord(new StringBuilder(word).reverse().toString());
+        }
+    }
+
+    public boolean query(char letter) {
+        stream.append(letter);
+        StringBuilder suffix = new StringBuilder();
+        for (int i = stream.length() - 1; i >= 0; i--) {
+            suffix.append(stream.charAt(i));
+            if (!trie.beginWith(suffix.toString())) {
+                return false;
+            }
+            if (trie.search(suffix.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
 // LC919
 class CBTInserter {
 
@@ -409,7 +438,7 @@ class CBTInserter {
             if (endFlag) {
                 lastLayer = new LinkedList<>();
                 ListIterator<TreeNode> it = lastButOneLayer.listIterator();
-                while(it.hasNext()){
+                while (it.hasNext()) {
                     TreeNode t = it.next();
                     if (t.left != null && t.right != null) {
                         lastLayer.offer(t.left);
