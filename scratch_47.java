@@ -7,13 +7,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        RLEIterator ri = new RLEIterator(new int[]{3, 8, 0, 9, 2, 5});
-        System.out.println(ri.next(2));
-        System.out.println(ri.next(1));
-        System.out.println(ri.next(1));
-        System.out.println(ri.next(2));
-
-        System.err.println(s.search(new int[]{5, 7, 7, 8, 8, 10}, 7));
+        TopVotedCandidate tvc = new TopVotedCandidate(new int[]{0, 1, 1, 0, 0, 1, 0}, new int[]{0, 5, 10, 15, 20, 25, 30});
 
 
         timing = System.currentTimeMillis() - timing;
@@ -362,6 +356,45 @@ class Scratch {
         }
         return max;
     }
+}
+
+// LC911 较慢
+class TopVotedCandidate {
+    TreeMap<Integer, Integer> timeCanMap;
+
+
+    public TopVotedCandidate(int[] persons, int[] times) {
+        timeCanMap = new TreeMap<>();
+        Map<Integer, Integer> canFreqMap = new HashMap<>();
+        Map<Integer, Integer> canTimeMap = new HashMap<>();
+        TreeMap<Integer, TreeSet<Integer>> freqCanMap = new TreeMap<>();
+        int n = persons.length;
+        for (int i = 0; i < n; i++) {
+            int oldFreq = canFreqMap.getOrDefault(persons[i], 0);
+            int newFreq = oldFreq + 1;
+            canTimeMap.put(persons[i], times[i]);
+            canFreqMap.put(persons[i], newFreq);
+            if (oldFreq != 0) {
+                freqCanMap.get(oldFreq).remove(persons[i]);
+                if (freqCanMap.get(oldFreq).size() == 0) {
+                    freqCanMap.remove(oldFreq);
+                }
+            }
+            freqCanMap.putIfAbsent(newFreq, new TreeSet<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return canTimeMap.getOrDefault(o2, 0) - canTimeMap.getOrDefault(o1, 0);
+                }
+            }));
+            freqCanMap.get(newFreq).add(persons[i]);
+            timeCanMap.put(times[i], freqCanMap.lastEntry().getValue().first());
+        }
+    }
+
+    public int q(int t) {
+        return timeCanMap.floorEntry(t).getValue();
+    }
+
 }
 
 // LC901 ** 单调栈
