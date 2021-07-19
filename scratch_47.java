@@ -7,12 +7,29 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        CombinationIterator ci = new CombinationIterator("abc", 2);
-        ci.hasNext();
+        System.out.println(s.maxFrequency(new int[]{3, 9, 6}, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1838 **
+    public int maxFrequency(int[] nums, int k) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        long total = 0;
+        int l = 0;
+        int max = 1;
+        for (int r = 1; r < n; r++) {
+            total += (long) (nums[r] - nums[r - 1]) * (r - l);
+            while (total > k) {
+                total -= (nums[r] - nums[l]);
+                l++;
+            }
+            max = Math.max(max, r - l + 1);
+        }
+        return max;
     }
 
     // LC929
