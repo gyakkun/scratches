@@ -7,11 +7,43 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxFrequency(new int[]{3, 9, 6}, 2));
+        System.out.println(s.minPathSum(new int[][]{{1, 3, 1}, {1, 5, 1}, {4, 2, 1}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC64
+    int[][] lc64Directions = {{1, 0}, {0, 1}};
+    int[][] lc64Grid;
+    Integer[][] lc64Memo;
+
+    public int minPathSum(int[][] grid) {
+        lc64Grid = grid;
+        return lc64Wrapper(grid);
+    }
+
+    private int lc64Wrapper(int[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        lc64Memo = new Integer[n][m];
+        return lc64Helper(0, 0);
+    }
+
+    private int lc64Helper(int row, int col) {
+        if (lc64Memo[row][col] != null) return lc64Memo[row][col];
+        int min = Integer.MAX_VALUE;
+        for (int[] dir : lc64Directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            if (newRow >= lc64Grid.length) continue;
+            if (newCol >= lc64Grid[0].length) continue;
+            min = Math.min(min, lc64Grid[row][col] + lc64Helper(newRow, newCol));
+        }
+        if (min == Integer.MAX_VALUE) {
+            return lc64Memo[row][col] = lc64Grid[row][col];
+        }
+        return lc64Memo[row][col] = min;
     }
 
     // LC1838 **
