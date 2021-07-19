@@ -7,16 +7,33 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxSumTwoNoOverlap(new int[]{3, 8, 1, 3, 2, 1, 8, 9, 0}, 2, 3));
+        System.out.println(s.maxSumTwoNoOverlap(new int[]{2,1,5,6,0,9,5,0,3,8}, 4, 3));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1031 TBD
+    // LC1031 **
     public int maxSumTwoNoOverlap(int[] nums, int firstLen, int secondLen) {
-        return -1;
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
+        int[] leftDp = new int[n + 1];
+        int[] sumDp = new int[n + 1];
+        int result = Integer.MIN_VALUE;
+        // ...first | second...
+        for (int i = firstLen; i + secondLen <= n; i++) {
+            leftDp[i] = Math.max(leftDp[i - 1], prefix[i] - prefix[i - firstLen]);
+            sumDp[i] = Math.max(sumDp[i - 1], leftDp[i] - prefix[i] + prefix[i + secondLen]);
+            result = Math.max(result, sumDp[i]);
+        }
+        for (int i = secondLen; i + firstLen <= n; i++) {
+            leftDp[i] = Math.max(leftDp[i - 1], prefix[i] - prefix[i - secondLen]);
+            sumDp[i] = Math.max(sumDp[i - 1], leftDp[i] - prefix[i] + prefix[i + firstLen]);
+            result = Math.max(result, sumDp[i]);
+        }
+        return result;
     }
 
     // LC64
