@@ -7,11 +7,41 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxSumTwoNoOverlap(new int[]{2, 1, 5, 6, 0, 9, 5, 0, 3, 8}, 4, 3));
+        System.out.println(s.sumSubarrayMins(new int[]{11, 81, 94, 43, 3}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC907 **
+    public int sumSubarrayMins(int[] arr) {
+        Deque<Integer> stack = new LinkedList<>(); // 单调递增栈
+        long result = 0;
+        long mod = 1000000007;
+        for (int i = 0; i < arr.length; i++) {
+            while (!stack.isEmpty() && arr[stack.peek()] >= arr[i]) {
+                int p = stack.pop();
+                long left = -1;
+                if (!stack.isEmpty()) left = stack.peek();
+                long right = i;
+                long m = p - left - 1;
+                long n = i - p - 1;
+                result += ((long) arr[p] * (m + 1) * (n + 1)) % mod;
+                result %= mod;
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            int p = stack.pop();
+            long left = -1;
+            if (!stack.isEmpty()) left = stack.peek();
+            long m = p - left - 1;
+            long n = arr.length - p - 1;
+            result += ((long) arr[p] * (m + 1) * (n + 1)) % mod;
+            result %= mod;
+        }
+        return (int) result;
     }
 
     // LC1019
