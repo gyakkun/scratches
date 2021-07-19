@@ -7,11 +7,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxSumTwoNoOverlap(new int[]{2,1,5,6,0,9,5,0,3,8}, 4, 3));
+        System.out.println(s.maxSumTwoNoOverlap(new int[]{2, 1, 5, 6, 0, 9, 5, 0, 3, 8}, 4, 3));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1019
+    public int[] nextLargerNodes(ListNode head) {
+        ListNode dummyHead = new ListNode();
+        dummyHead.next = head;
+        ListNode cur = dummyHead.next;
+        Deque<ListNode> stack = new LinkedList<>();
+        int len = 0;
+        while (cur != null) {
+            while (!stack.isEmpty() && stack.peek().val < cur.val) {
+                stack.pop().val = cur.val;
+            }
+            stack.push(cur);
+            cur = cur.next;
+            len++;
+        }
+        while (!stack.isEmpty()) {
+            stack.pop().val = 0;
+        }
+        int[] result = new int[len];
+        cur = dummyHead.next;
+        int ctr = 0;
+        while (cur != null) {
+            result[ctr++] = cur.val;
+            cur = cur.next;
+        }
+        return result;
     }
 
     // LC1031 **
@@ -1736,5 +1764,22 @@ class MyStack {
      */
     public boolean empty() {
         return q.isEmpty();
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
