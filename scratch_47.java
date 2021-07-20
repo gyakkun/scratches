@@ -14,17 +14,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC392
+    // LC392 DP **
     public boolean isSubsequence(String s, String t) {
-        char[] sc = s.toCharArray();
+        int m = s.length(), n = t.length();
+        int[][] dp = new int[n + 1][26];
         char[] tc = t.toCharArray();
-        int ps = 0, pt = 0;
-        while (ps < s.length() && pt < t.length()) {
-            if (tc[pt] == sc[ps]) ps++;
-            pt++;
+        char[] sc = s.toCharArray();
+        for (int i = 0; i < 26; i++) {
+            dp[n][i] = n;
         }
-        if(ps==s.length()) return true;
-        return false;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = 0; j < 26; j++) {
+                if (tc[i] == (char) (j + 'a')) {
+                    dp[i][j] = i;
+                } else {
+                    dp[i][j] = dp[i + 1][j];
+                }
+            }
+        }
+        int add = 0;
+        for (int i = 0; i < m; i++) {
+            if (dp[add][sc[i] - 'a'] == n) return false;
+            add = dp[add][sc[i] - 'a'] + 1;
+        }
+        return true;
     }
 
     // LC1877
