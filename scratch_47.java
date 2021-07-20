@@ -7,11 +7,24 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minPairSum(new int[]{3,5,4,2,4,6}));
+        System.out.println(s.minPairSum(new int[]{3, 5, 4, 2, 4, 6}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC392
+    public boolean isSubsequence(String s, String t) {
+        char[] sc = s.toCharArray();
+        char[] tc = t.toCharArray();
+        int ps = 0, pt = 0;
+        while (ps < s.length() && pt < t.length()) {
+            if (tc[pt] == sc[ps]) ps++;
+            pt++;
+        }
+        if(ps==s.length()) return true;
+        return false;
     }
 
     // LC1877
