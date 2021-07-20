@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.apache.lucene.queries.function.valuesource.NumDocsValueSource;
 
 import java.util.*;
 
@@ -7,25 +8,30 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        ListNode a1 = new ListNode(1);
-        ListNode a2 = new ListNode(2);
-        ListNode a3 = new ListNode(3);
-        ListNode a4 = new ListNode(4);
-        ListNode a5 = new ListNode(5);
-        ListNode a6 = new ListNode(6);
-        a1.next = a2;
-        a2.next = a3;
-        a3.next = a4;
-        a4.next = a5;
-        a5.next = a6;
 
-        s.reorderList(a1);
+        s.sortArrayByParityII(new int[]{4, 2, 5, 7});
 
         System.out.println(s.compareVersion("1.0.1", "1"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC922 **
+    public int[] sortArrayByParityII(int[] nums) {
+        int oddPtr = 1;
+        for (int evenPtr = 0; evenPtr < nums.length; evenPtr += 2) {
+            if (nums[evenPtr] % 2 == 1) {
+                while (nums[oddPtr] % 2 == 1) {
+                    oddPtr += 2;
+                }
+                int tmp = nums[oddPtr];
+                nums[oddPtr] = nums[evenPtr];
+                nums[evenPtr] = tmp;
+            }
+        }
+        return nums;
     }
 
     // LC143
