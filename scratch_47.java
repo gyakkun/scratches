@@ -7,11 +7,24 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minPairSum(new int[]{3, 5, 4, 2, 4, 6}));
+        System.out.println(s.compareVersion("1.0.1", "1"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC165
+    public int compareVersion(String version1, String version2) {
+        String[] v1 = version1.split("\\.");
+        String[] v2 = version2.split("\\.");
+        for (int i = 0; i < Math.max(v1.length, v2.length); i++) {
+            int t1 = i >= v1.length ? 0 : Integer.parseInt(v1[i], 10);
+            int t2 = i >= v2.length ? 0 : Integer.parseInt(v2[i], 10);
+            if (t1 > t2) return 1;
+            if (t2 > t1) return -1;
+        }
+        return 0;
     }
 
     // LC392 DP **
