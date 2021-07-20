@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import org.apache.lucene.queries.function.valuesource.NumDocsValueSource;
 
 import java.util.*;
 
@@ -9,13 +8,72 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        s.sortArrayByParityII(new int[]{4, 2, 5, 7});
-
-        System.out.println(s.compareVersion("1.0.1", "1"));
+        System.out.println(s.pushDominoes("..L."));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC838
+    public String pushDominoes(String dominoes) {
+        int n = dominoes.length();
+        char[] cArr = dominoes.toCharArray();
+        // 处理左...第一个字母, 如果第一个字母是L, 则左到第一个字母全是L
+        int leftPtr = 0;
+        while (leftPtr < n && cArr[leftPtr] == '.') leftPtr++;
+        if (leftPtr < n && cArr[leftPtr] == 'L') {
+            for (int i = 0; i < leftPtr; i++) {
+                cArr[i] = 'L';
+            }
+        }
+        int rightPtr = n - 1;
+        while (rightPtr >= 0 && cArr[rightPtr] == '.') rightPtr--;
+        if (rightPtr >= 0 && cArr[rightPtr] == 'R') {
+            for (int i = n - 1; i > rightPtr; i--) {
+                cArr[i] = 'R';
+            }
+        }
+        int prev = leftPtr;
+        int next = leftPtr + 1;
+        while (next <= rightPtr) {
+            if (cArr[next] == '.') {
+                next++;
+            } else {
+                if (cArr[prev] == 'L') {
+                    if (cArr[next] == 'L') {
+                        for (int i = prev; i < next; i++) {
+                            cArr[i] = 'L';
+                        }
+                    } else {
+                        ;
+                    }
+                } else { // prev == R
+                    if (cArr[next] == 'R') {
+                        for (int i = prev; i < next; i++) {
+                            cArr[i] = 'R';
+                        }
+                    } else { // next = L
+                        int left = prev, right = next;
+                        if ((right - left + 1) % 2 == 1) {
+                            while (left != right) {
+                                cArr[left++] = 'R';
+                                cArr[right--] = 'L';
+                            }
+                        } else {
+                            while (left < right) {
+                                cArr[left++] = 'R';
+                                cArr[right--] = 'L';
+                            }
+                        }
+                    }
+                }
+
+                prev = next;
+                next = next + 1;
+            }
+        }
+        return new String(cArr);
     }
 
     // LC922 **
