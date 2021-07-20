@@ -7,11 +7,63 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        ListNode a1 = new ListNode(1);
+        ListNode a2 = new ListNode(2);
+        ListNode a3 = new ListNode(3);
+        ListNode a4 = new ListNode(4);
+        ListNode a5 = new ListNode(5);
+        ListNode a6 = new ListNode(6);
+        a1.next = a2;
+        a2.next = a3;
+        a3.next = a4;
+        a4.next = a5;
+        a5.next = a6;
+
+        s.reorderList(a1);
+
         System.out.println(s.compareVersion("1.0.1", "1"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC143
+    public void reorderList(ListNode head) {
+        ListNode dummy = new ListNode();
+        dummy.next = head;
+        ListNode fast = dummy.next;
+        ListNode slow = dummy.next;
+        while (fast.next != null && fast.next.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        boolean even = fast.next != null;
+        ListNode middle = slow;
+        ListNode secHalfDummyHead = new ListNode();
+        secHalfDummyHead.next = middle.next;
+        middle.next = null;
+        ListNode prev = null;
+        ListNode cur = secHalfDummyHead.next;
+        while (cur != null) {
+            ListNode origNext = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = origNext;
+        }
+        ListNode secHalfRevDummyHead = new ListNode();
+        secHalfRevDummyHead.next = prev;
+
+        ListNode firstPtr = dummy.next;
+        ListNode secPtr = secHalfRevDummyHead.next;
+        while (secPtr != null) {
+            ListNode firstNext = firstPtr.next;
+            ListNode secNext = secPtr.next;
+            firstPtr.next = secPtr;
+            secPtr.next = firstNext;
+            firstPtr = firstNext;
+            secPtr = secNext;
+        }
     }
 
     // LC86
