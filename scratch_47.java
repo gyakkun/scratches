@@ -7,11 +7,22 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.sumSubarrayMins(new int[]{11, 81, 94, 43, 3}));
+        System.out.println(s.minPairSum(new int[]{3,5,4,2,4,6}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1877
+    public int minPairSum(int[] nums) {
+        Arrays.sort(nums);
+        int max = Integer.MIN_VALUE;
+        int n = nums.length;
+        for (int i = 0; i < n / 2; i++) {
+            max = Math.max(nums[i] + nums[n - i - 1], max);
+        }
+        return max;
     }
 
     // LC907 **
