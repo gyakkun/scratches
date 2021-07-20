@@ -14,6 +14,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC86
+    public ListNode partition(ListNode head, int x) {
+        ListNode mainChainHead = new ListNode();
+        mainChainHead.next = head;
+        ListNode subChainHead = new ListNode();
+        ListNode prev = mainChainHead;
+        ListNode cur = mainChainHead.next;
+        ListNode subChainPtr = subChainHead;
+        while (cur != null) {
+            if (cur.val >= x) {
+                ListNode origNext = cur.next;
+                cur.next = null;
+                subChainPtr.next = cur;
+                subChainPtr = subChainPtr.next;
+                prev.next = origNext;
+                cur = prev.next;
+            } else {
+                prev = prev.next;
+                cur = cur.next;
+            }
+        }
+        prev.next = subChainHead.next;
+        return mainChainHead.next;
+    }
+
     // LC165
     public int compareVersion(String version1, String version2) {
         String[] v1 = version1.split("\\.");
