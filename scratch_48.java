@@ -5,35 +5,57 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.splitArraySameAverage(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6}));
+        System.out.println(s.splitArraySameAverage(new int[]{18, 0, 16, 2}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC805 MLE
+    // LC805 **
     public boolean splitArraySameAverage(int[] nums) {
+        Arrays.sort(nums); // 避免出现{18,0,16,2}的被hack情况
         int n = nums.length;
-        int allMask = (1 << n) - 1;
-        int sum = 0;
+        long sum = 0;
         for (int i : nums) sum += i;
-        Set<Integer> visited = new HashSet<>();
+        long[] arr = new long[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = ((long) nums[i]) * ((long) n) - sum;
+        }
+        long[] left = new long[n / 2];
+        long[] right = new long[n - left.length];
+        for (int i = 0; i < left.length; i++) {
+            left[i] = arr[i];
+        }
+        for (int i = left.length; i < n; i++) {
+            right[i - left.length] = arr[i];
+        }
 
-        for (int subset = allMask; subset != 0; subset = (subset - 1) & allMask) {
-            int anotherHalf = allMask ^ subset;
-            if (visited.contains(subset) || visited.contains(anotherHalf)) continue;
-            visited.add(subset);
-            visited.add(anotherHalf);
-
-            int curSum = 0;
-            for (int i = 0; i < n; i++) {
+        // 找0
+        Map<Integer, Set<Integer>> leftSumMaskMap = new HashMap<>();
+        for (int subset = (1 << left.length) - 1; subset != 0; subset--) {
+            int tmp = 0;
+            for (int i = 0; i < left.length; i++) {
                 if (((subset >> i) & 1) == 1) {
-                    curSum += nums[i];
+                    tmp += arr[i];
                 }
             }
-            int halfSum = sum - curSum;
-            if ((halfSum + 0.0) / (0.0 + Integer.bitCount(anotherHalf)) == (curSum + 0.0) / (0.0 + Integer.bitCount(subset)))
-                return true;
+            leftSumMaskMap.putIfAbsent(tmp, new HashSet<>());
+            leftSumMaskMap.get(tmp).add(subset);
+        }
+        for (int subset = (1 << right.length) - 1; subset != 0; subset--) {
+            int tmp = 0;
+            for (int i = 0; i < right.length; i++) {
+                if (((subset >> i) & 1) == 1) {
+                    tmp += arr[i + left.length];
+                }
+            }
+            if (leftSumMaskMap.containsKey(-tmp)) {
+                for (int mask : leftSumMaskMap.get(-tmp)) {
+                    if (Integer.bitCount(mask) + Integer.bitCount(subset) != n) {
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
