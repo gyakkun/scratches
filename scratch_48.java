@@ -5,10 +5,37 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxScore(new int[]{1, 7, 3, 8, 9, 2, 1, 2, 666, 29, 13, 12, 16, 93}));
+        System.out.println(s.splitArraySameAverage(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC805 MLE
+    public boolean splitArraySameAverage(int[] nums) {
+        int n = nums.length;
+        int allMask = (1 << n) - 1;
+        int sum = 0;
+        for (int i : nums) sum += i;
+        Set<Integer> visited = new HashSet<>();
+
+        for (int subset = allMask; subset != 0; subset = (subset - 1) & allMask) {
+            int anotherHalf = allMask ^ subset;
+            if (visited.contains(subset) || visited.contains(anotherHalf)) continue;
+            visited.add(subset);
+            visited.add(anotherHalf);
+
+            int curSum = 0;
+            for (int i = 0; i < n; i++) {
+                if (((subset >> i) & 1) == 1) {
+                    curSum += nums[i];
+                }
+            }
+            int halfSum = sum - curSum;
+            if ((halfSum + 0.0) / (0.0 + Integer.bitCount(anotherHalf)) == (curSum + 0.0) / (0.0 + Integer.bitCount(subset)))
+                return true;
+        }
+        return false;
     }
 
     // LC1799 **
