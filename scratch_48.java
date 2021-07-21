@@ -1,12 +1,98 @@
+import java.util.ArrayList;
+import java.util.List;
+
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.countSquares(new int[][]{{0, 1, 1, 1}, {1, 1, 1, 1}, {0, 1, 1, 1}}));
+        System.out.println(s.maxScoreWords(
+
+                new String[]{"baa", "bba", "ccb", "ac"},
+                new char[]{'a', 'b', 'b', 'b', 'b', 'c'},
+                new int[]{2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1255
+    int lc1255Max;
+
+    public int maxScoreWords(String[] words, char[] letters, int[] score) {
+        lc1255Max = 0;
+        int[] usable = new int[26];
+        for (char c : letters) {
+            usable[c - 'a']++;
+        }
+        boolean[] canAdd = new boolean[words.length];
+        for (int i = 0; i < words.length; i++) {
+            int[] tmp = new int[26];
+            System.arraycopy(usable, 0, tmp, 0, 26);
+            boolean flag = true;
+            for (char c : words[i].toCharArray()) {
+                tmp[c - 'a']--;
+                if (tmp[c - 'a'] < 0) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) canAdd[i] = true;
+        }
+        List<String> addableWords = new ArrayList<>();
+        for (int i = 0; i < words.length; i++) {
+            if (canAdd[i]) addableWords.add(words[i]);
+        }
+        int[] addableScores = new int[addableWords.size()];
+        for (int i = 0; i < addableWords.size(); i++) {
+            for (char c : addableWords.get(i).toCharArray()) {
+                addableScores[i] += score[c - 'a'];
+            }
+        }
+
+        lc1255Backtrack(0, 0, usable, addableWords, addableScores);
+
+        return lc1255Max;
+    }
+
+    private void lc1255Backtrack(int curIdx, int curScore, int[] curUsable, List<String> addableWords, int[] addableScores) {
+        if (curIdx == addableWords.size()) {
+            lc1255Max = Math.max(lc1255Max, curScore);
+            return;
+        }
+        for (int i = curIdx; i < addableWords.size(); i++) {
+            subCurWordFreq(curUsable, addableWords, i);
+            if (!isCanUse(curUsable)) {
+                addBackCurWordFreq(curUsable, addableWords, i);
+                lc1255Backtrack(i + 1, curScore, curUsable, addableWords, addableScores);
+            } else {
+                lc1255Backtrack(i + 1, curScore + addableScores[i], curUsable, addableWords, addableScores);
+                addBackCurWordFreq(curUsable, addableWords, i);
+            }
+        }
+    }
+
+    private boolean isCanUse(int[] curUsable) {
+        for (int j = 0; j < 26; j++) {
+            if (curUsable[j] < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void addBackCurWordFreq(int[] curUsable, List<String> addableWords, int i) {
+        for (char c : addableWords.get(i).toCharArray()) {
+            curUsable[c - 'a']++;
+        }
+    }
+
+    private void subCurWordFreq(int[] curUsable, List<String> addableWords, int i) {
+        for (char c : addableWords.get(i).toCharArray()) {
+            curUsable[c - 'a']--;
+        }
     }
 
     // LC1277
