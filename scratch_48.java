@@ -6,43 +6,27 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minSteps(1000));
+        System.out.println(s.minSteps(2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC650 TLE
-    int lc650Min;
-    Integer[][][] lc650Memo;
-
+    // LC650 **
     public int minSteps(int n) {
-        lc650Min = n;
-        lc650Memo = new Integer[n + 1][n + 1][n + 1];
-        lc650dfs(1, 0, 0, n);
-        return lc650Min;
-    }
-
-    private int lc650dfs(int count, int curStep, int pasteBin, int target) {
-        if (curStep > target) {
-            return Integer.MAX_VALUE;
+        if (n == 1) return 0;
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            dp[i] = i;
         }
-        if (count == target) {
-            lc650Min = Math.min(curStep, lc650Min);
-            return curStep;
-        } else if (count > target) {
-            return Integer.MAX_VALUE;
-        } else {
-            if (lc650Memo[count][curStep][pasteBin] != null) return lc650Memo[count][curStep][pasteBin];
-
-            // 复制
-            int origPasteBin = pasteBin;
-            lc650Memo[count][curStep][pasteBin] = lc650dfs(count, curStep + 1, count, target);
-
-            // 粘贴
-            lc650Memo[count][curStep][pasteBin] = Math.min(lc650Memo[count][curStep][pasteBin], lc650dfs(count + pasteBin, curStep + 1, pasteBin, target));
+        for (int i = 1; i <= n; i++) {
+            for (int j = 2; j < i; j++) {
+                if (i % j == 0) {
+                    dp[i] = dp[j] + dp[i / j];
+                }
+            }
         }
-        return lc650Memo[count][curStep][pasteBin];
+        return dp[n];
     }
 
     // LC1255
