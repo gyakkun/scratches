@@ -1,17 +1,60 @@
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minSteps(2));
+        System.out.println(s.maxScore(new int[]{1, 7, 3, 8, 9, 2, 1, 2, 666, 29, 13, 12, 16, 93}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1799 **
+    int lc1799Result;
+    int[][] lc1799GcdCache;
+    Integer[] lc1799Memo;
+
+    public int maxScore(int[] nums) {
+        int n = nums.length / 2;
+        int allMask = (1 << (2 * n)) - 1;
+        lc1799Result = (1 + n) * n / 2;
+        lc1799GcdCache = new int[n * 2][n * 2];
+        lc1799Memo = new Integer[1 << (nums.length)];
+        for (int i = 0; i < n * 2; i++) {
+            for (int j = i + 1; j < n * 2; j++) {
+                lc1799GcdCache[i][j] = lc1799GcdCache[j][i] = gcd(nums[i], nums[j]);
+            }
+        }
+        return lc1799Helper(nums, 0, allMask);
+    }
+
+    // 注意DFS应该携带什么信息, 不应该携带什么信息, 不要把当前状态(比如这里的score)放进函数入参, 而应该动态计算, 动态更新 (见highlight)
+    private int lc1799Helper(int[] nums, int curMask, int allMask) {
+        if (lc1799Memo[curMask] != null) return lc1799Memo[curMask];
+        lc1799Memo[curMask] = 0;
+        int selectable = allMask ^ curMask;
+        for (int subset = selectable; subset != 0; subset = (subset - 1) & selectable) {
+            if (Integer.bitCount(subset) == 2) {
+                int[] select = new int[2];
+                int ctr = 0;
+                for (int i = 0; i < nums.length; i++) {
+                    if (((subset >> i) & 1) == 1) {
+                        select[ctr++] = i;
+                    }
+                    if (ctr == 2) break;
+                }
+                int newMask = subset ^ curMask;
+                lc1799Memo[curMask] = Math.max(lc1799Memo[curMask],
+                        lc1799Helper(nums, newMask, allMask) + lc1799GcdCache[select[0]][select[1]] * Integer.bitCount(newMask) / 2); // Highlight
+            }
+        }
+        return lc1799Memo[curMask];
+    }
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
     }
 
     // LC844
