@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 class Scratch {
@@ -10,6 +12,31 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC844
+    public boolean backspaceCompare(String s, String t) {
+        Deque<Character> ss = new LinkedList<>();
+        Deque<Character> ts = new LinkedList<>();
+        for (char c : s.toCharArray()) {
+            if (c != '#') {
+                ss.push(c);
+            } else {
+                if (!ss.isEmpty()) ss.pop();
+            }
+        }
+        for (char c : t.toCharArray()) {
+            if (c != '#') {
+                ts.push(c);
+            } else {
+                if (!ts.isEmpty()) ts.pop();
+            }
+        }
+        if (ss.size() != ts.size()) return false;
+        while (!ss.isEmpty()) {
+            if (ss.pollLast() != ts.pollLast()) return false;
+        }
+        return true;
     }
 
     // LC650 **
