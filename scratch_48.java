@@ -50,6 +50,7 @@ class Scratch {
         return dummy.next;
     }
 
+    // JSOF 52 LC160
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
         if (headA == null || headB == null) return null;
         ListNode aPtr = headA, bPtr = headB;
