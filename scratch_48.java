@@ -5,10 +5,23 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.splitArraySameAverage(new int[]{18, 0, 16, 2}));
+        System.out.println(s.heightChecker(new int[]{1, 1, 4, 2, 1, 3}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1051
+    public int heightChecker(int[] heights) {
+        int[] freq = new int[101];
+        for (int i : heights) freq[i]++;
+        int result = 0;
+        for (int i = 1, j = 0; i <= 100; i++) {
+            while (freq[i]-- != 0) {
+                if (heights[j++] != i) result++;
+            }
+        }
+        return result;
     }
 
     // LC805 **
