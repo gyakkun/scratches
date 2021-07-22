@@ -180,6 +180,7 @@ class Scratch {
     //     n1 * n2 < Integer.MAX_VALUE
     // <=> n1 < Integer.MAX_VALUE / n2
 
+    // LC713
     public int numSubarrayProductLessThanK(int[] nums, int k) {
         if (k <= 1) return 0;
         int prod = 1, ans = 0, left = 0;
