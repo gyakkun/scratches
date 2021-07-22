@@ -11,6 +11,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC846 LC1296
+    public boolean isNStraightHand(int[] hand, int groupSize) {
+        if (hand.length % groupSize != 0) return false;
+        TreeMap<Integer, Integer> m = new TreeMap<>();
+        for (int i : hand) m.put(i, m.getOrDefault(i, 0) + 1);
+        while (!m.isEmpty()) {
+            int firstKey = m.firstKey();
+            for (int i = 0; i < groupSize; i++) {
+                if (!m.containsKey(firstKey + i)) {
+                    return false;
+                }
+                m.put(firstKey + i, m.get(firstKey + i) - 1);
+                if (m.get(firstKey + i) == 0) m.remove(firstKey + i);
+            }
+        }
+        return true;
+    }
+
     // LC1302
     public int deepestLeavesSum(TreeNode root) {
         Deque<TreeNode> q = new LinkedList<>();
