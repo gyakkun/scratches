@@ -11,6 +11,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC713
+    public int numSubarrayProductLessThanK(int[] nums, int k) {
+        if (k <= 1) return 0;
+        int left = 0, prod = 1, result = 0, n = nums.length;
+        for (int right = 0; right < n; right++) {
+            prod *= nums[right];
+            while (prod >= k) prod /= nums[left++];
+            result += right - left + 1;
+        }
+        return result;
+    }
+
     // LC209
     public int minSubArrayLen(int target, int[] nums) {
         int n = nums.length;
