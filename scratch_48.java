@@ -12,6 +12,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC968 **
+    public int minCameraCover(TreeNode root) {
+        return lc968Helper(root)[1];
+    }
+
+    private int[] lc968Helper(TreeNode root) {
+        if (root == null) {
+            return new int[]{Integer.MAX_VALUE / 2, 0, 0};
+        }
+        int[] status = new int[3];
+        int[] lStatus = lc968Helper(root.left);
+        int[] rStatus = lc968Helper(root.right);
+        status[0] = lStatus[2] + rStatus[2] + 1;
+        status[1] = Math.min(status[0], Math.min(lStatus[0] + rStatus[1], lStatus[1] + rStatus[0]));
+        status[2] = Math.min(status[0], lStatus[1] + rStatus[1]);
+        return status;
+    }
+
     // LC866
     public int primePalindrome(int n) {
         // 前 663,961 个素数的回文素数表, 借用nthPrime打出来, 超过这个数就耗时太长了
@@ -38,7 +56,7 @@ class Scratch {
                         break;
                     }
                 }
-                if(flag) System.out.println(p);
+                if (flag) System.out.println(p);
             }
         }
 
