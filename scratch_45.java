@@ -13,21 +13,11 @@ class Scratch {
         int max = 0;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String line;
-        for (int i = 0; i < 10; i++) {
-            if ((line = br.readLine()) != null) {
-                if (line.startsWith("q")) {
-                    qIdx = i;
-                    line = line.replaceAll("[^\\d]", "").trim();
-                }
-                input[i] = Integer.valueOf(line);
-                max = Math.max(max, input[i]);
-            }
-        }
 
-        NthPrime nthPrime = new NthPrime(max);
+        NthPrime nthPrime = new NthPrime(1664);
 
-        for (int i = 0; i < 10; i++) {
-            System.out.println((i == qIdx ? "qq_group:" : "") + nthPrime.getNthPrime(input[i]));
+        for (int i = 1; i < 1664; i++) {
+            System.out.println(nthPrime.getNthPrime(i));
         }
     }
 
@@ -52,26 +42,48 @@ class NthPrime {
 
     private int calcNth(int n) {
         // 以下估计参考了 Wikipedia - 素数计数函数
-        int lb = (int) (n * ((Math.log(n) + Math.log(Math.log(n))) - 1)); // nth prime 的下界
-        int ub = lb + n; // 上界
+        int lb = (int) (n * ((Math.log(n) + Math.log(Math.log(n))) - 1)); // nth prime 的上界
+        int ub = lb + n; // 下界
         int approx = lb + (int) ((0.0 + n * Math.log(Math.log(n)) - 2 * n) / (Math.log(n))); // 一个估计
         int apPi = (int) helper.pi(approx);
         int low = lb, high = ub;
         if (apPi > n) high = approx;
         else low = approx;
 
-        while (low < high) {
+        int target = n - 1;
+
+        // 二分 令下界lb逼近不超过nthPrime的一个值 使得pi(lb)==nth-1
+        while (low <= high) {
             int mid = low + (high - low) / 2;
             int tmpPi = (int) helper.pi(mid);
-            if (tmpPi >= n) {
-                high = mid;
+            if (tmpPi == target) {
+                lb = mid;
+                break;
+            } else if (tmpPi > target) {
+                high = mid - 1;
             } else {
                 low = mid + 1;
             }
         }
-        result.put(n, low);
 
-        return low;
+        if (lb % 2 == 1) lb--;
+        int primeCount = (int) helper.pi(lb);
+        // 埃筛
+        for (int i = lb; i <= ub; i++) {
+            boolean isPrime = true;
+            for (int j = 1; j < helper.prime.length && helper.prime[j] * helper.prime[j] <= i; j++) {
+                if (i % helper.prime[j] == 0) {
+                    isPrime = false;
+                    break;
+                }
+            }
+            if (isPrime) {
+                result.put(++primeCount, i);
+            }
+            if (primeCount == n) break;
+        }
+
+        return result.get(n);
     }
 
     // Meissel-Lehmer 法求素数计数函数
@@ -115,12 +127,9 @@ class NthPrime {
             }
             prime = new int[pc + 1];
             System.arraycopy(pl, 0, prime, 0, pc + 1);
-
             piCacheArray = new int[prime[prime.length - 1] + 1];
-            int primeIdx = 0;
             for (int i = 0; i <= prime[prime.length - 1]; i++) {
-                if (i == prime[primeIdx]) piCacheArray[i] = primeIdx++;
-                else piCacheArray[i] = piCacheArray[i - 1];
+                piCacheArray[i] = (int) piLessThanPrimeMax(i);
             }
         }
 
@@ -134,6 +143,21 @@ class NthPrime {
                 phiMemo[(int) m][n] = (int) result;
             }
             return result;
+        }
+
+        private long piLessThanPrimeMax(long x) {
+            if (x == 1) return 0;
+            if (x == 2) return 1;
+            int low = 1, high = prime.length - 1;
+            while (low < high) {
+                int mid = low + (high - low + 1) / 2;
+                if (prime[mid] <= x) {
+                    low = mid;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            return low;
         }
 
         public long pi(long m) {
@@ -150,4 +174,5 @@ class NthPrime {
             return result;
         }
     }
+
 }
