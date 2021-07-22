@@ -11,6 +11,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1302
+    public int deepestLeavesSum(TreeNode root) {
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        List<TreeNode> thisLayer = new LinkedList<>();
+        while (!q.isEmpty()) {
+            thisLayer.clear();
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
+                TreeNode p = q.poll();
+                thisLayer.add(p);
+                if (p.left != null) {
+                    q.offer(p.left);
+                }
+                if (p.right != null) {
+                    q.offer(p.right);
+                }
+            }
+        }
+        int sum = 0;
+        for (TreeNode t : thisLayer) {
+            sum += t.val;
+        }
+        return sum;
+    }
+
     // LC138
     class LC138 {
 
@@ -361,5 +387,24 @@ class ListNode {
     ListNode(int val, ListNode next) {
         this.val = val;
         this.next = next;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
