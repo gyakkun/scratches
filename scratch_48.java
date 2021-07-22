@@ -13,21 +13,32 @@ class Scratch {
     }
 
     // LC968 **
-    public int minCameraCover(TreeNode root) {
-        return lc968Helper(root)[1];
+    enum lc968Status {
+        NO_NEED,
+        NEED,
+        HAS_CAMERA
     }
 
-    private int[] lc968Helper(TreeNode root) {
+    int lc968Result;
+
+    public int minCameraCover(TreeNode root) {
+        lc968Result = 0;
+        if (lc968Helper(root) == lc968Status.NEED) lc968Result++;
+        return lc968Result;
+    }
+
+    private lc968Status lc968Helper(TreeNode root) {
         if (root == null) {
-            return new int[]{Integer.MAX_VALUE / 2, 0, 0};
+            return lc968Status.NO_NEED;
         }
-        int[] status = new int[3];
-        int[] lStatus = lc968Helper(root.left);
-        int[] rStatus = lc968Helper(root.right);
-        status[0] = lStatus[2] + rStatus[2] + 1;
-        status[1] = Math.min(status[0], Math.min(lStatus[0] + rStatus[1], lStatus[1] + rStatus[0]));
-        status[2] = Math.min(status[0], lStatus[1] + rStatus[1]);
-        return status;
+        lc968Status left = lc968Helper(root.left), right = lc968Helper(root.right);
+        // 如果子结点中有一个需要相机, 则该节点需要放置相机, 否则子节点会不被覆盖
+        if (left == lc968Status.NEED || right == lc968Status.NEED) {
+            lc968Result++;
+            return lc968Status.HAS_CAMERA;
+        }
+        // 如果子节点中有一个拥有相机, 则父节点被覆盖, 不需要相机, 否则需要相机
+        return (left == lc968Status.HAS_CAMERA || right == lc968Status.HAS_CAMERA) ? lc968Status.NO_NEED : lc968Status.NEED;
     }
 
     // LC866
