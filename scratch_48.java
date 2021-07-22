@@ -5,10 +5,32 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.longestWord(new String[]{"wo","wor","worl", "wordd"}));
+        System.out.println(s.lengthOfLongestSubstring(""));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC3
+    public int lengthOfLongestSubstring(String s) {
+        char[] cArr = s.toCharArray();
+        int n = cArr.length;
+        Map<Character, Integer> lastOccur = new HashMap<>();
+        int left = 0, right = 0;
+        int max = 0;
+        while (right != n) {
+            if (lastOccur.containsKey(cArr[right])) {
+                int end = lastOccur.get(cArr[right]);
+                for (int i = left; i <= end; i++) {
+                    lastOccur.remove(cArr[i]);
+                }
+                left = end + 1;
+            }
+            lastOccur.put(cArr[right], right);
+            max = Math.max(max, right - left + 1);
+            right++;
+        }
+        return max;
     }
 
     // LC720 You sure this is EASY???
