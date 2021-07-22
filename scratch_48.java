@@ -5,10 +5,32 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.longestPalindrome("a"));
+        System.out.println(s.minSubArrayLen(4, new int[]{1, 4, 4}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC209
+    public int minSubArrayLen(int target, int[] nums) {
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
+        int left = 0, right = 0;
+        int min = Integer.MAX_VALUE;
+        while (left <= right && right != n) {
+            if (prefix[right + 1] - prefix[left] < target) {
+                right++;
+                continue;
+            } else {
+                if (right - left + 1 < min) {
+                    min = right - left + 1;
+                }
+                left++;
+            }
+        }
+        if (min == Integer.MAX_VALUE) return 0;
+        return min;
     }
 
     // LC5
