@@ -5,11 +5,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.out.println(s.heightChecker(new int[]{1, 1, 4, 2, 1, 3}));
-        s.printPrimePalindromeFrom1e7to2e8();
+        System.out.println(s.longestWord(new String[]{"wo","wor","worl", "wordd"}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC720 You sure this is EASY???
+    int lc720MaxLen = 0;
+    String lc720Result = "";
+    StringBuilder lc720Sb = new StringBuilder();
+
+    public String longestWord(String[] words) {
+        Trie trie = new Trie();
+        for (String word : words) trie.addWord(word);
+        TrieNode root = trie.root;
+        lc720Helper(root);
+        return lc720Result;
+    }
+
+    private void lc720Helper(TrieNode root) {
+        for (char c : root.children.keySet()) {
+            if (root.children.get(c).isEnd) {
+                lc720Sb.append(c);
+                if (lc720Sb.length() > lc720MaxLen) {
+                    lc720MaxLen = lc720Sb.length();
+                    lc720Result = lc720Sb.toString();
+                } else if (lc720Sb.length() == lc720MaxLen && lc720Sb.toString().compareTo(lc720Result) < 0) {
+                    lc720Result = lc720Sb.toString();
+                }
+                lc720Helper(root.children.get(c));
+                lc720Sb.deleteCharAt(lc720Sb.length() - 1);
+            }
+        }
     }
 
     // LC968 **
@@ -486,5 +514,53 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+class Trie {
+
+    public TrieNode root;
+
+    public Trie() {
+        this.root = new TrieNode();
+    }
+
+    public boolean addWord(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            cur.children.putIfAbsent(c, new TrieNode());
+            cur = cur.children.get(c);
+        }
+        if (cur.isEnd) return false;
+        return cur.isEnd = true;
+    }
+
+    public boolean beginWith(String prefix) {
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (!cur.children.containsKey(c)) return false;
+            cur = cur.children.get(c);
+        }
+        return true;
+    }
+
+    public boolean search(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) return false;
+            cur = cur.children.get(c);
+        }
+        return cur.isEnd;
+    }
+
+}
+
+class TrieNode {
+    Map<Character, TrieNode> children;
+    boolean isEnd;
+
+    public TrieNode() {
+        children = new HashMap<>();
+        isEnd = false;
     }
 }
