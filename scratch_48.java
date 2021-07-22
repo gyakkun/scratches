@@ -11,6 +11,45 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC138
+    class LC138 {
+
+        public Node copyRandomList(Node head) {
+            Node dummy = new Node(-1);
+            dummy.next = head;
+            Node cur = head;
+            Map<Node, Node> m = new HashMap<>();
+            m.put(null, null);
+            while (cur != null) {
+                Node t = new Node(cur.val);
+                m.put(cur, t);
+                cur = cur.next;
+            }
+
+            cur = head;
+            while (cur != null) {
+                m.get(cur).next = m.get(cur.next);
+                m.get(cur).random = m.get(cur.random);
+                cur = cur.next;
+            }
+
+            return m.get(head);
+        }
+
+        class Node {
+            int val;
+            Node next;
+            Node random;
+
+            public Node(int val) {
+                this.val = val;
+                this.next = null;
+                this.random = null;
+            }
+        }
+
+    }
+
     // LC1051
     public int heightChecker(int[] heights) {
         int[] freq = new int[101];
