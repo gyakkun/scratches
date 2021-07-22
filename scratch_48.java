@@ -5,10 +5,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.lengthOfLongestSubstring(""));
+        System.out.println(s.longestPalindrome("a"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC5
+    public String longestPalindrome(String s) {
+        char[] cArr = s.toCharArray();
+        int n = cArr.length;
+        boolean[][] dp = new boolean[n][n];
+        // dp[i][j] 表示 [i,j]是不是回文串
+        // dp[i][j] = true iff dp[i+1][j-1]==true && cArr[i]==cArr[j]
+        for (int i = 0; i < n; i++) dp[i][i] = true;
+        int max = 1;
+        int maxLeft = 0, maxRight = 0;
+        for (int len = 2; len <= n; len++) {
+            for (int left = 0; left < n; left++) {
+                int right = left + len - 1;
+                if (right >= n) break;
+                if (cArr[left] == cArr[right]) {
+                    if (len == 2) dp[left][right] = true;
+                    else {
+                        dp[left][right] = dp[left + 1][right - 1];
+                    }
+                }
+                if (len > max && dp[left][right]) {
+                    maxLeft = left;
+                    maxRight = right;
+                }
+            }
+        }
+        return s.substring(maxLeft, maxRight + 1);
     }
 
     // LC3
