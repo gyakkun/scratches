@@ -11,6 +11,48 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 16.19
+    public int[] pondSizes(int[][] land) {
+        int[][] directions = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+        int totalRow = land.length, totalCol = land[0].length;
+        DisjointSetUnion dsu = new DisjointSetUnion();
+        for (int i = 0; i < totalRow; i++) {
+            for (int j = 0; j < totalCol; j++) {
+                int curId = getMatrixId(i, j, totalRow, totalCol);
+                if (land[i][j] == 0) {
+                    dsu.add(curId);
+                    for (int[] dir : directions) {
+                        int targetRow = i + dir[0];
+                        int targetCol = j + dir[1];
+                        if (checkPoint(targetRow, targetCol, totalRow, totalCol) && land[targetRow][targetCol] == 0) {
+                            dsu.add(getMatrixId(targetRow, targetCol, totalRow, totalCol));
+                            dsu.merge(curId, getMatrixId(targetRow, targetCol, totalRow, totalCol));
+                        }
+                    }
+                }
+            }
+        }
+        Map<Integer, Set<Integer>> groups = dsu.allGroups();
+        List<Integer> result = new ArrayList<>(groups.size());
+        for (int i : groups.keySet()) {
+            result.add(groups.get(i).size());
+        }
+        Collections.sort(result);
+        int[] res = new int[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            res[i] = result.get(i);
+        }
+        return res;
+    }
+
+    private boolean checkPoint(int targetRow, int targetCol, int totalRow, int totalCol) {
+        return !(targetRow >= totalRow || targetRow < 0 || targetCol >= totalCol || targetCol < 0);
+    }
+
+    private int getMatrixId(int targetRow, int targetCol, int totalRow, int totalCol) {
+        return targetRow * totalCol + targetCol;
+    }
+
     // LC500
     public String[] findWords(String[] words) {
         List<String> result = new ArrayList<>(words.length);
@@ -694,5 +736,56 @@ class TrieNode {
     public TrieNode() {
         children = new HashMap<>();
         isEnd = false;
+    }
+}
+
+class DisjointSetUnion {
+    Map<Integer, Integer> parent = new HashMap<>();
+
+    public boolean add(int i) {
+        if (parent.containsKey(i)) return false;
+        parent.put(i, i);
+        return true;
+    }
+
+    // 找最终父节点
+    public int find(int i) {
+        int cur = i;
+        while (parent.get(cur) != cur) {
+            cur = parent.get(cur);
+        }
+        int finalParent = cur;
+        cur = i;
+        // 路径压缩
+        while (parent.get(cur) != finalParent) {
+            int origParent = parent.get(cur);
+            parent.put(cur, finalParent);
+            cur = origParent;
+        }
+        return finalParent;
+    }
+
+    public boolean merge(int i, int j) {
+        int ip = find(i);
+        int jp = find(j);
+        if (ip == jp) return false;
+        parent.put(ip, jp);
+        return true;
+    }
+
+    public boolean isConnect(int i, int j) {
+        return find(i) == find(j);
+    }
+
+    public Map<Integer, Set<Integer>> allGroups() {
+        for (int i : parent.keySet()) {
+            find(i);
+        }
+        Map<Integer, Set<Integer>> result = new HashMap<>();
+        for (int i : parent.keySet()) {
+            result.putIfAbsent(parent.get(i), new HashSet<>());
+            result.get(parent.get(i)).add(i);
+        }
+        return result;
     }
 }
