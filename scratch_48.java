@@ -11,6 +11,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC500
+    public String[] findWords(String[] words) {
+        List<String> result = new ArrayList<>(words.length);
+        String[] kb = new String[]{"qwertyuiop", "asdfghjkl", "zxcvbnm"};
+        boolean[][] kbCheck = new boolean[3][26];
+        int kbCtr = 0;
+        for (String s : kb) {
+            for (char c : s.toCharArray()) {
+                kbCheck[kbCtr][c - 'a'] = true;
+            }
+            kbCtr++;
+        }
+        for (String word : words) {
+            boolean flag = false;
+            for (int i = 0; i < 3; i++) {
+                boolean flag2 = true;
+                for (char c : word.toLowerCase().toCharArray()) {
+                    if (!kbCheck[i][c - 'a']) {
+                        flag2 = false;
+                        break;
+                    }
+                }
+                if (flag2) {
+                    result.add(word);
+                    break;
+                }
+            }
+        }
+        return result.toArray(new String[result.size()]);
+    }
+
     // LC1893
     public boolean isCovered(int[][] ranges, int left, int right) {
         boolean[] check = new boolean[51];
