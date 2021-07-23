@@ -11,6 +11,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1893
+    public boolean isCovered(int[][] ranges, int left, int right) {
+        boolean[] check = new boolean[51];
+        int min = 51, max = -1;
+        for (int[] r : ranges) {
+            min = Math.min(min, r[0]);
+            max = Math.max(max, r[1]);
+            for (int i = r[0]; i <= r[1]; i++) {
+                check[i] = true;
+            }
+        }
+        if (left < min || right > max) return false;
+        for (int i = left; i <= right; i++) if (!check[i]) return false;
+        return true;
+    }
+
     // LC713
     public int numSubarrayProductLessThanK(int[] nums, int k) {
         if (k <= 1) return 0;
