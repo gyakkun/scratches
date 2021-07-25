@@ -11,6 +11,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1743
+    public int[] restoreArray(int[][] adjacentPairs) {
+        Map<Integer, List<Integer>> m = new HashMap<>();
+        for (int[] p : adjacentPairs) {
+            m.putIfAbsent(p[0], new ArrayList<>(2));
+            m.putIfAbsent(p[1], new ArrayList<>(2));
+            m.get(p[0]).add(p[1]);
+            m.get(p[1]).add(p[0]);
+        }
+
+        int end = -1;
+        for (int i : m.keySet()) {
+            if (m.get(i).size() == 1) {
+                end = i;
+                break;
+            }
+        }
+        int[] result = new int[adjacentPairs.length + 1];
+        result[0] = end;
+        result[1] = m.get(result[0]).get(0);
+        for (int i = 2; i < result.length; i++) {
+            List<Integer> prevAdj = m.get(result[i - 1]);
+            result[i] = result[i - 2] == prevAdj.get(0) ? prevAdj.get(1) : prevAdj.get(0);
+        }
+        return result;
+    }
+
     // Interview 16.19
     public int[] pondSizes(int[][] land) {
         int[][] directions = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
