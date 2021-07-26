@@ -11,6 +11,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1713 **
+    public int minOperations(int[] target, int[] arr) {
+        Map<Integer,Integer> targetValIdxMap = new HashMap<>();
+        for (int i = 0; i < target.length; i++) targetValIdxMap.put(target[i], i);
+        List<Integer> arrList = new ArrayList<>(arr.length);
+        for (int i = 0; i < arr.length; i++) {
+            if(targetValIdxMap.containsKey(arr[i])) arrList.add(targetValIdxMap.get(arr[i]));
+        }
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i : arrList) {
+            Integer ceiling = ts.ceiling(i);
+            if (ceiling != null) {
+                ts.remove(ceiling);
+            }
+            ts.add(i);
+        }
+        return target.length - ts.size();
+    }
+
     // LC1743
     public int[] restoreArray(int[][] adjacentPairs) {
         Map<Integer, List<Integer>> m = new HashMap<>();
