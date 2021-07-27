@@ -11,7 +11,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1943
+    // LC1943 **
     public List<List<Long>> splitPainting(int[][] segments) {
         Map<Integer, Long> diff = new HashMap<>();
         for (int[] intv : segments) {
@@ -20,17 +20,14 @@ class Scratch {
             diff.put(intv[0], diff.get(intv[0]) + intv[2]);
             diff.put(intv[1], diff.get(intv[1]) - intv[2]);
         }
-        List<long[]> pairs = new ArrayList<>();
-        diff.entrySet().stream().forEach((e) -> pairs.add(new long[]{e.getKey(), e.getValue()}));
-        pairs.sort(Comparator.comparingLong(o -> o[0]));
-        for (int i = 1; i < pairs.size(); i++) {
-            pairs.get(i)[1] += pairs.get(i - 1)[1];
-        }
+        List<Integer> keyArr = new ArrayList<>(diff.keySet());
+        Collections.sort(keyArr);
+        long prev = 0, accumulative = 0;
         List<List<Long>> result = new ArrayList<>();
-        for (int i = 1; i < pairs.size(); i++) {
-            if (pairs.get(i - 1)[1] != 0) {
-                result.add(Arrays.asList(pairs.get(i - 1)[0], pairs.get(i)[0], pairs.get(i - 1)[1]));
-            }
+        for (int i : keyArr) {
+            if (accumulative != 0) result.add(Arrays.asList(prev, (long) i, accumulative));
+            accumulative += diff.get(i);
+            prev = i;
         }
         return result;
     }
