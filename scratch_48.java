@@ -18,6 +18,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC657
+    public boolean judgeCircle(String moves) {
+        int[] count = new int[2];
+        for (char c : moves.toCharArray()) {
+            if (c == 'U') count[0]++;
+            else if (c == 'D') count[0]--;
+            else if (c == 'L') count[1]++;
+            else if (c == 'R') count[1]--;
+        }
+        return count[0] == 0 && count[1] == 0;
+    }
+
     // LCP 01
     public int game(int[] guess, int[] answer) {
         int result = 0;
