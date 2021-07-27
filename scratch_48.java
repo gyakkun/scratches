@@ -5,10 +5,79 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.splitPainting(new int[][]{{1, 7, 9}, {6, 8, 15}, {8, 10, 7}}));
+        String[][] smtx = {{"b"}, {"f"}, {"f", "r"}, {"f", "r", "g"}, {"f", "r", "g", "c"}, {"f", "r", "g", "c", "r"}, {"f", "o"}, {"f", "o", "x"}, {"f", "o", "x", "t"}, {"f", "o", "x", "d"}, {"f", "o", "l"}, {"l"}, {"l", "q"}, {"c"}, {"h"}, {"h", "t"}, {"h", "o"}, {"h", "o", "d"}, {"h", "o", "t"}};
+        List<List<String>> sll = new ArrayList<>(smtx.length);
+        for (String[] sa : smtx) sll.add(Arrays.asList(sa));
+        Lc1948 lc1948 = new Lc1948();
+        System.out.println(lc1948.deleteDuplicateFolder(sll));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1948 **
+    static class Lc1948 {
+        class Node {
+            String serial = "";
+            // 用TreeMap保证序列化后的出现顺序唯一
+            TreeMap<String, Node> children = new TreeMap<>();
+        }
+
+        public List<List<String>> deleteDuplicateFolder(List<List<String>> paths) {
+            Node root = new Node();
+            Map<Node, List<String>> nodeListStringMap = new HashMap<>();
+            List<List<String>> result = new LinkedList<>();
+            for (List<String> p : paths) {
+                Node cur = root;
+                for (int i = 0; i < p.size(); i++) {
+                    cur.children.putIfAbsent(p.get(i), new Node());
+                    cur = cur.children.get(p.get(i));
+                }
+                nodeListStringMap.put(cur, p);
+            }
+            getSerial(root);
+            // BFS
+            Deque<Node> q = new LinkedList<>();
+            Map<String, Integer> serialCountMap = new HashMap<>();
+            q.offer(root);
+            while (!q.isEmpty()) {
+                Node p = q.poll();
+                serialCountMap.put(p.serial, serialCountMap.getOrDefault(p.serial, 0) + 1);
+                for (String s : p.children.keySet()) {
+                    q.offer(p.children.get(s));
+                }
+            }
+            // DFS
+            Deque<Node> stack = new LinkedList<>();
+            stack.push(root);
+            while (!stack.isEmpty()) {
+                Node p = stack.pop();
+                if (!p.serial.equals("()") && serialCountMap.get(p.serial) > 1) {
+                    continue;
+                }
+                if (nodeListStringMap.containsKey(p)) {
+                    result.add(nodeListStringMap.get(p));
+                }
+                for (String s : p.children.keySet()) {
+                    stack.push(p.children.get(s));
+                }
+            }
+            return result;
+        }
+
+        private void getSerial(Node node) {
+            if (node.children.size() == 0) {
+                node.serial = "()";
+                return;
+            }
+            for (String s : node.children.keySet()) {
+                getSerial(node.children.get(s));
+            }
+            for (String s : node.children.keySet()) {
+                node.serial += "(" + s + node.children.get(s).serial + ")";
+            }
+        }
+
     }
 
     // LC1943 **
