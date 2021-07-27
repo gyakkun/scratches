@@ -11,6 +11,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1334 Floyd 算法模板
+    public int findTheCity(int n, int[][] edges, int distanceThreshold) {
+        int[][] distance = new int[n][n];
+        for (int i = 0; i < n; i++) Arrays.fill(distance[i], Integer.MAX_VALUE / 2);
+        for (int[] e : edges) distance[e[0]][e[1]] = distance[e[1]][e[0]] = e[2];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (distance[j][i] != Integer.MAX_VALUE / 2 && distance[i][k] != Integer.MAX_VALUE / 2) {
+                        distance[k][j] = distance[j][k] = Math.min(distance[j][k], distance[j][i] + distance[i][k]);
+                    }
+                }
+            }
+        }
+        int minFreq = Integer.MAX_VALUE / 2;
+        int minIdx = -1;
+        for (int i = 0; i < n; i++) {
+            int freq = 0;
+            for (int j = 0; j < n; j++) {
+                if (i != j && distance[i][j] != Integer.MAX_VALUE / 2 && distance[i][j] <= distanceThreshold) {
+                    freq++;
+                }
+            }
+            if (freq <= minFreq) {
+                minFreq = freq;
+                minIdx = i;
+            }
+        }
+        return minIdx;
+    }
+
     // LC187
     public List<String> findRepeatedDnaSequences(String s) {
         if (s.length() <= 10) return new ArrayList<>();
