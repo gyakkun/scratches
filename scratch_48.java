@@ -1,21 +1,38 @@
 import java.util.*;
-import java.util.function.IntConsumer;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode n1 = new TreeNode(5);
-        TreeNode n2 = new TreeNode(8);
-        TreeNode n3 = new TreeNode(5);
-        n1.left = n2;
-        n1.right = n3;
-
-        System.out.println(s.findSecondMinimumValue(n1));
+        System.out.println(s.splitPainting(new int[][]{{1, 7, 9}, {6, 8, 15}, {8, 10, 7}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1943
+    public List<List<Long>> splitPainting(int[][] segments) {
+        Map<Integer, Long> diff = new HashMap<>();
+        for (int[] intv : segments) {
+            diff.putIfAbsent(intv[0], 0L);
+            diff.putIfAbsent(intv[1], 0L);
+            diff.put(intv[0], diff.get(intv[0]) + intv[2]);
+            diff.put(intv[1], diff.get(intv[1]) - intv[2]);
+        }
+        List<long[]> pairs = new ArrayList<>();
+        diff.entrySet().stream().forEach((e) -> pairs.add(new long[]{e.getKey(), e.getValue()}));
+        pairs.sort(Comparator.comparingLong(o -> o[0]));
+        for (int i = 1; i < pairs.size(); i++) {
+            pairs.get(i)[1] += pairs.get(i - 1)[1];
+        }
+        List<List<Long>> result = new ArrayList<>();
+        for (int i = 1; i < pairs.size(); i++) {
+            if (pairs.get(i - 1)[1] != 0) {
+                result.add(Arrays.asList(pairs.get(i - 1)[0], pairs.get(i)[0], pairs.get(i - 1)[1]));
+            }
+        }
+        return result;
     }
 
     // LC657
