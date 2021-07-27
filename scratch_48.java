@@ -15,6 +15,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 04.10
+    public boolean checkSubTree(TreeNode t1, TreeNode t2) {
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(t1);
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            if (checkSubTreeHelper(p, t2)) {
+                return true;
+            }
+            if (p.left != null) q.offer(p.left);
+            if (p.right != null) q.offer(p.right);
+        }
+        return false;
+    }
+
+    private boolean checkSubTreeHelper(TreeNode root, TreeNode target) {
+        if (root == null && target == null) return true;
+        else if (root == null || target == null) return false;
+        if (root.val != target.val) {
+            return false;
+        }
+        return checkSubTreeHelper(root.left, target.left) && checkSubTreeHelper(root.right, target.right);
+    }
+
     // LC1948 **
     static class Lc1948 {
         class Node {
