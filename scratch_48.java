@@ -5,14 +5,47 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        String[][] smtx = {{"b"}, {"f"}, {"f", "r"}, {"f", "r", "g"}, {"f", "r", "g", "c"}, {"f", "r", "g", "c", "r"}, {"f", "o"}, {"f", "o", "x"}, {"f", "o", "x", "t"}, {"f", "o", "x", "d"}, {"f", "o", "l"}, {"l"}, {"l", "q"}, {"c"}, {"h"}, {"h", "t"}, {"h", "o"}, {"h", "o", "d"}, {"h", "o", "t"}};
-        List<List<String>> sll = new ArrayList<>(smtx.length);
-        for (String[] sa : smtx) sll.add(Arrays.asList(sa));
-        Lc1948 lc1948 = new Lc1948();
-        System.out.println(lc1948.deleteDuplicateFolder(sll));
+        System.out.println(s.findRepeatedDnaSequences("AAAAAAAAAAAAA"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC187
+    public List<String> findRepeatedDnaSequences(String s) {
+        if (s.length() <= 10) return new ArrayList<>();
+        // A C G T 00 01 10 11 2*10=20 < 32
+        int hash = 0;
+        int allMask = (1 << 20) - 1;
+        int[] alphabet = new int[26];
+        char[] reverseAlphabet = {'A', 'C', 'G', 'T'};
+        char[] cArr = s.toCharArray();
+        Set<Integer> set = new HashSet<>();
+        Set<Integer> result = new HashSet<>();
+        List<String> strResult;
+        alphabet['A' - 'A'] = 0b00;
+        alphabet['C' - 'A'] = 0b01;
+        alphabet['G' - 'A'] = 0b10;
+        alphabet['T' - 'A'] = 0b11;
+        for (int i = 0; i < 10; i++) {
+            hash = (hash << 2) | alphabet[cArr[i] - 'A'];
+        }
+        set.add(hash);
+        for (int i = 10; i < cArr.length; i++) {
+            hash = allMask & ((hash << 2) | alphabet[cArr[i] - 'A']);
+            if (set.contains(hash)) result.add(hash);
+            set.add(hash);
+        }
+        int twoBitMask = 0b11;
+        strResult = new ArrayList<>(result.size());
+        for (int i : result) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 1; j <= 10; j++) {
+                sb.append(reverseAlphabet[twoBitMask & (i >> (20 - j * 2))]);
+            }
+            strResult.add(sb.toString());
+        }
+        return strResult;
     }
 
     // LC997
