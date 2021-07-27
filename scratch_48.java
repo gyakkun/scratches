@@ -15,6 +15,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC997
+    public int findJudge(int n, int[][] trust) {
+        int[] trustFrom = new int[n + 1];
+        int[] trustTo = new int[n + 1];
+        for (int[] t : trust) {
+            trustFrom[t[0]]++;
+            trustTo[t[1]]++;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (trustFrom[i] == 0 && trustTo[i] == n - 1) return i;
+        }
+        return -1;
+    }
+
     // Interview 04.10
     public boolean checkSubTree(TreeNode t1, TreeNode t2) {
         Deque<TreeNode> q = new LinkedList<>();
