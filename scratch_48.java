@@ -17,6 +17,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1487
+    public String[] getFolderNames(String[] names) {
+        Map<String, Integer> m = new HashMap<>();
+        int n = names.length;
+        String[] result = new String[n];
+        for (int i = 0; i < n; i++) {
+            if (m.containsKey(names[i])) {
+                int count = m.get(names[i]);
+                while (m.containsKey(names[i] + '(' + count + ')')) {
+                    count++;
+                }
+                result[i] = names[i] + '(' + count + ')';
+
+                m.put(names[i], count + 1);
+                m.put(result[i], 1);
+            } else {
+                result[i] = names[i];
+                m.put(names[i], 1);
+            }
+        }
+        return result;
+    }
+
     // LC671
     TreeSet<Integer> lc671Ts;
 
