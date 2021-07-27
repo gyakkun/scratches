@@ -5,19 +5,51 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minSubArrayLen(4, new int[]{1, 4, 4}));
+        TreeNode n1 = new TreeNode(5);
+        TreeNode n2 = new TreeNode(8);
+        TreeNode n3 = new TreeNode(5);
+        n1.left = n2;
+        n1.right = n3;
+
+        System.out.println(s.findSecondMinimumValue(n1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC671
+    TreeSet<Integer> lc671Ts;
+
+    public int findSecondMinimumValue(TreeNode root) {
+        lc671Ts = new TreeSet<>();
+        lc671Helper(root);
+        if (lc671Ts.size() <= 1) return -1;
+        return lc671Ts.last();
+    }
+
+    private void lc671Helper(TreeNode root) {
+        if (root == null) return;
+        if (lc671Ts.contains(root.val)) {
+            ;
+        } else if (lc671Ts.size() < 2) {
+            lc671Ts.add(root.val);
+        } else {
+            if (root.val < lc671Ts.last()) {
+                lc671Ts.remove(lc671Ts.last());
+                lc671Ts.add(root.val);
+            }
+        }
+        lc671Helper(root.left);
+        lc671Helper(root.right);
+    }
+
     // LC1713 **
     public int minOperations(int[] target, int[] arr) {
-        Map<Integer,Integer> targetValIdxMap = new HashMap<>();
+        Map<Integer, Integer> targetValIdxMap = new HashMap<>();
         for (int i = 0; i < target.length; i++) targetValIdxMap.put(target[i], i);
         List<Integer> arrList = new ArrayList<>(arr.length);
         for (int i = 0; i < arr.length; i++) {
-            if(targetValIdxMap.containsKey(arr[i])) arrList.add(targetValIdxMap.get(arr[i]));
+            if (targetValIdxMap.containsKey(arr[i])) arrList.add(targetValIdxMap.get(arr[i]));
         }
         TreeSet<Integer> ts = new TreeSet<>();
         for (int i : arrList) {
