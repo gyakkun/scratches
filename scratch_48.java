@@ -1,5 +1,3 @@
-import org.apache.poi.ss.formula.functions.T;
-
 import java.util.*;
 
 class Scratch {
@@ -24,6 +22,29 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC807
+    public int maxIncreaseKeepingSkyline(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[] top = new int[n], left = new int[m];
+        int result = 0;
+        Arrays.fill(top, Integer.MIN_VALUE);
+        Arrays.fill(left, Integer.MIN_VALUE);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                left[i] = Math.max(left[i], grid[i][j]);
+                top[j] = Math.max(top[j], grid[i][j]);
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] < left[i] && grid[i][j] < top[j]) {
+                    result += Math.min(left[i] - grid[i][j], top[j] - grid[i][j]);
+                }
+            }
+        }
+        return result;
     }
 
     // LC199
