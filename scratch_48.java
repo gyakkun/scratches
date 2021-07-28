@@ -1,3 +1,4 @@
+import javax.print.attribute.standard.ReferenceUriSchemesSupported;
 import java.awt.image.Kernel;
 import java.util.*;
 
@@ -10,6 +11,25 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC129
+    long lc129Sum = 0;
+
+    public int sumNumbers(TreeNode root) {
+        lc129Helper(root, 0);
+        return (int) lc129Sum;
+    }
+
+    private void lc129Helper(TreeNode root, long cur) {
+        if (root == null) return;
+        cur = cur * 10 + root.val;
+        if (root.left == null && root.right == null) {
+            lc129Sum += cur;
+            return;
+        }
+        lc129Helper(root.left, cur);
+        lc129Helper(root.right, cur);
     }
 
     // LC106
