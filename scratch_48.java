@@ -14,6 +14,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC808 ** 看公式推导
+    // https://leetcode-cn.com/problems/soup-servings/solution/zhao-zhong-jie-shi-yi-xia-dong-tai-gui-hua-zhong-d/
+    public double soupServings(int n) {
+        if (n >= 500 * 25) return 1d;
+        n = n / 25 + (n % 25 == 0 ? 0 : 1);
+        Double[][] memo = new Double[n + 1][n + 1];
+        return lc808Helper(n, n, memo);
+    }
+
+    private double lc808Helper(int i, int j, Double[][] memo) {
+        if (i <= 0) {
+            if (j <= 0) return 0.5d;
+            else return 1d;
+        }
+        if (j <= 0) return 0d;
+        if (memo[i][j] != null) return memo[i][j];
+        return memo[i][j] = 0.25d * (
+                lc808Helper(i - 4, j, memo)
+                        + lc808Helper(i - 3, j - 1, memo)
+                        + lc808Helper(i - 2, j - 2, memo)
+                        + lc808Helper(i - 1, j - 3, memo)
+        );
+    }
+
     // LC539
     public int findMinDifference(List<String> timePoints) {
         int round = 1440;
