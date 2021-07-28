@@ -6,10 +6,45 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.numSpecialEquivGroups(new String[]{"abc", "acb", "bac", "bca", "cab", "cba"}));
+        System.out.println(s.containsPattern(new int[]{1, 2, 4, 4, 4, 4}, 1, 3));
+        System.out.println(s.containsPattern(new int[]{1, 2, 1, 2, 1, 1, 1, 3}, 2, 2));
+        System.out.println(s.containsPattern(new int[]{1, 2, 1, 2, 1, 3}, 2, 3));
+        System.out.println(s.containsPattern(new int[]{1, 2, 3, 1, 2}, 2, 2));
+        System.out.println(s.containsPattern(new int[]{1, 2, 3}, 2, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1566
+    public boolean containsPattern(int[] arr, int m, int k) {
+        if (m * k > arr.length) return false;
+        for (int i = 0; i < arr.length - m; i++) {
+            if (arr.length - i < m * k) break;
+            int[] pattern = new int[m];
+            for (int j = 0; j < m; j++) {
+                pattern[j] = arr[i + j];
+            }
+            int ctr = 1;
+            boolean outerFlag = true;
+            while (ctr < k) {
+                boolean innerFlag = true;
+                for (int j = 0; j < m; j++) {
+                    if (arr[i + m * (ctr) + j] != pattern[j]) {
+                        innerFlag = false;
+                        break;
+                    }
+                }
+                if (!innerFlag) {
+                    outerFlag = false;
+                    break;
+                }
+                ctr++;
+            }
+            if (!outerFlag) continue;
+            return true;
+        }
+        return false;
     }
 
     // LC893
