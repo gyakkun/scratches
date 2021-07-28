@@ -16,33 +16,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1566
+    // LC1566 from solution
     public boolean containsPattern(int[] arr, int m, int k) {
-        if (m * k > arr.length) return false;
-        for (int i = 0; i < arr.length - m; i++) {
-            if (arr.length - i < m * k) break;
-            int[] pattern = new int[m];
-            for (int j = 0; j < m; j++) {
-                pattern[j] = arr[i + j];
-            }
-            int ctr = 1;
-            boolean outerFlag = true;
-            while (ctr < k) {
-                boolean innerFlag = true;
-                for (int j = 0; j < m; j++) {
-                    if (arr[i + m * (ctr) + j] != pattern[j]) {
-                        innerFlag = false;
-                        break;
-                    }
-                }
-                if (!innerFlag) {
-                    outerFlag = false;
+        int n = arr.length;
+        for (int l = 0; l <= n - m * k; l++) {
+            int offset;
+            for (offset = 0; offset < m * k; offset++) {
+                if (arr[l + offset] != arr[l + offset % m]) {
                     break;
                 }
-                ctr++;
             }
-            if (!outerFlag) continue;
-            return true;
+            if (offset == m * k) {
+                return true;
+            }
         }
         return false;
     }
