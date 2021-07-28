@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
@@ -32,14 +33,16 @@ class Scratch {
         // 全排列
         int primeNum = primeList.size();
         int notPrimeNum = n - primeNum;
-        long pnf = factorial(primeNum);
-        long npnf = factorial(notPrimeNum);
+        // 尝试Lambda, 发现要递归只能这么写 (汗
+        Function<Integer, Long> f = new Function<Integer, Long>() {
+            @Override
+            public Long apply(Integer i) {
+                return i <= 1 ? 1L : ((i * this.apply(i - 1)) % mod);
+            }
+        };
+        long pnf = f.apply(primeNum);
+        long npnf = f.apply(notPrimeNum);
         return (int) (((pnf % mod) * (npnf % mod)) % mod);
-    }
-
-    private long factorial(int n) {
-        final long mod = 1000000007;
-        return n <= 1 ? 1L : ((n * factorial(n - 1)) % mod);
     }
 
     // LC1566 from solution
