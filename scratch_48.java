@@ -24,6 +24,41 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC847 **
+    public int shortestPathLength(int[][] graph) {
+        int n = graph.length;
+        Deque<lc847State> q = new LinkedList<>();
+        int[][] distance = new int[1 << n][n];
+        for (int[] row : distance) Arrays.fill(row, n * n);
+        int allMask = (1 << n) - 1;
+        for (int i = 0; i < n; i++) {
+            q.offer(new lc847State(1 << i, i));
+            distance[1 << i][i] = 0;
+        }
+        while (!q.isEmpty()) {
+            lc847State p = q.poll();
+            int d = distance[p.mask][p.head];
+            if (p.mask == allMask) return d;
+            for (int child : graph[p.head]) {
+                int newMask = p.mask | (1 << child);
+                if (d + 1 < distance[newMask][child]) {
+                    distance[newMask][child] = d + 1;
+                    q.offer(new lc847State(newMask, child));
+                }
+            }
+        }
+        return Integer.MAX_VALUE;
+    }
+
+    class lc847State {
+        int mask, head;
+
+        public lc847State(int mask, int head) {
+            this.mask = mask;
+            this.head = head;
+        }
+    }
+
     // LC807
     public int maxIncreaseKeepingSkyline(int[][] grid) {
         int m = grid.length, n = grid[0].length;
