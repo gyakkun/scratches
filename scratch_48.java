@@ -14,6 +14,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC539
+    public int findMinDifference(List<String> timePoints) {
+        int round = 1440;
+        List<Integer> minutes = new ArrayList<>(timePoints.size());
+        for (String s : timePoints) {
+            Integer[] tmp = Arrays.stream(s.split(":")).map(Integer::valueOf).toArray(Integer[]::new);
+            minutes.add(tmp[0] * 60 + tmp[1]);
+        }
+        Collections.sort(minutes);
+        int result = Integer.MAX_VALUE;
+        for (int i = 0; i < minutes.size(); i++) {
+            result = Math.min(result, (minutes.get((i + 1) % minutes.size()) - minutes.get(i) + round) % round);
+        }
+        return result;
+    }
+
     // LC1175
     public int numPrimeArrangements(int n) {
         final long mod = 1000000007;
