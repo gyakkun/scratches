@@ -1,3 +1,4 @@
+import java.awt.image.Kernel;
 import java.util.*;
 
 class Scratch {
@@ -10,6 +11,46 @@ class Scratch {
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC863 **
+    Map<TreeNode, Integer> lc863Distance;
+    Map<TreeNode, TreeNode> lc863Parent;
+    List<Integer> lc863Result;
+
+    public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
+        lc863Distance = new HashMap<>();
+        lc863Result = new ArrayList<>();
+        lc863Parent = new HashMap<>();
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        // BFS
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            if (p.left != null) {
+                q.offer(p.left);
+                lc863Parent.put(p.left, p);
+            }
+            if (p.right != null) {
+                q.offer(p.right);
+                lc863Parent.put(p.right, p);
+            }
+        }
+        lc863Helper(target, 0, k, null);
+        return lc863Result;
+    }
+
+    private void lc863Helper(TreeNode root, int curDistance, int targetDistance, TreeNode source) {
+        if (root == null) return;
+        lc863Distance.put(root, curDistance);
+        if (curDistance == targetDistance) lc863Result.add(root.val);
+        if (root.left != source)
+            lc863Helper(root.left, curDistance + 1, targetDistance, root);
+        if (root.right != source)
+            lc863Helper(root.right, curDistance + 1, targetDistance, root);
+        if (lc863Parent.get(root) != source)
+            lc863Helper(lc863Parent.get(root), curDistance + 1, targetDistance, root);
+    }
+
 
     // LC1334 Floyd 算法模板
     public int findTheCity(int n, int[][] edges, int distanceThreshold) {
