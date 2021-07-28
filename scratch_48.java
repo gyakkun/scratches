@@ -5,23 +5,29 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        // [-10, -3, 0, 5, 9]
 
-        ListNode n1 = new ListNode(-10);
-        ListNode n2 = new ListNode(-3);
-        ListNode n3 = new ListNode(0);
-        ListNode n4 = new ListNode(5);
-        ListNode n5 = new ListNode(9);
-        n1.next = n2;
-        n2.next = n3;
-        n3.next = n4;
-        n4.next = n5;
-        s.sortedListToBST(n1);
-
-        System.out.println(s.findRepeatedDnaSequences("AAAAAAAAAAAAA"));
+        System.out.println(s.buildArray(new int[]{2, 3, 4}, 4));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1441
+    public List<String> buildArray(int[] target, int n) {
+        int cur = 1;
+        int ctr = 0;
+        List<String> result = new ArrayList<>();
+        while (ctr != target.length) {
+            while (cur != target[ctr]) {
+                result.add("Push");
+                result.add("Pop");
+                cur++;
+            }
+            result.add("Push");
+            cur++;
+            ctr++;
+        }
+        return result;
     }
 
     // LC847 **
