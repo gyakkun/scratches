@@ -1,5 +1,5 @@
-import javax.print.attribute.standard.ReferenceUriSchemesSupported;
-import java.awt.image.Kernel;
+import org.apache.poi.ss.formula.functions.T;
+
 import java.util.*;
 
 class Scratch {
@@ -7,10 +7,49 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        // [-10, -3, 0, 5, 9]
+
+        ListNode n1 = new ListNode(-10);
+        ListNode n2 = new ListNode(-3);
+        ListNode n3 = new ListNode(0);
+        ListNode n4 = new ListNode(5);
+        ListNode n5 = new ListNode(9);
+        n1.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+        n4.next = n5;
+        s.sortedListToBST(n1);
+
         System.out.println(s.findRepeatedDnaSequences("AAAAAAAAAAAAA"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC109
+    public TreeNode sortedListToBST(ListNode head) {
+        if (head == null) return null;
+        ListNode fast = head;
+        ListNode slow = head;
+        ListNode prev = null;
+        while (fast != null && fast.next != null && fast.next.next != null) {
+            fast = fast.next.next;
+            prev = slow;
+            slow = slow.next;
+        }
+        if (prev != null) {
+            prev.next = null;
+        }
+        TreeNode root = new TreeNode(slow.val);
+        if (fast != slow) {
+            root.left = sortedListToBST(head);
+            root.right = sortedListToBST(slow.next);
+        } else {
+            if (slow.next != null) {
+                root.right = new TreeNode(slow.next.val);
+            }
+        }
+        return root;
     }
 
     // LC129
