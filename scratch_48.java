@@ -12,6 +12,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC106
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        // 后序遍历 根在最后
+        if (inorder.length == 0) return null;
+        TreeNode root = new TreeNode(postorder[postorder.length - 1]);
+
+        int i = 0;
+        for (; i < inorder.length; i++) {
+            if (inorder[i] == postorder[postorder.length - 1]) {
+                break;
+            }
+        }
+        // i 是 root在inorder中的位置, 所以i为左子树的长,
+        root.left = buildTree(Arrays.copyOfRange(inorder, 0, i), Arrays.copyOfRange(postorder, 0, i));
+        root.right = buildTree(Arrays.copyOfRange(inorder, i + 1, inorder.length), Arrays.copyOfRange(postorder, i, postorder.length - 1));
+        return root;
+    }
+
     // LC863 **
     Map<TreeNode, Integer> lc863Distance;
     Map<TreeNode, TreeNode> lc863Parent;
