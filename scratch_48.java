@@ -26,6 +26,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC199
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int qSize = q.size();
+            for (int i = 1; i <= qSize; i++) {
+                TreeNode p = q.poll();
+                if (i == qSize) result.add(p.val);
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+            }
+        }
+        return result;
+    }
+
     // LC109
     public TreeNode sortedListToBST(ListNode head) {
         if (head == null) return null;
