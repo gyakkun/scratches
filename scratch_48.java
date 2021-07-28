@@ -6,14 +6,40 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.containsPattern(new int[]{1, 2, 4, 4, 4, 4}, 1, 3));
-        System.out.println(s.containsPattern(new int[]{1, 2, 1, 2, 1, 1, 1, 3}, 2, 2));
-        System.out.println(s.containsPattern(new int[]{1, 2, 1, 2, 1, 3}, 2, 3));
-        System.out.println(s.containsPattern(new int[]{1, 2, 3, 1, 2}, 2, 2));
-        System.out.println(s.containsPattern(new int[]{1, 2, 3}, 2, 3));
+        System.out.println(s.numPrimeArrangements(100));
+
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1175
+    public int numPrimeArrangements(int n) {
+        final long mod = 1000000007;
+        List<Integer> primeList = new ArrayList<>();
+        Set<Integer> notPrime = new HashSet<>();
+        notPrime.add(1);
+        for (int i = 2; i <= n; i++) {
+            if (!notPrime.contains(i)) {
+                primeList.add(i);
+            }
+            for (int j = 0; j < primeList.size(); j++) {
+                if (i * primeList.get(j) > n) break;
+                notPrime.add(i * primeList.get(j));
+                if (i % primeList.get(j) == 0) break;
+            }
+        }
+        // 全排列
+        int primeNum = primeList.size();
+        int notPrimeNum = n - primeNum;
+        long pnf = factorial(primeNum);
+        long npnf = factorial(notPrimeNum);
+        return (int) (((pnf % mod) * (npnf % mod)) % mod);
+    }
+
+    private long factorial(int n) {
+        final long mod = 1000000007;
+        return n <= 1 ? 1L : ((n * factorial(n - 1)) % mod);
     }
 
     // LC1566 from solution
