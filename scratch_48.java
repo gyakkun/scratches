@@ -6,12 +6,39 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.purchasePlans(new int[]
-                        {61055, 35718, 71455, 34429, 97039, 63942, 37037, 88911},
-                17209));
+        System.out.println(s.numSpecialEquivGroups(new String[]{"abc", "acb", "bac", "bca", "cab", "cba"}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC893
+    public int numSpecialEquivGroups(String[] words) {
+        // 对word奇偶查频, 0奇数, 1偶数
+        int n = words.length;
+        int[][] freq;
+        Map<String, Set<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            freq = new int[2][26];
+            char[] cArr = words[i].toCharArray();
+            for (int j = 0; j < cArr.length; j++) {
+                freq[j % 2][cArr[j] - 'a']++;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < 2; j++) {
+                for (int k = 0; k < 26; k++) {
+                    if (freq[j][k] != 0) {
+                        sb.append((char) ('a' + k));
+                        sb.append(freq[j][k]);
+                    }
+                }
+                sb.append(",");
+            }
+            String hash = sb.toString();
+            map.putIfAbsent(hash, new HashSet<>());
+            map.get(hash).add(i);
+        }
+        return map.size();
     }
 
     // LC704
