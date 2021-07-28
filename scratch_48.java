@@ -29,26 +29,19 @@ class Scratch {
     // LC109
     public TreeNode sortedListToBST(ListNode head) {
         if (head == null) return null;
+        if (head.next == null) return new TreeNode(head.val);
         ListNode fast = head;
         ListNode slow = head;
-        ListNode prev = null;
-        while (fast != null && fast.next != null && fast.next.next != null) {
+        ListNode prev = head;
+        while (fast != null && fast.next != null) {
             fast = fast.next.next;
             prev = slow;
             slow = slow.next;
         }
-        if (prev != null) {
-            prev.next = null;
-        }
+        prev.next = null;
         TreeNode root = new TreeNode(slow.val);
-        if (fast != slow) {
-            root.left = sortedListToBST(head);
-            root.right = sortedListToBST(slow.next);
-        } else {
-            if (slow.next != null) {
-                root.right = new TreeNode(slow.next.val);
-            }
-        }
+        root.left = sortedListToBST(head);
+        root.right = sortedListToBST(slow.next);
         return root;
     }
 
