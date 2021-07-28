@@ -6,10 +6,27 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.buildArray(new int[]{2, 3, 4}, 4));
+        System.out.println(s.purchasePlans(new int[]
+                        {61055, 35718, 71455, 34429, 97039, 63942, 37037, 88911},
+                17209));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LCP28
+    public int purchasePlans(int[] nums, int target) {
+        int n = nums.length;
+        final long mod = 1000000007;
+        long result = 0;
+        Arrays.sort(nums);
+        int right = n - 1;
+        for (int i = 0; i < n; i++) {
+            while (right >= 0 && nums[right] + nums[i] > target) right--;
+            if (right <= i) break;
+            result = (result + (right - i)) % mod;
+        }
+        return (int) result;
     }
 
     // LC1441
