@@ -7,11 +7,39 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.numPrimeArrangements(100));
+        System.out.println(s.pathInZigZagTree(1000000));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1104
+    public List<Integer> pathInZigZagTree(int label) {
+        List<Integer> result = new LinkedList<>();
+        // 获取层数, 从0算
+        int floor = Integer.SIZE - Integer.numberOfLeadingZeros(label) - 1;
+        // 每一层的个数
+        int floorNum = 1 << floor;
+        int floorStart = 1 << floor;
+        int floorEnd = floorStart + floorNum - 1;
+        if (floor % 2 == 1) {
+            label = floorEnd - label + floorStart;
+        }
+        int cur = label;
+        while (cur != 0) {
+            result.add(0, cur);
+            cur >>= 1;
+        }
+        result = new ArrayList<>(result);
+        for (int i = 1; i < result.size(); i += 2) {
+            floor = i;
+            floorNum = 1 << floor;
+            floorStart = 1 << floor;
+            floorEnd = floorStart + floorNum - 1;
+            result.set(i, floorEnd - result.get(i) + floorStart);
+        }
+        return result;
     }
 
     // LC808 ** 看公式推导
