@@ -7,11 +7,47 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.buddyStrings("abcd", "badc"));
+        System.out.println(s.numSubseq(new int[]{3, 5, 6, 7}, 9));
+        System.out.println(s.numSubseq(new int[]{3, 3, 6, 8}, 10));
+        System.out.println(s.numSubseq(new int[]{2, 3, 3, 4, 6, 7}, 12));
+        System.out.println(s.numSubseq(new int[]{5, 2, 4, 1, 7, 6, 8}, 16));
+        System.out.println(s.numSubseq(new int[]{1}, 1));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1498 **
+    public int numSubseq(int[] nums, int target) {
+        final long mod = 1000000007;
+        int n = nums.length;
+        long result = 0;
+        Arrays.sort(nums);
+        int left = 0, right = n - 1;
+        while (left <= right && left < n) {
+            while (right >= 0 && nums[left] + nums[right] > target) {
+                right--;
+            }
+            if (right < left) break;
+            if (left == right && nums[left] + nums[right] > target) break;
+            result = (result + quickPowerMod(2, right - left, mod)) % mod;
+            left++;
+        }
+        return (int) (result % mod);
+    }
+
+    private long quickPowerMod(long a, long b, long m) {
+        long result = 1;
+        long base = a;
+        while (b > 0) {
+            if ((b & 1l) == 1) {
+                result = (result * base) % m;
+            }
+            base = (base * base) % m;
+            b >>= 1;
+        }
+        return result;
     }
 
     // LC383
