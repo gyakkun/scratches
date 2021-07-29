@@ -18,6 +18,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 04.05
+    public boolean isValidBST(TreeNode root) {
+        return isValidBstHelper(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    private boolean isValidBstHelper(TreeNode root, long lo, long hi) {
+        if (root == null) return true;
+        if (root.val <= lo || root.val >= hi) return false;
+        return isValidBstHelper(root.left, lo, root.val) && isValidBstHelper(root.right, root.val, hi);
+    }
+
     // LC1498 **
     public int numSubseq(int[] nums, int target) {
         final long mod = 1000000007;
