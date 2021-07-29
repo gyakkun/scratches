@@ -20,6 +20,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1392
+    public String longestPrefix(String s) {
+        // 哈希
+        final int mod = 1000000007;
+        final int base = 31; // 选一个质数
+        long prefix = 0, suffix = 0, mul = 1;
+        int happy = 0;
+        int n = s.length();
+        for (int i = 1; i < n; i++) {
+            prefix = (prefix * base + s.charAt(i - 1)) % mod;
+            suffix = (suffix + (s.charAt(n - i) - 'a') * mul) % mod;
+            if (prefix == suffix) happy = i;
+            mul = (mul * base) % mod;
+        }
+        // 建议 用10进制帮助思考
+        return s.substring(0, happy);
+    }
+
     // LC576
     int[][] lc576Directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
     final long lc576mod = 1000000007;
