@@ -7,12 +7,32 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.nthSuperUglyNumber(12,
-                new int[]{2, 7, 13, 19}));
+        System.out.println(s.buddyStrings("abcd", "badc"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC859
+    public boolean buddyStrings(String s, String goal) {
+        if (s.length() != goal.length()) return false;
+        int n = s.length();
+        char[] sa = s.toCharArray(), ga = goal.toCharArray();
+        int[] sf = new int[26], gf = new int[26];
+        int diff = 0;
+        for (int i = 0; i < n; i++) {
+            sf[sa[i] - 'a']++;
+            gf[ga[i] - 'a']++;
+            if (sa[i] != ga[i]) diff++;
+        }
+        boolean twoOrMoreSameLetterFlag = false;
+        for (int i = 0; i < 26; i++) {
+            if (sf[i] != gf[i]) return false;
+            if (sf[i] > 1) twoOrMoreSameLetterFlag = true;
+        }
+        if (diff != 2) return diff == 0 ? twoOrMoreSameLetterFlag : false;
+        return true;
     }
 
     // LC313 ** DP
