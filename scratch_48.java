@@ -6,12 +6,14 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        TreeNode n1 = new TreeNode(1);
+        TreeNode n2 = new TreeNode(2);
+        TreeNode n3 = new TreeNode(3);
+        n2.left = n1;
+        n2.right = n3;
 
-        System.out.println(s.numSubseq(new int[]{3, 5, 6, 7}, 9));
-        System.out.println(s.numSubseq(new int[]{3, 3, 6, 8}, 10));
-        System.out.println(s.numSubseq(new int[]{2, 3, 3, 4, 6, 7}, 12));
-        System.out.println(s.numSubseq(new int[]{5, 2, 4, 1, 7, 6, 8}, 16));
-        System.out.println(s.numSubseq(new int[]{1}, 1));
+
+        System.out.println(s.isValidBST(n2));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -19,14 +21,23 @@ class Scratch {
     }
 
     // Interview 04.05
+    long[] itv0405Memo;
+    int itv0405Counter;
+
     public boolean isValidBST(TreeNode root) {
-        return isValidBstHelper(root, Long.MIN_VALUE, Long.MAX_VALUE);
+        itv0405Memo = new long[2];
+        itv0405Counter = 0;
+        itv0405Memo[1] = Long.MIN_VALUE;
+        return isValidBstHelper(root);
     }
 
-    private boolean isValidBstHelper(TreeNode root, long lo, long hi) {
+    private boolean isValidBstHelper(TreeNode root) {
         if (root == null) return true;
-        if (root.val <= lo || root.val >= hi) return false;
-        return isValidBstHelper(root.left, lo, root.val) && isValidBstHelper(root.right, root.val, hi);
+        boolean result = isValidBstHelper(root.left);
+        itv0405Memo[(itv0405Counter++) % 2] = root.val;
+        if (root.val <= itv0405Memo[(itv0405Counter) % 2]) return false;
+        result = result && isValidBstHelper(root.right);
+        return result;
     }
 
     // LC1498 **
