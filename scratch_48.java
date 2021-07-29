@@ -13,11 +13,39 @@ class Scratch {
         n2.right = n3;
 
 
-        System.out.println(s.isValidBST(n2));
+        System.out.println(s.findPaths(50, 50, 50, 24, 24));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC576
+    int[][] lc576Directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    final long lc576mod = 1000000007;
+    int lc576MaxMove;
+    Integer[][][] lc576Memo;
+
+    public int findPaths(int m, int n, int maxMove, int startRow, int startColumn) {
+        lc576Memo = new Integer[m][n][maxMove];
+        lc576MaxMove = maxMove;
+        int result = lc576Helper(startRow, startColumn, 0);
+        return result;
+    }
+
+    private int lc576Helper(int row, int col, int curMove) {
+        if (row < 0 || row >= lc576Memo.length || col < 0 || col >= lc576Memo[0].length) return 0;
+        if (curMove >= lc576MaxMove) return 0;
+        if (lc576Memo[row][col][curMove] != null) return lc576Memo[row][col][curMove];
+        long result = 0;
+        if (row == 0) result++;
+        if (row == lc576Memo.length - 1) result++;
+        if (col == 0) result++;
+        if (col == lc576Memo[0].length - 1) result++;
+        for (int[] dir : lc576Directions) {
+            result = (result + lc576Helper(row + dir[0], col + dir[1], curMove + 1)) % lc576mod;
+        }
+        return lc576Memo[row][col][curMove] = (int) (result);
     }
 
     // Interview 04.05
