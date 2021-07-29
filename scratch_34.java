@@ -110,6 +110,25 @@ class Scratch {
     }
 
     // LC264 TBD heap set LC Solution
+    public int nthUglyNumber(int n) {
+        int[] primes = {2, 3, 5};
+        Set<Long> visited = new HashSet<>();
+        PriorityQueue<Long> pq = new PriorityQueue<>();
+        visited.add(1L);
+        pq.offer(1L);
+        long result = 1;
+        for (int i = 0; i < n; i++) {
+            long p = pq.poll();
+            result = p;
+            for (int j : primes) {
+                long tmp = j * p;
+                if (visited.add(tmp)) {
+                    pq.offer(tmp);
+                }
+            }
+        }
+        return (int) result;
+    }
 
     // LC91 TBD wrong answer
     public int numDecodingsBottomUp(String s) {

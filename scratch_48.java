@@ -14,6 +14,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC313
+    public int nthSuperUglyNumber(int n, int[] primes) {
+        Set<Long> visited = new HashSet<>();
+        PriorityQueue<Long> pq = new PriorityQueue<>();
+        visited.add(1L);
+        pq.offer(1L);
+        long result = 1;
+        for (int i = 0; i < n; i++) {
+            long p = pq.poll();
+            result = p;
+            for (int j : primes) {
+                long tmp = j * p;
+                if (visited.add(tmp)) {
+                    pq.offer(tmp);
+                }
+            }
+        }
+        return (int) result;
+    }
+
     // LC1104
     public List<Integer> pathInZigZagTree(int label) {
         List<Integer> result = new LinkedList<>();
