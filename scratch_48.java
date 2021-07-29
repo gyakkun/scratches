@@ -6,18 +6,23 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode n1 = new TreeNode(1);
-        TreeNode n2 = new TreeNode(2);
-        TreeNode n3 = new TreeNode(3);
-        n2.left = n1;
-        n2.right = n3;
 
-
-        System.out.println(s.findPaths(50, 50, 50, 24, 24));
-
+        System.out.println(s.findCheapestPrice(4, new int[][]{{0, 1, 1}, {0, 2, 5}, {1, 2, 1}, {2, 3, 1}}, 0, 3, 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC787 TBD
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        int[][] reachable = new int[n][n];
+        for (int[] r : reachable) Arrays.fill(r, -1);
+        for (int i = 0; i < n; i++) {
+            reachable[i][i] = 0;
+        }
+        for (int[] f : flights) {
+            reachable[f[0]][f[1]] = f[2];
+        }
     }
 
     // LC1392
