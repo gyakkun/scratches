@@ -7,7 +7,8 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.pathInZigZagTree(1000000));
+        System.out.println(s.nthSuperUglyNumber(12,
+                new int[]{2, 7, 13, 19}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -18,21 +19,23 @@ class Scratch {
     public int nthSuperUglyNumberDP(int n, int[] primes) {
         int[] dp = new int[n + 1];
         dp[1] = 1;
-
         int[] pointer = new int[primes.length];
         Arrays.fill(pointer, 1);
-
         for (int i = 2; i <= n; i++) {
-            int[] num = new int[primes.length];
+            int next = Integer.MAX_VALUE;
+            List<Integer> idx = new ArrayList<>();
             for (int j = 0; j < primes.length; j++) {
-                num[j] = dp[pointer[j]] * primes[j];
-            }
-            dp[i] = Arrays.stream(num).min().getAsInt();
-            for (int j = 0; j < primes.length; j++) {
-                if (dp[i] == num[j]) {
-                    pointer[j]++;
+                int tmp = dp[pointer[j]] * primes[j];
+                if (tmp < next) {
+                    idx = new ArrayList<>();
+                    idx.add(j);
+                    next = tmp;
+                } else if (tmp == next) {
+                    idx.add(j);
                 }
             }
+            dp[i] = next;
+            for (int j : idx) pointer[j]++;
         }
         return dp[n];
     }
