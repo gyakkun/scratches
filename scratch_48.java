@@ -14,6 +14,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC383
+    public boolean canConstruct(String ransomNote, String magazine) {
+        int[] freq = new int[26];
+        for (char c : ransomNote.toCharArray()) freq[c - 'a']--;
+        for (char c : magazine.toCharArray()) freq[c - 'a']++;
+        for (int i : freq) if (i < 0) return false;
+        return true;
+    }
+
     // LC859
     public boolean buddyStrings(String s, String goal) {
         if (s.length() != goal.length()) return false;
