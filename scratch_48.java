@@ -14,6 +14,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC313 ** DP
+    public int nthSuperUglyNumberDP(int n, int[] primes) {
+        int[] dp = new int[n + 1];
+        dp[1] = 1;
+
+        int[] pointer = new int[primes.length];
+        Arrays.fill(pointer, 1);
+
+        for (int i = 2; i <= n; i++) {
+            int[] num = new int[primes.length];
+            for (int j = 0; j < primes.length; j++) {
+                num[j] = dp[pointer[j]] * primes[j];
+            }
+            dp[i] = Arrays.stream(num).min().getAsInt();
+            for (int j = 0; j < primes.length; j++) {
+                if (dp[i] == num[j]) {
+                    pointer[j]++;
+                }
+            }
+        }
+        return dp[n];
+    }
+
     // LC313
     public int nthSuperUglyNumber(int n, int[] primes) {
         Set<Long> visited = new HashSet<>();
