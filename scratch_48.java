@@ -13,6 +13,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC45 Greedy
+    public int jumpGreedy(int[] nums) {
+        int n = nums.length;
+        int end = 0;
+        int maxPosition = 0;
+        int steps = 0;
+        int cur = 0;
+        while (end < n) {
+            maxPosition = Math.max(maxPosition, cur + nums[cur]);
+            if (end == cur) {
+                end = maxPosition;
+                steps++;
+            }
+            cur++;
+        }
+        return steps;
+    }
+
     // LC45 DP O(n^2) AC
     public int jump(int[] nums) {
         int n = nums.length;
