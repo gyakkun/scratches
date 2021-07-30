@@ -13,7 +13,7 @@ class Scratch {
                 10,
                 1,
                 10
-                ));
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -21,10 +21,15 @@ class Scratch {
 
     // LC787 DFS 不存在环 TLE
     int lc787DfsResult;
+    int[] lc787DfsMinCost;
+    int[] lc787DfsMaxStop;
 
     public int findCheapestPriceDFS(int n, int[][] flights, int src, int dst, int k) {
         lc787DfsResult = Integer.MAX_VALUE;
         int[][] reachable = new int[n][n];
+        lc787DfsMinCost = new int[n];
+        lc787DfsMaxStop = new int[n];
+        Arrays.fill(lc787DfsMinCost, Integer.MAX_VALUE);
         for (int[] r : reachable) Arrays.fill(r, -1);
         for (int[] f : flights) {
             reachable[f[0]][f[1]] = f[2];
@@ -40,8 +45,15 @@ class Scratch {
         }
         if (limit > 0) {
             for (int i = 0; i < reachable.length; i++) {
+                int minCostToi = lc787DfsMinCost[i], costFromCurToI = price + reachable[cur][i];
                 if (reachable[cur][i] != -1) {
-                    lc787DfsHelper(reachable, i, limit - 1, reachable[cur][i] + price, dst);
+                    if (minCostToi > costFromCurToI) {
+                        lc787DfsHelper(reachable, i, limit - 1, costFromCurToI, dst);
+                        lc787DfsMinCost[i] = costFromCurToI;
+                        lc787DfsMaxStop[i] = limit - 1;
+                    } else if (lc787DfsMaxStop[i] < limit - 1) {
+                        lc787DfsHelper(reachable, i, limit - 1, costFromCurToI, dst);
+                    }
                 }
             }
         }
