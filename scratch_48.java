@@ -13,8 +13,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC45 TLE Dijkstra
+    // LC45 DP O(n^2) AC
     public int jump(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                // 看能不能用j中转, 即i在j的可达范围内
+                int left = Math.max(0, j - nums[j]);
+                int right = Math.min(n - 1, j + nums[j]);
+                boolean reachable = i >= left && i <= right;
+                if (reachable) {
+                    dp[i] = Math.min(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return dp[n - 1];
+    }
+
+    // LC45 TLE Dijkstra O(n^2)
+    public int jumpDijkstra(int[] nums) {
         if (nums.length == 1) return 0;
         int n = nums.length;
         int[] matrix = new int[n];

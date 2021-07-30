@@ -309,7 +309,7 @@ class Scratch {
         for (int i = 1; i < n; i++) {
             dp[i] = Integer.MAX_VALUE / 2;
             for (int j = 0; j < i; j++) {
-                if (i <= j + arr[i] && dp[j] != Integer.MAX_VALUE / 2) {
+                if (i <= j + arr[j] && dp[j] != Integer.MAX_VALUE / 2) {
                     dp[i] = Math.min(dp[i], dp[j] + 1);
                     // 因为从数组的最左侧开始遍历, 一旦找到符合条件的左侧, 便一定是最小的步数, 此时剪枝即可
                     break;
