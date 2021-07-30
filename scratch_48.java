@@ -7,28 +7,24 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.jump(new int[]{2, 3, 0, 1, 4}));
+        System.out.println(s.jump(new int[]{1, 2, 3}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC45 MLE Dijkstra
+    // LC45 TLE Dijkstra
     public int jump(int[] nums) {
         if (nums.length == 1) return 0;
         int n = nums.length;
-        int[][] matrix = new int[n][n];
-        for (int[] i : matrix) Arrays.fill(i, -1);
-        for (int i = 0; i < n; i++) {
-            for (int j = 1; j <= nums[i]; j++) {
-                if (i + j < n) {
-                    matrix[i][i + j] = 1;
-                }
-                if (i - j >= 0) {
-                    matrix[i][i - j] = 1;
-                }
+        int[] matrix = new int[n];
+        Arrays.fill(matrix, -1);
+        for (int j = 1; j <= nums[0]; j++) {
+            if (j < n) {
+                matrix[j] = 1;
             }
         }
+        if (matrix[n - 1] == 1) return 1;
 
         // Dijkstra?
         Set<Integer> visited = new HashSet<>();
@@ -37,21 +33,26 @@ class Scratch {
             int curMinIdx = 0;
             int curMinLen = Integer.MAX_VALUE;
             for (int j = 1; j < n; j++) {
-                if (!visited.contains(j) && matrix[0][j] != -1 && curMinLen > matrix[0][j]) {
+                if (!visited.contains(j) && matrix[j] != -1 && curMinLen > matrix[j]) {
                     curMinIdx = j;
-                    curMinLen = matrix[0][j];
+                    curMinLen = matrix[j];
                 }
             }
             visited.add(curMinIdx);
             for (int j = 1; j < n; j++) {
                 if (!visited.contains(j)) {
-                    if (matrix[curMinIdx][j] != -1 && (matrix[0][j] == -1 || matrix[0][j] > matrix[0][curMinIdx] + matrix[curMinIdx][j])) {
-                        matrix[0][j] = matrix[0][curMinIdx] + matrix[curMinIdx][j];
+                    int left = Math.max(0, curMinIdx - nums[curMinIdx]);
+                    int right = Math.min(n - 1, curMinIdx + nums[curMinIdx]);
+                    boolean a = j >= left && j <= right;
+                    boolean b = matrix[j] == -1;
+                    boolean c = matrix[j] > matrix[curMinIdx] + 1;
+                    if (a && (b || c)) {
+                        matrix[j] = matrix[curMinIdx] + 1;
                     }
                 }
             }
         }
-        return matrix[0][n - 1];
+        return matrix[n - 1];
     }
 
     // LC787 DFS 不存在环 TLE
