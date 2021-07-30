@@ -1,3 +1,5 @@
+import io.swagger.models.auth.In;
+
 import java.util.*;
 import java.util.function.Function;
 
@@ -11,6 +13,28 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF 32
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        int layer = -1;
+        while (!q.isEmpty()) {
+            layer++;
+            int qSize = q.size();
+            List<Integer> thisLine = new ArrayList<>(qSize);
+            for (int i = 0; i < qSize; i++) {
+                TreeNode p = q.poll();
+                thisLine.add(p.val);
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+            }
+            result.add(thisLine);
+        }
+        return result;
     }
 
     // LC124
