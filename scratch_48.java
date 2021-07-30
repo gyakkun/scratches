@@ -15,6 +15,65 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC133
+    class lc133 {
+        class Node {
+            public int val;
+            public List<Node> neighbors;
+
+            public Node() {
+                val = 0;
+                neighbors = new ArrayList<Node>();
+            }
+
+            public Node(int _val) {
+                val = _val;
+                neighbors = new ArrayList<Node>();
+            }
+
+            public Node(int _val, ArrayList<Node> _neighbors) {
+                val = _val;
+                neighbors = _neighbors;
+            }
+        }
+
+
+        class Solution {
+            Map<Node, Node> origToClone = new HashMap<>();
+            Set<Node> visited = new HashSet<>();
+
+            public Node cloneGraph(Node node) {
+                dfs(node);
+                dfsNeighbor(node);
+                return origToClone.get(node);
+            }
+
+            private void dfsNeighbor(Node node) {
+                if (node == null) return;
+                if (!visited.contains(node)) {
+                    visited.add(node);
+                    for (Node n : node.neighbors) {
+                        dfsNeighbor(n);
+                    }
+                    for (Node n : node.neighbors) {
+                        origToClone.get(node).neighbors.add(origToClone.get(n));
+                    }
+                }
+            }
+
+            private void dfs(Node node) {
+                if (node == null) return;
+                if (!origToClone.containsKey(node)) {
+                    origToClone.put(node, new Node(node.val));
+                    for (Node n : node.neighbors) {
+                        dfs(n);
+                    }
+                }
+            }
+        }
+    }
+
+
     // JZOF 32
     public List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> result = new ArrayList<>();
