@@ -47,6 +47,9 @@ class Scratch {
             for (int i = 0; i < reachable.length; i++) {
                 int minCostToi = lc787DfsMinCost[i], costFromCurToI = price + reachable[cur][i];
                 if (reachable[cur][i] != -1) {
+                    // **剪枝
+                    if (costFromCurToI > lc787DfsResult) continue;
+
                     if (minCostToi > costFromCurToI) {
                         lc787DfsHelper(reachable, i, limit - 1, costFromCurToI, dst);
                         lc787DfsMinCost[i] = costFromCurToI;
