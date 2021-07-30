@@ -1,5 +1,3 @@
-import io.swagger.models.auth.In;
-
 import java.util.*;
 import java.util.function.Function;
 
@@ -9,7 +7,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.jump(new int[]{1, 2, 3}));
+        System.out.println(s.jumpGreedy(new int[]{1, 2, 3}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -40,36 +38,20 @@ class Scratch {
 
         class Solution {
             Map<Node, Node> origToClone = new HashMap<>();
-            Set<Node> visited = new HashSet<>();
 
             public Node cloneGraph(Node node) {
-                dfs(node);
-                dfsNeighbor(node);
-                return origToClone.get(node);
+                if (node == null) return null;
+                if (origToClone.containsKey(node)) {
+                    return origToClone.get(node);
+                }
+                Node clone = new Node(node.val);
+                origToClone.put(node, clone);
+                for (Node ne : node.neighbors) {
+                    clone.neighbors.add(cloneGraph(ne));
+                }
+                return clone;
             }
 
-            private void dfsNeighbor(Node node) {
-                if (node == null) return;
-                if (!visited.contains(node)) {
-                    visited.add(node);
-                    for (Node n : node.neighbors) {
-                        dfsNeighbor(n);
-                    }
-                    for (Node n : node.neighbors) {
-                        origToClone.get(node).neighbors.add(origToClone.get(n));
-                    }
-                }
-            }
-
-            private void dfs(Node node) {
-                if (node == null) return;
-                if (!origToClone.containsKey(node)) {
-                    origToClone.put(node, new Node(node.val));
-                    for (Node n : node.neighbors) {
-                        dfs(n);
-                    }
-                }
-            }
         }
     }
 
