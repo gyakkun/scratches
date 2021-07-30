@@ -1,5 +1,7 @@
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntBinaryOperator;
+import java.util.function.IntUnaryOperator;
 
 class Scratch {
     public static void main(String[] args) {
@@ -7,10 +9,31 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.sumBase(4, 2));
+        System.out.println(s.minMoves2(new int[]{1, 0, 0, 8, 6}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC462
+    public int minMoves2(int[] nums) {
+        Arrays.sort(nums);
+        if (nums.length % 2 == 1) {
+            int result = 0;
+            int mid = nums[nums.length / 2];
+            for (int i : nums) {
+                result += Math.abs(i - mid);
+            }
+            return result;
+        } else {
+            int right = nums[nums.length / 2], left = nums[(nums.length / 2) - 1];
+            int lr = 0, rr = 0;
+            for (int i : nums) {
+                lr += Math.abs(i - left);
+                rr += Math.abs(i - right);
+            }
+            return Math.min(lr, rr);
+        }
     }
 
     // LC1837
