@@ -7,10 +7,20 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.jumpGreedy(new int[]{1, 2, 3}));
+        System.out.println(s.sumBase(4, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1837
+    public int sumBase(int n, int k) {
+        int i = n, result = 0;
+        while (i != 0) {
+            result += i % k;
+            i /= k;
+        }
+        return result;
     }
 
     // LC133
@@ -54,7 +64,6 @@ class Scratch {
 
         }
     }
-
 
     // JZOF 32
     public List<List<Integer>> levelOrder(TreeNode root) {
