@@ -1,3 +1,5 @@
+import org.springframework.security.core.parameters.P;
+
 import java.util.*;
 import java.util.function.Function;
 
@@ -13,16 +15,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC787 TBD
+    // LC787  ** From Solution
+    // 剪枝参考: https://leetcode-cn.com/problems/cheapest-flights-within-k-stops/solution/dijkstraji-bai-100yong-hu-jie-jue-guan-f-hpmn/
     public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        // Dijkstra
         int[][] reachable = new int[n][n];
         for (int[] r : reachable) Arrays.fill(r, -1);
-        for (int i = 0; i < n; i++) {
-            reachable[i][i] = 0;
-        }
         for (int[] f : flights) {
             reachable[f[0]][f[1]] = f[2];
         }
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[1]));
+        pq.offer(new int[]{k + 1, 0, src});
+        // [a,b,c] a: 跳数限制 b: 价格 c:目标站点。按价格排序 保证队首是价格最低的
+
+        int[] minCostTo = new int[n]; // 到i最小的价格, 初始化为极大值
+        int[] maxStopsTo = new int[n]; // 到i最大的可经停站数, 初始化为0
+        Arrays.fill(minCostTo, Integer.MAX_VALUE);
+
+        while (!pq.isEmpty()) {
+            int[] polled = pq.poll();
+            int stop = polled[0], costToNext = polled[1], next = polled[2];
+            if (next == dst) return costToNext;
+            if (stop > 0) {
+                for (int i = 0; i < n; i++) {
+                    if (reachable[next][i] != -1) {
+                        int minCostToI = minCostTo[i], costFromNextToI = reachable[next][i];
+                        if (costToNext + costFromNextToI < minCostToI) { // 经过中间点i后价格更小的加入bfs
+                            pq.offer(new int[]{stop - 1, costToNext + costFromNextToI, i});
+                            minCostTo[i] = costToNext + costFromNextToI;
+                            maxStopsTo[i] = stop - 1;
+                        } else if (maxStopsTo[i] < stop - 1) { // 经过中间点i后可经停的站数更多的加入bfs
+                            pq.offer(new int[]{stop - 1, costToNext + costFromNextToI, i});
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
     }
 
     // LC1392
