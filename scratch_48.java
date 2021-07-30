@@ -1,5 +1,3 @@
-import org.springframework.security.core.parameters.P;
-
 import java.util.*;
 import java.util.function.Function;
 
@@ -9,11 +7,46 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.findCheapestPrice(4, new int[][]{{0, 1, 1}, {0, 2, 5}, {1, 2, 1}, {2, 3, 1}}, 0, 3, 1));
+        System.out.println(s.findCheapestPrice(
+                13,
+                new int[][]{{11, 12, 74}, {1, 8, 91}, {4, 6, 13}, {7, 6, 39}, {5, 12, 8}, {0, 12, 54}, {8, 4, 32}, {0, 11, 4}, {4, 0, 91}, {11, 7, 64}, {6, 3, 88}, {8, 5, 80}, {11, 10, 91}, {10, 0, 60}, {8, 7, 92}, {12, 6, 78}, {6, 2, 8}, {4, 3, 54}, {3, 11, 76}, {3, 12, 23}, {11, 6, 79}, {6, 12, 36}, {2, 11, 100}, {2, 5, 49}, {7, 0, 17}, {5, 8, 95}, {3, 9, 98}, {8, 10, 61}, {2, 12, 38}, {5, 7, 58}, {9, 4, 37}, {8, 6, 79}, {9, 0, 1}, {2, 3, 12}, {7, 10, 7}, {12, 10, 52}, {7, 2, 68}, {12, 2, 100}, {6, 9, 53}, {7, 4, 90}, {0, 5, 43}, {11, 2, 52}, {11, 8, 50}, {12, 4, 38}, {7, 9, 94}, {2, 7, 38}, {3, 7, 88}, {9, 12, 20}, {12, 0, 26}, {10, 5, 38}, {12, 8, 50}, {0, 2, 77}, {11, 0, 13}, {9, 10, 76}, {2, 6, 67}, {5, 6, 34}, {9, 7, 62}, {5, 3, 67}},
+                10,
+                1,
+                10
+                ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC787 DFS 不存在环 TLE
+    int lc787DfsResult;
+
+    public int findCheapestPriceDFS(int n, int[][] flights, int src, int dst, int k) {
+        lc787DfsResult = Integer.MAX_VALUE;
+        int[][] reachable = new int[n][n];
+        for (int[] r : reachable) Arrays.fill(r, -1);
+        for (int[] f : flights) {
+            reachable[f[0]][f[1]] = f[2];
+        }
+        lc787DfsHelper(reachable, src, k + 1, 0, dst);
+        return lc787DfsResult == Integer.MAX_VALUE ? -1 : lc787DfsResult;
+    }
+
+    private void lc787DfsHelper(int[][] reachable, int cur, int limit, int price, int dst) {
+        if (cur == dst) {
+            lc787DfsResult = Math.min(lc787DfsResult, price);
+            return;
+        }
+        if (limit > 0) {
+            for (int i = 0; i < reachable.length; i++) {
+                if (reachable[cur][i] != -1) {
+                    lc787DfsHelper(reachable, i, limit - 1, reachable[cur][i] + price, dst);
+                }
+            }
+        }
+    }
+
 
     // LC787  ** From Solution
     // 剪枝参考: https://leetcode-cn.com/problems/cheapest-flights-within-k-stops/solution/dijkstraji-bai-100yong-hu-jie-jue-guan-f-hpmn/
