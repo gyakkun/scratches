@@ -13,6 +13,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC124
+    int lc124Result;
+
+    public int maxPathSum(TreeNode root) {
+        lc124Result = Integer.MIN_VALUE;
+        lc124Helper(root);
+        return lc124Result;
+    }
+
+    private int lc124Helper(TreeNode root) {
+        if (root == null) return 0;
+        int leftGain = Math.max(0, lc124Helper(root.left));
+        int rightGain = Math.max(0, lc124Helper(root.right));
+
+        int sum = root.val + leftGain + rightGain;
+        lc124Result = Math.max(lc124Result, sum);
+
+        return root.val + Math.max(leftGain, rightGain);
+    }
+
     // LC45 Greedy
     public int jumpGreedy(int[] nums) {
         int n = nums.length;
