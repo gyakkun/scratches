@@ -20,15 +20,11 @@ class Scratch {
         Map<TreeNode, Integer> colMap = new HashMap<>();
         Map<TreeNode, Integer> rowMap = new HashMap<>();
         Map<Integer, List<TreeNode>> rColMap = new HashMap<>();
-//        Map<Integer, List<TreeNode>> rRowMap = new HashMap<>();
         Deque<TreeNode> q = new LinkedList<>();
-        List<List<Integer>> result = new ArrayList<>();
         rowMap.put(root, 0);
         colMap.put(root, 0);
         rColMap.put(0, new ArrayList<>());
         rColMap.get(0).add(root);
-//        rRowMap.put(0, new ArrayList<>());
-//        rRowMap.get(0).add(root);
         q.offer(root);
         int layer = -1;
         while (!q.isEmpty()) {
@@ -37,29 +33,24 @@ class Scratch {
             for (int i = 0; i < qSize; i++) {
                 TreeNode p = q.poll();
                 if (p.left != null) {
-//                    colMap.put(p.left, colMap.get(p) - 1);
+                    colMap.put(p.left, colMap.get(p) - 1);
                     rowMap.put(p.left, layer + 1);
                     rColMap.putIfAbsent(colMap.get(p) - 1, new ArrayList<>());
                     rColMap.get(colMap.get(p) - 1).add(p.left);
-//                    rRowMap.putIfAbsent(layer + 1, new ArrayList<>());
-//                    rRowMap.get(layer + 1).add(p.left);
                     q.offer(p.left);
                 }
                 if (p.right != null) {
-//                    colMap.put(p.right, colMap.get(p) + 1);
+                    colMap.put(p.right, colMap.get(p) + 1);
                     rowMap.put(p.right, layer + 1);
                     rColMap.putIfAbsent(colMap.get(p) + 1, new ArrayList<>());
                     rColMap.get(colMap.get(p) + 1).add(p.right);
-//                    rRowMap.putIfAbsent(layer + 1, new ArrayList<>());
-//                    rRowMap.get(layer + 1).add(p.right);
                     q.offer(p.right);
                 }
             }
         }
         List<Integer> colList = new ArrayList<>(rColMap.keySet());
-//        List<Integer> rowList = new ArrayList<>(rRowMap.keySet());
         Collections.sort(colList);
-//        Collections.sort(rowList);
+        List<List<Integer>> result = new ArrayList<>(colList.size());
         for (int i : colList) {
             List<TreeNode> thisCol = rColMap.get(i);
             thisCol.sort((o1, o2) -> rowMap.get(o1) == rowMap.get(o2) ? o1.val - o2.val : rowMap.get(o1) - rowMap.get(o2));
