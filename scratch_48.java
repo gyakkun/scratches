@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
@@ -13,6 +15,27 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1337
+    public int[] kWeakestRows(int[][] mat, int k) {
+        int m = mat.length, n = mat[0].length;
+        int[] result = new int[k];
+        // <idx,sum>
+        PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(
+                (o1, o2) -> o2.getValue() == o1.getValue() ? o2.getKey() - o1.getKey() : o2.getValue() - o1.getValue()
+        );
+        for (int i = 0; i < mat.length; i++) {
+            int[] arr = mat[i];
+            int j = 0, sum = 0;
+            while (j < n && arr[j++] == 1) sum++;
+            pq.offer(new Pair<>(i, sum));
+        }
+        int ctr = 0;
+        while (ctr < k) {
+            result[ctr++] = pq.poll().getKey();
+        }
+        return result;
     }
 
     // LC987
