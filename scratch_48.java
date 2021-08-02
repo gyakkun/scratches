@@ -9,10 +9,39 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
         // [3,4],[2,3],[1,2]
-        System.out.println(s.magicalString(100000));
+        System.out.println(s.crackSafe(3, 5));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC753 Hierholzer算法 **
+    public String crackSafe(int n, int k) {
+        boolean[] visited = new boolean[(int) Math.pow(k, n)];
+        Deque<Character> stack = new LinkedList<>();
+        visited[0] = true;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) sb.append("0");
+        if (k == 1) return sb.toString();
+        lc753Dfs(sb.toString(), visited, stack, k, n);
+        stack.pop();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        return sb.toString();
+    }
+
+    private void lc753Dfs(String cur, boolean[] visited, Deque<Character> stack, int k, int n) {
+        String prefix = cur.substring(1, n);
+        for (int i = 0; i < k; i++) {
+            String next = prefix + i;
+            int nextIdx = Integer.valueOf(next, k);
+            if (!visited[nextIdx]) {
+                visited[nextIdx] = true;
+                lc753Dfs(next, visited, stack, k, n);
+            }
+        }
+        stack.push(cur.charAt(cur.length() - 1));
     }
 
     // LC481
