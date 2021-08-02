@@ -29,16 +29,11 @@ class Scratch {
         int shadowIdx = 2;
         int count = 1;
         while (mainIdx <= n) {
-            if (seq[shadowIdx] == 1) {
+            if (seq[shadowIdx] == 1 || (seq[shadowIdx] == 2 && seq[mainIdx] == seq[mainIdx - 1])) {
                 seq[mainIdx + 1] = seq[mainIdx] == 1 ? 2 : 1;
                 shadowIdx++;
-            } else if (seq[shadowIdx] == 2) {
-                if (seq[mainIdx] == seq[mainIdx - 1]) {
-                    seq[mainIdx + 1] = seq[mainIdx] == 1 ? 2 : 1;
-                    shadowIdx++;
-                } else {
-                    seq[mainIdx + 1] = seq[mainIdx];
-                }
+            } else {
+                seq[mainIdx + 1] = seq[mainIdx];
             }
             if (seq[mainIdx] == 1) count++;
             mainIdx++;
