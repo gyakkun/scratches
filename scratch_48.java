@@ -14,6 +14,7 @@ class Scratch {
         System.out.println(s.networkDelayTime(new int[][]{{2, 1, 1}, {2, 3, 1}, {3, 4, 1}}, 4, 2));
         System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}}, 2, 1));
         System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}}, 2, 2));
+        System.out.println(s.networkDelayTime(new int[][]{{4, 2, 76}, {1, 3, 79}, {3, 1, 81}, {4, 3, 30}, {2, 1, 47}, {1, 5, 61}, {1, 4, 99}, {3, 4, 68}, {3, 5, 46}, {4, 1, 6}, {5, 4, 7}, {5, 3, 44}, {4, 5, 19}, {2, 3, 13}, {3, 2, 18}, {1, 2, 0}, {5, 1, 25}, {2, 5, 58}, {2, 4, 77}, {5, 2, 74}}, 5, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -21,49 +22,50 @@ class Scratch {
 
     // LC743 Dijkstra
     public int networkDelayTime(int[][] times, int n, int k) {
-        int[][] distance = new int[n + 1][n + 1];
-        for (int[] d : distance) Arrays.fill(d, -1);
+        int[] distance = new int[n + 1];
         boolean[] visited = new boolean[n + 1];
-        int[] result = new int[n + 1];
-        Arrays.fill(result, -1);
-        result[k] = 0;
-        visited[k] = true;
+        Arrays.fill(distance, -1);
+        Map<Integer, Map<Integer, Integer>> m = new HashMap<>();
         for (int[] t : times) {
-            distance[t[0]][t[1]] = t[2];
+            m.putIfAbsent(t[0], new HashMap<>());
+            m.get(t[0]).put(t[1], t[2]);
         }
-        for (int i = 1; i <= n; i++) {
-            if (distance[k][i] != -1) {
-                result[i] = distance[k][i];
-            }
+        if (!m.containsKey(k)) return -1;
+        for (int key : m.get(k).keySet()) {
+            distance[key] = m.get(k).get(key);
         }
+        distance[k] = 0;
+        visited[k] = true;
         for (int i = 1; i <= n; i++) {
             if (i != k) {
                 int curMinIdx = -1;
                 int curMinLen = Integer.MAX_VALUE;
                 for (int j = 1; j <= n; j++) {
-                    if (!visited[j] && result[j] != -1 && curMinLen > result[j]) {
+                    if (!visited[j] && distance[j] != -1 && curMinLen > distance[j]) {
                         curMinIdx = j;
-                        curMinLen = result[j];
+                        curMinLen = distance[j];
                     }
                 }
-                if (curMinIdx == -1) continue;
+                if (curMinIdx == -1) break;
                 visited[curMinIdx] = true;
-                for (int j = 1; j <= n; j++) {
-                    if (!visited[j]) {
-                        if (distance[curMinIdx][j] != -1 && (result[j] == -1 || result[j] > curMinLen + distance[curMinIdx][j])) {
-                            result[j] = curMinLen + distance[curMinIdx][j];
+                if (m.containsKey(curMinIdx)) {
+                    for (int j = 1; j <= n; j++) {
+                        if (!visited[j]) {
+                            if (m.get(curMinIdx).containsKey(j)
+                                    && (distance[j] == -1 || distance[j] > curMinLen + m.get(curMinIdx).get(j))) {
+                                distance[j] = curMinLen + m.get(curMinIdx).get(j);
+                            }
                         }
                     }
                 }
-
             }
         }
-        int max = Integer.MIN_VALUE;
+        int result = Integer.MIN_VALUE;
         for (int i = 1; i <= n; i++) {
-            if (result[i] == -1) return -1;
-            max = Math.max(result[i], max);
+            if (distance[i] == -1) return -1;
+            result = Math.max(result, distance[i]);
         }
-        return max;
+        return result;
     }
 
 
