@@ -9,10 +9,41 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
         // [3,4],[2,3],[1,2]
-        System.out.println(s.findRightInterval(new int[][]{{3, 4}, {2, 3}, {1, 2}}));
+        System.out.println(s.magicalString(100000));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC481
+    public int magicalString(int n) {
+        // S = 1 22 1
+        // sh = 1 2
+        if (n == 0) return 0;
+        if (n <= 3) return 1;
+        int[] seq = new int[n + 2];
+        seq[1] = 1;
+        seq[2] = 2;
+        seq[3] = 2;
+        int mainIdx = 3; // 从1算
+        int shadowIdx = 2;
+        int count = 1;
+        while (mainIdx <= n) {
+            if (seq[shadowIdx] == 1) {
+                seq[mainIdx + 1] = seq[mainIdx] == 1 ? 2 : 1;
+                shadowIdx++;
+            } else if (seq[shadowIdx] == 2) {
+                if (seq[mainIdx] == seq[mainIdx - 1]) {
+                    seq[mainIdx + 1] = seq[mainIdx] == 1 ? 2 : 1;
+                    shadowIdx++;
+                } else {
+                    seq[mainIdx + 1] = seq[mainIdx];
+                }
+            }
+            if (seq[mainIdx] == 1) count++;
+            mainIdx++;
+        }
+        return count;
     }
 
     // LC436
