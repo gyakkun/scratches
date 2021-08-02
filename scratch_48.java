@@ -19,15 +19,15 @@ class Scratch {
     public int[] findRightInterval(int[][] intervals) {
         int n = intervals.length;
         int[] result = new int[n];
-        Map<Pair<Integer, Integer>, Integer> origIdxMap = new HashMap<>();
+        Map<Integer, Integer> origIdxMap = new HashMap<>(n);
         for (int i = 0; i < n; i++) {
-            origIdxMap.put(new Pair<>(intervals[i][0], intervals[i][1]), i);
+            origIdxMap.put(intervals[i][0], i);
         }
         Arrays.fill(result, -1);
         Arrays.sort(intervals, Comparator.comparingInt(o -> o[0]));
         for (int i = 0; i < n; i++) {
             int target = intervals[i][1];
-            int lo = 0, hi = n - 1;
+            int lo = i, hi = n - 1;
             while (lo < hi) {
                 int mid = lo + (hi - lo) / 2;
                 if (intervals[mid][0] >= target) {
@@ -37,7 +37,7 @@ class Scratch {
                 }
             }
             if (intervals[lo][0] < target) continue;
-            result[origIdxMap.get(new Pair<>(intervals[i][0], intervals[i][1]))] = origIdxMap.get(new Pair<>(intervals[lo][0], intervals[lo][1]));
+            result[origIdxMap.get(intervals[i][0])] = origIdxMap.get(intervals[lo][0]);
         }
         return result;
     }
