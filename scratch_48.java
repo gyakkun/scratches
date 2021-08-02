@@ -15,7 +15,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC753 Hierholzer算法 **
+    // LC753 Hierholzer算法, 找欧拉通路 **
     public String crackSafe(int n, int k) {
         boolean[] visited = new boolean[(int) Math.pow(k, n)];
         Deque<Character> stack = new LinkedList<>();
@@ -44,7 +44,7 @@ class Scratch {
         stack.push(cur.charAt(cur.length() - 1));
     }
 
-    // LC481
+    // LC481 Kolakoski 数列
     public int magicalString(int n) {
         // S = 1 22 1
         // sh = 1 2
