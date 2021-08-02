@@ -15,6 +15,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC332 TBD
+    public List<String> findItinerary(List<List<String>> tickets) {
+        return null;
+    }
+
     // LC753 Hierholzer算法, 找欧拉通路 **
     public String crackSafe(int n, int k) {
         boolean[] visited = new boolean[(int) Math.pow(k, n)];
