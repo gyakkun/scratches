@@ -8,16 +8,38 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
-        System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}, {2, 3, 2}, {1, 3, 4}}, 3, 1));
-        System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}, {2, 3, 2}, {1, 3, 2}}, 3, 1));
-        System.out.println(s.networkDelayTime(new int[][]{{2, 1, 1}, {2, 3, 1}, {3, 4, 1}}, 4, 2));
-        System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}}, 2, 1));
-        System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}}, 2, 2));
-        System.out.println(s.networkDelayTime(new int[][]{{4, 2, 76}, {1, 3, 79}, {3, 1, 81}, {4, 3, 30}, {2, 1, 47}, {1, 5, 61}, {1, 4, 99}, {3, 4, 68}, {3, 5, 46}, {4, 1, 6}, {5, 4, 7}, {5, 3, 44}, {4, 5, 19}, {2, 3, 13}, {3, 2, 18}, {1, 2, 0}, {5, 1, 25}, {2, 5, 58}, {2, 4, 77}, {5, 2, 74}}, 5, 3));
+        // [3,4],[2,3],[1,2]
+        System.out.println(s.findRightInterval(new int[][]{{3, 4}, {2, 3}, {1, 2}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC436
+    public int[] findRightInterval(int[][] intervals) {
+        int n = intervals.length;
+        int[] result = new int[n];
+        Map<Pair<Integer, Integer>, Integer> origIdxMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            origIdxMap.put(new Pair<>(intervals[i][0], intervals[i][1]), i);
+        }
+        Arrays.fill(result, -1);
+        Arrays.sort(intervals, Comparator.comparingInt(o -> o[0]));
+        for (int i = 0; i < n; i++) {
+            int target = intervals[i][1];
+            int lo = 0, hi = n - 1;
+            while (lo < hi) {
+                int mid = lo + (hi - lo) / 2;
+                if (intervals[mid][0] >= target) {
+                    hi = mid;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+            if (intervals[lo][0] < target) continue;
+            result[origIdxMap.get(new Pair<>(intervals[i][0], intervals[i][1]))] = origIdxMap.get(new Pair<>(intervals[lo][0], intervals[lo][1]));
+        }
+        return result;
     }
 
     // LC743 Dijkstra
