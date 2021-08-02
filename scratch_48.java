@@ -2,8 +2,6 @@ import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.IntBinaryOperator;
-import java.util.function.IntUnaryOperator;
 
 class Scratch {
     public static void main(String[] args) {
@@ -11,11 +9,63 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minMoves2(new int[]{1, 0, 0, 8, 6}));
+        System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}, {2, 3, 2}, {1, 3, 4}}, 3, 1));
+        System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}, {2, 3, 2}, {1, 3, 2}}, 3, 1));
+        System.out.println(s.networkDelayTime(new int[][]{{2, 1, 1}, {2, 3, 1}, {3, 4, 1}}, 4, 2));
+        System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}}, 2, 1));
+        System.out.println(s.networkDelayTime(new int[][]{{1, 2, 1}}, 2, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC743 Dijkstra
+    public int networkDelayTime(int[][] times, int n, int k) {
+        int[][] distance = new int[n + 1][n + 1];
+        for (int[] d : distance) Arrays.fill(d, -1);
+        boolean[] visited = new boolean[n + 1];
+        int[] result = new int[n + 1];
+        Arrays.fill(result, -1);
+        result[k] = 0;
+        visited[k] = true;
+        for (int[] t : times) {
+            distance[t[0]][t[1]] = t[2];
+        }
+        for (int i = 1; i <= n; i++) {
+            if (distance[k][i] != -1) {
+                result[i] = distance[k][i];
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if (i != k) {
+                int curMinIdx = -1;
+                int curMinLen = Integer.MAX_VALUE;
+                for (int j = 1; j <= n; j++) {
+                    if (!visited[j] && result[j] != -1 && curMinLen > result[j]) {
+                        curMinIdx = j;
+                        curMinLen = result[j];
+                    }
+                }
+                if (curMinIdx == -1) continue;
+                visited[curMinIdx] = true;
+                for (int j = 1; j <= n; j++) {
+                    if (!visited[j]) {
+                        if (distance[curMinIdx][j] != -1 && (result[j] == -1 || result[j] > curMinLen + distance[curMinIdx][j])) {
+                            result[j] = curMinLen + distance[curMinIdx][j];
+                        }
+                    }
+                }
+
+            }
+        }
+        int max = Integer.MIN_VALUE;
+        for (int i = 1; i <= n; i++) {
+            if (result[i] == -1) return -1;
+            max = Math.max(result[i], max);
+        }
+        return max;
+    }
+
 
     // LC1337
     public int[] kWeakestRows(int[][] mat, int k) {
@@ -1742,7 +1792,8 @@ class Scratch {
         return lc1255Max;
     }
 
-    private void lc1255Backtrack(int curIdx, int curScore, int[] curUsable, List<String> addableWords, int[] addableScores) {
+    private void lc1255Backtrack(int curIdx, int curScore, int[] curUsable, List<String> addableWords,
+                                 int[] addableScores) {
         if (curIdx == addableWords.size()) {
             lc1255Max = Math.max(lc1255Max, curScore);
             return;
