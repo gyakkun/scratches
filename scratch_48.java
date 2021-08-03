@@ -15,6 +15,41 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1452 Tips: Two pointer, O(n^2 *m), n=favoriteCompanies.size(), m = companySet.size()
+    // 但我这个好像就是朴素思路, 复杂度一样?
+    public List<Integer> peopleIndexes(List<List<String>> favoriteCompanies) {
+        List<Integer> result = new ArrayList<>();
+        Set<String> companySet = new HashSet<>();
+        for (List<String> f : favoriteCompanies) companySet.addAll(f);
+        int n = companySet.size();
+        List<String> companyList = new ArrayList<>(companySet);
+        Map<String, Integer> idxMap = new HashMap<>();
+        for (int i = 0; i < n; i++) idxMap.put(companyList.get(i), i);
+        List<Set<Integer>> hashedFC = new ArrayList<>(favoriteCompanies.size());
+        for (List<String> f : favoriteCompanies) {
+            Set<Integer> tmp = new HashSet<>(f.size());
+            for (String c : f) tmp.add(idxMap.get(c));
+            hashedFC.add(tmp);
+        }
+        for (int i = 0; i < hashedFC.size(); i++) {
+            int count = 0;
+            for (int j = 0; j < hashedFC.size(); j++) {
+                if (i != j) {// 判断 i 是不是 j的子集, 如果i中有元素j没有, 则i不是j的子集
+                    boolean flag = false; // 假设是, 若不是立即break;
+                    for (int ele : hashedFC.get(i)) {
+                        if (!hashedFC.get(j).contains(ele)) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (flag) count++;
+                }
+            }
+            if (count == hashedFC.size() - 1) result.add(i);
+        }
+        return result;
+    }
+
     // LC1850 ** 交换的是相邻位数字, 贪心策略见Solution
     public int getMinSwaps(String num, int k) {
         int n = num.length();
