@@ -15,6 +15,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1823 TBD
+    public int findTheWinner(int n, int k) {
+        return -1;
+    }
+
     // LC1567 Solution DP
     public int getMaxLen(int[] nums) {
         int n = nums.length;
