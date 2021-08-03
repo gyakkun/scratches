@@ -15,8 +15,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1567 慢
+    // LC1567 Solution DP
     public int getMaxLen(int[] nums) {
+        int n = nums.length;
+        int[] pos = new int[2], neg = new int[2];
+        if (nums[0] > 0) pos[0] = 1;
+        if (nums[0] < 0) neg[0] = 1;
+        int result = pos[0];
+        for (int i = 1; i < n; i++) {
+            if (nums[i] > 0) {
+                pos[i % 2] = pos[(i - 1) % 2] + 1;
+                neg[i % 2] = neg[(i - 1) % 2] == 0 ? 0 : neg[(i - 1) % 2] + 1;
+            } else if (nums[i] < 0) {
+                pos[i % 2] = neg[(i - 1) % 2] == 0 ? 0 : neg[(i - 1) % 2] + 1;
+                neg[i % 2] = pos[(i - 1) % 2] + 1;
+            } else {
+                pos[i % 2] = neg[i % 2] = 0;
+            }
+            result = Math.max(result, pos[i % 2]);
+        }
+        return result;
+    }
+
+    // LC1567 慢
+    public int getMaxLenSimple(int[] nums) {
         int n = nums.length;
         int[] nextZero = new int[n];
         int[] negCount = new int[n];
