@@ -1,16 +1,43 @@
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        System.out.println(s.findNumberOfLIS(new int[]{2, 1}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC673 **
+    public int findNumberOfLIS(int[] nums) {
+        int n = nums.length;
+        if (n <= 1) return n;
+        int[] dp = new int[n], count = new int[n];
+        Arrays.fill(dp, 1);
+        Arrays.fill(count, 1);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    if (dp[i] <= dp[j]) {
+                        dp[i] = dp[j] + 1;
+                        count[i] = count[j];
+                    } else if (dp[j] + 1 == dp[i]) {
+                        count[i] += count[j];
+                    }
+                }
+            }
+        }
+        int max = Arrays.stream(dp).max().getAsInt();
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[i] == max) {
+                result += count[i];
+            }
+        }
+        return result;
     }
 }
 
@@ -54,14 +81,14 @@ class AnimalShelf {
     }
 
     public int[] dequeueDog() {
-        if(dogQueue.isEmpty()) return new int[]{-1, -1};
+        if (dogQueue.isEmpty()) return new int[]{-1, -1};
         int polledDogId = dogQueue.poll();
         idSeqMap.remove(polledDogId);
         return new int[]{polledDogId, DOG};
     }
 
     public int[] dequeueCat() {
-        if(catQueue.isEmpty()) return new int[]{-1, -1};
+        if (catQueue.isEmpty()) return new int[]{-1, -1};
         int polledCatId = catQueue.poll();
         idSeqMap.remove(polledCatId);
         return new int[]{polledCatId, CAT};
