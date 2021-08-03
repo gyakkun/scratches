@@ -9,17 +9,70 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
         // [3,4],[2,3],[1,2]
-        System.out.println(s.findUnsortedSubarray(new int[]{1, 2, 3, 4, 5}));
+        System.out.println(s.getMinSwaps("00123", 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1850
+    // LC1850 ** 交换的是相邻位数字, 贪心策略见Solution
     public int getMinSwaps(String num, int k) {
-
+        int n = num.length();
+        char[] ca = num.toCharArray();
+        char[] orig = Arrays.copyOfRange(ca, 0, n);
+        for (int i = 0; i < k; i++) {
+            ca = getNextPermutation(ca);
+        }
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            if (ca[i] != orig[i]) {
+                int j;
+                for (j = i; ca[i] != orig[j]; j++) ;
+                result += j - i;
+                while (j != i) {
+                    arraySwap(orig, j, j - 1);
+                    j--;
+                }
+            }
+        }
+        return result;
     }
 
+    private char[] getNextPermutation(char[] ca) {
+        int n = ca.length;
+        int right = ca.length - 2;
+        while (right >= 0 && ca[right] >= ca[right + 1]) {
+            right--;
+        }
+        if (right >= 0) {
+            int left = n - 1;
+            while (left >= 0 && ca[right] >= ca[left]) {
+                left--;
+            }
+            arraySwap(ca, left, right);
+        }
+        arrayReverse(ca, right + 1, n - 1);
+        return ca;
+    }
+
+    private void arraySwap(char[] ca, int i, int j) {
+        if (i != j) {
+            char orig = ca[j];
+            ca[j] = ca[i];
+            ca[i] = orig;
+        }
+    }
+
+    private void arrayReverse(char[] ca, int from, int to) {
+        if (from < 0 || from >= ca.length || to < 0 || to >= ca.length) return;
+        int origFrom = from;
+        from = from > to ? to : from;
+        to = from == origFrom ? to : origFrom;
+        int mid = (from + to + 1) / 2;
+        for (int i = from; i < mid; i++) {
+            arraySwap(ca, i, to - (i - from));
+        }
+    }
 
     // LC332 可以先对机场按照字典序排序 也可以参考Solution使用优先队列
     public List<String> findItinerary(List<List<String>> tickets) {
