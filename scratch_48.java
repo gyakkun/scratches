@@ -15,6 +15,12 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1850
+    public int getMinSwaps(String num, int k) {
+
+    }
+
+
     // LC332 可以先对机场按照字典序排序 也可以参考Solution使用优先队列
     public List<String> findItinerary(List<List<String>> tickets) {
         List<String> result = new ArrayList<>();

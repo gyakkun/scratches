@@ -6,6 +6,7 @@ class Scratch {
         System.err.println(s.longestOnes(new int[]{1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0}, 2));
     }
 
+    // LC1493 ?
     public int longestSubarrayAVL(int[] nums,int limit){
         TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
         int n = nums.length;
@@ -26,6 +27,7 @@ class Scratch {
         return ret;
     }
 
+    // LC1493 ?
     public int longestSubarray(int[] nums, int limit) {
         int n = nums.length;
         int left = 0, right = 0;
@@ -86,6 +88,7 @@ class Scratch {
         return result;
     }
 
+    // LC697
     public int findShortestSubArray(int[] nums) {
         Map<Integer, Integer> occurCtr = new HashMap<>();
         Set<Integer> maxOccurSet = new HashSet<>();
@@ -126,6 +129,7 @@ class Scratch {
         return shortestLen;
     }
 
+    // LC867
     public int[][] transpose(int[][] matrix) {
         int[][] result = new int[matrix[0].length][matrix.length];
         for (int i = 0; i < matrix[0].length; i++) {
@@ -136,6 +140,7 @@ class Scratch {
         return result;
     }
 
+    // LC1004
     public int longestOnes(int[] A, int K) {
         int n = A.length;
         int max = 0;
@@ -176,6 +181,7 @@ class Scratch {
         }
     }
 
+    // LC995
     public int minKBitFlips(int[] A, int K) {
         int n = A.length;
         int[] diff = new int[n + 1];
@@ -201,6 +207,7 @@ class Scratch {
         return result;
     }
 
+    // LC995
     public int minKBitFlipsOrig(int[] A, int K) {
         int n = A.length;
         int result = 0;
@@ -219,6 +226,7 @@ class Scratch {
 
     }
 
+    // LC832
     public int[][] flipAndInvertImage(int[][] A) {
         for (int[] row : A) {
             for (int i = 0; i < row.length / 2; i++) {
@@ -236,6 +244,7 @@ class Scratch {
         return A;
     }
 
+    // LC566
     public int[][] matrixReshape(int[][] nums, int r, int c) {
         int origM = nums.length;
         int origN = nums[0].length;
@@ -252,6 +261,7 @@ class Scratch {
         return result;
     }
 
+    // LC561
     public int arrayPairSum(int[] nums) {
         Arrays.sort(nums);
         int result = 0;
@@ -261,6 +271,7 @@ class Scratch {
         return result;
     }
 
+    // LC485
     public int findMaxConsecutiveOnes(int[] nums) {
         int max = 0;
         int currentLen = 0;
@@ -285,6 +296,7 @@ class Scratch {
         return max;
     }
 
+    // LC765
     public int minSwapsCouples(int[] row) {
 
         DisjointSetUnion dsu = new DisjointSetUnion();
