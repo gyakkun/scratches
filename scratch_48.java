@@ -9,7 +9,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
         // [3,4],[2,3],[1,2]
-        System.out.println(s.findUnsortedSubarray(new int[]{1, 3, 2, 2, 2}));
+        System.out.println(s.findUnsortedSubarray(new int[]{1, 2, 3, 4, 5}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -18,26 +18,22 @@ class Scratch {
     // LC581 Stack
     public int findUnsortedSubarray(int[] nums) {
         int n = nums.length;
-        Deque<Integer> stack = new LinkedList<>();
-        int minLeft = n - 1;
-        stack.push(0);
-        for (int i = 1; i < n; i++) {
-            while (!stack.isEmpty() && nums[i] < nums[stack.peek()]) {
-                minLeft = Math.min(minLeft, stack.pop());
+        int start = 0, end = -1;
+        int min = nums[n - 1], max = nums[0];
+        for (int i = 0, j = n - 1; i < n; i++, j--) {
+            if (nums[i] < max) {
+                end = i;
+            } else {
+                max = nums[i];
             }
-            stack.push(i);
-        }
-        if (minLeft == n - 1) return 0;
-        stack.clear();
-        stack.push(n - 1);
-        int maxRight = 0;
-        for (int i = n - 2; i >= 0; i--) {
-            while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {
-                maxRight = Math.max(maxRight, stack.pop());
+
+            if (nums[j] > min) {
+                start = j;
+            } else {
+                min = nums[j];
             }
-            stack.push(i);
         }
-        return maxRight - minLeft + 1;
+        return end - start + 1;
     }
 
     // LC581
