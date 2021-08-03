@@ -5,10 +5,50 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findNumberOfLIS(new int[]{2, 1}));
+        System.out.println(s.getMaxLen(new int[]{-1, -2, -3, 0, 1}));
+        System.out.println(s.getMaxLen(new int[]{-1, 2}));
+        System.out.println(s.getMaxLen(new int[]{0, 1, -2, -3, -4}));
+        System.out.println(s.getMaxLen(new int[]{1, -2, -3, 4}));
+        System.out.println(s.getMaxLen(new int[]{1, 2, 3, 5, -6, 4, 0, 10}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1567 慢
+    public int getMaxLen(int[] nums) {
+        int n = nums.length;
+        int[] nextZero = new int[n];
+        int[] negCount = new int[n];
+        Arrays.fill(nextZero, -1);
+        int nextZeroIdx = -1;
+        for (int i = n - 1; i >= 0; i--) {
+            if (nums[i] == 0) {
+                nextZeroIdx = i;
+            }
+            nextZero[i] = nextZeroIdx;
+        }
+        negCount[0] = nums[0] < 0 ? 1 : 0;
+        for (int i = 1; i < n; i++) {
+            negCount[i] = negCount[i - 1] + (nums[i] < 0 ? 1 : 0);
+        }
+        int result = 0;
+        // 在下一个0来临之前, 找到最大的偶数个负数所在IDX 求长度
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != 0) {
+                int curNegCount = negCount[i];
+                if (nums[i] < 0) curNegCount--;
+                int start = i, end = -1;
+                if (nextZero[i] == -1) end = n - 1;
+                else end = nextZero[i] - 1;
+                int j;
+                for (j = end; j >= start; j--) {
+                    if (negCount[j] % 2 == curNegCount % 2) break;
+                }
+                result = Math.max(result, j - i + 1);
+            }
+        }
+        return result;
     }
 
     // LC198
