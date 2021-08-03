@@ -9,10 +9,28 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
         // [3,4],[2,3],[1,2]
-        System.out.println(s.crackSafe(3, 5));
+        System.out.println(s.findUnsortedSubarray(new int[]{4, 3, 2, 4}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC581
+    public int findUnsortedSubarray(int[] nums) {
+        int n = nums.length;
+        int[] orig = Arrays.copyOfRange(nums, 0, nums.length);
+        Arrays.sort(nums);
+        int left = 0, right = n - 1;
+        while (left < n) {
+            if (orig[left] != nums[left]) break;
+            left++;
+        }
+        while (right >= 0) {
+            if (orig[right] != nums[right]) break;
+            right--;
+        }
+        if (left == n && right == -1) return 0;
+        return right - left + 1;
     }
 
     // LC332 TBD
