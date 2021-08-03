@@ -11,6 +11,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC740 ** 打家劫舍
+    public int deleteAndEarn(int[] nums) {
+        int max = Arrays.stream(nums).max().getAsInt();
+        int[] sum = new int[max + 1];
+        for (int i : nums) sum[i] += i;
+        if (max == 1) return sum[1];
+        if (max == 2) return Math.max(sum[1], sum[2]);
+        int[] dp = new int[max + 1];
+        dp[1] = sum[1];
+        dp[2] = Math.max(sum[1], sum[2]);
+        for (int i = 3; i <= max; i++) {
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + sum[i]);
+        }
+        return dp[max];
+    }
+
     // LC673 **
     public int findNumberOfLIS(int[] nums) {
         int n = nums.length;
