@@ -5,19 +5,31 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.getMaxLen(new int[]{-1, -2, -3, 0, 1}));
-        System.out.println(s.getMaxLen(new int[]{-1, 2}));
-        System.out.println(s.getMaxLen(new int[]{0, 1, -2, -3, -4}));
-        System.out.println(s.getMaxLen(new int[]{1, -2, -3, 4}));
-        System.out.println(s.getMaxLen(new int[]{1, 2, 3, 5, -6, 4, 0, 10}));
+        System.out.println(s.findTheWinner(6, 5));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1823 TBD
+    // LC1823
     public int findTheWinner(int n, int k) {
-        return -1;
+        TreeSet<Integer> s = new TreeSet<>();
+        for (int i = 1; i <= n; i++) s.add(i);
+        int cur = 1;
+        while (s.size() > 1) {
+            int ctr = 1;
+            while (ctr < k) {
+                Integer higher = s.higher(cur);
+                if (higher == null) higher = s.first();
+                cur = higher;
+                ctr++;
+            }
+            Integer next = s.higher(cur);
+            if (next == null) next = s.first();
+            s.remove(cur);
+            cur = next;
+        }
+        return s.first();
     }
 
     // LC1567 Solution DP
