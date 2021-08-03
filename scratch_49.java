@@ -11,6 +11,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC167
+    public int[] twoSum(int[] numbers, int target) {
+        int n = numbers.length;
+        for (int i = 0; i < n; i++) {
+            int tmp = target - numbers[i];
+            int bsResult = Arrays.binarySearch(numbers, i + 1, n, tmp);
+            if (bsResult >= 0) return new int[]{i + 1, bsResult + 1};
+        }
+        return new int[]{-1, -1};
+    }
+
     // LC1823
     public int findTheWinner(int n, int k) {
         TreeSet<Integer> s = new TreeSet<>();
