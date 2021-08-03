@@ -15,6 +15,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC332 可以先对机场按照字典序排序 也可以参考Solution使用优先队列
+    public List<String> findItinerary(List<List<String>> tickets) {
+        List<String> result = new ArrayList<>();
+        Set<String> airportSet = new HashSet<>();
+        for (List<String> t : tickets) {
+            airportSet.addAll(t);
+        }
+        int n = airportSet.size();
+        List<String> airportList = new ArrayList<>(airportSet);
+        Collections.sort(airportList);
+        Map<String, Integer> idxMap = new HashMap<>();
+        for (int i = 0; i < airportList.size(); i++) idxMap.put(airportList.get(i), i);
+        int[][] reachable = new int[n][n];
+        for (List<String> t : tickets) {
+            reachable[idxMap.get(t.get(0))][idxMap.get(t.get(1))]++;
+        }
+        Deque<Integer> stack = new LinkedList<>();
+        lc332Helper(idxMap.get("JFK"), stack, reachable);
+        while (!stack.isEmpty()) result.add(airportList.get(stack.pop()));
+        return result;
+    }
+
+    private void lc332Helper(int cur, Deque<Integer> stack, int[][] reachable) {
+        for (int i = 0; i < reachable.length; i++) {
+            if (reachable[cur][i] != 0) {
+                reachable[cur][i]--;
+                lc332Helper(i, stack, reachable);
+            }
+        }
+        stack.push(cur);
+    }
+
     // LC581 Stack
     public int findUnsortedSubarray(int[] nums) {
         int n = nums.length;
@@ -52,11 +84,6 @@ class Scratch {
         }
         if (left == n && right == -1) return 0;
         return right - left + 1;
-    }
-
-    // LC332 TBD
-    public List<String> findItinerary(List<List<String>> tickets) {
-        return null;
     }
 
     // LC753 Hierholzer算法, 找欧拉通路 **
