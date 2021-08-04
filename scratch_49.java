@@ -5,10 +5,63 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.pacificAtlantic(new int[][]{{1, 2, 3}, {8, 9, 4}, {7, 6, 5}}));
+        System.out.println(s.longestCommomSubsequence(new int[][]{{2, 3, 6, 8}, {1, 2, 3, 5, 6, 7, 10}, {2, 3, 4, 6, 9}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1940 Prime Locked
+    public List<Integer> longestCommomSubsequence(int[][] arrays) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 1; i <= 100; i++) {
+            int count = 0;
+            for (int[] arr : arrays) {
+                int bsResult = Arrays.binarySearch(arr, i);
+                if (bsResult >= 0) count++;
+            }
+            if (count == arrays.length) result.add(i);
+        }
+        return result;
+    }
+
+    // LC1781
+    public int beautySum(String s) {
+        char[] ca = s.toCharArray();
+        int[] freq = new int[26];
+        int left = 0;
+        int result = 0;
+        while (left < s.length()) {
+            freq = new int[26];
+            int right = left;
+            while (right < s.length()) {
+                freq[ca[right++] - 'a']++;
+                int[] j = lc1781Judge(freq);
+                if (j[0] != -1) {
+                    result += freq[j[1]] - freq[j[0]];
+                }
+            }
+            left++;
+        }
+        return result;
+    }
+
+    private int[] lc1781Judge(int[] freq) {
+        int min = Integer.MAX_VALUE, minIdx = -1, max = 0, maxIdx = -1;
+        int notZeroCount = 0;
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] != 0) notZeroCount++;
+            if (freq[i] > max) {
+                max = freq[i];
+                maxIdx = i;
+            }
+            if (freq[i] != 0 && freq[i] < min) {
+                min = freq[i];
+                minIdx = i;
+            }
+        }
+        if (notZeroCount <= 1 || max == min) return new int[]{-1, -1};
+        return new int[]{minIdx, maxIdx};
     }
 
     // LC417 **
