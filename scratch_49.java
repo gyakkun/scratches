@@ -5,10 +5,89 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minDays(10));
+        System.out.println(s.findBestValue(new int[]{2, 3, 5}, 10));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1300
+    public int findBestValue(int[] arr, int target) {
+        int n = arr.length;
+        int[] prefix = new int[n + 1];
+        Arrays.sort(arr);
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + arr[i - 1];
+        int lo = 0, hi = arr[n - 1];
+        while (lo < hi) { // 找value的下届
+            int mid = lo + (hi - lo + 1) / 2;
+            int idx = bsLargerOrEqualMin(arr, mid);
+            while (idx < arr.length && arr[idx] == mid) idx++;
+            if (idx > arr.length) break;
+            // 此时idx及其之后的值都大于value
+            int curSum = prefix[idx] - prefix[0] + (arr.length - idx) * mid;
+            if (curSum <= target) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        int lowBound = lo;
+        lo = 0;
+        hi = arr[n - 1];
+        while (lo < hi) { // 找value的上界
+            int mid = lo + (hi - lo) / 2;
+            int idx = bsLargerOrEqualMin(arr, mid);
+            while (idx < arr.length && arr[idx] == mid) idx++;
+            if (idx > arr.length) break;
+            // 此时idx及其之后的值都大于value
+            int curSum = prefix[idx] - prefix[0] + (arr.length - idx) * mid;
+            if (curSum < target) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        int hiBound = lo;
+
+        int result = lowBound, minDiff = Integer.MAX_VALUE;
+        for (int i = lowBound; i <= hiBound; i++) {
+            int idx = bsLargerOrEqualMin(arr, i);
+            while (idx < arr.length && arr[idx] == i) idx++;
+            int curSum = prefix[idx] - prefix[0] + (arr.length - idx) * i;
+            if (Math.abs(curSum - target) < minDiff) {
+                minDiff = Math.abs(curSum - target);
+                result = i;
+            }
+        }
+        return result;
+    }
+
+    private int bsLessOrEqualMax(int[] arr, int target) {
+        int lo = 0, hi = arr.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (arr[mid] <= target) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        if (arr[lo] > target) return -1;
+        return lo;
+    }
+
+    private int bsLargerOrEqualMin(int[] arr, int target) {
+        int lo = 0, hi = arr.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (arr[mid] >= target) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        if (arr[hi] < target) return -1;
+        return hi;
     }
 
     // LC1553 ** 类比LCP20
