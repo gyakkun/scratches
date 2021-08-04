@@ -4,13 +4,48 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        int[] arr = new int[Integer.MAX_VALUE >> 28];
-        for (int i = 0; i < arr.length; i++) arr[i] = (Integer.MAX_VALUE >> 28) - i;
-        System.out.println(quickSelect.topK(arr, 4));
-//        System.out.println(s.longestCommomSubsequence(new int[][]{{2, 3, 6, 8}, {1, 2, 3, 5, 6, 7, 10}, {2, 3, 4, 6, 9}}));
+
+        System.out.println(s.busRapidTransit(31,
+                5,
+                3,
+                new int[]{6},
+                new int[]{10}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LCP 20 ** bottom up dfs
+    Map<Long, Long> lcp20Map;
+    final long lcp20Mod = 1000000007L;
+    int lcp20Inc, lcp20Dec;
+    int[] lcp20Jump, lcp20Cost;
+
+    public int busRapidTransit(int target, int inc, int dec, int[] jump, int[] cost) {
+        lcp20Map = new HashMap<>();
+        lcp20Map.put(0l, 0l);
+        lcp20Map.put(1l, (long) inc);
+        lcp20Inc = inc;
+        lcp20Cost = cost;
+        lcp20Jump = jump;
+        lcp20Dec = dec;
+        return (int) (lcp20Helper(target) % lcp20Mod);
+    }
+
+    private long lcp20Helper(long cur) {
+        if (lcp20Map.containsKey(cur)) return lcp20Map.get(cur);
+        long result = cur * lcp20Inc;
+        for (int i = 0; i < lcp20Jump.length; i++) {
+            long remainder = cur % lcp20Jump[i];
+            if (remainder == 0l) {
+                result = Math.min(result, lcp20Helper(cur / lcp20Jump[i]) + lcp20Cost[i]);
+            } else {
+                result = Math.min(result, lcp20Helper(cur / lcp20Jump[i]) + lcp20Cost[i] + remainder * lcp20Inc);
+                result = Math.min(result, lcp20Helper((cur / lcp20Jump[i]) + 1) + lcp20Cost[i] + (lcp20Jump[i] - remainder) * lcp20Dec);
+            }
+        }
+        lcp20Map.put(cur, result);
+        return result;
     }
 
     // LC1940 Prime Locked
