@@ -1,3 +1,5 @@
+import org.jcp.xml.dsig.internal.dom.DOMUtils;
+
 import java.util.*;
 
 class Scratch {
@@ -332,5 +334,27 @@ class AnimalShelf {
 
     private int getSeq() {
         return seq++;
+    }
+}
+
+// LC478
+class Solution {
+    double x_center;
+    double y_center;
+    double radius;
+
+    public Solution(double radius, double x_center, double y_center) {
+        this.x_center = x_center;
+        this.y_center = y_center;
+        this.radius = radius;
+    }
+
+    public double[] randPoint() {
+        double len = Math.sqrt(Math.random()) * radius; // 注意开方 , 参考solution
+        double theta = Math.random() * Math.PI * 2;
+
+        double x = len * Math.sin(theta) + x_center;
+        double y = len * Math.cos(theta) + y_center;
+        return new double[]{x, y};
     }
 }
