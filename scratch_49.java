@@ -5,10 +5,36 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findTheWinner(6, 5));
+        System.out.println(s.triangleNumber(new int[]{1, 0, 3, 6, 9, 7, 2, 1, 5, 11}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC611 **
+    public int triangleNumber(int[] nums) {
+        // nums.length <=1000
+        // A + B > C
+        int n = nums.length, result = 0;
+        if (n <= 2) return 0;
+        Arrays.sort(nums);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int lo = j + 1, hi = n - 1, k = j;
+                int target = nums[i] + nums[j];
+                while (lo <= hi) {
+                    int mid = (hi + lo) / 2;
+                    if (nums[mid] < target) {
+                        k = mid;
+                        lo = mid + 1;
+                    } else {
+                        hi = mid - 1;
+                    }
+                }
+                result += k - j;
+            }
+        }
+        return result;
     }
 
     // LC167
