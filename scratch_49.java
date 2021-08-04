@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -5,10 +7,44 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findBestValue(new int[]{2, 3, 5}, 10));
+        System.out.println(s.avoidFlood(new int[]{1, 2, 0, 0, 2, 1}));
+        System.out.println(s.avoidFlood(new int[]{1, 2, 0, 1, 2}));
+        System.out.println(s.avoidFlood(new int[]{69, 0, 0, 0, 69}));
+        System.out.println(s.avoidFlood(new int[]{10, 20, 20}));
+        System.out.println(s.avoidFlood(new int[]{0, 1, 1}));
+        System.out.println(s.avoidFlood(new int[]{1, 0, 2, 0, 2, 1}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1488
+    public int[] avoidFlood(int[] rains) {
+        int n = rains.length;
+        int[] ans = new int[n];
+        TreeSet<Integer> unrain = new TreeSet<>();
+        Map<Integer, Integer> tbd = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            if (rains[i] == 0) unrain.add(i);
+            else {
+                ans[i] = -1;
+                if (tbd.containsKey(rains[i])) {
+                    if (unrain.isEmpty()) {
+                        return new int[0];
+                    }
+                    int prevRainDay = tbd.get(rains[i]);
+                    Integer ceiling = unrain.ceiling(prevRainDay);
+                    if (ceiling == null) {
+                        return new int[]{};
+                    }
+                    ans[ceiling] = rains[i];
+                    unrain.remove(ceiling);
+                }
+                tbd.put(rains[i], i);
+            }
+        }
+        for (int i : unrain) ans[i] = tbd.keySet().iterator().next();
+        return ans;
     }
 
     // LC1300
