@@ -5,14 +5,28 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.busRapidTransit(31,
-                5,
-                3,
-                new int[]{6},
-                new int[]{10}));
+        System.out.println(s.minDays(10));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1553 ** 类比LCP20
+    Map<Integer, Integer> lc1553Memo = new HashMap<>();
+
+    public int minDays(int n) {
+        return lc1553Helper(n);
+    }
+
+    private int lc1553Helper(int cur) {
+        if (cur <= 1) return 1;
+        if (cur == 2 || cur == 3) return 2;
+        if (lc1553Memo.get(cur) != null) return lc1553Memo.get(cur);
+        int result = cur;
+        result = Math.min(result, 1 + lc1553Helper(cur / 2) + cur % 2);
+        result = Math.min(result, 1 + lc1553Helper(cur / 3) + cur % 3);
+        lc1553Memo.put(cur, result);
+        return result;
     }
 
     // LCP 20 ** bottom up dfs
