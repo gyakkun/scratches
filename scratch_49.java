@@ -5,11 +5,55 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.triangleNumber(new int[]{1, 0, 3, 6, 9, 7, 2, 1, 5, 11}));
+        System.out.println(s.pacificAtlantic(new int[][]{{1, 2, 3}, {8, 9, 4}, {7, 6, 5}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC417 **
+    boolean[][] lc417P, lc417A;
+    int[][] lc417Direction = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    public List<List<Integer>> pacificAtlantic(int[][] heights) {
+        List<List<Integer>> result = new ArrayList<>();
+        int n = heights.length, m = heights[0].length;
+        lc417A = new boolean[n][m];
+        lc417P = new boolean[n][m];
+        for (int i = 0; i < n; i++) {
+            lc417Helper(heights, i, 0, lc417P);
+            lc417Helper(heights, i, m - 1, lc417A);
+        }
+        for (int i = 0; i < m; i++) {
+            lc417Helper(heights, 0, i, lc417P);
+            lc417Helper(heights, n - 1, i, lc417A);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (lc417P[i][j] && lc417A[i][j]) {
+                    result.add(Arrays.asList(i, j));
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean lc417IdxLegalJudge(int row, int col) {
+        return (row >= 0 && row < lc417P.length && col >= 0 && col < lc417P[0].length);
+    }
+
+    private void lc417Helper(int[][] heights, int row, int col, boolean[][] judge) {
+        if (judge[row][col]) return;
+        judge[row][col] = true;
+        for (int[] dir : lc417Direction) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            if (lc417IdxLegalJudge(newRow, newCol) && heights[newRow][newCol] >= heights[row][col]) {
+                lc417Helper(heights, newRow, newCol, judge);
+            }
+        }
+    }
+
 
     // LC611 **
     public int triangleNumber(int[] nums) {
