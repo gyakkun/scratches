@@ -1,13 +1,13 @@
-import org.jcp.xml.dsig.internal.dom.DOMUtils;
-
 import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.out.println(s.longestCommomSubsequence(new int[][]{{2, 3, 6, 8}, {1, 2, 3, 5, 6, 7, 10}, {2, 3, 4, 6, 9}}));
+        int[] arr = new int[Integer.MAX_VALUE >> 28];
+        for (int i = 0; i < arr.length; i++) arr[i] = (Integer.MAX_VALUE >> 28) - i;
+        System.out.println(quickSelect.topK(arr, 4));
+//        System.out.println(s.longestCommomSubsequence(new int[][]{{2, 3, 6, 8}, {1, 2, 3, 5, 6, 7, 10}, {2, 3, 4, 6, 9}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -381,5 +381,90 @@ class KthLargest {
             }
         }
         return pq.peek();
+    }
+}
+
+class quickSort {
+
+    static Random r = new Random();
+
+    public static void sort(int[] arr) {
+        helper(arr, 0, arr.length - 1);
+    }
+
+    private static void helper(int[] arr, int start, int end) {
+        if (start >= end) return;
+        int randPivot = r.nextInt(end - start + 1) + start;
+        if (arr[start] != arr[randPivot]) {
+            int o = arr[start];
+            arr[start] = arr[randPivot];
+            arr[randPivot] = o;
+        }
+        int pivotVal = arr[start];
+        int left = start, right = end;
+        while (left < right) {
+            while (left < right && arr[right] > pivotVal) {
+                right--;
+            }
+            if (left < right) {
+                arr[left] = arr[right];
+                left++;
+            }
+            while (left < right && arr[left] < pivotVal) {
+                left++;
+            }
+            if (left < right) {
+                arr[right] = arr[left];
+                right--;
+            }
+        }
+        arr[left] = pivotVal;
+        helper(arr, start, left - 1);
+        helper(arr, right + 1, end);
+    }
+
+}
+
+class quickSelect {
+    static Random r = new Random();
+
+    public static int topK(int[] arr, int topK) {
+        return helper(arr, 0, arr.length - 1, topK);
+    }
+
+    private static Integer helper(int[] arr, int start, int end, int topK) {
+        if (start == end && start == arr.length - topK) return arr[start];
+        if (start >= end) return null;
+        int randPivot = r.nextInt(end - start + 1) + start;
+        if (arr[start] != arr[randPivot]) {
+            int o = arr[start];
+            arr[start] = arr[randPivot];
+            arr[randPivot] = o;
+        }
+        int pivotVal = arr[start];
+        int left = start, right = end;
+        while (left < right) {
+            while (left < right && arr[right] > pivotVal) {
+                right--;
+            }
+            if (left < right) {
+                arr[left] = arr[right];
+                left++;
+            }
+            while (left < right && arr[left] < pivotVal) {
+                left++;
+            }
+            if (left < right) {
+                arr[right] = arr[left];
+                right--;
+            }
+        }
+        arr[left] = pivotVal;
+        if (left == arr.length - topK) return arr[left];
+        Integer leftResult = helper(arr, start, left - 1, topK);
+        if (leftResult != null) return leftResult;
+        Integer rightResult = helper(arr, right + 1, end, topK);
+        if (rightResult != null) return rightResult;
+        return null;
     }
 }
