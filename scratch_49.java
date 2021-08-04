@@ -19,19 +19,12 @@ class Scratch {
         if (n <= 2) return 0;
         Arrays.sort(nums);
         for (int i = 0; i < n; i++) {
+            int k = i;
             for (int j = i + 1; j < n; j++) {
-                int lo = j + 1, hi = n - 1, k = j;
-                int target = nums[i] + nums[j];
-                while (lo <= hi) {
-                    int mid = (hi + lo) / 2;
-                    if (nums[mid] < target) {
-                        k = mid;
-                        lo = mid + 1;
-                    } else {
-                        hi = mid - 1;
-                    }
+                while (k + 1 < n && nums[k + 1] < nums[i] + nums[j]) {
+                    k++;
                 }
-                result += k - j;
+                result += Math.max(k - j, 0);
             }
         }
         return result;
