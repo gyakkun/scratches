@@ -13,6 +13,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC940 **
+    public int distinctSubseqII(String s) {
+        int n = s.length();
+        char[] ca = s.toCharArray();
+        int[] dp = new int[n + 1];
+        dp[0] = 1; // 空串
+        int[] lastOccur = new int[26];
+        Arrays.fill(lastOccur, -1);
+        final int mod = 1000000007;
+        for (int i = 0; i < n; i++) {
+            dp[i + 1] = dp[i] * 2 % mod;
+            if (lastOccur[ca[i] - 'a'] != -1) {
+                dp[i + 1] -= dp[lastOccur[ca[i] - 'a']];
+            }
+            dp[i + 1] %= mod;
+            lastOccur[ca[i] - 'a'] = i;
+        }
+        dp[n] = (dp[n] - 1 + mod) % mod; // -1 处理空串
+        return dp[n];
+    }
+
     // LC1696 单纯DP不行 求max是O(n), 加起来O(n^2)超时, 用TreeMap求max是O(log(n)), 总复杂度O(nlogn)
     public int maxResult(int[] nums, int k) {
         int n = nums.length;
