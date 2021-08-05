@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 
@@ -13,44 +14,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC497 TBD
+    // LC497
     static class Lc497 {
-        long[] accumulate;
-        long[] indv;
+        TreeMap<Integer, Integer> tm;
         int[][] rects;
+        Random rand = new Random();
+        int totalArea = 0;
 
         public Lc497(int[][] rects) {
-            int n = rects.length;
-            accumulate = new long[n + 1];
-            indv = new long[n];
+            tm = new TreeMap<>();
             this.rects = rects;
             int ctr = 0;
             for (int[] r : rects) {
                 int x1 = r[0], y1 = r[1], x2 = r[2], y2 = r[3];
-                long area = (long) Math.abs(y1 - y2) * (long) Math.abs(x1 - x2);
-                accumulate[ctr + 1] = accumulate[ctr] + area;
-                indv[ctr] = area;
-                ctr++;
+                totalArea += (Math.abs(y1 - y2) + 1) * (Math.abs(x1 - x2) + 1);
+                tm.put(totalArea, ctr++);
             }
         }
 
         public int[] pick() {
-            long l = 0;
-            while (l == 0l) {
-                l = (long) (Math.random() * accumulate[accumulate.length - 1]);
-            }
-            int idx = Arrays.binarySearch(accumulate, l);
-            if (idx < 0) {
-                idx = -idx - 1;
-            }
-            idx--;
-            long actualAreaTh = (l - accumulate[idx]);
-            int[] r = rects[idx];
+            int target = rand.nextInt(totalArea) + 1; // 注意+1这些细节，判题能判出来的
+            int ceil = tm.ceilingKey(target);
+            int rectIdx = tm.get(ceil);
+            int[] r = rects[rectIdx];
             int x1 = r[0], y1 = r[1], x2 = r[2], y2 = r[3];
-            int length = Math.abs(x1 - x2);
-            int relX = (int) actualAreaTh % length;
-            int relY = (int) actualAreaTh / length;
-            return new int[]{x2 - relX, y1 + relY};
+            int offset = ceil - target;
+            int len = Math.abs(x1 - x2) + 1;
+            int relX = offset % len, relY = offset / len;
+            return new int[]{x1 + relX, y1 + relY};
         }
     }
 
