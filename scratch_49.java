@@ -6,12 +6,54 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.out.println(s.maxResultBottomUp(new int[]{100, -100, -300, -300, -300, -100, 100}, 4));
-
+        Lc497 lc497 = new Lc497(new int[][]{{-2, -2, 1, 1}, {2, 2, 4, 6}});
+//        System.out.println(s.maxResultBottomUp(new int[]{100, -100, -300, -300, -300, -100, 100}, 4));
+        lc497.pick();
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC497 TBD
+    static class Lc497 {
+        long[] accumulate;
+        long[] indv;
+        int[][] rects;
+
+        public Lc497(int[][] rects) {
+            int n = rects.length;
+            accumulate = new long[n + 1];
+            indv = new long[n];
+            this.rects = rects;
+            int ctr = 0;
+            for (int[] r : rects) {
+                int x1 = r[0], y1 = r[1], x2 = r[2], y2 = r[3];
+                long area = (long) Math.abs(y1 - y2) * (long) Math.abs(x1 - x2);
+                accumulate[ctr + 1] = accumulate[ctr] + area;
+                indv[ctr] = area;
+                ctr++;
+            }
+        }
+
+        public int[] pick() {
+            long l = 0;
+            while (l == 0l) {
+                l = (long) (Math.random() * accumulate[accumulate.length - 1]);
+            }
+            int idx = Arrays.binarySearch(accumulate, l);
+            if (idx < 0) {
+                idx = -idx - 1;
+            }
+            idx--;
+            long actualAreaTh = (l - accumulate[idx]);
+            int[] r = rects[idx];
+            int x1 = r[0], y1 = r[1], x2 = r[2], y2 = r[3];
+            int length = Math.abs(x1 - x2);
+            int relX = (int) actualAreaTh % length;
+            int relY = (int) actualAreaTh / length;
+            return new int[]{x2 - relX, y1 + relY};
+        }
+    }
+
 
     // LC429
     class Lc429 {
