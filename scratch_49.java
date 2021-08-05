@@ -1,6 +1,5 @@
 import javafx.util.Pair;
 
-import javax.measure.quantity.Length;
 import java.util.*;
 
 class Scratch {
@@ -8,16 +7,53 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.countPairs(5, new int[][]{{1, 5}, {1, 5}, {3, 4}, {2, 5}, {1, 3}, {5, 1}, {2, 3}, {2, 5}}, new int[]{1, 2, 3, 4, 5}));
+        System.out.println(s.maxResultBottomUp(new int[]{100, -100, -300, -300, -300, -100, 100}, 4));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1696 单纯DP不行 求max是O(n), 加起来O(n^2)超时, 用TreeMap求max是O(log(n)), 总复杂度O(nlogn)
+    public int maxResult(int[] nums, int k) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[n - 1] = nums[n - 1];
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        tm.put(dp[n - 1], 1);
+        int tmCounter = 1;
+        for (int i = n - 2; i >= 0; i--) {
+            int gain = tm.lastKey();
+            if (tmCounter == k) {
+                tm.put(dp[i + k], tm.get(dp[i + k]) - 1);
+                if (tm.get(dp[i + k]) == 0) tm.remove(dp[i + k]);
+                tmCounter--;
+            }
+            dp[i] = gain + nums[i];
+            tm.put(dp[i], tm.getOrDefault(dp[i], 0) + 1);
+            tmCounter++;
+        }
+        return dp[0];
+    }
+
+    // LC1696 TLE
+    public int maxResultBottomUp(int[] nums, int k) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            int gain = Integer.MIN_VALUE;
+            for (int j = i + 1; j <= Math.min(n - 1, i + k); j++) {
+                gain = Math.max(gain, dp[j]);
+            }
+            dp[i] = gain + nums[i];
+        }
+        return dp[0];
+    }
+
     // LC1696 TLE
     Integer[] lc1696Memo;
 
-    public int maxResult(int[] nums, int k) {
+    public int maxResultTopDown(int[] nums, int k) {
         lc1696Memo = new Integer[nums.length];
         return lc1696Helper(0, nums, k);
     }
