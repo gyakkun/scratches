@@ -13,6 +13,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1780
+    public boolean checkPowersOfThree(int n) {
+        while (n != 0) {
+            if (n % 3 == 2) return false;
+            n /= 3;
+        }
+        return true;
+    }
+
     // LC1523
     public int countOdds(int low, int high) {
         if (low % 2 == 1) low--;
