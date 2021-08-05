@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -5,10 +7,52 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.checkValidString("(*))*("));
+        System.out.println(s.countPairs(5, new int[][]{{1, 5}, {1, 5}, {3, 4}, {2, 5}, {1, 3}, {5, 1}, {2, 3}, {2, 5}}, new int[]{1, 2, 3, 4, 5}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1782 ***
+    public int[] countPairs(int n, int[][] edges, int[] queries) {
+        int[] result = new int[queries.length];
+        int[] deg = new int[n + 1];
+        Map<Pair<Integer, Integer>, Integer> edgeCount = new HashMap<>();
+        for (int[] e : edges) {
+            int a = Math.min(e[0], e[1]), b = Math.max(e[0], e[1]);
+            deg[a]++;
+            deg[b]++;
+            Pair<Integer, Integer> key = new Pair<>(a, b);
+            edgeCount.put(key, edgeCount.getOrDefault(key, 0) + 1);
+        }
+        int[] sortedDeg = Arrays.copyOfRange(deg, 1, deg.length);
+        Arrays.sort(sortedDeg);
+        for (int i = 0; i < queries.length; i++) {
+            // 容斥原理
+            // c1: deg[a] + deg[b] - edgeCount(a,b) > q[i], ab存在边
+            // c2: deg[a] + deg[b] > q[i], ab 存在边
+            // c3: deg[a] + deg[b] > q[i], 对于所有点
+            // result[i] = c1 + c3 - c2, c2被重复计算了
+            int c1 = 0, c2 = 0, c3 = 0;
+            for (Pair<Integer, Integer> edge : edgeCount.keySet()) {
+                int a = edge.getKey(), b = edge.getValue();
+                if (deg[a] + deg[b] - edgeCount.get(edge) > queries[i]) c1++;
+                if (deg[a] + deg[b] > queries[i]) c2++;
+            }
+            int left = 0, right = n - 1;
+            // 双指针求有序数组中和大于queries[i]的数对的个数
+            while (left < n && right >= 0) {
+                while (right > left && sortedDeg[left] + sortedDeg[right] <= queries[i]) {
+                    left++;
+                }
+                if (right > left && sortedDeg[left] + sortedDeg[right] > queries[i]) {
+                    c3 += right - left; // 求的是**数对**个数, 而不是两个数之间(含端点)共有多少个数, 所以不用+1
+                }
+                right--;
+            }
+            result[i] = c1 + c3 - c2;
+        }
+        return result;
     }
 
     // LC678 ** 两个栈
