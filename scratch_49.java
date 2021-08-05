@@ -5,10 +5,30 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.makeLargestSpecial("101101011000"));
+        System.out.println(s.checkValidString("(*))*("));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC678 ** 两个栈
+    public boolean checkValidString(String s) {
+        char[] ca = s.toCharArray();
+        Deque<Integer> left = new LinkedList<>(), star = new LinkedList<>();
+        for (int i = 0; i < ca.length; i++) {
+            if (ca[i] == '(') left.push(i);
+            else if (ca[i] == '*') star.push(i);
+            else {
+                if (left.size() > 0) left.pop();
+                else if (star.size() > 0) star.pop();
+                else return false;
+            }
+        }
+        if (left.size() > star.size()) return false;
+        while (left.size() > 0 && star.size() > 0) {
+            if (left.pop() > star.pop()) return false;
+        }
+        return true;
     }
 
     // LC761 ** 非常巧妙 看成括号对
