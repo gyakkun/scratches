@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 
@@ -7,9 +6,20 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        Lc497 lc497 = new Lc497(new int[][]{{-2, -2, 1, 1}, {2, 2, 4, 6}});
-//        System.out.println(s.maxResultBottomUp(new int[]{100, -100, -300, -300, -300, -100, 100}, 4));
-        lc497.pick();
+
+        TreeNode n1 = new TreeNode(1);
+        TreeNode n2 = new TreeNode(2);
+        TreeNode n3 = new TreeNode(3);
+        TreeNode n4 = new TreeNode(4);
+        TreeNode n5 = new TreeNode(5);
+        TreeNode n6 = new TreeNode(6);
+        n1.left = n2;
+        n1.right = n3;
+        n2.left = n4;
+        n2.right = n5;
+        n3.left = n6;
+        CBTInserter cbtInserter = new CBTInserter(n1);
+
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -1047,5 +1057,88 @@ class quickSelect {
         Integer rightResult = helper(arr, right + 1, end, topK);
         if (rightResult != null) return rightResult;
         return null;
+    }
+}
+
+
+// JZOF II 043 同LC919
+class CBTInserter {
+
+    Deque<TreeNode> lastButOneLayer;
+    Deque<TreeNode> lastLayer;
+    TreeNode root;
+
+    public CBTInserter(TreeNode root) {
+        this.root = root;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int qSize = q.size();
+            Deque<TreeNode> thisLayer = new LinkedList<>();
+            Deque<TreeNode> nextLayer = new LinkedList<>();
+            boolean isLastButOneLayerFlag = false;
+            for (int i = 0; i < qSize; i++) {
+                TreeNode p = q.poll();
+                thisLayer.offer(p);
+                if (p.left == null && p.right == null) {
+                    isLastButOneLayerFlag = true;
+                } else if (p.right == null) {
+                    isLastButOneLayerFlag = true;
+                    nextLayer.offer(p.left);
+                    q.offer(p.left);
+                } else {
+                    q.offer(p.left);
+                    q.offer(p.right);
+                    nextLayer.offer(p.left);
+                    nextLayer.offer(p.right);
+                }
+            }
+            lastButOneLayer = thisLayer;
+            lastLayer = nextLayer;
+            if (isLastButOneLayerFlag) break;
+        }
+        while (lastButOneLayer.peek().left != null && lastButOneLayer.peek().right != null) {
+            lastButOneLayer.poll();
+        }
+    }
+
+    public int insert(int v) {
+        TreeNode next = new TreeNode(v);
+        TreeNode p = lastButOneLayer.peek();
+        if (p.left == null) {
+            p.left = next;
+        } else if (p.right == null) {
+            p.right = next;
+            lastButOneLayer.poll();
+        }
+        lastLayer.offer(next);
+        if (lastButOneLayer.isEmpty()) {
+            lastButOneLayer = lastLayer;
+            lastLayer = new LinkedList<>();
+        }
+        return p.val;
+    }
+
+    public TreeNode get_root() {
+        return root;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
