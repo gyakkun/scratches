@@ -13,6 +13,13 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1523
+    public int countOdds(int low, int high) {
+        if (low % 2 == 1) low--;
+        if (high % 2 == 1) high++;
+        return (high - low) / 2;
+    }
+
     // LC1782 ***
     public int[] countPairs(int n, int[][] edges, int[] queries) {
         int[] result = new int[queries.length];
