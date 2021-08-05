@@ -11,6 +11,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC210 Topology
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        int[] inDegree = new int[numCourses];
+        Deque<Integer> q = new LinkedList<>();
+        List<List<Integer>> graph = new ArrayList<>(numCourses);
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) graph.add(new ArrayList<>());
+        for (int[] p : prerequisites) {
+            inDegree[p[0]]++;
+            graph.get(p[1]).add(p[0]);
+        }
+        for (int i = 0; i < numCourses; i++) if (inDegree[i] == 0) q.offer(i);
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            result.add(p);
+            for (int next : graph.get(p)) {
+                inDegree[next]--;
+                if (inDegree[next] == 0) {
+                    q.offer(next);
+                }
+            }
+        }
+        for (int i = 0; i < numCourses; i++) if (inDegree[i] != 0) return new int[0];
+        return result.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
     // LC802 Topology Sort
     public List<Integer> eventualSafeNodesTopologySort(int[][] graph) {
         List<Integer> result = new ArrayList<>();
