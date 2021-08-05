@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import javax.measure.quantity.Length;
 import java.util.*;
 
 class Scratch {
@@ -11,6 +12,24 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1696 TLE
+    Integer[] lc1696Memo;
+
+    public int maxResult(int[] nums, int k) {
+        lc1696Memo = new Integer[nums.length];
+        return lc1696Helper(0, nums, k);
+    }
+
+    private int lc1696Helper(int cur, int[] nums, int k) {
+        if (cur == nums.length - 1) return nums[nums.length - 1];
+        if (lc1696Memo[cur] != null) return lc1696Memo[cur];
+        int gain = Integer.MIN_VALUE;
+        for (int i = cur + 1; i <= Math.min(cur + k, nums.length - 1); i++) {
+            gain = Math.max(gain, lc1696Helper(i, nums, k));
+        }
+        return lc1696Memo[cur] = nums[cur] + gain;
     }
 
     // LC1780
