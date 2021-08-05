@@ -13,6 +13,47 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC429
+    class Lc429 {
+
+        class Node {
+            public int val;
+            public List<Node> children;
+
+            public Node() {
+            }
+
+            public Node(int _val) {
+                val = _val;
+            }
+
+            public Node(int _val, List<Node> _children) {
+                val = _val;
+                children = _children;
+            }
+        }
+
+        class Solution {
+            public List<List<Integer>> levelOrder(Node root) {
+                Deque<Node> q = new LinkedList<>();
+                List<List<Integer>> result = new LinkedList<>();
+                if (root == null) return result;
+                q.offer(root);
+                while (!q.isEmpty()) {
+                    int qSize = q.size();
+                    List<Integer> thisLayer = new LinkedList<>();
+                    for (int i = 0; i < qSize; i++) {
+                        Node p = q.poll();
+                        thisLayer.add(p.val);
+                        for (Node c : p.children) q.offer(c);
+                    }
+                    result.add(thisLayer);
+                }
+                return result;
+            }
+        }
+    }
+
     // LC940 **
     public int distinctSubseqII(String s) {
         int n = s.length();
