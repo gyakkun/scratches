@@ -15,7 +15,7 @@ class Scratch {
     public int[] findOrder(int numCourses, int[][] prerequisites) {
         int[] inDegree = new int[numCourses];
         Deque<Integer> q = new LinkedList<>();
-        List<List<Integer>> graph = new ArrayList<>(numCourses);
+        List<List<Integer>> graph = new ArrayList<>(numCourses); // 拓扑排序算法中需要记录的出度表
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < numCourses; i++) graph.add(new ArrayList<>());
         for (int[] p : prerequisites) {
