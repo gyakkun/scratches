@@ -24,6 +24,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1834 ** 模拟
+    public int[] getOrder(int[][] tasks) {
+        Map<int[], Integer> idxMap = new HashMap<>();
+        for (int i = 0; i < tasks.length; i++) idxMap.put(tasks[i], i);
+        List<Integer> result = new ArrayList<>();
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[1] == o2[1] ? idxMap.get(o1) - idxMap.get(o2) : o1[1] - o2[1]);
+        Arrays.sort(tasks, Comparator.comparingInt(o -> o[0]));
+        int nextAvail = tasks[0][0];
+        int i = 0;
+        while (result.size() < tasks.length) {
+            while (i < tasks.length && tasks[i][0] <= nextAvail) pq.offer(tasks[i++]);
+            if (pq.isEmpty()) {
+                nextAvail = tasks[i][0];
+            } else {
+                int[] cur = pq.poll();
+                result.add(idxMap.get(cur));
+                nextAvail += cur[1];
+            }
+        }
+        return result.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
     // LC497
     static class Lc497 {
         TreeMap<Integer, Integer> tm;
