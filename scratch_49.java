@@ -7,21 +7,36 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode n1 = new TreeNode(1);
-        TreeNode n2 = new TreeNode(2);
-        TreeNode n3 = new TreeNode(3);
-        TreeNode n4 = new TreeNode(4);
-        TreeNode n5 = new TreeNode(5);
-        TreeNode n6 = new TreeNode(6);
-        n1.left = n2;
-        n1.right = n3;
-        n2.left = n4;
-        n2.right = n5;
-        n3.left = n6;
-        CBTInserter cbtInserter = new CBTInserter(n1);
+        System.out.println(s.shortestPathLength(new int[][]{{1, 2, 3}, {0}, {0}, {0}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC847 **
+    public int shortestPathLength(int[][] graph) {
+        int n = graph.length;
+        Deque<int[]> q = new LinkedList<>();
+        int[][] dist = new int[1 << n][n];
+        int fullMask = (1 << n) - 1;
+        for (int[] d : dist) Arrays.fill(d, 0x3f3f3f3f);
+        for (int i = 0; i < n; i++) {
+            q.offer(new int[]{1 << i, i}); // [bitmask, head]
+            dist[1 << i][i] = 0;
+        }
+        while (!q.isEmpty()) {
+            int[] state = q.poll();
+            int d = dist[state[0]][state[1]];
+            if (state[0] == fullMask) return d;
+            for (int next : graph[state[1]]) {
+                int nextMask = state[0] | (1 << next);
+                if (d + 1 < dist[nextMask][next]) {
+                    dist[nextMask][next] = d + 1;
+                    q.offer(new int[]{nextMask, next});
+                }
+            }
+        }
+        return -1;
     }
 
     // LC1834 ** 模拟
