@@ -5,10 +5,56 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.eventualSafeNodes(new int[][]{{1, 2, 3, 4}, {1, 2}, {3, 4}, {0, 4}, {}}));
+        System.out.println(s.makeLargestSpecial("101101011000"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC761 ** 非常巧妙 看成括号对
+    public String makeLargestSpecial(String s) {
+        if (s.length() == 2) return s;
+        Map<String, Integer> m = new HashMap<>();
+        char[] ca = s.toCharArray();
+        int prev = 0;
+        int oneCount = 0;
+        for (int i = 0; i < ca.length; i++) {
+            if (ca[i] == '1') oneCount++;
+            else {
+                oneCount--;
+                if (oneCount == 0) {
+                    String magic = s.substring(prev, i + 1);
+                    m.put(magic, m.getOrDefault(magic, 0) + 1);
+                    prev = i + 1;
+                }
+            }
+        }
+        List<String> result = new ArrayList<>();
+        for (String k : m.keySet()) {
+            String kResult = k;
+            if (k.length() > 2) {
+                kResult = "1" + makeLargestSpecial(k.substring(1, k.length() - 1)) + "0";
+            }
+            for (int i = 0; i < m.get(k); i++) {
+                result.add(kResult);
+            }
+        }
+        result.sort(Comparator.reverseOrder());
+        return String.join("", result);
+    }
+
+    // LC1605 ** 贪心
+    public int[][] restoreMatrix(int[] rowSum, int[] colSum) {
+        int numRow = rowSum.length, numCol = colSum.length;
+        int[][] result = new int[numRow][numCol];
+        for (int i = 0; i < numRow; i++) {
+            for (int j = 0; j < numCol; j++) {
+                result[i][j] = Math.min(rowSum[i], colSum[j]);
+                rowSum[i] -= result[i][j];
+                colSum[j] -= result[i][j];
+            }
+        }
+        return result;
     }
 
     // LC210 Topology
