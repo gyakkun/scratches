@@ -11,6 +11,36 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC802 Topology Sort
+    public List<Integer> eventualSafeNodesTopologySort(int[][] graph) {
+        List<Integer> result = new ArrayList<>();
+        int n = graph.length;
+        List<List<Integer>> reverseGraph = new ArrayList<>(n);
+        int[] inDegree = new int[n];
+        for (int i = 0; i < n; i++) reverseGraph.add(new LinkedList<>());
+        for (int i = 0; i < n; i++) {
+            int[] ithOutDegree = graph[i];
+            for (int j : ithOutDegree) {
+                reverseGraph.get(j).add(i);
+                inDegree[i]++;
+            }
+        }
+        Deque<Integer> zeroInDegreeQueue = new LinkedList<>();
+        for (int i = 0; i < n; i++) if (inDegree[i] == 0) zeroInDegreeQueue.offer(i);
+        while (!zeroInDegreeQueue.isEmpty()) {
+            int i = zeroInDegreeQueue.poll();
+            List<Integer> out = reverseGraph.get(i);
+            for (int j : out) {
+                inDegree[j]--;
+                if (inDegree[j] == 0) {
+                    zeroInDegreeQueue.offer(j);
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) if (inDegree[i] == 0) result.add(i);
+        return result;
+    }
+
     // LC802 ** 三色算法 垃圾回收时候的判断有无依赖的一种算法
     int[] lc802Mark;
     final int UNVISITED = 0, IN_STACK = 1, SAFE = 2;
