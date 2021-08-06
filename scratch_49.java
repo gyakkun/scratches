@@ -13,6 +13,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 55
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) return true;
+        int leftDepth = getTreeDepth(root.left);
+        int rightDepth = getTreeDepth(root.right);
+        return Math.abs(leftDepth - rightDepth) <= 1 && isBalanced(root.left) && isBalanced(root.right);
+    }
+
+    private int getTreeDepth(TreeNode root) {
+        if (root == null) return 0;
+        int left = getTreeDepth(root.left);
+        int right = getTreeDepth(root.right);
+        return 1 + Math.max(left, right);
+    }
+
     // LC847 **
     public int shortestPathLength(int[][] graph) {
         int n = graph.length;
