@@ -13,6 +13,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 61
+    public boolean isStraight(int[] nums) {
+        Arrays.sort(nums);
+        int zeroCount = 0;
+        int[] freq = new int[14];
+        for (int i : nums) {
+            if (i == 0) zeroCount++;
+            else {
+                freq[i]++;
+                if (freq[i] != 1) return false;
+            }
+        }
+        if (zeroCount >= 4) return true;
+        int diff = 0;
+        for (int i = zeroCount; i < 4; i++) {
+            diff += nums[i + 1] - nums[i] - 1;
+        }
+        if (diff > zeroCount) return false;
+        return true;
+    }
+
     // JZOF 62 同LC1823 约瑟夫环
     // 迭代
     public int lastRemaining(int n, int m) {
