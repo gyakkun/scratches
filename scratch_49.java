@@ -13,6 +13,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 62 同LC1823 约瑟夫环
+    // 迭代
+    public int lastRemaining(int n, int m) {
+        int f = 0; // i=1
+        for (int i = 2; i <= n; i++) {
+            f = (m + f) % i;
+        }
+        return f;
+    }
+
+    // 递归
+    private int f(int n, int m) {
+        if (n == 1) {
+            return 0;
+        }
+        int x = f(n - 1, m);
+        return (m + x) % n;
+    }
+
     // JZOF 55
     public boolean isBalanced(TreeNode root) {
         if (root == null) return true;
