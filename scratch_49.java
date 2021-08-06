@@ -7,10 +7,24 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.shortestPathLength(new int[][]{{1, 2, 3}, {0}, {0}, {0}}));
+        System.out.println(s.add(0x3f3f3f3f, 0x3f3f3f3f));
+        System.out.println(s.add(1, 222));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF 65 **
+    public int add(int a, int b) {
+        int sum = a;
+        while (b != 0) {
+            int xor = a ^ b;
+            int and = a & b;
+            b = and << 1;
+            sum = xor;
+            a = sum;
+        }
+        return sum;
     }
 
     // JZOF 61
