@@ -14,6 +14,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 54
+    int lc54Ctr;
+    int lc54Result = -1;
+
+    public int kthLargest(TreeNode root, int k) {
+        lc54Ctr = 0;
+        lc54InOrder(root, k);
+        return lc54Result;
+    }
+
+    private void lc54InOrder(TreeNode root, int k) {
+        if (root == null) return;
+        lc54InOrder(root.right, k);
+        lc54Ctr++;
+        if (lc54Ctr == k) {
+            lc54Result = root.val;
+            return;
+        }
+        lc54InOrder(root.left, k);
+    }
+
     // JZOF 65 **
     public int add(int a, int b) {
         int sum = a;
