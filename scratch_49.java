@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import java.awt.font.NumericShaper;
 import java.util.*;
 
 class Scratch {
@@ -12,6 +13,37 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC457 Solution
+    public boolean circularArrayLoop(int[] nums) {
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == 0) continue;
+            int slow = i, fast = lc457Next(nums, i);
+            while (nums[slow] * nums[fast] > 0 && nums[slow] * nums[lc457Next(nums, fast)] > 0) {
+                if (slow == fast) {
+                    if (slow != lc457Next(nums, slow)) {
+                        return true;
+                    } else {
+                        break; // 循环长度为1
+                    }
+                }
+                slow = lc457Next(nums, slow);
+                fast = lc457Next(nums, lc457Next(nums, fast));
+            }
+            int toMark = i;
+            while (nums[toMark] * nums[lc457Next(nums, toMark)] > 0) {
+                int tmp = toMark;
+                toMark = lc457Next(nums, toMark);
+                nums[tmp] = 0;
+            }
+        }
+        return false;
+    }
+
+    private int lc457Next(int[] nums, int idx) {
+        return ((idx + nums[idx]) % nums.length + nums.length) % nums.length;
     }
 
     // JZOF 54
