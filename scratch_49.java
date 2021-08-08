@@ -15,6 +15,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1137
+    public int tribonacci(int n) {
+        if (n == 0) return 0;
+        if (n <= 2) return 1;
+        int[] dp = new int[]{0, 1, 1};
+        int ctr = 2;
+        for (; ctr < n; ctr++) {
+            dp[(ctr + 1) % 3] = dp[ctr % 3] + dp[(ctr - 1) % 3] + dp[(ctr - 2) % 3];
+        }
+        return dp[ctr % 3];
+    }
+
     // LC457 Solution
     public boolean circularArrayLoop(int[] nums) {
         int n = nums.length;
