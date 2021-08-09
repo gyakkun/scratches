@@ -8,12 +8,33 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.nthSuperUglyNumber(12,
-                new int[]{2, 7, 13, 19}));
+        System.out.println(s.canPartition(new int[]{1, 1, 1, 1}));
 //        System.out.println(s.add(1, 222));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF II 101 01背包
+    public boolean canPartition(int[] nums) {
+        Arrays.sort(nums);
+        int sum = Arrays.stream(nums).sum();
+        if (sum % 2 == 1) return false;
+        int half = sum / 2;
+        int[][] dp = new int[nums.length + 1][half + 1];
+        // dp[i][j] 加入前i个数 在背包限制为j的情况下能达到的最大值
+        for (int i = 1; i <= nums.length; i++) {
+            for (int j = 0; j <= half; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j - nums[i - 1] >= 0 && dp[i - 1][j - nums[i - 1]] + nums[i - 1] <= half) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - nums[i - 1]] + nums[i - 1]);
+                }
+            }
+            if (dp[i][half] == half) {
+                return true;
+            }
+        }
+        return dp[nums.length][half] == half;
     }
 
     // LC313
