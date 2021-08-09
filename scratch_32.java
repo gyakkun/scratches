@@ -5,7 +5,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.err.println(s.maxSubArray(new int[]{-2, 1}));
+        System.err.println(s.alienDict(new String[]{"abc", "ab"}));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
@@ -408,6 +408,9 @@ class Scratch {
             String wordA = words[i - 1];
             String wordB = words[i];
             int minLen = Math.min(wordA.length(), wordB.length());
+            // 有可能不合法 如 [abc,ab]
+            if (wordA.substring(0, minLen).equals(wordB.substring(0, minLen)) && wordA.length() > wordB.length())
+                return "";
             for (int j = 0; j < minLen; j++) {
                 if (wordA.charAt(j) != wordB.charAt(j)) {
                     pairSet.add("" + wordA.charAt(j) + wordB.charAt(j));
