@@ -15,6 +15,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC606
+    public String tree2str(TreeNode root) {
+        if(root==null) return "";
+        StringBuilder sb = new StringBuilder();
+        lc606Preorder(root, sb);
+        return sb.toString().substring(1, sb.length() - 1);
+    }
+
+    private void lc606Preorder(TreeNode root, StringBuilder sb) {
+        if (root == null) return;
+        sb.append('(');
+        sb.append(root.val);
+        if (root.left == null && root.right != null) {
+            sb.append("()");
+            lc606Preorder(root.right, sb);
+        } else if (root.left != null && root.right == null) {
+            lc606Preorder(root.left, sb);
+        } else if (root.left != null && root.right != null) {
+            lc606Preorder(root.left, sb);
+            lc606Preorder(root.right, sb);
+        } else {
+            ;
+        }
+        sb.append(')');
+    }
+
     // JZOF II 101 01背包
     public boolean canPartition(int[] nums) {
         int sum = Arrays.stream(nums).sum();
