@@ -16,6 +16,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC76
+    public String minWindow(String s, String t) {
+        int n = s.length(), m = t.length();
+        char[] cs = s.toCharArray(), ct = t.toCharArray();
+        int[] freq = new int[256];
+        String result = "";
+        for (char c : ct) freq[c]--;
+        int count = 0;
+        for (int left = 0, right = 0; right < n; right++) {
+            freq[cs[right]]++;
+            if (freq[cs[right]] <= 0) count++;
+            while (count == m && freq[cs[left]] > 0) freq[cs[left++]]--;
+            if (count == m) {
+                if (result.equals("") || result.length() > right - left + 1) {
+                    result = s.substring(left, right + 1);
+                }
+            }
+
+        }
+        return result;
+    }
+
     // LC37
     char[][] lc37result = new char[9][9];
 
