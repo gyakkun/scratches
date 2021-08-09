@@ -7,11 +7,84 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.restoreIpAddresses("25525511135"));
+        s.solveSudoku(new char[][]{{'5', '3', '.', '.', '7', '.', '.', '.', '.'}, {'6', '.', '.', '1', '9', '5', '.', '.', '.'}, {'.', '9', '8', '.', '.', '.', '.', '6', '.'}, {'8', '.', '.', '.', '6', '.', '.', '.', '3'}, {'4', '.', '.', '8', '.', '3', '.', '.', '1'}, {'7', '.', '.', '.', '2', '.', '.', '.', '6'}, {'.', '6', '.', '.', '.', '.', '2', '8', '.'}, {'.', '.', '.', '4', '1', '9', '.', '.', '5'}, {'.', '.', '.', '.', '8', '.', '.', '7', '9'}});
+        System.out.println(s.lc37result);
+
 //        System.out.println(s.add(1, 222));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC37
+    char[][] lc37result = new char[9][9];
+
+    public void solveSudoku(char[][] board) {
+        int left = 0;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    left++;
+                }
+            }
+        }
+        lc37Helper(board, left);
+        for (int i = 0; i < 9; i++) {
+            System.arraycopy(lc37result[i], 0, board[i], 0, 9);
+        }
+    }
+
+    private boolean lc37Helper(char[][] board, int left) {
+        if (left == 0) {
+            for (int i = 0; i < 9; i++) {
+                System.arraycopy(board[i], 0, lc37result[i], 0, 9);
+            }
+            return true;
+        }
+        int i = 0, j = 0;
+        for (i = 0; i < 9; i++) {
+            boolean flag = false;
+            for (j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) break;
+        }
+        if (i == 9 || j == 9) return false;
+        int r = i, c = j;
+        Set<Integer> notAllow = new HashSet<>();
+        for (int k = 0; k < 9; k++) {
+            if (Character.isDigit(board[i][k])) {
+                notAllow.add(board[i][k] - '0');
+            }
+            if (Character.isDigit(board[k][j])) {
+                notAllow.add(board[k][j] - '0');
+            }
+        }
+        i /= 3;
+        j /= 3;
+        for (int m = 0; m < 3; m++) {
+            for (int n = 0; n < 3; n++) {
+                if (Character.isDigit(board[i * 3 + m][j * 3 + n])) {
+                    notAllow.add(board[i * 3 + m][j * 3 + n] - '0');
+                }
+            }
+        }
+        Set<Integer> allow = new HashSet<>();
+        for (int k = 1; k <= 9; k++) {
+            if (!notAllow.contains(k)) {
+                allow.add(k);
+            }
+        }
+        if (allow.size() == 0) return false;
+        for (int choice : allow) {
+            board[r][c] = (char) (choice + '0');
+            lc37Helper(board, left - 1);
+            board[r][c] = '.';
+        }
+        return false;
     }
 
     // LC93
