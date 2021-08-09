@@ -7,14 +7,6 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        //         1
-        //       / \
-        //      2   3
-        //     /   / \
-        //    4   2   4
-        //       /
-        //      4
-
         TreeNode n1 = new TreeNode(1);
         TreeNode n2 = new TreeNode(2);
         TreeNode n3 = new TreeNode(3);
@@ -34,6 +26,29 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC757 **
+    public int intersectionSizeTwo(int[][] intervals) {
+        int n = intervals.length, result = 0;
+        // 排序
+        Arrays.sort(intervals, (o1, o2) -> o1[0] == o2[0] ? o2[1] - o1[1] : o1[0] - o2[0]);
+        int[] todo = new int[n];
+        Arrays.fill(todo, 2);
+        for (int i = n - 1; i >= 0; i--) {
+            int start = intervals[i][0];
+            int end = intervals[i][1];
+            int m = todo[i];
+            for (int j = start; j < start + m; j++) {
+                for (int k = 0; k <= i; k++) {
+                    if (todo[k] > 0 && j <= intervals[k][1]) {
+                        todo[k]--;
+                    }
+                }
+                result++;
+            }
+        }
+        return result;
     }
 
     // LC652

@@ -8,7 +8,7 @@ class Scratch {
         System.err.println(s.mergeIntervalDiffArr(new int[][]{{1, 4}, {0, 0}}));
     }
 
-
+    // LC56
     public int[][] mergeInterval(int[][] intervals) {
         if (intervals.length == 0) {
             return new int[0][2];
