@@ -7,25 +7,54 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode n1 = new TreeNode(1);
-        TreeNode n2 = new TreeNode(2);
-        TreeNode n3 = new TreeNode(3);
-        TreeNode n4 = new TreeNode(4);
-        TreeNode n5 = new TreeNode(2);
-        TreeNode n6 = new TreeNode(4);
-        TreeNode n7 = new TreeNode(4);
-        n1.left = n2;
-        n1.right = n3;
-        n2.left = n4;
-        n3.left = n5;
-        n3.right = n6;
-        n5.left = n7;
-
-        System.out.println(s.findDuplicateSubtrees(n1));
+        System.out.println(s.restoreIpAddresses("25525511135"));
 //        System.out.println(s.add(1, 222));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC93
+    List<String> lc93Result = new ArrayList<>();
+
+    public List<String> restoreIpAddresses(String s) {
+        lc93Backtrack(new ArrayList<>(), 0, s);
+        return lc93Result;
+    }
+
+    private void lc93Backtrack(List<String> selections, int curIdx, String s) {
+        if (selections.size() == 4) {
+            if (curIdx == s.length()) {
+                lc93Result.add(String.join(".", selections));
+            } else {
+                return;
+            }
+        }
+        for (int i = 1; i <= 3; i++) {
+            if (i + curIdx > s.length()) break;
+            String tmp = s.substring(curIdx, curIdx + i);
+            int tmpInt = Integer.valueOf(tmp);
+            if (tmpInt >= 0 && tmpInt <= 255 && String.valueOf(tmpInt).equals(tmp)) {
+                selections.add(tmp);
+                lc93Backtrack(selections, curIdx + i, s);
+                selections.remove(selections.size() - 1);
+            }
+        }
+    }
+
+    public boolean isPalindrome(String s) {
+        char[] ca = s.toCharArray();
+        int left = 0, right = ca.length - 1;
+        while (left < right) {
+            while (left < right && !Character.isLetterOrDigit(ca[left])) left++;
+            while (left < right && !Character.isLetterOrDigit(ca[right])) right--;
+            if (left < right) {
+                if (Character.toLowerCase(ca[left]) != Character.toLowerCase(ca[right])) return false;
+                left++;
+                right--;
+            }
+        }
+        return true;
     }
 
     // LC757 **
