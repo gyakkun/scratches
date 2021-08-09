@@ -50,25 +50,13 @@ class Scratch {
     }
 
     private String lc652Dfs(TreeNode root, Map<String, TreeNode> map, Set<String> duplicateKey) {
-        if (root == null) return "";
+        if (root == null) return "()";
         StringBuilder sb = new StringBuilder();
         sb.append('(');
         sb.append(root.val);
-        String left = "", right = "";
-        if (root.left == null && root.right != null) {
-            left = "()";
-            right = lc652Dfs(root.right, map, duplicateKey);
-        } else if (root.left != null && root.right == null) {
-            left = lc652Dfs(root.left, map, duplicateKey);
-        } else if (root.left != null && root.right != null) {
-            left = lc652Dfs(root.left, map, duplicateKey);
-            right = lc652Dfs(root.right, map, duplicateKey);
-        } else {
-            ;
-        }
-        sb.append(left);
-        sb.append(right);
-        sb.append(")");
+        sb.append(lc652Dfs(root.left, map, duplicateKey));
+        sb.append(lc652Dfs(root.right, map, duplicateKey));
+        sb.append(')');
         String key = sb.toString();
         if (map.containsKey(key)) {
             duplicateKey.add(key);
