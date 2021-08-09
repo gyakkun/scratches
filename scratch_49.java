@@ -8,11 +8,37 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.add(0x3f3f3f3f, 0x3f3f3f3f));
-        System.out.println(s.add(1, 222));
+        System.out.println(s.nthSuperUglyNumber(12,
+                new int[]{2, 7, 13, 19}));
+//        System.out.println(s.add(1, 222));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC313
+    public int nthSuperUglyNumber(int n, int[] primes) {
+        int[] dp = new int[n + 1]; // 第一个是1
+        dp[1] = 1;
+        int[] ptr = new int[primes.length];
+        Arrays.fill(ptr, 1);
+        for (int i = 2; i <= n; i++) {
+            int next = Integer.MAX_VALUE;
+            List<Integer> changedIdx = new ArrayList<>();
+            for (int j = 0; j < primes.length; j++) {
+                int tmp = dp[ptr[j]] * primes[j];
+                if (tmp < next) {
+                    next = tmp;
+                    changedIdx = new ArrayList<>();
+                    changedIdx.add(j);
+                } else if (tmp == next) {
+                    changedIdx.add(j);
+                }
+            }
+            dp[i] = next;
+            for (int idx : changedIdx) ptr[idx]++;
+        }
+        return dp[n];
     }
 
     // LC1137
