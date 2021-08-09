@@ -1,6 +1,5 @@
 import javafx.util.Pair;
 
-import java.awt.font.NumericShaper;
 import java.util.*;
 
 class Scratch {
@@ -8,16 +7,79 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.canPartition(new int[]{1, 1, 1, 1}));
+        //         1
+        //       / \
+        //      2   3
+        //     /   / \
+        //    4   2   4
+        //       /
+        //      4
+
+        TreeNode n1 = new TreeNode(1);
+        TreeNode n2 = new TreeNode(2);
+        TreeNode n3 = new TreeNode(3);
+        TreeNode n4 = new TreeNode(4);
+        TreeNode n5 = new TreeNode(2);
+        TreeNode n6 = new TreeNode(4);
+        TreeNode n7 = new TreeNode(4);
+        n1.left = n2;
+        n1.right = n3;
+        n2.left = n4;
+        n3.left = n5;
+        n3.right = n6;
+        n5.left = n7;
+
+        System.out.println(s.findDuplicateSubtrees(n1));
 //        System.out.println(s.add(1, 222));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC652
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        List<TreeNode> result = new ArrayList<>();
+        if (root == null) return result;
+        Map<String, TreeNode> map = new HashMap<>();
+        Set<String> duplicateKey = new HashSet<>();
+        lc652Dfs(root, map, duplicateKey);
+        for (String key : duplicateKey) {
+            result.add(map.get(key));
+        }
+        return result;
+    }
+
+    private String lc652Dfs(TreeNode root, Map<String, TreeNode> map, Set<String> duplicateKey) {
+        if (root == null) return "";
+        StringBuilder sb = new StringBuilder();
+        sb.append('(');
+        sb.append(root.val);
+        String left = "", right = "";
+        if (root.left == null && root.right != null) {
+            left = "()";
+            right = lc652Dfs(root.right, map, duplicateKey);
+        } else if (root.left != null && root.right == null) {
+            left = lc652Dfs(root.left, map, duplicateKey);
+        } else if (root.left != null && root.right != null) {
+            left = lc652Dfs(root.left, map, duplicateKey);
+            right = lc652Dfs(root.right, map, duplicateKey);
+        } else {
+            ;
+        }
+        sb.append(left);
+        sb.append(right);
+        sb.append(")");
+        String key = sb.toString();
+        if (map.containsKey(key)) {
+            duplicateKey.add(key);
+        }
+        map.put(key, root);
+        return key;
+    }
+
     // LC606
     public String tree2str(TreeNode root) {
-        if(root==null) return "";
+        if (root == null) return "";
         StringBuilder sb = new StringBuilder();
         lc606Preorder(root, sb);
         return sb.toString().substring(1, sb.length() - 1);
