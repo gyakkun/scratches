@@ -7,13 +7,34 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        s.solveSudoku(new char[][]{{'5', '3', '.', '.', '7', '.', '.', '.', '.'}, {'6', '.', '.', '1', '9', '5', '.', '.', '.'}, {'.', '9', '8', '.', '.', '.', '.', '6', '.'}, {'8', '.', '.', '.', '6', '.', '.', '.', '3'}, {'4', '.', '.', '8', '.', '3', '.', '.', '1'}, {'7', '.', '.', '.', '2', '.', '.', '.', '6'}, {'.', '6', '.', '.', '.', '.', '2', '8', '.'}, {'.', '.', '.', '4', '1', '9', '.', '.', '5'}, {'.', '.', '.', '.', '8', '.', '.', '7', '9'}});
-        System.out.println(s.lc37result);
+        System.out.println(s.numberOfArithmeticSlices(new int[]{1, 2, 3}));
 
 //        System.out.println(s.add(1, 222));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC413
+    public int numberOfArithmeticSlices(int[] nums) {
+        int n = nums.length;
+        if (n <= 2) return 0;
+        int d = nums[n - 1] - nums[n - 2];
+        int result = 0, len = 2, curCount = 0;
+        for (int i = n - 2; i >= 1; i--) {
+            int newD = nums[i] - nums[i - 1];
+            if (newD == d) {
+                len++;
+                if (len >= 3) {
+                    result += ++curCount;
+                }
+            } else {
+                d = newD;
+                len = 2;
+                curCount = 0;
+            }
+        }
+        return result;
     }
 
     // LC76
