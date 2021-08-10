@@ -15,6 +15,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 051 LC 124
+    int lc124Result;
+
+    public int maxPathSum(TreeNode root) {
+        lc124Result = Integer.MIN_VALUE;
+        lc124Helper(root);
+        return lc124Result;
+    }
+
+    private int lc124Helper(TreeNode root) {
+        if (root == null) return 0;
+        int left = Math.max(0, lc124Helper(root.left));
+        int right = Math.max(0, lc124Helper(root.right));
+        lc124Result = Math.max(lc124Result, root.val + left + right);
+        return root.val + Math.max(left, right);
+    }
+
     // LC1394
     public int findLucky(int[] arr) {
         TreeMap<Integer, Integer> tm = new TreeMap<>(Comparator.comparingInt(o -> -o));
@@ -22,7 +39,7 @@ class Scratch {
             tm.put(i, tm.getOrDefault(i, 0) + 1);
         }
         for (int key : tm.keySet()) {
-            if(tm.get(key)==key) return key;
+            if (tm.get(key) == key) return key;
         }
         return -1;
     }
