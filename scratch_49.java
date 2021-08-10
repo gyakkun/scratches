@@ -15,6 +15,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1394
+    public int findLucky(int[] arr) {
+        TreeMap<Integer, Integer> tm = new TreeMap<>(Comparator.comparingInt(o -> -o));
+        for (int i : arr) {
+            tm.put(i, tm.getOrDefault(i, 0) + 1);
+        }
+        for (int key : tm.keySet()) {
+            if(tm.get(key)==key) return key;
+        }
+        return -1;
+    }
+
     // LC1857 Hard **
     // let dp[u][c] := the maximum count of vertices with color c of any path starting from vertex u. (by JerryJin2905)
     public int largestPathValue(String colors, int[][] edges) {
