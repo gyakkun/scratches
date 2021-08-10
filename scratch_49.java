@@ -53,7 +53,7 @@ class Scratch {
         for (int i = 1; i <= n; i++) {
             int left = prefix[i - 1] - prefix[0];
             int right = prefix[n] - prefix[i];
-            if (left == right) return i;
+            if (left == right) return i - 1;
         }
         return -1;
     }
