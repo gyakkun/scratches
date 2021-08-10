@@ -9,10 +9,33 @@ class Scratch {
 
         System.out.println(s.numberOfArithmeticSlices(new int[]{1, 2, 3}));
 
-//        System.out.println(s.add(1, 222));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC446 **
+    public int numberOfArithmeticSlicesHard(int[] nums) {
+        // 状态 dp[d][i] 到nums[i]为止公差为d的等差数列的个数, 用map, 方便寻址
+        // how transfer
+        // [2,4,6,8,10]
+        // j<i, d=nums[i]-nums[j], dp[d][i] += (dp[d][j]+1)
+        // 考虑到长度为2的序列从dp[d][i](左侧)中生成(等式右边的+1), 所以实际result+=的是右侧的(dp[d][j]), 即长度一定大于2的数列的数量
+        int n = nums.length, result = 0;
+        Map<Integer, Integer>[] dp = new Map[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = new HashMap<>();
+            for (int j = 0; j < i; j++) {
+                long diff = (long) (nums[i]) - (long) (nums[j]);
+                if (diff < Integer.MIN_VALUE || diff > Integer.MAX_VALUE) continue;
+                int d = (int) (diff);
+                int sumJ = dp[j].getOrDefault(d, 0);
+                int sumI = dp[i].getOrDefault(d, 0);
+                result += sumJ;
+                dp[i].put(d, sumI + sumJ + 1);
+            }
+        }
+        return result;
     }
 
     // LC413
@@ -24,8 +47,7 @@ class Scratch {
         for (int i = n - 2; i >= 1; i--) {
             int newD = nums[i] - nums[i - 1];
             if (newD == d) {
-                len++;
-                if (len >= 3) {
+                if (++len >= 3) {
                     result += ++curCount;
                 }
             } else {
@@ -54,7 +76,6 @@ class Scratch {
                     result = s.substring(left, right + 1);
                 }
             }
-
         }
         return result;
     }
