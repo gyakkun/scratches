@@ -15,6 +15,60 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1505 Hard ** 树状数组
+    public String minInteger(String num, int k) {
+        int[] latestIdx = new int[10];
+        List<Integer>[] idxList = new List[10];
+        for (int i = 0; i < 10; i++) {
+            idxList[i] = new ArrayList<>();
+        }
+        char[] ca = num.toCharArray();
+        int n = ca.length;
+        for (int i = 0; i < n; i++) {
+            idxList[ca[i] - '0'].add(i);
+        }
+        StringBuilder sb = new StringBuilder();
+        BIT bit = new BIT(n); // 用来标记该下标是否已被替换
+        int cur = 0;
+        while (cur < n) {
+            if (bit.get(cur) != 0) { // 已被替换过
+                cur++;
+                continue;
+            }
+            int digit = ca[cur] - '0';
+            boolean isReplaced = false;
+            for (int i = 0; i < digit; i++) {
+                while (latestIdx[i] < idxList[i].size() && idxList[i].get(latestIdx[i]) < cur) {
+                    latestIdx[i]++;
+                }
+                if (latestIdx[i] == idxList[i].size()) {
+                    continue;
+                }
+                int idxToBeReplace = idxList[i].get(latestIdx[i]);
+                int distance = idxList[i].get(latestIdx[i]) - cur;
+                int alreadyReplacedCount = bit.sumRange(cur, idxToBeReplace - 1);
+                int steps = distance - alreadyReplacedCount;
+                if (steps <= k) {
+                    k -= steps;
+                    latestIdx[i]++;
+                    bit.update(idxToBeReplace, 1);
+                    cur--;
+                    sb.append(i);
+                    isReplaced = true;
+                    break;
+                }
+            }
+            if (isReplaced) {
+                cur = 0;
+                continue;
+            }
+            bit.update(cur, 1);
+            sb.append(digit);
+            cur++;
+        }
+        return sb.toString();
+    }
+
     // JZOF II 051 LC 124
     int lc124Result;
 
@@ -1733,5 +1787,59 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+class BIT {
+    int[] tree;
+    int n;
+
+    public BIT(int n) {
+        this.n = n;
+        tree = new int[n + 1];
+    }
+
+    public BIT(int[] arr) {
+        this.n = arr.length;
+        tree = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            updateOneBased(i + 1, arr[i]);
+        }
+    }
+
+    public void update(int idx, int delta) {
+        updateOneBased(idx + 1, delta);
+    }
+
+    public void set(int idx, int val) {
+        update(idx, val - get(idx));
+    }
+
+    public int get(int idx) {
+        return sum(idx + 1) - sum(idx);
+    }
+
+    public int sumRange(int start, int end) {
+        return sum(end + 1) - sum(start);
+    }
+
+    private int sum(int oneBaseIdx) {
+        int result = 0;
+        while (oneBaseIdx > 0) {
+            result += tree[oneBaseIdx];
+            oneBaseIdx -= lowbit(oneBaseIdx);
+        }
+        return result;
+    }
+
+    private void updateOneBased(int oneBaseIdx, int delta) {
+        while (oneBaseIdx <= n) {
+            tree[oneBaseIdx] += delta;
+            oneBaseIdx += lowbit(oneBaseIdx);
+        }
+    }
+
+    private int lowbit(int x) {
+        return x & (-x);
     }
 }
