@@ -7,11 +7,55 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.numberOfArithmeticSlices(new int[]{1, 2, 3}));
+//        System.out.println(s.fourSum(new int[]{-2, -1, -1, 1, 1, 2, 2},0));
+        System.out.println(s.fourSum(new int[]{1, -2, -5, -4, -3, 3, 3, 5}, -11));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC18 4sum
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> result = new LinkedList<>();
+        int n = nums.length;
+        Arrays.sort(nums);
+        for (int a = 0; a < n; a++) {
+            if (a > 0 && nums[a - 1] == nums[a]) continue;
+            for (int b = a + 1; b < n; b++) {
+                if (b > a + 1 && nums[b - 1] == nums[b]) continue;
+                int c = b + 1, d = n - 1;
+                while (c < d) {
+                    int tmpSum = nums[a] + nums[b] + nums[c] + nums[d];
+                    if (tmpSum == target) {
+                        result.add(Arrays.asList(nums[a], nums[b], nums[c], nums[d]));
+                        while (c < d && nums[c] == nums[c + 1]) c++;
+                        while (c < d && nums[d] == nums[d - 1]) d--;
+                        c++;
+                        d--;
+                    } else if (tmpSum > target) {
+                        d--;
+                    } else {
+                        c++;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    // JZOF II 012
+    public int pivotIndex(int[] nums) {
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+        // Arrays.fill(prefix,0);
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
+        for (int i = 1; i <= n; i++) {
+            int left = prefix[i - 1] - prefix[0];
+            int right = prefix[n] - prefix[i];
+            if (left == right) return i;
+        }
+        return -1;
     }
 
     // LC446 **
