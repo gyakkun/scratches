@@ -15,6 +15,53 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1857 Hard **
+    // let dp[u][c] := the maximum count of vertices with color c of any path starting from vertex u. (by JerryJin2905)
+    public int largestPathValue(String colors, int[][] edges) {
+        char[] ca = colors.toCharArray();
+        int n = ca.length;
+        int[][] dp = new int[n][26];
+        List<List<Integer>> outEdge = new ArrayList<>();
+        int[] indegree = new int[n];
+        int result = 0;
+        for (int i = 0; i < n; i++) outEdge.add(new ArrayList<>());
+        for (int[] e : edges) {
+            indegree[e[1]]++;
+            outEdge.get(e[0]).add(e[1]);
+        }
+        Deque<Integer> q = new LinkedList<>();
+        List<Integer> topo = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            topo.add(p);
+            dp[p][ca[p] - 'a']++;
+            List<Integer> out = outEdge.get(p);
+            for (int i : out) {
+                indegree[i]--;
+                // 注意转移的时机, 在找到下一条出边的时候, 遍历所有颜色,
+                for (int j = 0; j < 26; j++) {
+                    dp[i][j] = Math.max(dp[p][j], dp[i][j]);
+                }
+                if (indegree[i] == 0) {
+                    q.offer(i);
+                }
+            }
+        }
+        if (topo.size() != n) return -1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 26; j++) {
+                result = Math.max(result, dp[i][j]);
+            }
+        }
+
+        return result;
+    }
+
     // LC18 4sum
     public List<List<Integer>> fourSum(int[] nums, int target) {
         List<List<Integer>> result = new LinkedList<>();
