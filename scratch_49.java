@@ -16,7 +16,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1514 BFS TLE
+    // LC1514 BFS
     public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
         Map<Integer, List<Pair<Integer, Double>>> outEdge = new HashMap<>();
         for (int i = 0; i < edges.length; i++) {
@@ -27,34 +27,31 @@ class Scratch {
             outEdge.get(e[1]).add(new Pair<>(e[0], succProb[i]));
         }
         if (!outEdge.containsKey(start)) return 0d;
-        double[] visited = new double[n];
-        Arrays.fill(visited, 0d);
-        visited[start] = 1d;
-        PriorityQueue<Pair<Integer, Double>> pq = new PriorityQueue<>(Comparator.comparingDouble(o -> o.getValue()));
-        for (Pair<Integer, Double> e : outEdge.get(start)) {
-            pq.offer(e);
-        }
-        double result = 0d;
+        double[] prob = new double[n];
+        // Arrays.fill(visited, 0d);
+        prob[start] = 1d;
+        PriorityQueue<Pair<Integer, Double>> pq = new PriorityQueue<>((o1, o2) -> {
+            if (o1.getValue() == o2.getValue()) return o1.getKey() - o2.getKey();
+            return o1.getValue() < o2.getValue() ? 1 : -1;
+        });
+        pq.offer(new Pair<>(start, 1d));
         while (!pq.isEmpty()) {
             Pair<Integer, Double> p = pq.poll();
-            if (p.getKey() == end) {
-                result = Math.max(result, p.getValue());
-                continue;
-            }
-            if (visited[p.getKey()] > p.getValue()) continue;
-            visited[p.getKey()] = p.getValue();
-            for (Pair<Integer, Double> e : outEdge.get(p.getKey())) {
-                double probability = p.getValue() * e.getValue();
-                if (probability < visited[e.getKey()]) continue;
-                Pair<Integer, Double> next = new Pair<>(e.getKey(), probability);
-                if (next.getKey() == end) {
-                    result = Math.max(result, probability);
-                    continue;
+            int cur = p.getKey();
+            double curProb = p.getValue();
+            if (prob[cur] > curProb) continue;
+            prob[cur] = curProb;
+            for (Pair<Integer, Double> e : outEdge.get(cur)) {
+                int nextIdx = e.getKey();
+                double nextProb = curProb * e.getValue();
+                if (nextProb > prob[nextIdx]) {
+                    prob[nextIdx] = nextProb;
+                    Pair<Integer, Double> nextEle = new Pair<>(e.getKey(), nextProb);
+                    pq.offer(nextEle);
                 }
-                pq.offer(next);
             }
         }
-        return result;
+        return prob[end];
     }
 
     // LC609
