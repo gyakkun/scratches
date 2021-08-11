@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import org.springframework.security.core.parameters.P;
 
 import java.util.*;
 
@@ -14,6 +13,22 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF II 038
+    public int[] dailyTemperatures(int[] temperatures) {
+        int n = temperatures.length;
+        int[] nge = new int[n];
+//        Arrays.fill(nge, 0);
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
+                int prev = stack.pop();
+                nge[prev] = i - prev;
+            }
+            stack.push(i);
+        }
+        return nge;
     }
 
     // LC963
