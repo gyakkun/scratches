@@ -1,7 +1,8 @@
 import javafx.util.Pair;
-import org.springframework.security.core.parameters.P;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 
 import java.util.*;
+import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
@@ -9,11 +10,37 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.fourSum(new int[]{1, -2, -5, -4, -3, 3, 3, 5}, -11));
+        System.out.println(s.minDeletionSize(new String[]{"ca", "bb", "ac"}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC955
+    public int minDeletionSize(String[] strs) {
+        Function<String[], Boolean> isSorted = strArr -> {
+            int n = strArr.length;
+            if (n == 1) return true;
+            for (int i = 1; i < n; i++) {
+                if (strArr[i - 1].compareTo(strArr[i]) > 0) return false;
+            }
+            return true;
+        };
+        int numRow = strs.length;
+        int wordLen = strs[0].length();
+        String[] adopted = new String[numRow];
+        Arrays.fill(adopted, "");
+        for (int i = 0; i < wordLen; i++) {
+            String[] working = Arrays.copyOf(adopted, numRow);
+            for (int j = 0; j < numRow; j++) {
+                working[j] += strs[j].charAt(i);
+            }
+            if (isSorted.apply(working)) {
+                adopted = working;
+            }
+        }
+        return wordLen - adopted[0].length();
     }
 
     // LC1514 BFS
