@@ -17,6 +17,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1347
+    public int minSteps(String s, String t) {
+        int[] freqS = new int[26], freqT = new int[26];
+        char[] cs = s.toCharArray(), ct = t.toCharArray();
+        int n = s.length(), result = 0;
+        for (int i = 0; i < n; i++) {
+            freqS[cs[i] - 'a']++;
+            freqT[ct[i] - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            result += Math.max(0, freqS[i] - freqT[i]);
+        }
+        return result;
+    }
+
     // LC955
     public int minDeletionSize(String[] strs) {
         Function<String[], Boolean> isSorted = strArr -> {
