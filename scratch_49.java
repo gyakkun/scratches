@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 
 import java.util.*;
 import java.util.function.Function;
@@ -15,6 +14,24 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1470
+    public int[] shuffle(int[] nums, int n) {
+        int fullMask = (1 << 10) - 1;
+        for (int i = 0; i < 2 * n; i++) {
+            int targetIdx;
+            if (i < n) {
+                targetIdx = 2 * i;
+            } else {
+                targetIdx = 2 * (i - n) + 1;
+            }
+            nums[targetIdx] |= (nums[i] & fullMask) << 10;
+        }
+        for (int i = 0; i < 2 * n; i++) {
+            nums[i] >>= 10;
+        }
+        return nums;
     }
 
     // LC1347
