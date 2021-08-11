@@ -2021,12 +2021,10 @@ class BIT {
 }
 
 // LC528
-class Solution {
+class Lc528 {
     int[] acc;
-    int[] weight;
 
-    public Solution(int[] w) {
-        this.weight = w;
+    public Lc528(int[] w) {
         acc = new int[w.length + 1];
         for (int i = 1; i < acc.length; i++) {
             acc[i] = acc[i - 1] + w[i - 1];
