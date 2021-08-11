@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.springframework.security.core.parameters.P;
 
 import java.util.*;
 
@@ -13,6 +14,47 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1514 BFS TLE
+    public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
+        Map<Integer, List<Pair<Integer, Double>>> outEdge = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] e = edges[i];
+            outEdge.putIfAbsent(e[0], new ArrayList<>());
+            outEdge.putIfAbsent(e[1], new ArrayList<>());
+            outEdge.get(e[0]).add(new Pair<>(e[1], succProb[i]));
+            outEdge.get(e[1]).add(new Pair<>(e[0], succProb[i]));
+        }
+        if (!outEdge.containsKey(start)) return 0d;
+        double[] visited = new double[n];
+        Arrays.fill(visited, 0d);
+        visited[start] = 1d;
+        PriorityQueue<Pair<Integer, Double>> pq = new PriorityQueue<>(Comparator.comparingDouble(o -> o.getValue()));
+        for (Pair<Integer, Double> e : outEdge.get(start)) {
+            pq.offer(e);
+        }
+        double result = 0d;
+        while (!pq.isEmpty()) {
+            Pair<Integer, Double> p = pq.poll();
+            if (p.getKey() == end) {
+                result = Math.max(result, p.getValue());
+                continue;
+            }
+            if (visited[p.getKey()] > p.getValue()) continue;
+            visited[p.getKey()] = p.getValue();
+            for (Pair<Integer, Double> e : outEdge.get(p.getKey())) {
+                double probability = p.getValue() * e.getValue();
+                if (probability < visited[e.getKey()]) continue;
+                Pair<Integer, Double> next = new Pair<>(e.getKey(), probability);
+                if (next.getKey() == end) {
+                    result = Math.max(result, probability);
+                    continue;
+                }
+                pq.offer(next);
+            }
+        }
+        return result;
     }
 
     // LC609
