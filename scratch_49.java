@@ -15,6 +15,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC609
+    public List<List<String>> findDuplicate(String[] paths) {
+        Map<String, List<String>> contentPathMap = new HashMap<>();
+        List<List<String>> result = new ArrayList<>();
+        for (String p : paths) {
+            String[] arr = p.split(" ");
+            String directory = arr[0];
+            int n = arr.length;
+            for (int i = 1; i < n; i++) {
+                int leftParIdx = arr[i].indexOf('(');
+                int rightParIdx = arr[i].indexOf(')');
+                String fileName = arr[i].substring(0, leftParIdx);
+                String content = arr[i].substring(leftParIdx + 1, rightParIdx);
+                contentPathMap.putIfAbsent(content, new ArrayList<>());
+                contentPathMap.get(content).add(directory + "/" + fileName);
+            }
+        }
+        for (String content : contentPathMap.keySet()) {
+            if (contentPathMap.get(content).size() > 1) {
+                result.add(contentPathMap.get(content));
+            }
+        }
+        return result;
+    }
+
     // JZOF II 038
     public int[] dailyTemperatures(int[] temperatures) {
         int n = temperatures.length;
