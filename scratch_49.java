@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import javax.xml.transform.Result;
 import java.util.*;
 import java.util.function.Function;
 
@@ -18,11 +19,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC470
+    public int rand10() {
+        int i = rand7() + (rand7() - 1) * 7;
+        return i > 40 ? rand10() : 1 + (i - 1) % 10;
+    }
+
+    private int rand7() {
+        return (int) (Math.random() * 7) + 1;
+    }
+
     // LC887
-    Integer[][] lc887Memo;
+    Map<Integer, Map<Integer, Integer>> lc887Memo;
 
     public int superEggDrop(int eggs, int floors) {
-        lc887Memo = new Integer[eggs + 1][floors + 1];
+        lc887Memo = new HashMap<>();
         for (int i = 1; i <= floors; i++) if (lc887MaxFloor(i, eggs) >= floors) return i;
         return floors;
     }
@@ -31,8 +42,11 @@ class Scratch {
     private int lc887MaxFloor(int oper, int egg) {
         if (oper == 1) return 1;
         if (egg == 1) return oper;
-        if (lc887Memo[egg][oper] != null) return lc887Memo[egg][oper];
-        return lc887Memo[egg][oper] = 1 + lc887MaxFloor(oper - 1, egg - 1) + lc887MaxFloor(oper - 1, egg);
+        if (lc887Memo.containsKey(egg) && lc887Memo.get(egg).containsKey(oper)) return lc887Memo.get(egg).get(oper);
+        lc887Memo.putIfAbsent(egg, new HashMap<>());
+        int result = 1 + lc887MaxFloor(oper - 1, egg - 1) + lc887MaxFloor(oper - 1, egg);
+        lc887Memo.get(egg).put(oper, result);
+        return result;
     }
 
     // LC927
