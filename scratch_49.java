@@ -9,11 +9,65 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minDeletionSize(new String[]{"ca", "bb", "ac"}));
+//        System.out.println(s.threeEqualParts(new int[]{1, 1, 0, 0, 1, 1, 0, 1, 1}));
+//        System.out.println(s.threeEqualParts(new int[]{1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0}));
+        System.out.println(s.threeEqualParts(new int[]{0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC927
+    public int[] threeEqualParts(int[] arr) {
+        int sum = Arrays.stream(arr).sum();
+        if (sum % 3 != 0) return new int[]{-1, -1};
+        if (sum == 0) return new int[]{0, arr.length - 1};
+        int oneThird = sum / 3;
+        int accumulate = 0;
+        List<Integer> oneThirdLastIdx = new ArrayList<>(3);
+        List<Integer> oneThirdFirstIdx = new ArrayList<>(3);
+        boolean firstOneFlag = false;
+        for (int i = 0; i < arr.length; i++) {
+            if (!firstOneFlag && arr[i] == 1) {
+                oneThirdFirstIdx.add(i);
+                firstOneFlag = true;
+            }
+            accumulate += arr[i];
+            if (accumulate == oneThird) {
+                accumulate = 0;
+                oneThirdLastIdx.add(i);
+                firstOneFlag = false;
+            }
+        }
+        if (oneThirdLastIdx.size() != 3 || oneThirdFirstIdx.size() != 3) return new int[]{-1, -1};
+        List<Integer> lens = new ArrayList<>();
+        Set<Integer> test = new HashSet<>();
+        for (int i = 0; i < 3; i++) {
+            lens.add(oneThirdLastIdx.get(i) - oneThirdFirstIdx.get(i) + 1);
+            test.add(lens.get(i));
+        }
+        if (test.size() != 1) return new int[]{-1, -1};
+        int len = lens.get(0), p0 = oneThirdLastIdx.get(0), p1 = oneThirdLastIdx.get(1), p2 = oneThirdLastIdx.get(2);
+        for (int i = 0; i < len; i++) {
+            if (arr[p0] == arr[p1] && arr[p1] == arr[p2]) {
+                p0--;
+                p1--;
+                p2--;
+                continue;
+            }
+            return new int[]{-1, -1};
+        }
+        // 如果后缀是1结尾的话
+        if (oneThirdLastIdx.get(2) == arr.length - 1) {
+            return new int[]{oneThirdLastIdx.get(0), oneThirdLastIdx.get(1) + 1};
+        }
+        // 否则
+        int remainZero = arr.length - oneThirdLastIdx.get(2) - 1;
+        int firstGapZeroCount = oneThirdFirstIdx.get(1) - oneThirdLastIdx.get(0) - 1;
+        int secondGapZeroCount = oneThirdFirstIdx.get(2) - oneThirdLastIdx.get(1) - 1;
+        if (firstGapZeroCount < remainZero || secondGapZeroCount < remainZero) return new int[]{-1, -1};
+        return new int[]{oneThirdLastIdx.get(0) + remainZero, oneThirdLastIdx.get(1) + 1 + remainZero};
     }
 
     // LC1470
