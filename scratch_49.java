@@ -1752,12 +1752,12 @@ class AnimalShelf {
 }
 
 // LC478
-class Solution {
+class Lc478 {
     double x_center;
     double y_center;
     double radius;
 
-    public Solution(double radius, double x_center, double y_center) {
+    public Lc478(double radius, double x_center, double y_center) {
         this.x_center = x_center;
         this.y_center = y_center;
         this.radius = radius;
@@ -2017,5 +2017,34 @@ class BIT {
 
     private int lowbit(int x) {
         return x & (-x);
+    }
+}
+
+// LC528
+class Solution {
+    int[] acc;
+    int[] weight;
+
+    public Solution(int[] w) {
+        this.weight = w;
+        acc = new int[w.length + 1];
+        for (int i = 1; i < acc.length; i++) {
+            acc[i] = acc[i - 1] + w[i - 1];
+        }
+    }
+
+    public int pickIndex() {
+        int target = (int) (Math.random() * acc[acc.length - 1]);
+        int lo = 0, hi = acc.length - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (acc[mid] >= target) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        while (acc[lo] == target) lo++;
+        return lo - 1;
     }
 }
