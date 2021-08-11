@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.springframework.security.core.parameters.P;
 
 import java.util.*;
 
@@ -7,12 +8,81 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.out.println(s.fourSum(new int[]{-2, -1, -1, 1, 1, 2, 2},0));
+
         System.out.println(s.fourSum(new int[]{1, -2, -5, -4, -3, 3, 3, 5}, -11));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC963
+    public double minAreaFreeRect(int[][] points) {
+        Set<Pair<Integer, Integer>> pointSet = new HashSet<>();
+        for (int[] p : points) {
+            pointSet.add(new Pair<>(p[0], p[1]));
+        }
+        int n = points.length;
+        double result = Integer.MAX_VALUE;
+        double max = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int[] a = points[i];
+            for (int j = i + 1; j < n; j++) {
+                int[] b = points[j];
+                for (int k = j + 1; k < n; k++) {
+                    int[] c = points[k];
+                    Map<int[], Pair<int[], int[]>> vecPointPairMap = new HashMap<>();
+                    int[] vecAB = new int[]{a[0] - b[0], a[1] - b[1]};
+                    vecPointPairMap.put(vecAB, new Pair<>(a, b));
+                    int[] vecBA = new int[]{b[0] - a[0], b[1] - a[1]};
+                    vecPointPairMap.put(vecBA, new Pair<>(b, a));
+                    int[] vecBC = new int[]{b[0] - c[0], b[1] - c[1]};
+                    vecPointPairMap.put(vecBC, new Pair<>(b, c));
+                    int[] vecCB = new int[]{c[0] - b[0], c[1] - b[1]};
+                    vecPointPairMap.put(vecCB, new Pair<>(c, b));
+                    int[] vecAC = new int[]{a[0] - c[0], a[1] - c[1]};
+                    vecPointPairMap.put(vecAC, new Pair<>(a, c));
+                    int[] vecCA = new int[]{c[0] - a[0], c[1] - a[1]};
+                    vecPointPairMap.put(vecCA, new Pair<>(c, a));
+                    int[][] allVec = new int[][]{vecAB, vecBC, vecAC, vecBA, vecCB, vecCA};
+                    for (int p = 0; p < allVec.length; p++) {
+                        int[] vecP = allVec[p];
+                        for (int q = p + 1; q < allVec.length; q++) {
+                            int[] vecQ = allVec[q];
+
+                            int mul = vecP[0] * vecQ[0] + vecP[1] * vecQ[1];
+                            if (mul != 0) continue;
+
+                            Pair<int[], int[]> pointPairP = vecPointPairMap.get(vecP);
+                            Pair<int[], int[]> pointPairQ = vecPointPairMap.get(vecQ);
+                            int[][] tmpPa = new int[][]{pointPairP.getKey(), pointPairP.getValue(), pointPairQ.getKey(), pointPairQ.getValue()};
+                            Set<int[]> tmpPs = new HashSet<>();
+                            int[] dup = new int[0];
+                            for (int[] mayDup : tmpPa) {
+                                if (!tmpPs.add(mayDup)) {
+                                    dup = mayDup;
+                                }
+                            }
+                            List<int[]> vecToCompose = new ArrayList<>();
+                            for (int[] point : tmpPs) {
+                                if (point != dup) {
+                                    vecToCompose.add(new int[]{point[0] - dup[0], point[1] - dup[1]});
+                                }
+                            }
+                            int[] composedVec = new int[]{vecToCompose.get(0)[0] + vecToCompose.get(1)[0], vecToCompose.get(0)[1] + vecToCompose.get(1)[1]};
+                            Pair<Integer, Integer> targetPoint = new Pair<>(dup[0] + composedVec[0], dup[1] + composedVec[1]);
+                            if (!pointSet.contains(targetPoint)) continue;
+                            double width = Math.sqrt(vecToCompose.get(0)[0] * vecToCompose.get(0)[0] + vecToCompose.get(0)[1] * vecToCompose.get(0)[1]);
+                            double height = Math.sqrt(vecToCompose.get(1)[0] * vecToCompose.get(1)[0] + vecToCompose.get(1)[1] * vecToCompose.get(1)[1]);
+                            double area = width * height;
+                            result = Math.min(result, area);
+                        }
+                    }
+
+                }
+            }
+        }
+        return result == max ? 0d : result;
     }
 
     // LC1505 Hard ** 树状数组
@@ -190,7 +260,7 @@ class Scratch {
 
     // LC446 **
     public int numberOfArithmeticSlicesHard(int[] nums) {
-        // 状态 dp[d][i] 到nums[i]为止公差为d的等差数列的个数, 用map, 方便寻址
+        // 状态 dp[i][d] 到nums[i]为止公差为d的等差数列的个数, 用map离散化, 避免公差d的范围过大
         // how transfer
         // [2,4,6,8,10]
         // j<i, d=nums[i]-nums[j], dp[d][i] += (dp[d][j]+1)
