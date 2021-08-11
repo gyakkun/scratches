@@ -18,6 +18,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC887
+    Integer[][] lc887Memo;
+
+    public int superEggDrop(int eggs, int floors) {
+        lc887Memo = new Integer[eggs + 1][floors + 1];
+        for (int i = 1; i <= floors; i++) if (lc887MaxFloor(i, eggs) >= floors) return i;
+        return floors;
+    }
+
+    // return the maximum floors with the given num of oper and num of egg
+    private int lc887MaxFloor(int oper, int egg) {
+        if (oper == 1) return 1;
+        if (egg == 1) return oper;
+        if (lc887Memo[egg][oper] != null) return lc887Memo[egg][oper];
+        return lc887Memo[egg][oper] = 1 + lc887MaxFloor(oper - 1, egg - 1) + lc887MaxFloor(oper - 1, egg);
+    }
+
     // LC927
     public int[] threeEqualParts(int[] arr) {
         int sum = Arrays.stream(arr).sum();
