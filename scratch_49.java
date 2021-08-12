@@ -19,6 +19,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1753
+    public int maximumScoreMath(int a, int b, int c) {
+        int[] arr = new int[]{a, b, c};
+        Arrays.sort(arr);
+        if (arr[0] + arr[1] <= arr[2]) return arr[0] + arr[1];
+        return (a + b + c) / 2;
+    }
+
+    // LC1753 Simulation
+    public int maximumScore(int a, int b, int c) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
+        pq.offer(a);
+        pq.offer(b);
+        pq.offer(c);
+        boolean end = false;
+        int result = 0;
+        while (!end) {
+            int max = pq.poll();
+            int mid = pq.poll();
+            if (max == 0 || mid == 0) {
+                end = true;
+                break;
+            }
+            max--;
+            mid--;
+            result++;
+            pq.offer(max);
+            pq.offer(mid);
+        }
+        return result;
+    }
+
     // LC516
     Integer[][] lc516Memo;
 
