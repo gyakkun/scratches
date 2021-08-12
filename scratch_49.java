@@ -33,10 +33,13 @@ class Scratch {
         if (start > end) return 0;
         if (start == end) return 1;
         if (lc516Memo[start][end] != null) return lc516Memo[start][end];
-        int mid = lc516Helper(start + 1, end - 1, ca);
-        if (ca[start] == ca[end]) mid += 2;
-        int result = Math.max(mid, lc516Helper(start, end - 1, ca));
-        result = Math.max(result, lc516Helper(start + 1, end, ca));
+        int result = 0;
+        if (ca[start] == ca[end]) { // 如果两端相同 则最长长度必然在两端+内侧最长
+            result = lc516Helper(start + 1, end - 1, ca) + 2;
+        } else {
+            result = Math.max(result, lc516Helper(start, end - 1, ca));
+            result = Math.max(result, lc516Helper(start + 1, end, ca));
+        }
         return lc516Memo[start][end] = result;
     }
 
