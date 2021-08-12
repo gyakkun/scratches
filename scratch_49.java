@@ -19,6 +19,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC516
+    Integer[][] lc516Memo;
+
+    public int longestPalindromeSubseq(String s) {
+        char[] ca = s.toCharArray();
+        int n = ca.length;
+        lc516Memo = new Integer[n + 1][n + 1];
+        return lc516Helper(0, n - 1, ca);
+    }
+
+    private int lc516Helper(int start, int end, char[] ca) {
+        if (start > end) return 0;
+        if (start == end) return 1;
+        if (lc516Memo[start][end] != null) return lc516Memo[start][end];
+        int mid = lc516Helper(start + 1, end - 1, ca);
+        if (ca[start] == ca[end]) mid += 2;
+        int result = Math.max(mid, lc516Helper(start, end - 1, ca));
+        result = Math.max(result, lc516Helper(start + 1, end, ca));
+        return lc516Memo[start][end] = result;
+    }
+
     // LC470
     public int rand10() {
         int i = rand7() + (rand7() - 1) * 7;
