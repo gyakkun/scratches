@@ -1,6 +1,5 @@
 import javafx.util.Pair;
 
-import javax.xml.transform.Result;
 import java.util.*;
 import java.util.function.Function;
 
@@ -17,6 +16,19 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC110
+    public boolean isBalancedLC(TreeNode root) {
+        Function<TreeNode, Integer> height = new Function<TreeNode, Integer>() {
+            @Override
+            public Integer apply(TreeNode root) {
+                if (root == null) return 0;
+                return 1 + Math.max(this.apply(root.left), this.apply(root.right));
+            }
+        };
+        return Math.abs(height.apply(root.left) - height.apply(root.right)) <= 1
+                && isBalanced(root.right) && isBalanced(root.left);
     }
 
     // LC1153 **
