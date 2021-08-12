@@ -19,6 +19,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1153 **
+    public boolean canConvert(String str1, String str2) {
+        if (str1.equals(str2)) return true;
+        char[] c1 = str1.toCharArray(), c2 = str2.toCharArray();
+        int[] freq2 = new int[26];
+        for (char c : c2) freq2[c - 'a'] = 1;
+        if (Arrays.stream(freq2).sum() == 26) return false;
+        Map<Character, Character> s1s2CharMap = new HashMap<>();
+        // 确保同s1中的同一个字母对应s2中的同一个字母
+        for (int i = 0; i < c1.length; i++) {
+            if (s1s2CharMap.containsKey(c1[i]) && c2[i] != s1s2CharMap.get(c1[i])) return false;
+            s1s2CharMap.putIfAbsent(c1[i], c2[i]);
+        }
+        return true;
+    }
+
     // LC1753
     public int maximumScoreMath(int a, int b, int c) {
         int[] arr = new int[]{a, b, c};
