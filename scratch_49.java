@@ -20,30 +20,29 @@ class Scratch {
 
     // LC1062
     public int longestRepeatingSubstring(String s) {
-        Map<Pair<Long, Integer>, Integer> m = new HashMap<>();
-        final int base1 = 31, mod = 1000000007;
-        char[] ca = s.toCharArray();
+        final int base = 31, mod = 1000000007;
         int n = s.length();
-        for (int i = 0; i < n; i++) {
-            long hash1 = 0;
-            for (int j = i; j < n; j++) {
-                hash1 = (hash1 * base1 + (ca[j] - 'a')) % mod;
-                Pair<Long, Integer> key = new Pair<>(hash1, j - i + 1);
-                m.put(key, m.getOrDefault(key, 0) + 1);
+        char[] ca = s.toCharArray();
+        for (int len = n - 1; len >= 1; len--) {
+            Map<Long, Integer> m = new HashMap<>();
+            // calculate init hash
+            long hash = 0, mul = 1;
+            for (int i = 0; i < len; i++) {
+                hash = (hash * base + (ca[i] - 'a')) % mod;
+                mul = (mul * base) % mod;
             }
-        }
-        List<Pair<Long, Integer>> l = new ArrayList<>(m.keySet());
-        l.sort(Comparator.comparingInt(o -> -o.getValue()));
-        int maxCount = 0, maxLen = 0;
-        for (Pair<Long, Integer> sub : l) {
-            if (m.get(sub) == 1) continue;
-            if (maxCount != 1 && sub.getValue() < maxLen) break;
-            if (m.get(sub) > maxCount) {
-                maxCount = m.get(sub);
-                maxLen = sub.getValue();
+            m.put(hash, 1);
+            for (int i = len; i < n; i++) {
+                hash = (hash * base - (ca[i - len] - 'a') * mul + (ca[i] - 'a')) % mod;
+                m.put(hash, m.getOrDefault(hash, 0) + 1);
             }
+            int count = 1;
+            for (long k : m.keySet()) {
+                count = Math.max(count, m.get(k));
+            }
+            if (count != 1) return len;
         }
-        return maxLen;
+        return 0;
     }
 
     // LC110
