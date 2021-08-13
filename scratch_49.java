@@ -11,11 +11,39 @@ class Scratch {
 
 //        System.out.println(s.threeEqualParts(new int[]{1, 1, 0, 0, 1, 1, 0, 1, 1}));
 //        System.out.println(s.threeEqualParts(new int[]{1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0}));
-        System.out.println(s.threeEqualParts(new int[]{0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0}));
+        System.out.println(s.longestRepeatingSubstring("aaaaa"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1062
+    public int longestRepeatingSubstring(String s) {
+        Map<Pair<Long, Integer>, Integer> m = new HashMap<>();
+        final int base1 = 31, mod = 1000000007;
+        char[] ca = s.toCharArray();
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            long hash1 = 0;
+            for (int j = i; j < n; j++) {
+                hash1 = (hash1 * base1 + (ca[j] - 'a')) % mod;
+                Pair<Long, Integer> key = new Pair<>(hash1, j - i + 1);
+                m.put(key, m.getOrDefault(key, 0) + 1);
+            }
+        }
+        List<Pair<Long, Integer>> l = new ArrayList<>(m.keySet());
+        l.sort(Comparator.comparingInt(o -> -o.getValue()));
+        int maxCount = 0, maxLen = 0;
+        for (Pair<Long, Integer> sub : l) {
+            if (m.get(sub) == 1) continue;
+            if (maxCount != 1 && sub.getValue() < maxLen) break;
+            if (m.get(sub) > maxCount) {
+                maxCount = m.get(sub);
+                maxLen = sub.getValue();
+            }
+        }
+        return maxLen;
     }
 
     // LC110
