@@ -18,6 +18,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1583
+    public int unhappyFriends(int n, int[][] preferences, int[][] pairs) {
+        int[][] m = new int[n][n];
+        int[] result = new int[n], match = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n - 1; j++) {
+                m[i][preferences[i][j]] = j; // order 越小 越亲密
+            }
+        }
+        for (int[] p : pairs) {
+            match[p[0]] = p[1];
+            match[p[1]] = p[0];
+        }
+        for (int x = 0; x < n; x++) {
+            int y = match[x];
+            int xy = m[x][y];
+            for (int i = 0; i < xy; i++) {
+                int u = preferences[x][i];
+                int v = match[u];
+                if (m[u][x] < m[u][v]) {
+                    result[x] = 1;
+                    break;
+                }
+            }
+        }
+        return Arrays.stream(result).sum();
+    }
+
     // LC1062
     public int longestRepeatingSubstring(String s) {
         final int base = 31, mod = 1000000007;
