@@ -13,6 +13,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 06
+    public int[] reversePrint(ListNode head) {
+        // 倒置链表
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode prev = null, cur = head;
+        int count = 0;
+        while (cur != null) {
+            count++;
+            ListNode origNext = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = origNext;
+        }
+        int[] result = new int[count];
+        count = 0;
+        cur = prev;
+        while (cur != null) {
+            result[count++] = cur.val;
+            cur = cur.next;
+        }
+        return result;
+    }
+
     // JZOF II 090
     public int rob(int[] nums) {
         int n = nums.length;
@@ -201,5 +225,14 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode(int x) {
+        val = x;
     }
 }
