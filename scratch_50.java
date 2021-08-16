@@ -13,6 +13,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 68 II
+    public TreeNode LCA(TreeNode root, TreeNode p, TreeNode q) {
+        Map<TreeNode, TreeNode> parent = new HashMap<>();
+        parent.put(root, null);
+        Deque<TreeNode> queue = new LinkedList<>();
+        Set<TreeNode> visited = new HashSet<>();
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            TreeNode poll = queue.poll();
+            if (poll.left != null) {
+                parent.put(poll.left, poll);
+                queue.offer(poll.left);
+            }
+            if (poll.right != null) {
+                parent.put(poll.right, poll);
+                queue.offer(poll.right);
+            }
+        }
+        while (p != null) {
+            visited.add(p);
+            p = parent.get(p);
+        }
+        while (q != null) {
+            if (visited.contains(q)) return q;
+            q = parent.get(q);
+        }
+        return null;
+    }
+
     // JZOF 68
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         TreeNode result = root;
