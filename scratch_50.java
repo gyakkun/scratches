@@ -13,6 +13,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1338
+    Map<TreeNode, Long> nodeSumMap = new HashMap<>();
+
+    public int maxProduct(TreeNode root) {
+        final int mod = 1000000007;
+        lc1338Helper(root);
+        long result = 0;
+        long total = nodeSumMap.get(root);
+        for (TreeNode node : nodeSumMap.keySet()) {
+            result = Math.max(result, (total - nodeSumMap.get(node)) * nodeSumMap.get(node));
+        }
+        return (int) (result % mod);
+    }
+
+    private long lc1338Helper(TreeNode root) {
+        if (root == null) return 0;
+        long result = root.val + lc1338Helper(root.left) + lc1338Helper(root.right);
+        nodeSumMap.put(root, result);
+        return result;
+    }
+
     // LC733
     int[][] lc733Directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
@@ -95,5 +116,24 @@ class Scratch {
                 lc526Visited[i] = false;
             }
         }
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
