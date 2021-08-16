@@ -13,6 +13,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 68
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode result = root;
+        while (true) {
+            if (p.val > result.val && q.val > result.val) {
+                result = result.right;
+            } else if (p.val < result.val && q.val < result.val) {
+                result = result.left;
+            } else {
+                break;
+            }
+        }
+        return result;
+    }
+
     // LC1338
     Map<TreeNode, Long> nodeSumMap = new HashMap<>();
 
