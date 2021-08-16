@@ -13,6 +13,12 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 64 **
+    public int sumNums(int n) {
+        boolean flag = n > 0 && (n += sumNums(n - 1)) > 0;
+        return n;
+    }
+
     // LC1282
     public List<List<Integer>> groupThePeople(int[] groupSizes) {
         List<List<Integer>> result = new ArrayList<>();
