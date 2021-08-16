@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
@@ -15,21 +12,11 @@ class Scratch {
     }
 
     // LC526 **
-    List<Integer>[] lc526Match;
     boolean[] lc526Visited;
     int lc526Result;
 
     public int countArrangement(int n) {
-        lc526Match = new List[n + 1];
         lc526Visited = new boolean[n + 1];
-        for (int i = 1; i <= n; i++) {
-            lc526Match[i] = new ArrayList<>();
-            for (int j = 1; j <= n; j++) {
-                if (i % j == 0 || j % i == 0) {
-                    lc526Match[i].add(j);
-                }
-            }
-        }
         lc526Backtrack(1, n);
         return lc526Result;
     }
@@ -39,11 +26,11 @@ class Scratch {
             lc526Result++;
             return;
         }
-        for (int x : lc526Match[index]) {
-            if (!lc526Visited[x]) {
-                lc526Visited[x] = true;
+        for (int i = 1; i <= n; i++) {
+            if (!lc526Visited[i] && (i % index == 0 || index % i == 0)) {
+                lc526Visited[i] = true;
                 lc526Backtrack(index + 1, n);
-                lc526Visited[x] = false;
+                lc526Visited[i] = false;
             }
         }
     }
