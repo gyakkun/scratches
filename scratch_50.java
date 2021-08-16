@@ -13,6 +13,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1389
+    public int[] createTargetArray(int[] nums, int[] index) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (index[i] >= result.size()) {
+                int targetSize = (index[i] + 1) - result.size();
+                for (int j = 0; j < targetSize; j++) {
+                    result.add(-1);
+                }
+                result.set(index[i], nums[i]);
+            } else {
+                result.add(index[i], nums[i]);
+            }
+        }
+        return result.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
     // LC1390
     public int sumFourDivisors(int[] nums) {
         int result = 0;
