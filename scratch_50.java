@@ -13,6 +13,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1390
+    public int sumFourDivisors(int[] nums) {
+        int result = 0;
+        for (int n : nums) result += lc1390Helper(n);
+        return result;
+    }
+
+    private int lc1390Helper(int n) {
+        if (n <= 5) return 0;
+        int sqrt = (int) Math.sqrt(n);
+        Set<Integer> s = new HashSet<>();
+        for (int i = 1; i <= sqrt; i++) {
+            if (n % i == 0) {
+                s.add(i);
+                s.add(n / i);
+            }
+            if (s.size() > 4) return 0;
+        }
+        if (s.size() != 4) return 0;
+        return s.stream().reduce((a, b) -> a + b).get();
+    }
+
     // JZOF 06
     public int[] reversePrint(ListNode head) {
         // 倒置链表
