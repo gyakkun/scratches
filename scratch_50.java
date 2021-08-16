@@ -11,6 +11,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1684
+    public int countConsistentStrings(String allowed, String[] words) {
+        int result = 0, mask = 0;
+        for (char c : allowed.toCharArray()) mask |= 1 << (c - 'a');
+        for (String w : words) {
+            int wm = 0;
+            for (char c : w.toCharArray()) wm |= 1 << (c - 'a');
+            if ((wm & mask) == wm) result++;
+        }
+        return result;
+    }
+
     // LC526 **
     boolean[] lc526Visited;
     int lc526Result;
