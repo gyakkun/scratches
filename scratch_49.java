@@ -9,9 +9,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.threeEqualParts(new int[]{1, 1, 0, 0, 1, 1, 0, 1, 1}));
-//        System.out.println(s.threeEqualParts(new int[]{1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0}));
-        System.out.println(s.longestRepeatingSubstring("aaaaa"));
+        System.out.println(s.powerfulIntegers(2, 1, 10));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -44,6 +42,38 @@ class Scratch {
             }
         }
         return Arrays.stream(result).sum();
+    }
+
+    // LC970
+    public List<Integer> powerfulIntegers(int x, int y, int bound) {
+        List<Integer> xp = new ArrayList<>(), yp = new ArrayList<>();
+        int pox = 1, poy = 1;
+        if (x == 1) {
+            xp.add(1);
+        } else {
+            while (pox <= bound) {
+                xp.add(pox);
+                pox *= x;
+            }
+        }
+        if (y == 1) {
+            yp.add(1);
+        } else {
+            while (poy <= bound) {
+                yp.add(poy);
+                poy *= y;
+            }
+        }
+        Set<Integer> result = new HashSet<>();
+        for (int i = 0; i < xp.size(); i++) {
+            for (int j = 0; j < yp.size(); j++) {
+                int tmp = xp.get(i) + yp.get(j);
+                if (tmp <= bound) {
+                    result.add(tmp);
+                }
+            }
+        }
+        return new ArrayList<>(result);
     }
 
     // LC1062
