@@ -13,6 +13,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC733
+    int[][] lc733Directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    public int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
+        int origColor = image[sr][sc];
+        boolean[][] visited = new boolean[image.length][image[0].length];
+        lc733Helper(image, sr, sc, origColor, newColor, visited);
+        return image;
+    }
+
+    private void lc733Helper(int[][] image, int x, int y, int origColor, int newColor, boolean[][] visited) {
+        if (x < 0 || x >= image.length || y < 0 || y >= image[0].length || visited[x][y]) {
+            return;
+        }
+        if (image[x][y] == origColor) {
+            image[x][y] = newColor;
+            visited[x][y] = true;
+            for (int[] dir : lc733Directions) {
+                lc733Helper(image, x + dir[0], y + dir[1], origColor, newColor, visited);
+            }
+        }
+    }
+
     // JZOF 64 **
     public int sumNums(int n) {
         boolean flag = n > 0 && (n += sumNums(n - 1)) > 0;
