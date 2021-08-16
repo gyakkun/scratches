@@ -1,3 +1,5 @@
+import java.util.*;
+
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
@@ -9,6 +11,25 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1282
+    public List<List<Integer>> groupThePeople(int[] groupSizes) {
+        List<List<Integer>> result = new ArrayList<>();
+        Map<Integer, List<Integer>> sizeCountMap = new HashMap<>();
+        for (int i = 0; i < groupSizes.length; i++) {
+            sizeCountMap.putIfAbsent(groupSizes[i], new ArrayList<>());
+            sizeCountMap.get(groupSizes[i]).add(i);
+        }
+        for (int gs : sizeCountMap.keySet()) {
+            List<Integer> users = sizeCountMap.get(gs);
+            int cur = 0;
+            while (cur != users.size()) {
+                result.add(users.subList(cur, cur + gs));
+                cur += gs;
+            }
+        }
+        return result;
     }
 
     // LC1684
