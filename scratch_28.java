@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -412,26 +413,23 @@ class Scratch {
 
     public List<List<Integer>> permute(int[] nums) {
         permuteResult = new ArrayList<>();
-        permuteBacktrack(nums, 0, nums.length);
+        permuteBacktrack(nums, 0);
         return permuteResult;
     }
 
-    public void permuteBacktrack(int[] nums, int curIdx, int fin) {
-        if (curIdx == fin) {
-            List<Integer> result = new ArrayList<>();
-            for (int i = 0; i < fin; i++) {
-                result.add(nums[i]);
-            }
-            permuteResult.add(result);
+    public void permuteBacktrack(int[] nums, int curIdx) {
+        if (curIdx == nums.length) {
+            permuteResult.add(Arrays.stream(nums).boxed().collect(Collectors.toList()));
+            return;
         }
-        for (int i = curIdx; i < fin; i++) {
+        for (int i = curIdx; i < nums.length; i++) {
             // 交换
             int tmp = nums[i];
             nums[i] = nums[curIdx];
             nums[curIdx] = tmp;
 
             // 回溯
-            permuteBacktrack(nums, curIdx + 1, fin);
+            permuteBacktrack(nums, curIdx + 1);
 
             // 复原
             tmp = nums[i];
