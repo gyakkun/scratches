@@ -7,14 +7,16 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.shortestAlternatingPaths(3, new int[][]{{0, 1}, {0, 2}}, new int[][]{{1, 0}}));
+        System.out.println(s.shortestAlternatingPaths(5,
+                new int[][]{{0, 1}, {1, 2}, {2, 3}, {3, 4}},
+                new int[][]{{1, 2}, {2, 3}, {3, 1}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1129 TBD
+    // LC1129 ** 可能有环 有平行边
     public int[] shortestAlternatingPaths(int n, int[][] red_edges, int[][] blue_edges) {
         final int RED = 0, BLUE = 1;
         int[] result = new int[n];
@@ -47,28 +49,28 @@ class Scratch {
             int qSize = q.size();
             for (int i = 0; i < qSize; i++) {
                 int[] p = q.poll();
+                // 注意剪枝时机!!!
+                if (blueVisit[p[0]] && redVisit[p[0]]) continue;
                 if (p[1] == RED && redVisit[p[0]]) continue;
                 if (p[1] == BLUE && blueVisit[p[0]]) continue;
-                if (p[1] == RED) redVisit[p[0]] = true;
-                else blueVisit[p[0]] = true;
                 if (result[p[0]] == -1) {
                     result[p[0]] = layer;
                 } else {
                     result[p[0]] = Math.min(result[p[0]], layer);
                 }
-                if (blueVisit[p[0]] && redVisit[p[0]]) continue;
                 if (p[1] == RED) {
+                    redVisit[p[0]] = true;
                     for (int next : blueOutEdge.get(p[0])) {
                         q.offer(new int[]{next, BLUE});
                     }
                 } else {
+                    blueVisit[p[0]] = true;
                     for (int next : redOutEdge.get(p[0])) {
                         q.offer(new int[]{next, RED});
                     }
                 }
             }
         }
-
         return result;
     }
 
