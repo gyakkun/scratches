@@ -6,11 +6,31 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.largestSubarrayBetter(new int[]{91, 6, 58}, 1));
+        System.out.println(s.numSub("0110111"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1513
+    public int numSub(String s) {
+        long oneCount = 0, mod = 1000000007;
+        long result = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '1') {
+                oneCount++;
+            } else {
+                result += oneCount * (oneCount + 1) / 2;
+                result %= mod;
+                oneCount = 0;
+            }
+        }
+        if (oneCount != 0) {
+            result += oneCount * (oneCount + 1) / 2;
+            result %= mod;
+        }
+        return (int) result;
     }
 
     // LC1709
