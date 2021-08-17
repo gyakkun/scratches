@@ -13,6 +13,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC551
+    public boolean checkRecord(String s) {
+        int lCount = 0, aCount = 0;
+        for (char c : s.toCharArray()) {
+            if (c == 'L') {
+                lCount++;
+            } else {
+                lCount = 0;
+            }
+            if (lCount >= 3) return false;
+            if (c == 'A') {
+                aCount++;
+            }
+            if (aCount >= 2) return false;
+        }
+        return true;
+    }
+
     // LC1389
     public int[] createTargetArray(int[] nums, int[] index) {
         List<Integer> result = new ArrayList<>();
