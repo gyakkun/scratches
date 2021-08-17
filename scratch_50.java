@@ -1,5 +1,5 @@
+import java.beans.Visibility;
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -7,11 +7,69 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.lc1387Weight(3));
+        System.out.println(s.shortestAlternatingPaths(3, new int[][]{{0, 1}, {0, 2}}, new int[][]{{1, 0}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1129 TBD
+    public int[] shortestAlternatingPaths(int n, int[][] red_edges, int[][] blue_edges) {
+        final int RED = 0, BLUE = 1;
+        int[] result = new int[n];
+        Arrays.fill(result, -1);
+        result[0] = 0;
+        List<List<Integer>> redOutEdge = new ArrayList<>(n), blueOutEdge = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            redOutEdge.add(new ArrayList<>());
+            blueOutEdge.add(new ArrayList<>());
+        }
+        boolean[] redVisit = new boolean[n], blueVisit = new boolean[n];
+        for (int[] re : red_edges) {
+            redOutEdge.get(re[0]).add(re[1]);
+        }
+        for (int[] be : blue_edges) {
+            blueOutEdge.get(be[0]).add(be[1]);
+        }
+        if (redOutEdge.get(0) == null && blueOutEdge.get(0) == null) return result;
+
+        Deque<int[]> q = new LinkedList<>();
+        for (int next : redOutEdge.get(0)) {
+            q.offer(new int[]{next, RED});
+        }
+        for (int next : blueOutEdge.get(0)) {
+            q.offer(new int[]{next, BLUE});
+        }
+        int layer = 0;
+        while (!q.isEmpty()) {
+            layer++;
+            int qSize = q.size();
+            for (int i = 0; i < qSize; i++) {
+                int[] p = q.poll();
+                if (p[1] == RED && redVisit[p[0]]) continue;
+                if (p[1] == BLUE && blueVisit[p[0]]) continue;
+                if (p[1] == RED) redVisit[p[0]] = true;
+                else blueVisit[p[0]] = true;
+                if (result[p[0]] == -1) {
+                    result[p[0]] = layer;
+                } else {
+                    result[p[0]] = Math.min(result[p[0]], layer);
+                }
+                if (blueVisit[p[0]] && redVisit[p[0]]) continue;
+                if (p[1] == RED) {
+                    for (int next : blueOutEdge.get(p[0])) {
+                        q.offer(new int[]{next, BLUE});
+                    }
+                } else {
+                    for (int next : redOutEdge.get(p[0])) {
+                        q.offer(new int[]{next, RED});
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     // LC1387
