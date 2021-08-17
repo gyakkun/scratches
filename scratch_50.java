@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -6,11 +7,41 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.numSub("0110111"));
+        System.out.println(s.lc1387Weight(3));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1387
+    Integer[] memo;
+
+    public int getKth(int lo, int hi, int k) {
+        memo = new Integer[hi + 1];
+        List<Integer> arr = new ArrayList<>(hi - lo + 1);
+        for (int i = lo; i <= hi; i++) {
+            arr.add(i);
+        }
+        arr.sort((o1, o2) -> lc1387Weight(o1) == lc1387Weight(o2) ? o1 - o2 : lc1387Weight(o1) - lc1387Weight(o2));
+        return arr.get(k - 1);
+    }
+
+    private int lc1387Weight(int num) {
+        if (num == 1) return 0;
+        if (memo[num] != null) return memo[num];
+        int result = 1;
+        while ((num = lc1387Converter(num)) != 1) {
+            result++;
+        }
+        return memo[num] = result;
+    }
+
+    private int lc1387Converter(int num) {
+        // 如果 x 是偶数，那么 x = x / 2
+        // 如果 x 是奇数，那么 x = 3 * x + 1
+        if (num % 2 == 1) return 3 * num + 1;
+        return num / 2;
     }
 
     // LC1513
