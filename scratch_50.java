@@ -6,7 +6,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.longestConsecutive(new int[]{10, 1, 3, 4, 7, 6, 20, 5, 13, 23, 14}));
+        System.out.println(s.largestSubarrayBetter(new int[]{91, 6, 58}, 1));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -14,6 +14,20 @@ class Scratch {
     }
 
     // LC1709
+    public int[] largestSubarrayBetter(int[] nums, int k) {
+        int n = nums.length;
+        int maxInt = 0, ptr = n - k, maxStartPoint = 0;
+        while (ptr >= 0) {
+            if (nums[ptr] > maxInt) {
+                maxStartPoint = ptr;
+                maxInt = nums[ptr];
+            }
+            ptr--;
+        }
+        return Arrays.copyOfRange(nums, maxStartPoint, maxStartPoint + k);
+    }
+
+    // LC1709 没有利用数字不重复的条件
     public int[] largestSubarray(int[] nums, int k) {
         int maxStartPoint = 0, n = nums.length;
         for (int i = 1; i < n - k + 1; i++) {
