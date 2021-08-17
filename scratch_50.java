@@ -13,6 +13,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC552 HARD
+    public int checkRecord(int n) {
+        final int mod = 1000000007;
+        long[] dp = new long[Math.max(4, n + 1)];
+        dp[0] = 1;
+        dp[1] = 2;
+        dp[2] = 4;
+        dp[3] = 7;
+        for (int i = 4; i <= n; i++) {
+            dp[i] = (2 * dp[i - 1] - dp[i - 4] + mod) % mod;
+        }
+        long result = dp[n];
+        for (int i = 1; i <= n; i++) {
+            result += (dp[i - 1] * dp[n - i]) % mod;
+        }
+        return (int) (result % mod);
+    }
+
     // LC551
     public boolean checkRecord(String s) {
         int lCount = 0, aCount = 0;
