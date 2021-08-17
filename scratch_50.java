@@ -6,11 +6,50 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.countArrangement(2));
+        System.out.println(s.minOperations(new int[]{6, 6}, new int[]{1}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1775
+    public int minOperations(int[] nums1, int[] nums2) {
+        if (nums1.length * 6 < nums2.length || nums2.length * 6 < nums1.length) return -1;
+        int origSum1 = Arrays.stream(nums1).sum(), origSum2 = Arrays.stream(nums2).sum();
+        if (origSum1 == origSum2) return 0;
+        int[] inc = new int[6], dec = new int[6];
+        for (int i : nums1) {
+            inc[6 - i]++;
+            dec[i - 1]++;
+        }
+        for (int i : nums2) {
+            dec[6 - i]++;
+            inc[i - 1]++;
+        }
+        inc[0] = dec[0] = 0;
+        int result = 0;
+        int delta = origSum1 - origSum2;
+        if (delta > 0) { // nums1 should decrease
+            for (int i = 5; i >= 1; i--) {
+                while (dec[i] > 0) {
+                    result++;
+                    dec[i]--;
+                    delta -= i;
+                    if (delta <= 0) return result;
+                }
+            }
+        } else {
+            for (int i = 5; i >= 1; i--) {
+                while (inc[i] > 0) {
+                    result++;
+                    inc[i]--;
+                    delta += i;
+                    if (delta >= 0) return result;
+                }
+            }
+        }
+        return -1;
     }
 
     // LC552 HARD
