@@ -1,4 +1,3 @@
-import java.beans.Visibility;
 import java.util.*;
 
 class Scratch {
@@ -75,10 +74,10 @@ class Scratch {
     }
 
     // LC1387
-    Map<Integer, Integer> memo;
+    Map<Integer, Integer> lc1387Memo;
 
     public int getKth(int lo, int hi, int k) {
-        memo = new HashMap<>();
+        lc1387Memo = new HashMap<>();
         List<Integer> arr = new ArrayList<>(hi - lo + 1);
         for (int i = lo; i <= hi; i++) {
             arr.add(i);
@@ -89,9 +88,9 @@ class Scratch {
 
     private int lc1387Weight(int num) {
         if (num == 1) return 0;
-        if (memo.containsKey(num)) return memo.get(num);
+        if (lc1387Memo.containsKey(num)) return lc1387Memo.get(num);
         int result = num % 2 == 1 ? lc1387Weight(3 * num + 1) + 1 : lc1387Weight(num / 2) + 1;
-        memo.put(num, result);
+        lc1387Memo.put(num, result);
         return result;
     }
 
