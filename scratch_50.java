@@ -13,6 +13,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1709
+    public int[] largestSubarray(int[] nums, int k) {
+        int maxStartPoint = 0, n = nums.length;
+        for (int i = 1; i < n - k + 1; i++) {
+            for (int j = 0; j < k; j++) {
+                if (nums[maxStartPoint + j] < nums[i + j]) {
+                    maxStartPoint = i;
+                } else if (nums[maxStartPoint + j] == nums[i + j]) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+        }
+        return Arrays.copyOfRange(nums, maxStartPoint, maxStartPoint + k);
+    }
+
     // LC1039 ** 几何
     Integer[][] lc1039Memo;
 
