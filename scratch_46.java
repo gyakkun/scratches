@@ -2004,7 +2004,7 @@ class Scratch {
     // LC552 ** DP
     public int checkRecord(int n) {
         final long mod = 1000000007;
-        long[] lc552Memo = new long[n + 1];
+        long[] lc552Memo = new long[Math.max(4, n + 1)];
         lc552Memo[0] = 1;
         lc552Memo[1] = 2;
         lc552Memo[2] = 4;
