@@ -13,6 +13,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1039 ** 几何
+    Integer[][] lc1039Memo;
+
+    public int minScoreTriangulation(int[] values) {
+        int n = values.length;
+        lc1039Memo = new Integer[n + 1][n + 1];
+        return lc1039Helper(values, 0, n - 1);
+    }
+
+    private int lc1039Helper(int[] values, int start, int end) {
+        if (start + 1 == end) return 0;
+        if (lc1039Memo[start][end] != null) return lc1039Memo[start][end];
+        int result = Integer.MAX_VALUE;
+        for (int i = start + 1; i < end; i++) {
+            result = Math.min(result, lc1039Helper(values, start, i) + lc1039Helper(values, i, end) + values[start] * values[end] * values[i]);
+        }
+        return lc1039Memo[start][end] = result;
+    }
+
     // LC128
     // https://bbs.byr.cn/n/article/Talking/6295267
     public int longestConsecutive(int[] nums) {
@@ -34,23 +53,6 @@ class Scratch {
         return result;
     }
 
-    // LC1039 TBD
-    public int minScoreTriangulation(int[] values) {
-        int n = values.length;
-        // Without loss of generality, there is a triangle that uses adjacent vertices A[0] and A[N-1] (where N = A.length).
-        // Depending on your choice K of it, this breaks down the triangulation into two subproblems A[1:K) and A[K+1:N-1).
-        return lc1039Helper(values, 0, n);
-    }
-
-    private int lc1039Helper(int[] values, int start, int end) {
-        if (Math.abs(start - end) <= 1) return 0;
-        int curSum = values[start] + values[end - 1];
-        int min = Integer.MAX_VALUE;
-        for (int k = start + 1; k < end; k++) {
-            min = Math.min(min, lc1039Helper(values, start + 1, k) + lc1039Helper(values, k + 1, end - 1));
-        }
-        return min + curSum;
-    }
 
     // LC1775
     public int minOperations(int[] nums1, int[] nums2) {
