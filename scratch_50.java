@@ -15,6 +15,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1338
+    public int minSetSize(int[] arr) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int i : arr) freq.put(i, freq.getOrDefault(i, 0) + 1);
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -freq.getOrDefault(o, 0)));
+        for (int i : freq.keySet()) {
+            pq.offer(i);
+        }
+        int left = arr.length, half = arr.length / 2, result = 0;
+        while (left > half) {
+            left -= freq.get(pq.poll());
+            result++;
+        }
+        return result;
+    }
+
     // Interview 05.01
     public int insertBits(int N, int M, int i, int j) {
         int mask = 0;
