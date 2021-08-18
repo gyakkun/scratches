@@ -13,6 +13,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1100
+    public int numKLenSubstrNoRepeats(String s, int k) {
+        int result = 0, n = s.length();
+        if (k > n) return 0;
+        int[] freq = new int[26];
+        char[] ca = s.toCharArray();
+        for (int i = 0; i < k; i++) {
+            freq[ca[i] - 'a']++;
+        }
+        if (lc1100Check(freq)) result++;
+        for (int i = k; i < n; i++) {
+            freq[ca[i - k] - 'a']--;
+            freq[ca[i] - 'a']++;
+            if (lc1100Check(freq)) result++;
+        }
+        return result;
+    }
+
+    private boolean lc1100Check(int[] freq) {
+        for (int i : freq) if (i > 1) return false;
+        return true;
+    }
+
     // LC117 ** O(1) 空间
     class Lc117 {
         public Node connect(Node root) {
