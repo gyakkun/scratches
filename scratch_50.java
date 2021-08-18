@@ -15,6 +15,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 01.08
+    public void setZeroes(int[][] matrix) {
+        boolean[] rowMark = new boolean[matrix.length], colMark = new boolean[matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] == 0) {
+                    rowMark[i] = true;
+                    colMark[j] = true;
+                }
+            }
+        }
+        for (int i = 0; i < matrix.length; i++) {
+            if (rowMark[i]) {
+                for (int j = 0; j < matrix[0].length; j++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        for (int j = 0; j < matrix[0].length; j++) {
+            if(colMark[j]){
+                for (int i = 0; i < matrix.length; i++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+    }
+
     // LC1338
     public int minSetSize(int[] arr) {
         Map<Integer, Integer> freq = new HashMap<>();
