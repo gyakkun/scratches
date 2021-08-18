@@ -15,6 +15,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 17.01
+    public int add(int a, int b) {
+        int sum = a;
+        while (b != 0) {
+            int and = a & b;
+            int xor = a ^ b;
+            b = and << 1;
+            sum = xor;
+            a = xor;
+        }
+        return sum;
+    }
+
     // Interview 01.08
     public void setZeroes(int[][] matrix) {
         boolean[] rowMark = new boolean[matrix.length], colMark = new boolean[matrix[0].length];
@@ -34,7 +47,7 @@ class Scratch {
             }
         }
         for (int j = 0; j < matrix[0].length; j++) {
-            if(colMark[j]){
+            if (colMark[j]) {
                 for (int i = 0; i < matrix.length; i++) {
                     matrix[i][j] = 0;
                 }
