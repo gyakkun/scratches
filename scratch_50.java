@@ -14,6 +14,41 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC589
+    class Lc589 {
+        public List<Integer> preorder(Node root) {
+            List<Integer> result = new ArrayList<>();
+            if (root == null) return result;
+            Deque<Node> q = new LinkedList<>();
+            q.push(root);
+            while (!q.isEmpty()) {
+                Node p = q.pop();
+                result.add(p.val);
+                for (int i = p.children.size() - 1; i >= 0; i--) {
+                    q.push(p.children.get(i));
+                }
+            }
+            return result;
+        }
+
+        class Node {
+            public int val;
+            public List<Node> children;
+
+            public Node() {
+            }
+
+            public Node(int _val) {
+                val = _val;
+            }
+
+            public Node(int _val, List<Node> _children) {
+                val = _val;
+                children = _children;
+            }
+        }
+    }
+
     // Interview 16.18 ** 写得太复杂了！
     public boolean patternMatching(String pattern, String value) {
         char[] cp = pattern.toCharArray();
