@@ -15,6 +15,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 05.01
+    public int insertBits(int N, int M, int i, int j) {
+        int mask = 0;
+        for (int k = i; k <= j; k++) {
+            mask |= 1 << k;
+        }
+        mask = ~mask;
+        N &= mask;
+        M <<= i;
+        M &= ~mask;
+        N |= M;
+        return N;
+    }
+
     // LC1129 ** 可能有环 有平行边
     public int[] shortestAlternatingPaths(int n, int[][] red_edges, int[][] blue_edges) {
         final int RED = 0, BLUE = 1;
