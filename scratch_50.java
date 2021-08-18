@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import org.apache.poi.ss.formula.functions.T;
 
 import java.util.*;
 
@@ -9,12 +8,56 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.patternMatching("bbbaa",
-                "xxxxxxy"));
+        System.out.println(s.robot("RUUR",
+                new int[][]{{10, 5}, {1, 6}, {6, 10}, {3, 0}, {0, 3}, {0, 10}, {6, 2}}, 7856, 9033));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LCP 03
+    public boolean robot(String command, int[][] obstacles, int x, int y) {
+        Set<Pair<Integer, Integer>> obstacleSet = new HashSet<>();
+        for (int[] o : obstacles) obstacleSet.add(new Pair<>(o[0], o[1]));
+        char[] ca = command.toCharArray();
+        int ax = 0, ay = 0;
+        int commandPtr = 0;
+        while (true) {
+            int nextX = ax, nextY = ay;
+            if (ca[commandPtr] == 'U') {
+                nextY++;
+            } else {
+                nextX++;
+            }
+            if (obstacleSet.contains(new Pair<>(nextX, nextY))) return false;
+            ax = nextX;
+            ay = nextY;
+            if (ax == x && ay == y) return true;
+            if (ax > x || ay > y) break;
+            if (ax > 1000000000 || ay > 1000000000) return false;
+            commandPtr = (commandPtr + 1) % ca.length;
+        }
+        return false;
+    }
+
+    // LC1742
+    public int countBalls(int lowLimit, int highLimit) {
+        int[] count = new int[46];
+        for (int i = lowLimit; i <= highLimit; i++) {
+            count[getDigitSum(i)]++;
+        }
+
+        return Arrays.stream(count).max().getAsInt();
+    }
+
+    private int getDigitSum(int num) {
+        int result = 0;
+        while (num != 0) {
+            result += (num % 10);
+            num /= 10;
+        }
+        return result;
     }
 
     // JZOF II 058 LC729
@@ -35,7 +78,7 @@ class Scratch {
             int[] lsf = left.floor(lQuery), lsc = left.ceiling(lQuery),
                     rsf = right.floor(rQuery), rsc = right.ceiling(rQuery);
 
-            if (       (lsf == null || lsf[1] <= start)
+            if ((lsf == null || lsf[1] <= start)
                     && (lsc == null || lsc[0] >= end)
                     && (rsf == null || rsf[1] <= start)
                     && (rsc == null || rsc[0] >= end)) {
