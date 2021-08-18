@@ -16,20 +16,11 @@ class Scratch {
     // LC1737
     public int minCharacters(String a, String b) {
         // ONE TWO
-        int moveOne = Integer.MAX_VALUE / 2, moveTwo = Integer.MAX_VALUE / 2, moveThree = Integer.MAX_VALUE / 2;
+        int result = Integer.MAX_VALUE / 2;
         int[] freqA = new int[26], freqB = new int[26], prefixA = new int[27], prefixB = new int[27];
-        char minA = 'z', minB = 'z', maxA = 'a', maxB = 'a';
         char[] ca = a.toCharArray(), cb = b.toCharArray();
-        for (char c : ca) {
-            freqA[c - 'a']++;
-            maxA = (char) Math.max(maxA, c);
-            minA = (char) Math.min(minA, c);
-        }
-        for (char c : cb) {
-            freqB[c - 'a']++;
-            maxB = (char) Math.max(maxB, c);
-            minB = (char) Math.min(minB, c);
-        }
+        for (char c : ca) freqA[c - 'a']++;
+        for (char c : cb) freqB[c - 'a']++;
         for (int i = 1; i <= 26; i++) prefixA[i] = freqA[i - 1] + prefixA[i - 1];
         for (int i = 1; i <= 26; i++) prefixB[i] = freqB[i - 1] + prefixB[i - 1];
         // 令A严格小于B, 使用一个指针指示B中最小的字母, 指针应该在b...z上移动, 当B最小的是a时, 首先考虑将B的所有a变为b
@@ -40,25 +31,24 @@ class Scratch {
             tmpMove += prefixB[target - 'a'] - prefixB[0];
             // 将A中大于ptr的变为ptr-1
             tmpMove += prefixA[26] - prefixA[target - 'a'];
-            moveOne = Math.min(moveOne, tmpMove);
+            result = Math.min(result, tmpMove);
         }
-
+        // 令B严格小于A
         for (int ptr = 'b'; ptr <= 'z'; ptr++) {
             char target = (char) ptr;
             int tmpMove = 0;
             tmpMove += prefixA[target - 'a'] - prefixA[0];
             tmpMove += prefixB[26] - prefixB[target - 'a'];
-            moveTwo = Math.min(moveTwo, tmpMove);
+            result = Math.min(result, tmpMove);
         }
 
         // THREE
-
         for (int i = 0; i < 26; i++) {
             int tmpMove = prefixA[26] + prefixB[26] - freqA[i] - freqB[i];
-            moveThree = Math.min(moveThree, tmpMove);
+            result = Math.min(result, tmpMove);
         }
 
-        return Math.min(moveOne, Math.min(moveTwo, moveThree));
+        return result;
     }
 
     // JZOF II 113
