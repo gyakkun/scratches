@@ -1272,7 +1272,7 @@ class MyCalendar {
     public boolean book(int start, int end) {
         Integer prev = tm.floorKey(start);
         Integer next = tm.ceilingKey(start);
-        if ((prev == null || tm.get(prev) <= start) && (next == null || end <= tm.get(next))) {
+        if ((prev == null || tm.get(prev) <= start) && (next == null || end <= next)) {
             tm.put(start, end);
             return true;
         }
