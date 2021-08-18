@@ -15,6 +15,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 113
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> outEdge = new ArrayList<>(numCourses);
+        List<Integer> result = new ArrayList<>(numCourses);
+        Deque<Integer> q = new LinkedList<>();
+        int[] indegree = new int[numCourses];
+        for (int i = 0; i < numCourses; i++) outEdge.add(new ArrayList<>());
+        for (int[] p : prerequisites) {
+            outEdge.get(p[1]).add(p[0]);
+            indegree[p[0]]++;
+        }
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) q.offer(i);
+        }
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            result.add(p);
+            for (int next : outEdge.get(p)) {
+                indegree[next]--;
+                if (indegree[next] == 0) q.offer(next);
+            }
+        }
+        if (result.size() != numCourses) return new int[]{};
+        return result.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
     // Interview 17.01
     public int add(int a, int b) {
         int sum = a;
