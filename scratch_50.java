@@ -6,11 +6,107 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minCharacters("aba", "caa"));
+        System.out.println(s.patternMatching("bbbaa",
+                "xxxxxxy"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 16.18 ** 写得太复杂了！
+    public boolean patternMatching(String pattern, String value) {
+        char[] cp = pattern.toCharArray();
+        int aCount = 0, bCount = 0, valueLen = value.length();
+        int firstAIdx = pattern.indexOf('a'), firstBIdx = pattern.indexOf('b');
+        for (char c : cp) {
+            if (c == 'a') aCount++;
+            else bCount++;
+        }
+        if (aCount != 0 && bCount != 0 && value.equals("")) return false;
+        else if (value.equals("")) return true;
+        if (bCount == 0) {
+            int aLen = valueLen / aCount;
+            if (aLen * aCount != valueLen) return false;
+            String ap = value.substring(0, aLen);
+            int ptrOnV = -aLen;
+            for (int i = 0; i < aCount; i++) {
+                ptrOnV = value.indexOf(ap, ptrOnV + aLen);
+                if (ptrOnV == -1) return false;
+            }
+            return true;
+        } else if (aCount == 0) {
+            int bLen = valueLen / bCount;
+            if (bLen * bCount != valueLen) return false;
+            String ap = value.substring(0, bLen);
+            int ptrOnV = -bLen;
+            for (int i = 0; i < bCount; i++) {
+                ptrOnV = value.indexOf(ap, ptrOnV + bLen);
+                if (ptrOnV == -1) return false;
+            }
+            return true;
+        } else {
+            for (int aLen = 0; aLen <= (valueLen / aCount); aLen++) {
+                int bLen = (valueLen - aLen * aCount) / bCount;
+                if (bLen * bCount + aLen * aCount != valueLen) continue;
+                String ap = "", bp = "";
+                if (aLen == 0) {
+                    bp = value.substring(0, bLen);
+                    int ptr = 0, count = 0;
+                    while (ptr >= 0) {
+                        ptr = value.indexOf(bp, ptr);
+                        if (ptr >= 0) {
+                            count++;
+                            ptr += bLen;
+                        }
+                    }
+                    if (count == bCount) {
+                        return true;
+                    }
+                    continue;
+                }
+                if (bLen == 0) {
+                    ap = value.substring(0, aLen);
+                    int ptr = 0, count = 0;
+                    while (ptr >= 0) {
+                        ptr = value.indexOf(ap, ptr);
+                        if (ptr >= 0) {
+                            count++;
+                            ptr += aLen;
+                        }
+                    }
+                    if (count == aCount) {
+                        return true;
+                    }
+                    continue;
+                }
+                ap = value.substring(firstAIdx * bLen, firstAIdx * bLen + aLen);
+                bp = value.substring(firstBIdx * aLen, firstBIdx * aLen + bLen);
+                int ptrOnP = 0, ptrOnV = 0;
+                boolean success = true;
+                for (; ptrOnP < cp.length; ptrOnP++) {
+                    if (cp[ptrOnP] == 'a') {
+                        ptrOnV = value.indexOf(ap, ptrOnV);
+                        if (ptrOnV >= 0) {
+                            ptrOnV += aLen;
+                        }
+                    } else {
+                        ptrOnV = value.indexOf(bp, ptrOnV);
+                        if (ptrOnV >= 0) {
+                            ptrOnV += bLen;
+                        }
+                    }
+                    if (ptrOnV < 0) {
+                        success = false;
+                        break;
+                    }
+                }
+                if (!success) continue;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // LC1100
