@@ -1,3 +1,6 @@
+import javafx.util.Pair;
+import org.apache.poi.ss.formula.functions.T;
+
 import java.util.*;
 
 class Scratch {
@@ -12,6 +15,37 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF II 058 LC729
+    class MyCalendar {
+
+        TreeSet<int[]> left;
+        TreeSet<int[]> right;
+
+        public MyCalendar() {
+            left = new TreeSet<>((o1, o2) -> o1[0] == o2[0] ? o1[1] - o2[1] : o1[0] - o2[0]);
+            right = new TreeSet<>((o1, o2) -> o1[1] == o2[1] ? o1[0] - o2[0] : o1[1] - o2[1]);
+        }
+
+        // 前闭后开
+        public boolean book(int start, int end) {
+            int[] lQuery = new int[]{start, start};
+            int[] rQuery = new int[]{end, end};
+            int[] lsf = left.floor(lQuery), lsc = left.ceiling(lQuery),
+                    rsf = right.floor(rQuery), rsc = right.ceiling(rQuery);
+
+            if (       (lsf == null || lsf[1] <= start)
+                    && (lsc == null || lsc[0] >= end)
+                    && (rsf == null || rsf[1] <= start)
+                    && (rsc == null || rsc[0] >= end)) {
+                int[] entry = new int[]{start, end};
+                left.add(entry);
+                right.add(entry);
+                return true;
+            }
+            return false;
+        }
     }
 
     // LC589
