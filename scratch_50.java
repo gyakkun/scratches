@@ -13,22 +13,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC117 O(N) Space
+    // LC117 ** O(1) 空间
     class Lc117 {
         public Node connect(Node root) {
-            if(root==null) return null;
-            Deque<Node> q = new LinkedList<>();
-            q.offer(root);
-            while (!q.isEmpty()) {
-                int qSize = q.size();
-                for (int i = 0; i < qSize; i++) {
-                    Node p = q.poll();
-                    if (i != qSize - 1) {
-                        p.next = q.peek();
+            if (root == null) return null;
+            Node start = root;
+            while (start != null) { // 思想: 在本层连接下一层的next
+                Node nextStart = null, last = null; // 下一层的开始节点, 遍历到的下一层的最后一个节点
+                for (Node ptr = start; ptr != null; ptr = ptr.next) {
+                    if (ptr.left != null) {
+                        if (last != null) {
+                            last.next = ptr.left;
+                        }
+                        if (nextStart == null) {
+                            nextStart = ptr.left;
+                        }
+                        last = ptr.left;
                     }
-                    if (p.left != null) q.offer(p.left);
-                    if (p.right != null) q.offer(p.right);
+                    if (ptr.right != null) {
+                        if (last != null) {
+                            last.next = ptr.right;
+                        }
+                        if (nextStart == null) {
+                            nextStart = ptr.right;
+                        }
+                        last = ptr.right;
+                    }
                 }
+                start = nextStart;
             }
             return root;
         }
