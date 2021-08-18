@@ -13,6 +13,48 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC117 O(N) Space
+    class Lc117 {
+        public Node connect(Node root) {
+            if(root==null) return null;
+            Deque<Node> q = new LinkedList<>();
+            q.offer(root);
+            while (!q.isEmpty()) {
+                int qSize = q.size();
+                for (int i = 0; i < qSize; i++) {
+                    Node p = q.poll();
+                    if (i != qSize - 1) {
+                        p.next = q.peek();
+                    }
+                    if (p.left != null) q.offer(p.left);
+                    if (p.right != null) q.offer(p.right);
+                }
+            }
+            return root;
+        }
+
+        class Node {
+            public int val;
+            public Node left;
+            public Node right;
+            public Node next;
+
+            public Node() {
+            }
+
+            public Node(int _val) {
+                val = _val;
+            }
+
+            public Node(int _val, Node _left, Node _right, Node _next) {
+                val = _val;
+                left = _left;
+                right = _right;
+                next = _next;
+            }
+        }
+    }
+
     // LC1737
     public int minCharacters(String a, String b) {
         // ONE TWO
@@ -656,3 +698,4 @@ class ListNode {
         val = x;
     }
 }
+
