@@ -33,27 +33,24 @@ class Scratch {
 
     // LCP 03
     public boolean robot(String command, int[][] obstacles, int x, int y) {
-        Set<Pair<Integer, Integer>> obstacleSet = new HashSet<>();
-        for (int[] o : obstacles) obstacleSet.add(new Pair<>(o[0], o[1]));
+        Set<Pair<Integer, Integer>> trackSetInOneCycle = new HashSet<>();
         char[] ca = command.toCharArray();
-        int ax = 0, ay = 0;
-        int commandPtr = 0;
-        while (true) {
-            int nextX = ax, nextY = ay;
-            if (ca[commandPtr] == 'U') {
-                nextY++;
-            } else {
-                nextX++;
-            }
-            if (obstacleSet.contains(new Pair<>(nextX, nextY))) return false;
-            ax = nextX;
-            ay = nextY;
-            if (ax == x && ay == y) return true;
-            if (ax > x || ay > y) break;
-            if (ax > 1000000000 || ay > 1000000000) return false;
-            commandPtr = (commandPtr + 1) % ca.length;
+        int xCount = 0, yCount = 0;
+        trackSetInOneCycle.add(new Pair<>(0, 0));
+        for (char c : ca) {
+            if (c == 'U') yCount++;
+            else xCount++;
+            trackSetInOneCycle.add(new Pair<>(xCount, yCount));
         }
-        return false;
+        int cycles = Math.min(x / xCount, y / yCount);
+        if (!trackSetInOneCycle.contains(new Pair<>(x - cycles * xCount, y - cycles * yCount))) return false;
+
+        for (int[] o : obstacles) {
+            if (o[0] > x || o[1] > y) continue;
+            int oCycles = Math.min(o[0] / xCount, o[1] / yCount);
+            if (trackSetInOneCycle.contains(new Pair<>(o[0] - oCycles * xCount, o[1] - oCycles * yCount))) return false;
+        }
+        return true;
     }
 
     // LC1742
