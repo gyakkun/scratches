@@ -16,6 +16,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC542
+    public int[][] updateMatrix(int[][] mat) {
+        int m = mat.length, n = mat[0].length;
+        boolean[][] visited = new boolean[m][n];
+        int[][] result = new int[m][n], directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        Deque<int[]> q = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (mat[i][j] == 0) {
+                    q.offer(new int[]{i, j});
+                }
+            }
+        }
+        int layer = 0;
+        while (!q.isEmpty()) {
+            int qSize = q.size();
+            layer++;
+            for (int i = 0; i < qSize; i++) {
+                int[] p = q.poll();
+                if (visited[p[0]][p[1]]) continue;
+                visited[p[0]][p[1]] = true;
+                for (int[] d : directions) {
+                    int x = p[0] + d[0], y = p[1] + d[1];
+                    if (x >= 0 && x < mat.length && y >= 0 && y < mat[0].length) {
+                        if (!visited[x][y]) {
+                            if (mat[x][y] == 1 && result[x][y] == 0) {
+                                result[x][y] = layer;
+                            }
+                            q.offer(new int[]{x, y});
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     // LCP 22 **
     public int paintingPlan(int n, int k) {
         if (k == 0) return 1;
