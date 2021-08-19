@@ -8,12 +8,40 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.lenLongestFibSubseq(new int[]{1, 2, 3, 4, 5, 6, 7, 8}));
-        System.out.println(s.lenLongestFibSubseq(new int[]{1, 3, 7, 11, 12, 14, 18}));
+        System.out.println(s.movesToMakeZigzag(new int[]{1, 2, 3}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1144
+    public int movesToMakeZigzag(int[] nums) {
+        if (nums.length <= 2) return 0;
+        // 一开始下降
+        int result1 = 0;
+        for (int i = 1; i < nums.length; i += 2) {
+            if (i - 1 >= 0 && i + 1 < nums.length) {
+                result1 += Math.max(nums[i] - Math.min(nums[i - 1], nums[i + 1]) + 1, 0);
+            } else if (i - 1 < 0) {
+                result1 += Math.max(nums[i] - nums[i + 1] + 1, 0);
+            } else if (i + 1 >= nums.length) {
+                result1 += Math.max(nums[i] - nums[i - 1] + 1, 0);
+            }
+        }
+
+        // 一开始上升
+        int result2 = 0;
+        for (int i = 0; i < nums.length; i += 2) {
+            if (i - 1 >= 0 && i + 1 < nums.length) {
+                result2 += Math.max(nums[i] - Math.min(nums[i - 1], nums[i + 1]) + 1, 0);
+            } else if (i - 1 < 0) {
+                result2 += Math.max(nums[i] - nums[i + 1] + 1, 0);
+            } else if (i + 1 >= nums.length) {
+                result2 += Math.max(nums[i] - nums[i - 1] + 1, 0);
+            }
+        }
+        return Math.min(result1, result2);
     }
 
     // LC873
@@ -484,6 +512,7 @@ class Scratch {
                 next = _next;
             }
         }
+
     }
 
     // LC1737
