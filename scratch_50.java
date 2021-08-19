@@ -8,12 +8,39 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.largestMerge("asdfjjlkadfkljasdfk",
-                "jkladfjlkajdflkjkdkj"));
+        System.out.println(s.lenLongestFibSubseq(new int[]{1, 2, 3, 4, 5, 6, 7, 8}));
+        System.out.println(s.lenLongestFibSubseq(new int[]{1, 3, 7, 11, 12, 14, 18}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC873
+    public int lenLongestFibSubseq(int[] arr) {
+        // arr 严格递增
+        int n = arr.length;
+        int[] result = new int[1001];
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i = 0; i < n; i++) m.put(arr[i], i);
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i - 1; j >= 0; j--) {
+                int len = 2, last = i, lastButOne = j, next = arr[last] - arr[lastButOne];
+                while (m.containsKey(next) && m.get(next) < lastButOne) {
+                    len++;
+                    last = lastButOne;
+                    lastButOne = m.get(next);
+                    next = arr[last] - arr[lastButOne];
+                }
+                if (len != 2) {
+                    result[len]++;
+                }
+            }
+        }
+        for (int i = 1000; i >= 0; i--) {
+            if (result[i] != 0) return i;
+        }
+        return 0;
     }
 
     // JZOF II 057
