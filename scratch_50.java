@@ -965,21 +965,18 @@ class ListNode {
 
 // LC622
 class MyCircularQueue {
-
     int[] arr;
-    int headIdx, endIdx, count;
+    int headIdx, count;
 
     public MyCircularQueue(int k) {
         arr = new int[k];
         headIdx = 0;
-        endIdx = -1;
         count = 0;
     }
 
     public boolean enQueue(int value) {
         if (isFull()) return false;
-        endIdx = (endIdx + 1) % arr.length;
-        arr[endIdx] = value;
+        arr[(headIdx + count) % arr.length] = value;
         count++;
         return true;
     }
@@ -999,7 +996,7 @@ class MyCircularQueue {
 
     public int Rear() {
         if (isEmpty()) return -1;
-        return arr[endIdx];
+        return arr[(headIdx + count - 1 + arr.length) % arr.length];
     }
 
     public boolean isEmpty() {
