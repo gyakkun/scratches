@@ -8,11 +8,66 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.movesToMakeZigzag(new int[]{1, 2, 3}));
+        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Microsoft O(n^2)
+    // https://leetcode-cn.com/circle/discuss/OPC9WF/
+    public int[] maxCrossSum(int[] m, int[] n) {
+        // m,n 是长度为l的数列, 求区间[a,b] [c,d], 使得  sum(m, a,b) -sum(n,a,b)  - (sum(m,c,d) - sum(n,c,d)) 最大
+        // [a,b] [c,d] 没有交集
+        // 返回[a,b,c,d]
+        int l = m.length;
+        int[] mMinusN = new int[l], prefix = new int[l + 1];
+        for (int i = 0; i < l; i++) mMinusN[i] = m[i] - n[i];
+        for (int i = 0; i < l; i++) prefix[i + 1] = prefix[i] + mMinusN[i];
+        int[][] minDp = new int[l][l], maxDp = new int[l][l];
+        int[][][] minDpRange = new int[l][l][2], maxDpRange = new int[l][l][2];
+        // 求使得和式左侧最大的区间
+        for (int i = 0; i < l; i++) {
+            maxDp[i][i] = mMinusN[i];
+            maxDpRange[i][i] = new int[]{i, i};
+            for (int j = i + 1; j < l; j++) {
+                if (maxDp[i][j - 1] + mMinusN[j] > mMinusN[j]) {
+                    maxDp[i][j] = maxDp[i][j - 1] + mMinusN[j];
+                    maxDpRange[i][j] = new int[]{maxDpRange[i][j - 1][0], j};
+                } else {
+                    maxDp[i][j] = mMinusN[j];
+                    maxDpRange[i][j] = new int[]{j, j};
+                }
+            }
+        }
+        // 同理 求使得和式右侧最小的区间
+        for (int i = 0; i < l; i++) {
+            minDp[i][i] = mMinusN[i];
+            minDpRange[i][i] = new int[]{i, i};
+            for (int j = i + 1; j < l; j++) {
+                if (minDp[i][j - 1] + mMinusN[j] < mMinusN[j]) {
+                    minDp[i][j] = minDp[i][j - 1] + mMinusN[j];
+                    minDpRange[i][j] = new int[]{minDpRange[i][j - 1][0], j};
+                } else {
+                    minDp[i][j] = mMinusN[j];
+                    minDpRange[i][j] = new int[]{j, j};
+                }
+            }
+        }
+        int maxValue = Integer.MIN_VALUE;
+        int[] result = new int[]{};
+        for (int i = 0; i < l; i++) {
+            if (i + 1 < l && maxDp[0][i] - minDp[i + 1][l - 1] > maxValue) {
+                maxValue = maxDp[0][i] - minDp[i + 1][l - 1];
+                result = new int[]{maxDpRange[0][i][0], maxDpRange[0][i][1], minDpRange[i + 1][l - 1][0], minDpRange[i + 1][l - 1][1]};
+            }
+            if (i + 1 < l && maxDp[i + 1][l - 1] - minDp[0][i] > maxValue) {
+                maxValue = maxDp[i + 1][l - 1] - minDp[0][i];
+                result = new int[]{maxDpRange[i + 1][l - 1][0], maxDpRange[i + 1][l - 1][1], minDpRange[0][i][0], minDpRange[0][i][1]};
+            }
+        }
+        return result;
     }
 
     // LC991
