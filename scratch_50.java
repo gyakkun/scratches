@@ -16,6 +16,55 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 057
+    public int[][] findContinuousSequence(int target) {
+        // target = (a1 + an) * n /2
+        // product = (a1 +  a1 + (n-1) *d) *n
+        List<List<Integer>> result = new ArrayList<>();
+        Set<Integer> a1Set = new HashSet<>();
+        int product = target * 2;
+        int sqrt = (int) (Math.sqrt(product));
+        for (int i = 1; i <= sqrt; i++) {
+            if (product % i == 0) {
+                // 令i为n
+                int n = i;
+                int k = product / n;
+                if ((k - n + 1) % 2 == 0) {
+                    int a1 = (k - n + 1) / 2;
+                    if (a1 > 0 && !a1Set.contains(a1) && a1 != target) {
+                        a1Set.add(a1);
+                        List<Integer> tmp = new ArrayList<>(n);
+                        for (int j = 0; j < n; j++) {
+                            tmp.add(a1++);
+                        }
+                        result.add(tmp);
+                    }
+                }
+
+                // 令product/i为n
+                n = product - i;
+                k = product / n;
+                if ((k - n + 1) % 2 == 0) {
+                    int a1 = (k - n + 1) / 2;
+                    if (a1 > 0 && !a1Set.contains(a1) && a1 != target) {
+                        a1Set.add(a1);
+                        List<Integer> tmp = new ArrayList<>(n);
+                        for (int j = 0; j < n; j++) {
+                            tmp.add(a1++);
+                        }
+                        result.add(tmp);
+                    }
+                }
+            }
+        }
+        result.sort(Comparator.comparingInt(o -> o.get(0)));
+        int[][] resultArr = new int[result.size()][];
+        for (int i = 0; i < result.size(); i++) {
+            resultArr[i] = result.get(i).stream().mapToInt(Integer::valueOf).toArray();
+        }
+        return resultArr;
+    }
+
     // LC1754 **
     public String largestMerge(String word1, String word2) {
         StringBuilder sb = new StringBuilder();
