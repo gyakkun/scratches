@@ -16,6 +16,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1119
+    public String removeVowels(String s) {
+        Set<Character> vowelSet = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));
+        char[] ca = s.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ca.length; i++) if (!vowelSet.contains(ca[i])) sb.append(ca[i]);
+        return sb.toString();
+    }
+
     // LC345
     public String reverseVowels(String s) {
         Set<Character> vowelSet = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'));
@@ -954,3 +963,50 @@ class ListNode {
     }
 }
 
+// LC622
+class MyCircularQueue {
+
+    int[] arr;
+    int headIdx, endIdx, count;
+
+    public MyCircularQueue(int k) {
+        arr = new int[k];
+        headIdx = 0;
+        endIdx = -1;
+        count = 0;
+    }
+
+    public boolean enQueue(int value) {
+        if (isFull()) return false;
+        endIdx = (endIdx + 1) % arr.length;
+        arr[endIdx] = value;
+        count++;
+        return true;
+    }
+
+    public boolean deQueue() {
+        if (isEmpty()) return false;
+        arr[headIdx] = 0;
+        headIdx = (headIdx + 1) % arr.length;
+        count--;
+        return true;
+    }
+
+    public int Front() {
+        if (isEmpty()) return -1;
+        return arr[headIdx];
+    }
+
+    public int Rear() {
+        if (isEmpty()) return -1;
+        return arr[endIdx];
+    }
+
+    public boolean isEmpty() {
+        return count == 0;
+    }
+
+    public boolean isFull() {
+        return count == arr.length;
+    }
+}
