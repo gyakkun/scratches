@@ -29,32 +29,12 @@ class Scratch {
                 // 令i为n
                 int n = i;
                 int k = product / n;
-                if ((k - n + 1) % 2 == 0) {
-                    int a1 = (k - n + 1) / 2;
-                    if (a1 > 0 && !a1Set.contains(a1) && a1 != target) {
-                        a1Set.add(a1);
-                        List<Integer> tmp = new ArrayList<>(n);
-                        for (int j = 0; j < n; j++) {
-                            tmp.add(a1++);
-                        }
-                        result.add(tmp);
-                    }
-                }
+                jzofii057Handle(target, result, a1Set, n, k);
 
                 // 令product/i为n
                 n = product - i;
                 k = product / n;
-                if ((k - n + 1) % 2 == 0) {
-                    int a1 = (k - n + 1) / 2;
-                    if (a1 > 0 && !a1Set.contains(a1) && a1 != target) {
-                        a1Set.add(a1);
-                        List<Integer> tmp = new ArrayList<>(n);
-                        for (int j = 0; j < n; j++) {
-                            tmp.add(a1++);
-                        }
-                        result.add(tmp);
-                    }
-                }
+                jzofii057Handle(target, result, a1Set, n, k);
             }
         }
         result.sort(Comparator.comparingInt(o -> o.get(0)));
@@ -63,6 +43,20 @@ class Scratch {
             resultArr[i] = result.get(i).stream().mapToInt(Integer::valueOf).toArray();
         }
         return resultArr;
+    }
+
+    private void jzofii057Handle(int target, List<List<Integer>> result, Set<Integer> a1Set, int n, int k) {
+        if ((k - n + 1) % 2 == 0) {
+            int a1 = (k - n + 1) / 2;
+            if (a1 > 0 && !a1Set.contains(a1) && a1 != target) {
+                a1Set.add(a1);
+                List<Integer> tmp = new ArrayList<>(n);
+                for (int j = 0; j < n; j++) {
+                    tmp.add(a1++);
+                }
+                result.add(tmp);
+            }
+        }
     }
 
     // LC1754 **
