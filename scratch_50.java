@@ -8,12 +8,57 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.robot("RUUR",
-                new int[][]{{10, 5}, {1, 6}, {6, 10}, {3, 0}, {0, 3}, {0, 10}, {6, 2}}, 7856, 9033));
+        System.out.println(s.largestMerge("asdfjjlkadfkljasdfk",
+                "jkladfjlkajdflkjkdkj"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1754 **
+    public String largestMerge(String word1, String word2) {
+        StringBuilder sb = new StringBuilder();
+        char[] ca1 = word1.toCharArray(), ca2 = word2.toCharArray();
+
+        int ptr1 = 0, ptr2 = 0;
+        while (ptr1 != ca1.length && ptr2 != ca2.length) {
+            if (ca1[ptr1] > ca2[ptr2]) {
+                sb.append(ca1[ptr1]);
+                ptr1++;
+            } else if (ca1[ptr1] == ca2[ptr2]) {
+                int compare = charSeqCompare(ca1, ptr1, ca2, ptr2);
+                if (compare > 0) {
+                    sb.append(ca1[ptr1++]);
+                } else {
+                    sb.append(ca2[ptr2++]);
+                }
+            } else {
+                sb.append(ca2[ptr2]);
+                ptr2++;
+            }
+        }
+        while (ptr1 != ca1.length) {
+            sb.append(ca1[ptr1++]);
+        }
+        while (ptr2 != ca2.length) {
+            sb.append(ca2[ptr2++]);
+        }
+        return sb.toString();
+    }
+
+    // ** 字典序比较算法
+    private int charSeqCompare(char[] arr1, int startIdx1, char[] arr2, int startIdx2) {
+        int idx1 = startIdx1, idx2 = startIdx2;
+        while (idx1 < arr1.length && idx2 < arr2.length) {
+            if (arr1[idx1] == arr2[idx2]) {
+                idx1++;
+                idx2++;
+                continue;
+            }
+            return arr1[idx1] - arr2[idx2];
+        }
+        return arr1.length - startIdx1 - (arr2.length - startIdx2);
     }
 
     // LC542
