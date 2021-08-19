@@ -20,22 +20,13 @@ class Scratch {
     public String largestMerge(String word1, String word2) {
         StringBuilder sb = new StringBuilder();
         char[] ca1 = word1.toCharArray(), ca2 = word2.toCharArray();
-
         int ptr1 = 0, ptr2 = 0;
         while (ptr1 != ca1.length && ptr2 != ca2.length) {
-            if (ca1[ptr1] > ca2[ptr2]) {
-                sb.append(ca1[ptr1]);
-                ptr1++;
-            } else if (ca1[ptr1] == ca2[ptr2]) {
-                int compare = charSeqCompare(ca1, ptr1, ca2, ptr2);
-                if (compare > 0) {
-                    sb.append(ca1[ptr1++]);
-                } else {
-                    sb.append(ca2[ptr2++]);
-                }
+            int compare = charSeqCompare(ca1, ptr1, ca2, ptr2);
+            if (compare > 0) {
+                sb.append(ca1[ptr1++]);
             } else {
-                sb.append(ca2[ptr2]);
-                ptr2++;
+                sb.append(ca2[ptr2++]);
             }
         }
         while (ptr1 != ca1.length) {
