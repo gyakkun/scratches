@@ -9,9 +9,9 @@ class Scratch {
 
 
 //        System.out.println(s.maxCrossSum(new int[]{12, 29, 38, 48, 57, 69, 10}, new int[]{34, 67, 8, 9, 10, 10, 20}));
-        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
-                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
-//        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
+//        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
+//                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
+        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -48,7 +48,7 @@ class Scratch {
                 curSeg = 0;
                 left = right = i + 1;
                 int min = mMinusN[i + 1], minLeft = i + 1, minRight = i + 1;
-                for (int j = i; j < l; j++) {
+                for (int j = i + 1; j < l; j++) {
                     curSeg = Math.min(mMinusN[j], curSeg + mMinusN[j]);
                     if (curSeg != mMinusN[j]) { // 扩张了
                         right = j;
@@ -70,7 +70,7 @@ class Scratch {
             // 从右侧找最大 左侧找最小
             {
                 int max = mMinusN[i + 1], curSeg = 0, left = i + 1, right = i + 1, maxLeft = i + 1, maxRight = i + 1;
-                for (int j = i; j < l; j++) {
+                for (int j = i + 1; j < l; j++) {
                     curSeg = Math.max(mMinusN[j], curSeg + mMinusN[j]);
                     if (curSeg != mMinusN[j]) { // 扩张了
                         right = j;
