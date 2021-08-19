@@ -16,6 +16,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP 22 **
+    public int paintingPlan(int n, int k) {
+        if (k == 0) return 1;
+        if (k < n) return 0;
+        if (k == n * n) return 1;
+        // 排列数递推公式
+        int[][] C = new int[n + 1][n + 1];
+        int result = 0;
+        for (int i = 0; i < n + 1; i++) {
+            for (int j = 0; j <= i; j++) {
+                if (j == 0) C[i][j] = 1;
+                else C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
+            }
+        }
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (i * n + j * n - i * j == k) {
+                    result += C[n][i] * C[n][j];
+                }
+            }
+        }
+        return result;
+    }
+
     // LC1119
     public String removeVowels(String s) {
         Set<Character> vowelSet = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u'));
