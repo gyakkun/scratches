@@ -15,16 +15,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
     // Microsoft O(n^2)
     // https://leetcode-cn.com/circle/discuss/OPC9WF/
     public int[] maxCrossSum(int[] m, int[] n) {
-        // m,n 是长度为l的数列, 求区间[a,b] [c,d], 使得  sum(m, a,b) -sum(n,a,b)  - (sum(m,c,d) - sum(n,c,d)) 最大
+        // m,n 是长度为l的数列, 求区间[a,b] [c,d], 使得  sum(m, a,b) -sum(n,a,b) - (sum(m,c,d) - sum(n,c,d)) 最大
         // [a,b] [c,d] 没有交集
         // 返回[a,b,c,d]
         int l = m.length;
-        int[] mMinusN = new int[l], prefix = new int[l + 1];
+        int[] mMinusN = new int[l];
         for (int i = 0; i < l; i++) mMinusN[i] = m[i] - n[i];
-        for (int i = 0; i < l; i++) prefix[i + 1] = prefix[i] + mMinusN[i];
         int[][] minDp = new int[l][l], maxDp = new int[l][l];
         int[][][] minDpRange = new int[l][l][2], maxDpRange = new int[l][l][2];
         // 求使得和式左侧最大的区间
