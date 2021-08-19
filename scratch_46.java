@@ -1783,6 +1783,7 @@ class Scratch {
     private int lc818Helper(int target) {
         if (lc818Memo[target] != null) return lc818Memo[target];
         int twoPowCeil = Integer.SIZE - Integer.numberOfLeadingZeros(target);
+        // 一个连续的加速走过的路程总是 (2^n) -1
         if (target == (1 << twoPowCeil) - 1) {
             return twoPowCeil;
         }
@@ -1790,7 +1791,7 @@ class Scratch {
         int min = twoPowCeil + 1 + lc818Helper(((1 << twoPowCeil) - 1) - target);
         // Case 2 不超越 先掉头(R) 然后加速若干次(-1/-3/-7...)(A*back) 再掉头(R) 再加速
         for (int back = 0; back < twoPowCeil - 1; back++) {
-            int distance = target - (1 << (twoPowCeil - 1)) + (1 << back);
+            int distance = target - ((1 << (twoPowCeil - 1)) - 1) + ((1 << back) - 1);
             min = Math.min(min, (twoPowCeil - 1) + 2 + back + lc818Helper(distance));
         }
         return lc818Memo[target] = min;
