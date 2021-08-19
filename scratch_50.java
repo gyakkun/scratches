@@ -8,6 +8,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
+//        System.out.println(s.maxCrossSum(new int[]{12, 29, 38, 48, 57, 69, 10}, new int[]{34, 67, 8, 9, 10, 10, 20}));
         System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
 
 
@@ -34,7 +35,11 @@ class Scratch {
             for (int j = i + 1; j < l; j++) {
                 if (maxDp[i][j - 1] + mMinusN[j] > mMinusN[j]) {
                     maxDp[i][j] = maxDp[i][j - 1] + mMinusN[j];
-                    maxDpRange[i][j] = new int[]{maxDpRange[i][j - 1][0], j};
+                    if (maxDp[i][j] > maxDp[i][j - 1]) {
+                        maxDpRange[i][j] = new int[]{maxDpRange[i][j - 1][0], j};
+                    } else {
+                        maxDpRange[i][j] = maxDpRange[i][j - 1];
+                    }
                 } else {
                     maxDp[i][j] = mMinusN[j];
                     maxDpRange[i][j] = new int[]{j, j};
@@ -48,7 +53,11 @@ class Scratch {
             for (int j = i + 1; j < l; j++) {
                 if (minDp[i][j - 1] + mMinusN[j] < mMinusN[j]) {
                     minDp[i][j] = minDp[i][j - 1] + mMinusN[j];
-                    minDpRange[i][j] = new int[]{minDpRange[i][j - 1][0], j};
+                    if (minDp[i][j] < minDp[i][j - 1]) {
+                        minDpRange[i][j] = new int[]{minDpRange[i][j - 1][0], j};
+                    } else {
+                        minDpRange[i][j] = minDpRange[i][j - 1];
+                    }
                 } else {
                     minDp[i][j] = mMinusN[j];
                     minDpRange[i][j] = new int[]{j, j};
