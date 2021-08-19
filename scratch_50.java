@@ -9,7 +9,9 @@ class Scratch {
 
 
 //        System.out.println(s.maxCrossSum(new int[]{12, 29, 38, 48, 57, 69, 10}, new int[]{34, 67, 8, 9, 10, 10, 20}));
-        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
+        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
+                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
+//        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -23,58 +25,86 @@ class Scratch {
         // m,n 是长度为l的数列, 求区间[a,b] [c,d], 使得  sum(m, a,b) -sum(n,a,b) - (sum(m,c,d) - sum(n,c,d)) 最大
         // [a,b] [c,d] 没有交集
         // 返回[a,b,c,d]
-        int l = m.length;
-        int[] mMinusN = new int[l];
+        int l = m.length, maxValue = Integer.MIN_VALUE;
+        int[] mMinusN = new int[l], result = new int[0];
         for (int i = 0; i < l; i++) mMinusN[i] = m[i] - n[i];
-        int[][] minDp = new int[l][l], maxDp = new int[l][l];
-        int[][][] minDpRange = new int[l][l][2], maxDpRange = new int[l][l][2];
-        // 求使得和式左侧最大的区间
-        for (int i = 0; i < l; i++) {
-            maxDp[i][i] = mMinusN[i];
-            maxDpRange[i][i] = new int[]{i, i};
-            for (int j = i + 1; j < l; j++) {
-                if (maxDp[i][j - 1] + mMinusN[j] > mMinusN[j]) {
-                    maxDp[i][j] = maxDp[i][j - 1] + mMinusN[j];
-                    if (maxDp[i][j] > maxDp[i][j - 1]) {
-                        maxDpRange[i][j] = new int[]{maxDpRange[i][j - 1][0], j};
+        for (int i = 0; i < l - 1; i++) {
+            // 从左侧找最大 右侧找最小
+            {
+                int max = mMinusN[0], curSeg = 0, left = 0, right = 0, maxLeft = 0, maxRight = 0;
+                for (int j = 0; j <= i; j++) {
+                    curSeg = Math.max(mMinusN[j], curSeg + mMinusN[j]);
+                    if (curSeg != mMinusN[j]) { // 扩张了
+                        right = j;
                     } else {
-                        maxDpRange[i][j] = maxDpRange[i][j - 1];
+                        left = right = j;
                     }
-                } else {
-                    maxDp[i][j] = mMinusN[j];
-                    maxDpRange[i][j] = new int[]{j, j};
+                    if (curSeg > max) {
+                        max = curSeg;
+                        maxLeft = left;
+                        maxRight = right;
+                    }
+                }
+                curSeg = 0;
+                left = right = i + 1;
+                int min = mMinusN[i + 1], minLeft = i + 1, minRight = i + 1;
+                for (int j = i; j < l; j++) {
+                    curSeg = Math.min(mMinusN[j], curSeg + mMinusN[j]);
+                    if (curSeg != mMinusN[j]) { // 扩张了
+                        right = j;
+                    } else {
+                        left = right = j;
+                    }
+                    if (curSeg < min) {
+                        min = curSeg;
+                        minLeft = left;
+                        minRight = right;
+                    }
+                }
+                if (max - min > maxValue) {
+                    maxValue = max - min;
+                    result = new int[]{maxLeft, maxRight, minLeft, minRight};
                 }
             }
-        }
-        // 同理 求使得和式右侧最小的区间
-        for (int i = 0; i < l; i++) {
-            minDp[i][i] = mMinusN[i];
-            minDpRange[i][i] = new int[]{i, i};
-            for (int j = i + 1; j < l; j++) {
-                if (minDp[i][j - 1] + mMinusN[j] < mMinusN[j]) {
-                    minDp[i][j] = minDp[i][j - 1] + mMinusN[j];
-                    if (minDp[i][j] < minDp[i][j - 1]) {
-                        minDpRange[i][j] = new int[]{minDpRange[i][j - 1][0], j};
+
+            // 从右侧找最大 左侧找最小
+            {
+                int max = mMinusN[i + 1], curSeg = 0, left = i + 1, right = i + 1, maxLeft = i + 1, maxRight = i + 1;
+                for (int j = i; j < l; j++) {
+                    curSeg = Math.max(mMinusN[j], curSeg + mMinusN[j]);
+                    if (curSeg != mMinusN[j]) { // 扩张了
+                        right = j;
                     } else {
-                        minDpRange[i][j] = minDpRange[i][j - 1];
+                        left = right = j;
                     }
-                } else {
-                    minDp[i][j] = mMinusN[j];
-                    minDpRange[i][j] = new int[]{j, j};
+                    if (curSeg > max) {
+                        max = curSeg;
+                        maxLeft = left;
+                        maxRight = right;
+                    }
+                }
+                curSeg = 0;
+                left = right = 0;
+                int min = mMinusN[0], minLeft = 0, minRight = 0;
+                for (int j = 0; j <= i; j++) {
+                    curSeg = Math.min(mMinusN[j], curSeg + mMinusN[j]);
+                    if (curSeg != mMinusN[j]) { // 扩张了
+                        right = j;
+                    } else {
+                        left = right = j;
+                    }
+                    if (curSeg < min) {
+                        min = curSeg;
+                        minLeft = left;
+                        minRight = right;
+                    }
+                }
+                if (max - min > maxValue) {
+                    maxValue = max - min;
+                    result = new int[]{maxLeft, maxRight, minLeft, minRight};
                 }
             }
-        }
-        int maxValue = Integer.MIN_VALUE;
-        int[] result = new int[]{};
-        for (int i = 0; i < l; i++) {
-            if (i + 1 < l && maxDp[0][i] - minDp[i + 1][l - 1] > maxValue) {
-                maxValue = maxDp[0][i] - minDp[i + 1][l - 1];
-                result = new int[]{maxDpRange[0][i][0], maxDpRange[0][i][1], minDpRange[i + 1][l - 1][0], minDpRange[i + 1][l - 1][1]};
-            }
-            if (i + 1 < l && maxDp[i + 1][l - 1] - minDp[0][i] > maxValue) {
-                maxValue = maxDp[i + 1][l - 1] - minDp[0][i];
-                result = new int[]{maxDpRange[i + 1][l - 1][0], maxDpRange[i + 1][l - 1][1], minDpRange[0][i][0], minDpRange[0][i][1]};
-            }
+
         }
         return result;
     }
