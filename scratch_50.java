@@ -16,6 +16,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC345
+    public String reverseVowels(String s) {
+        Set<Character> vowelSet = new HashSet<>(Arrays.asList('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'));
+        char[] ca = s.toCharArray();
+        List<Character> l = new ArrayList<>();
+        for (int i = 0; i < ca.length; i++) {
+            if (vowelSet.contains(ca[i])) l.add(ca[i]);
+        }
+        int ptr = 0;
+        for (int i = ca.length - 1; i >= 0; i--) {
+            if (vowelSet.contains(ca[i])) ca[i] = l.get(ptr++);
+        }
+        return new String(ca);
+    }
+
     // LCP 03
     public boolean robot(String command, int[][] obstacles, int x, int y) {
         Set<Pair<Integer, Integer>> obstacleSet = new HashSet<>();
