@@ -22,19 +22,20 @@ class Scratch {
     // LC590
     class Lc590 {
 
-        List<Integer> result = new ArrayList<>();
-
+        // ** 迭代法 注意各种顺序
         public List<Integer> postorder(Node root) {
-            postorderHelper(root);
-            return result;
-        }
-
-        private void postorderHelper(Node root) {
-            if (root == null) return;
-            for (Node child : root.children) {
-                postorderHelper(child);
+            List<Integer> result = new LinkedList<>();
+            if (root == null) return result;
+            Deque<Node> dq = new LinkedList<>();
+            dq.offer(root);
+            while (!dq.isEmpty()) {
+                Node last = dq.pollLast();
+                result.add(0, last.val);
+                for (Node child : last.children) {
+                    dq.offer(child);
+                }
             }
-            result.add(root.val);
+            return result;
         }
 
         class Node {
