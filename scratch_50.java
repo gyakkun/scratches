@@ -18,8 +18,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1176
+    public int dietPlanPerformance(int[] calories, int k, int lower, int upper) {
+        int result = 0, c = 0;
+        for (int i = 0; i < k; i++) {
+            c += calories[i];
+        }
+        if (c < lower) result--;
+        if (c > upper) result++;
+        for (int i = k; i < calories.length; i++) {
+            c -= calories[i - k];
+            c += calories[i];
+            if (c < lower) result--;
+            if (c > upper) result++;
+        }
+        return result;
+    }
+
     // LC1443
-    List<Set<Integer>> lc1443EdgeMtx ;
+    List<Set<Integer>> lc1443EdgeMtx;
     Map<Integer, Set<Integer>> lc1443Mark; // 当发现 [i,j] 这条边能够连接到苹果, 则在mark中加入标记
     List<Boolean> lc1443AppleSet;
 
