@@ -24,15 +24,15 @@ class Scratch {
 
         // ** 迭代法 注意各种顺序
         public List<Integer> postorder(Node root) {
-            List<Integer> result = new LinkedList<>();
+            LinkedList<Integer> result = new LinkedList<>();
             if (root == null) return result;
             Deque<Node> dq = new LinkedList<>();
-            dq.offer(root);
+            dq.push(root);
             while (!dq.isEmpty()) {
-                Node last = dq.pollLast();
-                result.add(0, last.val);
+                Node last = dq.pop();
+                result.push(last.val);
                 for (Node child : last.children) {
-                    dq.offer(child);
+                    dq.push(child);
                 }
             }
             return result;
