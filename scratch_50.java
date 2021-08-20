@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import java.nio.file.DirectoryStream;
 import java.util.*;
 
 class Scratch {
@@ -17,6 +18,84 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC742
+    public int findClosestLeaf(TreeNode root, int k) {
+        TreeNode target = null;
+        Deque<TreeNode> q = new LinkedList<>();
+        Set<TreeNode> leaves = new HashSet<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            if (p.left != null) {
+                q.offer(p.left);
+            }
+            if (p.right != null) {
+                q.offer(p.right);
+            }
+            if (p.left == null && p.right == null) leaves.add(p);
+            if (p.val == k) target = p;
+        }
+        int minDistance = Integer.MAX_VALUE, result = -1;
+        for (TreeNode leaf : leaves) {
+            int dis = treeNodeDistance(root, leaf, target);
+            if (dis < minDistance) {
+                minDistance = dis;
+                result = leaf.val;
+            }
+        }
+        return result;
+    }
+
+    private int treeNodeDistance(TreeNode root, TreeNode a, TreeNode b) {
+        TreeNode lca = LCARecursive(root, a, b);
+        int disA = -1, disB = -1;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(lca);
+        while (!q.isEmpty()) {
+            disA++;
+            int qSize = q.size();
+            boolean finish = false;
+            for (int i = 0; i < qSize; i++) {
+                TreeNode p = q.poll();
+                if (p == a) {
+                    finish = true;
+                    break;
+                }
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+            }
+            if (finish) break;
+        }
+        q.clear();
+        q.offer(lca);
+        while (!q.isEmpty()) {
+            disB++;
+            int qSize = q.size();
+            boolean finish = false;
+            for (int i = 0; i < qSize; i++) {
+                TreeNode p = q.poll();
+                if (p == b) {
+                    finish = true;
+                    break;
+                }
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+            }
+            if (finish) break;
+        }
+        return disA + disB;
+    }
+
+    private TreeNode LCARecursive(TreeNode root, TreeNode a, TreeNode b) {
+        if (root == null) return null;
+        if (root == a || root == b) return root;
+        TreeNode left = LCARecursive(root.left, a, b);
+        TreeNode right = LCARecursive(root.right, a, b);
+        if (left != null && right != null) return root;
+        if (left != null) return left;
+        return right;
     }
 
     // LC590
