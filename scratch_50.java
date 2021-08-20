@@ -19,6 +19,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1598
+    public int minOperations(String[] logs) {
+        int stack = 0;
+        for (String oper : logs) {
+            if (oper.equals("./")) {
+                ;
+            } else if (oper.equals("../")) {
+                stack = Math.max(stack - 1, 0);
+            } else {
+                stack++;
+            }
+        }
+        return stack;
+    }
+
     // LC541
     public String reverseStr(String s, int k) {
         StringBuilder sb = new StringBuilder();
