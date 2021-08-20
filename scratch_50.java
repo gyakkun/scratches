@@ -1595,7 +1595,7 @@ class FileSystem {
     public List<String> ls(String path) {
         List<String> result = new ArrayList<>();
         if (path.equals("/")) {
-            for (Node n : root.children) {
+            for (Node n : root.nameChildMap.values()) {
                 result.add(n.name);
             }
         } else {
@@ -1603,7 +1603,7 @@ class FileSystem {
             if (cur.isFile) {
                 result.add(cur.name);
             } else {
-                for (Node c : cur.children) {
+                for (Node c : cur.nameChildMap.values()) {
                     result.add(c.name);
                 }
             }
@@ -1658,7 +1658,6 @@ class FileSystem {
     }
 
     class Node {
-        List<Node> children;
         Map<String, Node> nameChildMap;
         boolean isFile;
         String name;
@@ -1668,7 +1667,6 @@ class FileSystem {
             this.isFile = isFile;
             this.name = name;
             if (!isFile) {
-                children = new ArrayList<>();
                 nameChildMap = new HashMap<>();
             } else {
                 this.content = "";
@@ -1677,7 +1675,6 @@ class FileSystem {
 
         public void addChild(Node child) {
             nameChildMap.put(child.name, child);
-            children.add(child);
         }
     }
 }
