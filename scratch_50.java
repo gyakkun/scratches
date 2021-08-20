@@ -1,6 +1,5 @@
 import javafx.util.Pair;
 
-import java.nio.file.DirectoryStream;
 import java.util.*;
 
 class Scratch {
@@ -9,15 +8,57 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.maxCrossSum(new int[]{12, 29, 38, 48, 57, 69, 10}, new int[]{34, 67, 8, 9, 10, 10, 20}));
-//        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
-//                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
-        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
-
-        System.out.println(s.reverseStr("abcdefg", 2));
+        System.out.println(s.minTime(
+                4,
+                new int[][]{{0, 2}, {0, 3}, {1, 2}},
+                Arrays.asList(false, true, false, false)
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1443
+    List<Set<Integer>> lc1443EdgeMtx ;
+    Map<Integer, Set<Integer>> lc1443Mark; // 当发现 [i,j] 这条边能够连接到苹果, 则在mark中加入标记
+    List<Boolean> lc1443AppleSet;
+
+    public int minTime(int n, int[][] edges, List<Boolean> hasApple) {
+        lc1443EdgeMtx = new ArrayList<>();
+        lc1443Mark = new HashMap<>();
+        lc1443AppleSet = hasApple;
+        int[] indegree = new int[n];
+        for (int i = 0; i < n; i++) lc1443EdgeMtx.add(new HashSet<>());
+        for (int[] e : edges) {
+            lc1443EdgeMtx.get(e[0]).add(e[1]);
+            indegree[e[1]]++;
+        }
+        for (int i = 1; i < n; i++) {
+            if (indegree[i] == 0) {
+                for (int outNode : lc1443EdgeMtx.get(i)) {
+                    lc1443EdgeMtx.get(outNode).add(i);
+                }
+                lc1443EdgeMtx.get(i).clear();
+            }
+        }
+        lc1443IsConnectedToApple(0);
+        int result = 0;
+        for (int key : lc1443Mark.keySet()) {
+            result += lc1443Mark.get(key).size();
+        }
+        return 2 * result;
+    }
+
+    private boolean lc1443IsConnectedToApple(int node) {
+        boolean result = lc1443AppleSet.get(node);
+        for (int next : lc1443EdgeMtx.get(node)) {
+            if (lc1443IsConnectedToApple(next)) {
+                result = true;
+                lc1443Mark.putIfAbsent(node, new HashSet<>());
+                lc1443Mark.get(node).add(next);
+            }
+        }
+        return result;
     }
 
     // LC742
