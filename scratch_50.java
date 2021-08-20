@@ -9,8 +9,8 @@ class Scratch {
 
 
 //        System.out.println(s.maxCrossSum(new int[]{12, 29, 38, 48, 57, 69, 10}, new int[]{34, 67, 8, 9, 10, 10, 20}));
-//        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
-//                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
+        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
+                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
 //        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
 
         System.out.println(s.reverseStr("abcdefg", 2));
@@ -47,7 +47,7 @@ class Scratch {
         return sb.toString();
     }
 
-    // Microsoft O(n^2) Time O(1) Space
+    // Microsoft O(n) Time O(n) Space
     // https://leetcode-cn.com/circle/discuss/OPC9WF/
     public int[] maxCrossSum(int[] m, int[] n) {
         // m,n 是长度为l的数列, 求区间[a,b] [c,d], 使得  sum(m, a,b) -sum(n,a,b) - (sum(m,c,d) - sum(n,c,d)) 最大
@@ -56,83 +56,111 @@ class Scratch {
         int l = m.length, maxValue = Integer.MIN_VALUE;
         int[] mMinusN = new int[l], result = new int[0];
         for (int i = 0; i < l; i++) mMinusN[i] = m[i] - n[i];
+        int[] dpMaxFromLeft = new int[l], dpMinFromLeft = new int[l], dpMaxFromRight = new int[l], dpMinFromRight = new int[l];
+        int[][] dpMaxFromLeftRange = new int[l][2], dpMinFromLeftRange = new int[l][2], dpMaxFromRightRange = new int[l][2], dpMinFromRightRange = new int[l][2];
+        // 左侧最大
+        {
+            int curSeg = mMinusN[0], left = 0, right = 0, max = mMinusN[0];
+            dpMaxFromLeftRange[0] = new int[]{0, 0};
+            dpMaxFromLeft[0] = mMinusN[0];
+            for (int i = 1; i < l; i++) {
+                curSeg = Math.max(curSeg + mMinusN[i], mMinusN[i]);
+                if (curSeg != mMinusN[i]) { // 扩张了
+                    right = i;
+                } else { // 选择了下标为i这个数
+                    left = right = i;
+                }
+                if (curSeg > max) {
+                    max = curSeg;
+                    dpMaxFromLeft[i] = max;
+                    dpMaxFromLeftRange[i] = new int[]{left, right};
+                } else {
+                    dpMaxFromLeft[i] = dpMaxFromLeft[i - 1];
+                    dpMaxFromLeftRange[i] = dpMaxFromLeftRange[i - 1];
+                }
+            }
+        }
+        // 左侧最小
+        {
+            int curSeg = mMinusN[0], left = 0, right = 0, min = mMinusN[0];
+            dpMinFromLeftRange[0] = new int[]{0, 0};
+            dpMinFromLeft[0] = mMinusN[0];
+            for (int i = 1; i < l; i++) {
+                curSeg = Math.min(curSeg + mMinusN[i], mMinusN[i]);
+                if (curSeg != mMinusN[i]) { // 扩张了
+                    right = i;
+                } else { // 选择了下标为i这个数
+                    left = right = i;
+                }
+                if (curSeg < min) {
+                    min = curSeg;
+                    dpMinFromLeft[i] = min;
+                    dpMinFromLeftRange[i] = new int[]{left, right};
+                } else {
+                    dpMinFromLeft[i] = dpMinFromLeft[i - 1];
+                    dpMinFromLeftRange[i] = dpMinFromLeftRange[i - 1];
+                }
+            }
+        }
+        // 右侧最大
+        {
+            int curSeg = mMinusN[l - 1], left = l - 1, right = l - 1, max = mMinusN[l - 1];
+            dpMaxFromRightRange[l - 1] = new int[]{l - 1, l - 1};
+            dpMaxFromRight[l - 1] = mMinusN[l - 1];
+            for (int i = l - 2; i >= 0; i--) {
+                curSeg = Math.max(curSeg + mMinusN[i], mMinusN[i]);
+                if (curSeg != mMinusN[i]) { // 扩张了
+                    left = i;
+                } else { // 选择了下标为i这个数
+                    left = right = i;
+                }
+                if (curSeg > max) {
+                    max = curSeg;
+                    dpMaxFromRight[i] = max;
+                    dpMaxFromRightRange[i] = new int[]{left, right};
+                } else {
+                    dpMaxFromRight[i] = dpMaxFromRight[i + 1];
+                    dpMaxFromRightRange[i] = dpMaxFromRightRange[i + 1];
+                }
+            }
+        }
+        // 右侧最小
+        {
+            int curSeg = mMinusN[l - 1], left = l - 1, right = l - 1, min = mMinusN[l - 1];
+            dpMinFromRightRange[l - 1] = new int[]{l - 1, l - 1};
+            dpMinFromRight[l - 1] = mMinusN[l - 1];
+            for (int i = l - 2; i >= 0; i--) {
+                curSeg = Math.min(curSeg + mMinusN[i], mMinusN[i]);
+                if (curSeg != mMinusN[i]) { // 扩张了
+                    left = i;
+                } else { // 选择了下标为i这个数
+                    left = right = i;
+                }
+                if (curSeg < min) {
+                    min = curSeg;
+                    dpMinFromRight[i] = min;
+                    dpMinFromRightRange[i] = new int[]{left, right};
+                } else {
+                    dpMinFromRight[i] = dpMinFromRight[i + 1];
+                    dpMinFromRightRange[i] = dpMinFromRightRange[i + 1];
+                }
+            }
+        }
+        // 左大右小
         for (int i = 0; i < l - 1; i++) {
-            // 从左侧找最大 右侧找最小
-            {
-                int max = mMinusN[0], curSeg = 0, left = 0, right = 0, maxLeft = 0, maxRight = 0;
-                for (int j = 0; j <= i; j++) {
-                    curSeg = Math.max(mMinusN[j], curSeg + mMinusN[j]);
-                    if (curSeg != mMinusN[j]) { // 扩张了
-                        right = j;
-                    } else {
-                        left = right = j;
-                    }
-                    if (curSeg > max) {
-                        max = curSeg;
-                        maxLeft = left;
-                        maxRight = right;
-                    }
-                }
-                curSeg = 0;
-                left = right = i + 1;
-                int min = mMinusN[i + 1], minLeft = i + 1, minRight = i + 1;
-                for (int j = i + 1; j < l; j++) {
-                    curSeg = Math.min(mMinusN[j], curSeg + mMinusN[j]);
-                    if (curSeg != mMinusN[j]) { // 扩张了
-                        right = j;
-                    } else {
-                        left = right = j;
-                    }
-                    if (curSeg < min) {
-                        min = curSeg;
-                        minLeft = left;
-                        minRight = right;
-                    }
-                }
-                if (max - min > maxValue) {
-                    maxValue = max - min;
-                    result = new int[]{maxLeft, maxRight, minLeft, minRight};
-                }
+            int tmpValue = dpMaxFromLeft[i] - dpMinFromRight[i + 1];
+            if (tmpValue > maxValue) {
+                maxValue = tmpValue;
+                result = new int[]{dpMaxFromLeftRange[i][0], dpMaxFromLeftRange[i][1], dpMinFromRightRange[i + 1][0], dpMinFromRightRange[i + 1][1]};
             }
-
-            // 从右侧找最大 左侧找最小
-            {
-                int max = mMinusN[i + 1], curSeg = 0, left = i + 1, right = i + 1, maxLeft = i + 1, maxRight = i + 1;
-                for (int j = i + 1; j < l; j++) {
-                    curSeg = Math.max(mMinusN[j], curSeg + mMinusN[j]);
-                    if (curSeg != mMinusN[j]) { // 扩张了
-                        right = j;
-                    } else {
-                        left = right = j;
-                    }
-                    if (curSeg > max) {
-                        max = curSeg;
-                        maxLeft = left;
-                        maxRight = right;
-                    }
-                }
-                curSeg = 0;
-                left = right = 0;
-                int min = mMinusN[0], minLeft = 0, minRight = 0;
-                for (int j = 0; j <= i; j++) {
-                    curSeg = Math.min(mMinusN[j], curSeg + mMinusN[j]);
-                    if (curSeg != mMinusN[j]) { // 扩张了
-                        right = j;
-                    } else {
-                        left = right = j;
-                    }
-                    if (curSeg < min) {
-                        min = curSeg;
-                        minLeft = left;
-                        minRight = right;
-                    }
-                }
-                if (max - min > maxValue) {
-                    maxValue = max - min;
-                    result = new int[]{maxLeft, maxRight, minLeft, minRight};
-                }
+        }
+        // 左小右大
+        for (int i = 0; i < l - 1; i++) {
+            int tmpValue = dpMaxFromRight[i] - dpMinFromLeft[i + 1];
+            if (tmpValue > maxValue) {
+                maxValue = tmpValue;
+                result = new int[]{dpMaxFromRightRange[i][0], dpMaxFromRightRange[i][1], dpMinFromLeftRange[i + 1][0], dpMinFromLeftRange[i + 1][1]};
             }
-
         }
         return result;
     }
