@@ -7,7 +7,6 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
         System.out.println(s.minTime(
                 4,
                 new int[][]{{0, 2}, {0, 3}, {1, 2}},
@@ -1570,5 +1569,109 @@ class MyCircularQueue {
 
     public boolean isFull() {
         return count == arr.length;
+    }
+}
+
+// LC588
+class FileSystem {
+
+    Node root;
+
+    public FileSystem() {
+        root = new Node(false, "");
+    }
+
+    public List<String> ls(String path) {
+        List<String> result = new ArrayList<>();
+        if (path.equals("/")) {
+            for (Node n : root.children) {
+                result.add(n.name);
+            }
+        } else {
+            String[] pathSplit = path.split("/");
+            pathSplit = Arrays.copyOfRange(pathSplit, 1, pathSplit.length);
+            Node cur = root;
+            for (String n : pathSplit) {
+                cur = cur.nameChildMap.get(n);
+            }
+            if (cur.isFile) {
+                result.add(cur.name);
+            } else {
+                for (Node c : cur.children) {
+                    result.add(c.name);
+                }
+            }
+        }
+        result.sort(Comparator.naturalOrder());
+        return result;
+    }
+
+    public void mkdir(String path) {
+        String[] pathSplit = path.split("/");
+        pathSplit = Arrays.copyOfRange(pathSplit, 1, pathSplit.length);
+        Node cur = root;
+        for (String n : pathSplit) {
+            if (!cur.nameChildMap.containsKey(n)) {
+                cur.addChild(new Node(false, n));
+            }
+            cur = cur.nameChildMap.get(n);
+        }
+    }
+
+    public void addContentToFile(String filePath, String content) {
+        String[] pathSplit = filePath.split("/");
+        String fileName = pathSplit[pathSplit.length - 1];
+        String directory = String.join("/", Arrays.copyOfRange(pathSplit, 0, pathSplit.length - 1));
+        mkdir(directory);
+        Node directoryNode = getNode(directory);
+        if (!directoryNode.nameChildMap.containsKey(fileName)) {
+            directoryNode.addChild(new Node(true, fileName));
+        }
+        Node fileNode = getNode(filePath);
+        fileNode.content = fileNode.content + content;
+
+    }
+
+    public String readContentFromFile(String filePath) {
+        Node fileNode = getNode(filePath);
+        return fileNode.content;
+    }
+
+    private Node getNode(String path) {
+        if (path.equals("/")) {
+            return root;
+        } else {
+            String[] pathSplit = path.split("/");
+            pathSplit = Arrays.copyOfRange(pathSplit, 1, pathSplit.length);
+            Node cur = root;
+            for (String n : pathSplit) {
+                cur = cur.nameChildMap.get(n);
+            }
+            return cur;
+        }
+    }
+
+    class Node {
+        List<Node> children;
+        Map<String, Node> nameChildMap;
+        boolean isFile;
+        String name;
+        String content;
+
+        public Node(boolean isFile, String name) {
+            this.isFile = isFile;
+            this.name = name;
+            if (!isFile) {
+                children = new ArrayList<>();
+                nameChildMap = new HashMap<>();
+            } else {
+                this.content = "";
+            }
+        }
+
+        public void addChild(Node child) {
+            nameChildMap.put(child.name, child);
+            children.add(child);
+        }
     }
 }
