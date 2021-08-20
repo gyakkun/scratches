@@ -26,17 +26,32 @@ class Scratch {
         public List<Integer> postorder(Node root) {
             LinkedList<Integer> result = new LinkedList<>();
             if (root == null) return result;
-            Deque<Node> dq = new LinkedList<>();
-            dq.push(root);
-            while (!dq.isEmpty()) {
-                Node last = dq.pop();
+            Deque<Node> stack = new LinkedList<>();
+            stack.push(root);
+            while (!stack.isEmpty()) {
+                Node last = stack.pop();
                 result.push(last.val);
                 for (Node child : last.children) {
-                    dq.push(child);
+                    stack.push(child);
                 }
             }
             return result;
         }
+
+        public List<Integer> postorder(TreeNode root) {
+            LinkedList<Integer> result = new LinkedList<>();
+            if (root == null) return result;
+            Deque<TreeNode> stack = new LinkedList<>();
+            stack.push(root);
+            while (!stack.isEmpty()) {
+                TreeNode last = stack.pop();
+                result.push(last.val);
+                if (last.left != null) stack.push(last.left);
+                if (last.right != null) stack.push(last.right);
+            }
+            return result;
+        }
+
 
         class Node {
             public int val;
