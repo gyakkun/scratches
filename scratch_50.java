@@ -9,9 +9,9 @@ class Scratch {
 
 
 //        System.out.println(s.maxCrossSum(new int[]{12, 29, 38, 48, 57, 69, 10}, new int[]{34, 67, 8, 9, 10, 10, 20}));
-        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
-                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
-//        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
+//        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
+//                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
+        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
 
         System.out.println(s.reverseStr("abcdefg", 2));
 
@@ -170,8 +170,8 @@ class Scratch {
             }
         }
         // 左小右大
-        for (int i = 0; i < l - 1; i++) {
-            int tmpValue = dpMaxFromRight[i] - dpMinFromLeft[i + 1];
+        for (int i = 1; i < l; i++) {
+            int tmpValue = dpMaxFromRight[i] - dpMinFromLeft[i - 1];
             if (tmpValue > maxValue) {
                 maxValue = tmpValue;
                 result = new int[]{dpMaxFromRightRange[i][0], dpMaxFromRightRange[i][1], dpMinFromLeftRange[i + 1][0], dpMinFromLeftRange[i + 1][1]};
