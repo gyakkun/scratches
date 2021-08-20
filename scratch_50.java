@@ -1588,12 +1588,7 @@ class FileSystem {
                 result.add(n.name);
             }
         } else {
-            String[] pathSplit = path.split("/");
-            pathSplit = Arrays.copyOfRange(pathSplit, 1, pathSplit.length);
-            Node cur = root;
-            for (String n : pathSplit) {
-                cur = cur.nameChildMap.get(n);
-            }
+            Node cur = getNode(path);
             if (cur.isFile) {
                 result.add(cur.name);
             } else {
