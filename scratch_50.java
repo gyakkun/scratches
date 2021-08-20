@@ -7,14 +7,25 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minTime(
-                4,
-                new int[][]{{0, 2}, {0, 3}, {1, 2}},
-                Arrays.asList(false, true, false, false)
-        ));
+        System.out.println(s.canAttendMeetings(new int[][]{{0, 30}, {5, 10}, {15, 20}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC252
+    public boolean canAttendMeetings(int[][] intervals) {
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        for (int[] i : intervals) {
+            tm.put(i[0], tm.getOrDefault(i[0], 0) + 1);
+            tm.put(i[1], tm.getOrDefault(i[1], 0) - 1);
+        }
+        int sum = 0;
+        for (int i : tm.values()) {
+            sum += i;
+            if (sum > 1) return false;
+        }
+        return true;
     }
 
     // LC1176
