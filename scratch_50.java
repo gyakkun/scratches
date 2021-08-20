@@ -11,15 +11,43 @@ class Scratch {
 //        System.out.println(s.maxCrossSum(new int[]{12, 29, 38, 48, 57, 69, 10}, new int[]{34, 67, 8, 9, 10, 10, 20}));
 //        System.out.println(s.maxCrossSum(new int[]{66, 15, 37, 32, 94, 57, 3, 32, 42, 7, 51, 56, 8, 94, 4, 13, 39, 25, 63, 90, 17, 92, 87, 31, 6, 24, 36, 13, 97, 13, 48, 40, 27, 24, 13, 76, 51, 6, 63, 35, 75, 78, 39, 44, 82, 41, 77, 88, 91, 92},
 //                new int[]{92, 22, 36, 93, 5, 41, 83, 23, 58, 60, 21, 5, 96, 6, 54, 58, 70, 55, 76, 43, 19, 36, 26, 16, 96, 91, 50, 80, 31, 59, 59, 14, 15, 56, 30, 1, 58, 44, 33, 35, 10, 42, 68, 67, 27, 73, 6, 50, 67, 58}));
-        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
+//        System.out.println(s.maxCrossSum(new int[]{4, 2, 7, 13, 9, 25}, new int[]{5, 0, 18, 21, 3, 6}));
 
+        System.out.println(s.reverseStr("abcdefg", 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC541
+    public String reverseStr(String s, int k) {
+        StringBuilder sb = new StringBuilder();
+        char[] ca = s.toCharArray();
+        int i = 0;
+        for (; i < ca.length; i += 2 * k) {
+            for (int j = 0; j < k && (i + k - 1 - j) < ca.length; j++) {
+                sb.append(ca[i + k - 1 - j]);
+            }
+            for (int j = 0; j < k && (i + k + j) < ca.length; j++) {
+                sb.append(ca[i + k + j]);
+            }
+        }
+        if (sb.length() < ca.length) {
+            int remain = ca.length - sb.length();
+            String r = s.substring(i - 2 * k, i - 2 * k + remain);
+            if (remain < k) {
+                sb.append(new StringBuilder(r).reverse());
+            } else if (remain < 2 * k) {
+                String shouldReverse = r.substring(0, k);
+                String shouldKeep = r.substring(k);
+                sb.append(new StringBuilder(shouldReverse).reverse());
+                sb.append(shouldKeep);
+            }
+        }
+        return sb.toString();
+    }
 
-    // Microsoft O(n^2)
+    // Microsoft O(n^2) Time O(1) Space
     // https://leetcode-cn.com/circle/discuss/OPC9WF/
     public int[] maxCrossSum(int[] m, int[] n) {
         // m,n 是长度为l的数列, 求区间[a,b] [c,d], 使得  sum(m, a,b) -sum(n,a,b) - (sum(m,c,d) - sum(n,c,d)) 最大
