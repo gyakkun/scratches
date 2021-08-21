@@ -7,11 +7,41 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.canAttendMeetings(new int[][]{{0, 30}, {5, 10}, {15, 20}}));
+//        System.out.println(s.compress(new char[]{'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b'}));
+        System.out.println(s.compress(new char[]{'a', 'a', 'b', 'b', 'c', 'c', 'c'}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC443
+    public int compress(char[] chars) {
+        int shadowPtr = 0, ctr = 1;
+        char cur = chars[0];
+        for (int ptr = 1; ptr < chars.length; ptr++) {
+            if (chars[ptr] == cur) {
+                ctr++;
+            } else {
+                cur = chars[ptr];
+                shadowPtr++;
+                if (ctr != 1) {
+                    for (char c : String.valueOf(ctr).toCharArray()) {
+                        chars[shadowPtr++] = c;
+                    }
+                }
+                chars[shadowPtr] = chars[ptr];
+                ctr = 1;
+            }
+        }
+        shadowPtr++;
+        if (ctr != 1) {
+            for (char c : String.valueOf(ctr).toCharArray()) {
+                chars[shadowPtr++] = c;
+            }
+        }
+        return shadowPtr;
+    }
+
 
     // LC252
     public boolean canAttendMeetings(int[][] intervals) {
