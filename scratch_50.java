@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
@@ -12,6 +13,13 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC789 ** 曼哈顿距离及推理见Solution
+    public boolean escapeGhosts(int[][] ghosts, int[] target) {
+        Function<int[], Boolean> manh = ghost -> Math.abs(ghost[0] - target[0]) + Math.abs(ghost[1] - target[1]) > Math.abs(target[0]) + Math.abs(target[1]);
+        for (int[] g : ghosts) if (!manh.apply(g)) return false;
+        return true;
     }
 
     // LC443
