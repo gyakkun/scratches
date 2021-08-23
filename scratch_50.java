@@ -9,11 +9,31 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.compress(new char[]{'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b'}));
-        System.out.println(s.wordPatternMatch("abab",
-                "redblueredblue"));
+        System.out.println(s.wordPattern("jquery",
+                "jquery"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC290
+    public boolean wordPattern(String pattern, String s) {
+        Map<Character, String> map = new HashMap<>();
+        Map<String, Character> reverseMap = new HashMap<>();
+        String[] words = s.split(" ");
+        int wIdx = 0, pIdx = 0;
+        for (; pIdx < pattern.length(); pIdx++) {
+            char c = pattern.charAt(pIdx);
+            if (wIdx >= words.length) break;
+            if (map.containsKey(c)) {
+                if (!words[wIdx++].equals(map.get(c))) return false;
+            } else {
+                if (reverseMap.containsKey(words[wIdx])) return false;
+                reverseMap.put(words[wIdx], c);
+                map.put(c, words[wIdx++]);
+            }
+        }
+        return pIdx == pattern.length() && wIdx == words.length;
     }
 
     // LC291
