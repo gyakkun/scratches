@@ -16,6 +16,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 075 LC1122
+    public int[] relativeSortArray(int[] arr1, int[] arr2) {
+        LinkedHashMap<Integer, Integer> count = new LinkedHashMap<>();
+        for (int i : arr2) count.put(i, 0);
+        int ptr = arr1.length - 1;
+        for (int i = arr1.length - 1; i >= 0; i--) {
+            if (!count.containsKey(arr1[i])) {
+                arr1[ptr--] = arr1[i];
+            } else {
+                count.put(arr1[i], count.get(arr1[i]) + 1);
+            }
+        }
+        Arrays.sort(arr1, ptr + 1, arr1.length);
+        ptr = 0;
+        for (Map.Entry<Integer, Integer> e : count.entrySet()) {
+            for (int i = 0; i < e.getValue(); i++) {
+                arr1[ptr++] = e.getKey();
+            }
+        }
+        return arr1;
+    }
+
     // LC290
     public boolean wordPattern(String pattern, String s) {
         Map<Character, String> map = new HashMap<>();
