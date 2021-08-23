@@ -42,9 +42,6 @@ class Scratch {
     }
 
     private boolean lc291Backtrack(String p, int pIdx, String s, int sIdx, Map<Character, String> map, Map<String, Character> reverseMap) {
-        if (pIdx == p.length() && sIdx == s.length()) {
-            return true;
-        }
         for (int i = pIdx; i < p.length(); i++) {
             if (!map.containsKey(p.charAt(i))) {
                 for (int j = sIdx; j <= s.length() - (p.length() - i); j++) {
@@ -67,8 +64,7 @@ class Scratch {
                 sIdx += map.get(p.charAt(i)).length();
             }
         }
-        if (sIdx == s.length()) return true;
-        return false;
+        return sIdx == s.length();
     }
 
     // Interview 16.16 **
