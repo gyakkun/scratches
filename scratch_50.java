@@ -14,7 +14,7 @@ class Scratch {
         }
         System.out.println(rbit.sumRange(0, 4));
         rbit.rangeUpdate(0, 4, 1);
-        System.out.println(rbit.sumRange(0, 4));
+        System.out.println(rbit.sumRange(0, 0));
 //        System.out.println(s.compress(new char[]{'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b'}));
         System.out.println(s.wordPattern("jquery",
                 "jquery"));
@@ -1929,6 +1929,15 @@ class RangeBit {
         this.len = len;
         diff = new BIT(len);
         iDiff = new BIT(len);
+    }
+
+    public RangeBit(int[] arr) {
+        this.len = arr.length;
+        diff = new BIT(len);
+        iDiff = new BIT(len);
+        for (int i = 0; i < arr.length; i++) {
+            update(i, arr[i]);
+        }
     }
 
     public void set(int zeroBased, int val) {
