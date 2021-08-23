@@ -16,6 +16,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1401 ** 相交测试 原理: 比较(矩形距离圆心最近的点到圆心的距离, 半径)
+    public boolean checkOverlap(int radius, int x_center, int y_center, int x1, int y1, int x2, int y2) {
+        double squareCenterX = (x1 + x2 + 0d) / 2, squareCenterY = (y1 + y2 + 0d) / 2;
+        double[] vecSquareHalfLen = new double[]{x2 - squareCenterX, y2 - squareCenterY};
+        double[] vecSquareCenterToCircleCenter = new double[]{Math.abs(x_center - squareCenterX), Math.abs(y_center - squareCenterY)};
+        double[] vecResult = new double[]{Math.max(0, vecSquareCenterToCircleCenter[0] - vecSquareHalfLen[0]),
+                Math.max(0, vecSquareCenterToCircleCenter[1] - vecSquareHalfLen[1])};
+        return vecResult[0] * vecResult[0] + vecResult[1] * vecResult[1] <= radius * radius;
+    }
+
     // JZOF II 075 LC1122
     public int[] relativeSortArray(int[] arr1, int[] arr2) {
         LinkedHashMap<Integer, Integer> count = new LinkedHashMap<>();
