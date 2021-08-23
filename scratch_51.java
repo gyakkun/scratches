@@ -12,6 +12,47 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1896 ** Hard
+    public int minOperationsToFlip(String expression) {
+        Deque<int[]> stack = new LinkedList<>(); // [p,q] 表示变为0要p步, 变为1要q步
+        Deque<Character> ops = new LinkedList<>();
+        Set<Character> rightSideOp = new HashSet<Character>() {{
+            add('0');
+            add('1');
+            add(')');
+        }};
+        for (char c : expression.toCharArray()) {
+            if (rightSideOp.contains(c)) {
+                if (c == '0') stack.push(new int[]{0, 1});
+                else if (c == '1') stack.push(new int[]{1, 0});
+                else if (c == ')') ops.pop();
+
+                if (ops.size() != 0 && ops.peek() != '(') {
+                    char op = ops.pop();
+                    int[] pair2 = stack.pop();
+                    int[] pair1 = stack.pop();
+                    int[] newEntry;
+                    if (op == '&') {
+                        newEntry = new int[]{
+                                Math.min(pair1[0], pair2[0]),
+                                Math.min(pair1[1] + pair2[1], Math.min(pair1[1], pair2[1]) + 1)
+                        };
+                    } else {
+                        newEntry = new int[]{
+                                Math.min(pair1[0] + pair2[0], Math.min(pair1[0], pair2[0]) + 1),
+                                Math.min(pair1[1], pair2[1])
+                        };
+                    }
+                    stack.push(newEntry);
+                }
+            } else {
+                ops.push(c);
+            }
+        }
+        int[] last = stack.pop();
+        return Math.max(last[0], last[1]);
+    }
+
     // LC1223
     public List<String> removeSubfolders(String[] folder) {
         Set<String> prefix = new HashSet<>();
