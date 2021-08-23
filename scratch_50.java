@@ -16,6 +16,77 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC315
+    class Lc315 {
+        public List<Integer> countSmaller(int[] nums) {
+            final int offset = 10000;
+            BIT bit = new BIT(20002);
+            List<Integer> result = new ArrayList<>(nums.length);
+            for (int i = 0; i < nums.length; i++) result.add(0);
+            bit.update(nums[nums.length - 1] + offset, 1);
+            for (int i = nums.length - 2; i >= 0; i--) {
+                result.set(i, bit.sumRange(0, nums[i] - 1 + offset));
+                bit.update(nums[i] + offset, 1);
+            }
+            return result;
+        }
+
+        class BIT {
+            int[] tree;
+            int len;
+
+            public BIT(int len) {
+                this.len = len;
+                tree = new int[len + 1];
+            }
+
+            public BIT(int[] arr) {
+                this.len = arr.length;
+                tree = new int[len + 1];
+                for (int i = 0; i < arr.length; i++) {
+                    update(i, arr[i]);
+                }
+            }
+
+            public int get(int zeroBased) {
+                return sum(zeroBased + 1) - sum(zeroBased);
+            }
+
+            public void set(int zeroBased, int val) {
+                update(zeroBased, get(zeroBased) - val);
+            }
+
+            public void update(int zeroBased, int delta) {
+                updateOneBased(zeroBased + 1, delta);
+            }
+
+            public int sumRange(int left, int right) {
+                return sum(right + 1) - sum(left);
+            }
+
+            private void updateOneBased(int oneBased, int delta) {
+                while (oneBased <= len) {
+                    tree[oneBased] += delta;
+                    oneBased += lowbit(oneBased);
+                }
+            }
+
+            private int sum(int oneBasedRight) {
+                int result = 0;
+                while (oneBasedRight > 0) {
+                    result += tree[oneBasedRight];
+                    oneBasedRight -= lowbit(oneBasedRight);
+                }
+                return result;
+            }
+
+            private int lowbit(int x) {
+                return x & (-x);
+            }
+        }
+    }
+
+
     // LC1401 ** 相交测试 原理: 比较(矩形距离圆心最近的点到圆心的距离, 半径)
     public boolean checkOverlap(int radius, int x_center, int y_center, int x1, int y1, int x2, int y2) {
         double squareCenterX = (x1 + x2 + 0d) / 2, squareCenterY = (y1 + y2 + 0d) / 2;
