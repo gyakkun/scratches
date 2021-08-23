@@ -8,6 +8,13 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        RangeBit rbit = new RangeBit(5);
+        for (int i = 0; i < 5; i++) {
+            rbit.set(i, i);
+        }
+        System.out.println(rbit.sumRange(0, 4));
+        rbit.rangeUpdate(0, 4, 1);
+        System.out.println(rbit.sumRange(0, 4));
 //        System.out.println(s.compress(new char[]{'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b'}));
         System.out.println(s.wordPattern("jquery",
                 "jquery"));
@@ -17,73 +24,17 @@ class Scratch {
     }
 
     // LC315
-    class Lc315 {
-        public List<Integer> countSmaller(int[] nums) {
-            final int offset = 10000;
-            BIT bit = new BIT(20002);
-            List<Integer> result = new ArrayList<>(nums.length);
-            for (int i = 0; i < nums.length; i++) result.add(0);
-            bit.update(nums[nums.length - 1] + offset, 1);
-            for (int i = nums.length - 2; i >= 0; i--) {
-                result.set(i, bit.sumRange(0, nums[i] - 1 + offset));
-                bit.update(nums[i] + offset, 1);
-            }
-            return result;
+    public List<Integer> countSmaller(int[] nums) {
+        final int offset = 10000;
+        BIT bit = new BIT(20002);
+        List<Integer> result = new ArrayList<>(nums.length);
+        for (int i = 0; i < nums.length; i++) result.add(0);
+        bit.update(nums[nums.length - 1] + offset, 1);
+        for (int i = nums.length - 2; i >= 0; i--) {
+            result.set(i, bit.sumRange(0, nums[i] - 1 + offset));
+            bit.update(nums[i] + offset, 1);
         }
-
-        class BIT {
-            int[] tree;
-            int len;
-
-            public BIT(int len) {
-                this.len = len;
-                tree = new int[len + 1];
-            }
-
-            public BIT(int[] arr) {
-                this.len = arr.length;
-                tree = new int[len + 1];
-                for (int i = 0; i < arr.length; i++) {
-                    update(i, arr[i]);
-                }
-            }
-
-            public int get(int zeroBased) {
-                return sum(zeroBased + 1) - sum(zeroBased);
-            }
-
-            public void set(int zeroBased, int val) {
-                update(zeroBased, get(zeroBased) - val);
-            }
-
-            public void update(int zeroBased, int delta) {
-                updateOneBased(zeroBased + 1, delta);
-            }
-
-            public int sumRange(int left, int right) {
-                return sum(right + 1) - sum(left);
-            }
-
-            private void updateOneBased(int oneBased, int delta) {
-                while (oneBased <= len) {
-                    tree[oneBased] += delta;
-                    oneBased += lowbit(oneBased);
-                }
-            }
-
-            private int sum(int oneBasedRight) {
-                int result = 0;
-                while (oneBasedRight > 0) {
-                    result += tree[oneBasedRight];
-                    oneBasedRight -= lowbit(oneBasedRight);
-                }
-                return result;
-            }
-
-            private int lowbit(int x) {
-                return x & (-x);
-            }
-        }
+        return result;
     }
 
 
@@ -1966,5 +1917,107 @@ class FileSystem {
         public void addChild(Node child) {
             nameChildMap.put(child.name, child);
         }
+    }
+}
+
+class RangeBit {
+    BIT diff;
+    BIT iDiff;
+    int len;
+
+    public RangeBit(int len) {
+        this.len = len;
+        diff = new BIT(len);
+        iDiff = new BIT(len);
+    }
+
+    public void set(int zeroBased, int val) {
+        update(zeroBased, val - get(zeroBased));
+    }
+
+    public int get(int zeroBased) {
+        return sum(zeroBased + 1) - sum(zeroBased);
+    }
+
+    public void update(int zeroBased, int delta) {
+        updateOneBased(zeroBased + 1, delta);
+    }
+
+    public int sumRange(int l, int r) {
+        return sum(r + 1) - sum(l);
+    }
+
+    public void rangeUpdate(int l, int r, int delta) {
+        rangeUpdateOneBased(l + 1, r + 1, delta);
+    }
+
+    private void updateOneBased(int oneBased, int delta) {
+        int iDelta = oneBased * delta;
+        diff.update(oneBased - 1, delta);
+        iDiff.update(oneBased - 1, iDelta);
+    }
+
+    private void rangeUpdateOneBased(int leftOneBased, int rightOneBased, int delta) {
+        updateOneBased(leftOneBased, delta);
+        updateOneBased(rightOneBased + 1, -delta);
+    }
+
+    private int sum(int rightOneBased) {
+        return (rightOneBased + 1) * diff.sumRange(0, rightOneBased - 1) - iDiff.sumRange(0, rightOneBased - 1);
+    }
+
+}
+
+class BIT {
+    int[] tree;
+    int len;
+
+    public BIT(int len) {
+        this.len = len;
+        tree = new int[len + 1];
+    }
+
+    public BIT(int[] arr) {
+        this.len = arr.length;
+        tree = new int[len + 1];
+        for (int i = 0; i < arr.length; i++) {
+            update(i, arr[i]);
+        }
+    }
+
+    public int get(int zeroBased) {
+        return sum(zeroBased + 1) - sum(zeroBased);
+    }
+
+    public void set(int zeroBased, int val) {
+        update(zeroBased, val - get(zeroBased));
+    }
+
+    public void update(int zeroBased, int delta) {
+        updateOneBased(zeroBased + 1, delta);
+    }
+
+    public int sumRange(int left, int right) {
+        return sum(right + 1) - sum(left);
+    }
+
+    private void updateOneBased(int oneBased, int delta) {
+        while (oneBased <= len) {
+            tree[oneBased] += delta;
+            oneBased += lowbit(oneBased);
+        }
+    }
+
+    private int sum(int oneBasedRight) {
+        int result = 0;
+        while (oneBasedRight > 0) {
+            result += tree[oneBasedRight];
+            oneBasedRight -= lowbit(oneBasedRight);
+        }
+        return result;
+    }
+
+    private int lowbit(int x) {
+        return x & (-x);
     }
 }
