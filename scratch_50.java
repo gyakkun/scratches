@@ -15,6 +15,40 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC937
+    public String[] reorderLogFiles(String[] logs) {
+        Arrays.sort(logs, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                String[] arr1 = o1.split(" "), arr2 = o2.split(" ");
+                String id1 = arr1[0], id2 = arr2[0];
+                String content1 = String.join(" ", Arrays.copyOfRange(arr1, 1, arr1.length));
+                String content2 = String.join(" ", Arrays.copyOfRange(arr2, 1, arr2.length));
+                boolean isDigit1 = true, isDigit2 = true;
+                for (char c : content1.toCharArray()) {
+                    if (!Character.isSpaceChar(c) && !Character.isDigit(c)) {
+                        isDigit1 = false;
+                        break;
+                    }
+                }
+                for (char c : content2.toCharArray()) {
+                    if (!Character.isSpaceChar(c) && !Character.isDigit(c)) {
+                        isDigit2 = false;
+                        break;
+                    }
+                }
+
+                if (isDigit1 && !isDigit2) return 1;
+                else if (isDigit2 && !isDigit1) return -1;
+                else if (isDigit1 && isDigit2) return 0;
+                else {
+                    return !content1.equals(content2) ? content1.compareTo(content2) : id1.compareTo(id2);
+                }
+            }
+        });
+        return logs;
+    }
+
     // LC1646
     public int getMaximumGenerated(int n) {
         if (n <= 1) return n;
