@@ -15,6 +15,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 16.16 和 LC581 基本一样
+    public int[] subSort(int[] array) {
+        if (array.length <= 1) return new int[]{-1, -1};
+        int[] orig = Arrays.copyOfRange(array, 0, array.length);
+        Arrays.sort(array);
+        int left = 0, right = array.length - 1;
+        while (left < array.length && orig[left] == array[left]) left++;
+        if (left == array.length) return new int[]{-1, -1};
+        while (right >= 0 && orig[right] == array[right]) right--;
+        return new int[]{left, right};
+    }
+
     // LC1217
     public int minCostToMoveChips(int[] position) {
         int oddCtr = 0, evenCtr = 0;
