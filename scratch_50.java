@@ -15,6 +15,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1217
+    public int minCostToMoveChips(int[] position) {
+        int oddCtr = 0, evenCtr = 0;
+        for (int i : position) {
+            if (i % 2 == 0) evenCtr++;
+            else oddCtr++;
+        }
+        return Math.min(oddCtr, evenCtr);
+    }
+
     // LC937
     public String[] reorderLogFiles(String[] logs) {
         Arrays.sort(logs, new Comparator<String>() {
