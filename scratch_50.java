@@ -15,6 +15,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 16.16 **
+    public int[] subSortStack(int[] nums) {
+        if (nums.length <= 1) return new int[]{-1, -1};
+        int n = nums.length;
+        int start = -1, end = -1;
+        int min = nums[n - 1], max = nums[0];
+        for (int i = 0, j = n - 1; i < n; i++, j--) {
+            // 如果排好序, 则正向遍历数会越来越大, 最大值永远是当前数
+            // 如果遇到一个数小于最大值, 则从该数开始, 直到最后一个小于最大值的数, 这段都是无序的
+            // 反向遍历同理
+            if (nums[i] < max) {
+                end = i;
+            } else {
+                max = nums[i];
+            }
+
+            if (nums[j] > min) {
+                start = j;
+            } else {
+                min = nums[j];
+            }
+        }
+        return new int[]{start, end};
+    }
+
     // Interview 16.16 和 LC581 基本一样
     public int[] subSort(int[] array) {
         if (array.length <= 1) return new int[]{-1, -1};
