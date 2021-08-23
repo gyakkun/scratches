@@ -9,10 +9,46 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.compress(new char[]{'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b'}));
-        System.out.println(s.getMaximumGenerated(100));
+        System.out.println(s.wordPatternMatch("abab",
+                "redblueredblue"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC291
+    public boolean wordPatternMatch(String pattern, String s) {
+        return lc291Backtrack(pattern, 0, s, 0, new HashMap<>(), new HashMap<>());
+    }
+
+    private boolean lc291Backtrack(String p, int pIdx, String s, int sIdx, Map<Character, String> map, Map<String, Character> reverseMap) {
+        if (pIdx == p.length() && sIdx == s.length()) {
+            return true;
+        }
+        for (int i = pIdx; i < p.length(); i++) {
+            if (!map.containsKey(p.charAt(i))) {
+                for (int j = sIdx; j <= s.length() - (p.length() - i); j++) {
+                    String val = s.substring(sIdx, j + 1);
+                    if (!reverseMap.containsKey(val)) {
+                        map.put(p.charAt(i), val);
+                        reverseMap.put(val, p.charAt(i));
+                        if (lc291Backtrack(p, i + 1, s, sIdx + val.length(), map, reverseMap)) {
+                            return true;
+                        }
+                        reverseMap.remove(val);
+                        map.remove(p.charAt(i));
+                    }
+                }
+                return false;
+            } else {
+                if (s.indexOf(map.get(p.charAt(i)), sIdx) != sIdx) {
+                    return false;
+                }
+                sIdx += map.get(p.charAt(i)).length();
+            }
+        }
+        if (sIdx == s.length()) return true;
+        return false;
     }
 
     // Interview 16.16 **
