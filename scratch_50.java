@@ -22,16 +22,18 @@ class Scratch {
         Map<String, Character> reverseMap = new HashMap<>();
         String[] words = s.split(" ");
         int wIdx = 0, pIdx = 0;
-        for (; pIdx < pattern.length(); pIdx++) {
+        while (wIdx < words.length && pIdx < pattern.length()) {
             char c = pattern.charAt(pIdx);
             if (wIdx >= words.length) break;
             if (map.containsKey(c)) {
-                if (!words[wIdx++].equals(map.get(c))) return false;
+                if (!words[wIdx].equals(map.get(c))) return false;
             } else {
                 if (reverseMap.containsKey(words[wIdx])) return false;
                 reverseMap.put(words[wIdx], c);
-                map.put(c, words[wIdx++]);
+                map.put(c, words[wIdx]);
             }
+            wIdx++;
+            pIdx++;
         }
         return pIdx == pattern.length() && wIdx == words.length;
     }
