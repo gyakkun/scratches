@@ -12,6 +12,56 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC282 ** Hard
+    List<String> lc282Result = new ArrayList<>();
+
+    public List<String> addOperators(String num, int target) {
+        lc282Dfs(0, num, target, new StringBuilder(), 0, 0, 0);
+        return lc282Result;
+    }
+
+    private void lc282Dfs(int idx, String num, int target, StringBuilder sb, int cur, int pre, int accumulate) {
+        if (idx == num.length()) {
+            if (accumulate == target && cur == 0) {
+                lc282Result.add(sb.substring(1));
+            }
+            return;
+        }
+        // 溢出判断
+        if ((cur * 10 + num.charAt(idx) - '0') / 10 != cur) return;
+
+        cur = cur * 10 + num.charAt(idx) - '0';
+        String curStr = String.valueOf(cur);
+
+        // 空操作
+        if (cur > 0) {
+            lc282Dfs(idx + 1, num, target, sb, cur, pre, accumulate);
+        }
+
+        // +
+        sb.append("+");
+        sb.append(cur);
+        lc282Dfs(idx + 1, num, target, sb, 0, cur, accumulate + cur);
+        sb.delete(sb.length() - 1 - curStr.length(), sb.length());
+
+
+        if (sb.length() != 0) {
+
+            // -
+            sb.append("-");
+            sb.append(cur);
+            lc282Dfs(idx + 1, num, target, sb, 0, -cur, accumulate - cur);
+            sb.delete(sb.length() - 1 - curStr.length(), sb.length());
+
+            // *
+            sb.append("*");
+            sb.append(cur);
+            lc282Dfs(idx + 1, num, target, sb, 0, cur * pre, accumulate - pre + cur * pre);
+            sb.delete(sb.length() - 1 - curStr.length(), sb.length());
+
+        }
+    }
+
     // LC1896 ** Hard
     public int minOperationsToFlip(String expression) {
         Deque<int[]> stack = new LinkedList<>(); // [p,q] 表示变为0要p步, 变为1要q步
