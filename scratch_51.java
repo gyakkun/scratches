@@ -6,10 +6,58 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println();
+        System.out.println(s.countSubTrees(7, new int[][]{{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}}, "abaedcd"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1519
+    Integer[][] lc1519Memo;
+
+    public int[] countSubTrees(int n, int[][] edges, String labels) {
+        // 0 是根
+        lc1519Memo = new Integer[n + 1][26 + 1];
+        boolean[] visited = new boolean[n];
+        char[] labelCa = labels.toCharArray();
+        int[] result = new int[n];
+        List<List<Integer>> edgeList = new ArrayList<>(n);
+        List<List<Integer>> outList = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) edgeList.add(new ArrayList<>());
+        for (int i = 0; i < n; i++) outList.add(new ArrayList<>());
+        for (int[] e : edges) {
+            edgeList.get(e[0]).add(e[1]);
+            edgeList.get(e[1]).add(e[0]);
+        }
+        Deque<Integer> q = new LinkedList<>();
+        q.offer(0);
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            if (visited[p]) continue;
+            visited[p] = true;
+            for (int next : edgeList.get(p)) {
+                if (!visited[next]) {
+                    outList.get(p).add(next);
+                    q.offer(next);
+                }
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            result[i] = lc1519Dfs(i, labelCa[i], labelCa, result, outList);
+        }
+        return result;
+
+    }
+
+    private int lc1519Dfs(int cur, char color, char[] labelCa, int[] result, List<List<Integer>> outList) {
+        if (lc1519Memo[cur][color - 'a'] != null) return lc1519Memo[cur][color - 'a'];
+        int count = 0;
+        if (labelCa[cur] == color) count++;
+        for (int next : outList.get(cur)) {
+            count += lc1519Dfs(next, color, labelCa, result, outList);
+        }
+        return lc1519Memo[cur][color - 'a'] = count;
     }
 
     // LC205
