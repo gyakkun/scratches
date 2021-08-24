@@ -17,7 +17,7 @@ class Scratch {
 
     public int[] countSubTrees(int n, int[][] edges, String labels) {
         // 0 是根
-        lc1519Memo = new Integer[n + 1][26 + 1];
+        lc1519Memo = new Integer[n + 1][];
         boolean[] visited = new boolean[n];
         char[] labelCa = labels.toCharArray();
         int[] result = new int[n];
@@ -42,22 +42,25 @@ class Scratch {
                 }
             }
         }
-
+        lc1519Dfs(0, labelCa, result, outList);
         for (int i = 0; i < n; i++) {
-            result[i] = lc1519Dfs(i, labelCa[i], labelCa, result, outList);
+            result[i] = lc1519Memo[i][labelCa[i] - 'a'];
         }
         return result;
-
     }
 
-    private int lc1519Dfs(int cur, char color, char[] labelCa, int[] result, List<List<Integer>> outList) {
-        if (lc1519Memo[cur][color - 'a'] != null) return lc1519Memo[cur][color - 'a'];
-        int count = 0;
-        if (labelCa[cur] == color) count++;
+    private Integer[] lc1519Dfs(int cur, char[] labelCa, int[] result, List<List<Integer>> outList) {
+        if (lc1519Memo[cur] != null) return lc1519Memo[cur];
+        Integer[] count = new Integer[26];
+        for (int i = 0; i < 26; i++) count[i] = 0;
+        count[labelCa[cur] - 'a']++;
         for (int next : outList.get(cur)) {
-            count += lc1519Dfs(next, color, labelCa, result, outList);
+            Integer[] childColorTable = lc1519Dfs(next, labelCa, result, outList);
+            for (int i = 0; i < 26; i++) {
+                count[i] += childColorTable[i];
+            }
         }
-        return lc1519Memo[cur][color - 'a'] = count;
+        return lc1519Memo[cur] = count;
     }
 
     // LC205
