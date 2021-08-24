@@ -14,6 +14,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC67 JZOF II 002
+    public String addBinary(String a, String b) {
+        int carry = 0;
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (; i < Math.min(a.length(), b.length()); i++) {
+            int abit = a.charAt(a.length() - 1 - i) - '0', bbit = b.charAt(b.length() - 1 - i) - '0';
+            int thisBit = (carry + abit + bbit) % 2;
+            carry = (carry + abit + bbit) / 2;
+            sb.append(thisBit);
+        }
+        while (i < a.length()) {
+            int bit = a.charAt(a.length() - 1 - i) - '0';
+            int thisBit = (carry + bit) % 2;
+            carry = (carry + bit) / 2;
+            sb.append(thisBit);
+            i++;
+        }
+        while (i < b.length()) {
+            int bit = b.charAt(b.length() - 1 - i) - '0';
+            int thisBit = (carry + bit) % 2;
+            carry = (carry + bit) / 2;
+            sb.append(thisBit);
+            i++;
+        }
+        if (carry == 1) {
+            sb.append(1);
+        }
+        return sb.reverse().toString();
+    }
+
     // JZOF II 098
     public int uniquePaths(int m, int n) {
         int[][] dp = new int[m + 1][n + 1];
