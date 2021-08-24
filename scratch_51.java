@@ -8,10 +8,24 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.countSubTrees(7, new int[][]{{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}}, "abaedcd"));
+        System.out.println(s.twoSumLessThanK(new int[]{34, 23, 1, 24, 75, 33, 54, 8}, 60));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1099
+    public int twoSumLessThanK(int[] nums, int k) {
+        if (nums.length == 0) return -1;
+        Arrays.sort(nums);
+        int left = 0, right = nums.length - 1, result = Integer.MIN_VALUE;
+        while (left < right) {
+            if (nums[left] + nums[right] < k) {
+                result = Math.max(result, nums[left] + nums[right]);
+                left++;
+            } else if (nums[left] + nums[right] >= k) right--;
+        }
+        return result == Integer.MIN_VALUE ? -1 : result;
     }
 
     // Interview 16.05 ** LC172
