@@ -12,6 +12,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1749
+    public int maxAbsoluteSum(int[] nums) {
+        int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE, curSeg = 0;
+        for (int i : nums) {
+            curSeg = Math.max(i, curSeg + i);
+            max = Math.max(max, curSeg);
+        }
+
+        curSeg = 0;
+        for (int i : nums) {
+            curSeg = Math.min(i, curSeg + i);
+            min = Math.min(min, curSeg);
+        }
+        int absMax = Math.max(0, Math.max(Math.abs(max), Math.abs(min)));
+        return absMax;
+    }
+
     // LC1519
     Integer[][] lc1519Memo;
 
