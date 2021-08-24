@@ -8,10 +8,49 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.twoSumLessThanK(new int[]{34, 23, 1, 24, 75, 33, 54, 8}, 60));
+        System.out.println(s.minimumMountainRemovals(new int[]{1, 3, 1}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1671 TBD
+    public int minimumMountainRemovals(int[] nums) {
+        int result = nums.length;
+        for (int i = 1; i <= nums.length - 1; i++) {
+            int left = lengthOfLIS(Arrays.copyOfRange(nums, 0, i));
+            int right = lengthOfLISReverse(Arrays.copyOfRange(nums, i, nums.length));
+            if (nums[i] == nums[i - 1]) {
+                result = Math.min(result, nums.length - left - right + 1);
+            } else {
+                result = Math.min(result, nums.length - left - right);
+            }
+        }
+        return result;
+    }
+
+    private int lengthOfLIS(int[] arr) {
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i : arr) {
+            Integer c = ts.ceiling(i);
+            if (c != null) {
+                ts.remove(c);
+            }
+            ts.add(i);
+        }
+        return ts.size();
+    }
+
+    private int lengthOfLISReverse(int[] arr) {
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i = arr.length - 1; i >= 0; i--) {
+            Integer c = ts.ceiling(arr[i]);
+            if (c != null) {
+                ts.remove(c);
+            }
+            ts.add(arr[i]);
+        }
+        return ts.size();
     }
 
     // LC1099
