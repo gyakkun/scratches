@@ -12,6 +12,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC205
+    public boolean isIsomorphic(String s, String t) {
+        Map<Character, Character> m = new HashMap<>();
+        Map<Character, Character> reverseM = new HashMap<>();
+        char[] cs = s.toCharArray(), ct = t.toCharArray();
+        for (int i = 0; i < cs.length; i++) {
+            if (!m.containsKey(cs[i])) {
+                m.put(cs[i], ct[i]);
+                if (!reverseM.containsKey(ct[i])) {
+                    reverseM.put(ct[i], cs[i]);
+                } else {
+                    return false;
+                }
+            } else {
+                if (m.get(cs[i]) != ct[i]) return false;
+                if (reverseM.get(ct[i]) != cs[i]) return false;
+            }
+        }
+        return true;
+    }
+
     // LC787
     int lc787Result = Integer.MAX_VALUE;
 
