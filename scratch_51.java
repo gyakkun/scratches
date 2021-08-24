@@ -14,6 +14,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 16.05 ** LC172
+    public int trailingZeroes(int n) {
+        int result = 0;
+        while (n != 0) {
+            n /= 5;
+            result += n;
+        }
+        return result;
+    }
+
     // LC67 JZOF II 002
     public String addBinary(String a, String b) {
         int carry = 0;
