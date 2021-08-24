@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -287,5 +289,77 @@ class DiningPhilosophers {
 
         locks[left].unlock();
         locks[right].unlock();
+    }
+}
+
+// Interview 16.02
+class WordsFrequency {
+    Map<Pair<Integer, Integer>, Integer> m = new HashMap<>();
+
+    public WordsFrequency(String[] book) {
+        for (String word : book) {
+            Pair<Integer, Integer> tmp = new Pair<>(word.hashCode(), word.length());
+            m.put(tmp, m.getOrDefault(tmp, 0) + 1);
+        }
+    }
+
+    public int get(String word) {
+        return m.getOrDefault(new Pair<>(word.hashCode(), word.length()), 0);
+    }
+}
+
+// JZOF II 062
+class Trie {
+
+    TrieNode root;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public Trie() {
+        root = new TrieNode();
+    }
+
+    /**
+     * Inserts a word into the trie.
+     */
+    public void insert(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children[c - 'a'] == null) {
+                cur.children[c - 'a'] = new TrieNode();
+            }
+            cur = cur.children[c - 'a'];
+        }
+        cur.isEnd = true;
+    }
+
+    /**
+     * Returns if the word is in the trie.
+     */
+    public boolean search(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children[c - 'a'] == null) return false;
+            cur = cur.children[c - 'a'];
+        }
+        return cur.isEnd;
+    }
+
+    /**
+     * Returns if there is any word in the trie that starts with the given prefix.
+     */
+    public boolean startsWith(String prefix) {
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (cur.children[c - 'a'] == null) return false;
+            cur = cur.children[c - 'a'];
+        }
+        return true;
+    }
+
+    class TrieNode {
+        TrieNode[] children = new TrieNode[26];
+        boolean isEnd = false;
     }
 }
