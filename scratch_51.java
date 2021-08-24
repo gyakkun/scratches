@@ -12,6 +12,44 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC787
+    int lc787Result = Integer.MAX_VALUE;
+
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        // k站中转, 即最多可以坐k+1次航班
+        // flights[i] = [fromi, toi, pricei]
+        int[][] reach = new int[n][n];
+        int[] maxStop = new int[n]; // 经停i 的最大跳数
+        int[] minCost = new int[n];
+        Arrays.fill(minCost, Integer.MAX_VALUE / 2);
+        for (int[] r : reach) Arrays.fill(r, -1);
+        for (int[] f : flights) reach[f[0]][f[1]] = f[2];
+        lc787Dfs(src, dst, reach, maxStop, minCost, k + 1, 0);
+        return lc787Result == Integer.MAX_VALUE ? -1 : lc787Result;
+    }
+
+    private void lc787Dfs(int cur, int dst, int[][] reach, int[] maxStop, int[] minCost, int limit, int price) {
+        if (cur == dst) {
+            lc787Result = Math.min(lc787Result, price);
+            return;
+        }
+        if (limit > 0) {
+            for (int i = 0; i < reach.length; i++) {
+                if (reach[cur][i] != -1) {
+                    int minCostToI = minCost[i], costFromCurToI = price + reach[cur][i];
+                    if (costFromCurToI > lc787Result) continue; // 剪枝, 如果在这一站的中转都要比最小结果大, 就没必要DFS下去了
+                    if (minCostToI > costFromCurToI) {
+                        lc787Dfs(i, dst, reach, maxStop, minCost, limit - 1, costFromCurToI);
+                        minCost[i] = costFromCurToI;
+                        maxStop[i] = limit - 1;
+                    } else if (maxStop[i] < limit - 1) {
+                        lc787Dfs(i, dst, reach, maxStop, minCost, limit - 1, costFromCurToI);
+                    }
+                }
+            }
+        }
+    }
+
     // LC282 ** Hard
     List<String> lc282Result = new ArrayList<>();
 
