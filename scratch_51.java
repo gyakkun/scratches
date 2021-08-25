@@ -8,49 +8,50 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minimumMountainRemovals(new int[]{1, 3, 1}));
+        System.out.println(s.minimumMountainRemovals(new int[]{100, 92, 89, 77, 74, 66, 64, 66, 64}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1671 TBD
+    // LC1671
     public int minimumMountainRemovals(int[] nums) {
-        int result = nums.length;
-        for (int i = 1; i <= nums.length - 1; i++) {
-            int left = lengthOfLIS(Arrays.copyOfRange(nums, 0, i));
-            int right = lengthOfLISReverse(Arrays.copyOfRange(nums, i, nums.length));
-            if (nums[i] == nums[i - 1]) {
-                result = Math.min(result, nums.length - left - right + 1);
-            } else {
-                result = Math.min(result, nums.length - left - right);
+        int n = nums.length, result = nums.length;
+        int[] left = new int[n], right = new int[n];
+        int[] leftTop = new int[n], rightTop = new int[n];
+        left[0] = 1;
+        leftTop[0] = nums[0];
+        right[n - 1] = 1;
+        rightTop[n - 1] = nums[n - 1];
+        TreeSet<Integer> ts = new TreeSet<>();
+        ts.add(nums[0]);
+        for (int i = 1; i < n; i++) {
+            Integer ceil = ts.ceiling(nums[i]);
+            if (ceil != null) {
+                ts.remove(ceil);
+            }
+            ts.add(nums[i]);
+            left[i] = ts.size();
+            leftTop[i] = ts.last();
+        }
+        ts.clear();
+        ts.add(nums[n - 1]);
+        for (int i = n - 2; i >= 0; i--) {
+            Integer ceil = ts.ceiling(nums[i]);
+            if (ceil != null) {
+                ts.remove(ceil);
+            }
+            ts.add(nums[i]);
+            right[i] = ts.size();
+            rightTop[i] = ts.last();
+        }
+        for (int i = 1; i <= n - 2; i++) {
+            // 判定条件: 同为两边的峰, 且长度必须超过1
+            if (leftTop[i] == rightTop[i] && left[i] != 1 && right[i] != 1) {
+                result = Math.min(result, n - (left[i] + right[i] - 1));
             }
         }
         return result;
-    }
-
-    private int lengthOfLIS(int[] arr) {
-        TreeSet<Integer> ts = new TreeSet<>();
-        for (int i : arr) {
-            Integer c = ts.ceiling(i);
-            if (c != null) {
-                ts.remove(c);
-            }
-            ts.add(i);
-        }
-        return ts.size();
-    }
-
-    private int lengthOfLISReverse(int[] arr) {
-        TreeSet<Integer> ts = new TreeSet<>();
-        for (int i = arr.length - 1; i >= 0; i--) {
-            Integer c = ts.ceiling(arr[i]);
-            if (c != null) {
-                ts.remove(c);
-            }
-            ts.add(arr[i]);
-        }
-        return ts.size();
     }
 
     // LC1099
