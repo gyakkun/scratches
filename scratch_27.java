@@ -392,6 +392,7 @@ class Scratch {
         return prev;
     }
 
+    // LC354
     public int maxEnvelopes(int[][] env) {
         if (env.length <= 1) return env.length;
         // (长, 宽), 先按长排序
@@ -418,6 +419,7 @@ class Scratch {
         return Arrays.stream(dp).max().getAsInt();
     }
 
+    // LC442
     public List<Integer> findDuplicates(int[] nums) {
         List<Integer> result = new ArrayList<>(nums.length / 2);
         int n = nums.length;
@@ -433,6 +435,7 @@ class Scratch {
 
     }
 
+    // LC287
     public int findDuplicate(int[] nums) {
         Set<Integer> s = new HashSet<>();
         for (int i : nums) {
@@ -470,6 +473,7 @@ class Scratch {
         return missing;
     }
 
+    // LC435
     public int eraseOverlapIntervals(int[][] intervals) {
         if (intervals.length == 0) return 0;
         int n = intervals.length;
@@ -485,6 +489,7 @@ class Scratch {
         return n - selected;
     }
 
+    // LC986
     public int[][] intervalIntersection(int[][] A, int[][] B) {
         List<int[]> ans = new ArrayList();
         int i = 0, j = 0;
@@ -508,6 +513,7 @@ class Scratch {
         return ans.toArray(new int[ans.size()][]);
     }
 
+    // LC57
     public int[][] insertInterval(int[][] intervals, int[] newInterval) {
         boolean isPlaced = false;
         int left = newInterval[0];
@@ -533,6 +539,7 @@ class Scratch {
         return result.toArray(new int[result.size()][]);
     }
 
+    // LC338
     public int[] countBits(int num) {
         int[] result = new int[num + 1];
         for (int i = 0; i <= num; i++) {
