@@ -14,6 +14,46 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC759 ** 复习区间合并
+    class Lc759 {
+        public List<Interval> employeeFreeTime(List<List<Interval>> schedule) {
+            List<Interval> allIntervals = new ArrayList<>();
+            for (List<Interval> s : schedule) {
+                allIntervals.addAll(s);
+            }
+            allIntervals.sort(Comparator.comparingInt(o -> o.start));
+            List<Integer> first = new ArrayList<>(), second = new ArrayList<>();
+            first.add(allIntervals.get(0).start);
+            second.add(allIntervals.get(0).end);
+            for (int i = 1; i < allIntervals.size(); i++) {
+                if (allIntervals.get(i).start > second.get(second.size() - 1)) {
+                    first.add(allIntervals.get(i).start);
+                    second.add(allIntervals.get(i).end);
+                } else {
+                    second.set(second.size() - 1, Math.max(second.get(second.size() - 1), allIntervals.get(i).end));
+                }
+            }
+            List<Interval> result = new ArrayList<>();
+            for (int i = 1; i < first.size(); i++) {
+                result.add(new Interval(second.get(i - 1), first.get(i)));
+            }
+            return result;
+        }
+
+        class Interval {
+            public int start;
+            public int end;
+
+            public Interval() {
+            }
+
+            public Interval(int _start, int _end) {
+                start = _start;
+                end = _end;
+            }
+        }
+    }
+
     // LC515
     public List<Integer> largestValues(TreeNode root) {
         List<Integer> result = new ArrayList<>();
