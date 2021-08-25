@@ -19,7 +19,7 @@ class Scratch {
 
     public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
         lc797Result = new ArrayList<>();
-        List<Integer> path = new LinkedList<>();
+        List<Integer> path = new ArrayList<>(graph.length);
         path.add(0);
         lc797Dfs(0, graph, path);
         return lc797Result;
