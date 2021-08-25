@@ -14,6 +14,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC258
+    public int addDigits(int num) {
+        if (num < 10) return num;
+        while (num >= 10) {
+            int sum = 0;
+            while (num != 0) {
+                sum += num % 10;
+                num /= 10;
+            }
+            num = sum;
+        }
+        return num;
+    }
+
     // Interview 01.07
     public void rotate(int[][] matrix) {
         int n = matrix.length;
