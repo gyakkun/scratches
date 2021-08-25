@@ -14,6 +14,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC515
+    public List<Integer> largestValues(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            int max = Integer.MIN_VALUE;
+            for (int i = 0; i < qs; i++) {
+                TreeNode p = q.poll();
+                max = Math.max(max, p.val);
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+            }
+            result.add(max);
+        }
+        return result;
+    }
+
     // LC1679
     public int maxOperations(int[] nums, int k) {
         Map<Integer, Integer> m = new HashMap<>();
@@ -561,5 +581,24 @@ class Trie {
     class TrieNode {
         TrieNode[] children = new TrieNode[26];
         boolean isEnd = false;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
