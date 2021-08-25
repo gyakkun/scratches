@@ -14,6 +14,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC986 ** 复习区间交集
+    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        // 区间列表已经排序
+        int p1 = 0, p2 = 0, n = firstList.length, m = secondList.length;
+        List<int[]> result = new ArrayList<>();
+        while (p1 < n && p2 < m) {
+            int left = Math.max(firstList[p1][0], secondList[p2][0]);
+            int right = Math.min(firstList[p1][1], secondList[p2][1]);
+            if (left <= right) {
+                result.add(new int[]{left, right});
+            }
+            // 将右端点较小的区间列表下标右移
+            if (firstList[p1][1] < secondList[p1][1]) {
+                p1++;
+            } else {
+                p2++;
+            }
+        }
+        return result.toArray(new int[result.size()][]);
+    }
+
     // LC759 ** 复习区间合并
     class Lc759 {
         public List<Interval> employeeFreeTime(List<List<Interval>> schedule) {
