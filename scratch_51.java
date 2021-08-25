@@ -8,10 +8,24 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minimumMountainRemovals(new int[]{100, 92, 89, 77, 74, 66, 64, 66, 64}));
+        System.out.println(s.numSubarrayBoundedMax(new int[]{2, 1, 4, 3}, 2, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC795 ** from Solution
+    public int numSubarrayBoundedMax(int[] nums, int lowBound, int highBound) {
+        return lc795Helper(nums, highBound) - lc795Helper(nums, lowBound - 1);
+    }
+
+    private int lc795Helper(int[] arr, int bound) { // 最大值小于等于bound的子数组的数量
+        int cur = 0, result = 0;
+        for (int i : arr) {
+            cur = i <= bound ? cur + 1 : 0;
+            result += cur;
+        }
+        return result;
     }
 
     // LC258
