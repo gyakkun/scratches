@@ -14,6 +14,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC797
+    List<List<Integer>> lc797Result;
+
+    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        lc797Result = new ArrayList<>();
+        List<Integer> path = new LinkedList<>();
+        path.add(0);
+        lc797Dfs(0, graph, path);
+        return lc797Result;
+    }
+
+    private void lc797Dfs(int cur, int[][] graph, List<Integer> path) {
+        if (cur == graph.length - 1) {
+            lc797Result.add(new ArrayList<>(path));
+            return;
+        }
+        for (int next : graph[cur]) {
+            path.add(next);
+            lc797Dfs(next, graph, path);
+            path.remove(path.size() - 1);
+        }
+    }
+
     // LC1671
     public int minimumMountainRemovals(int[] nums) {
         int n = nums.length, result = nums.length;
