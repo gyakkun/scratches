@@ -14,6 +14,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1679
+    public int maxOperations(int[] nums, int k) {
+        Map<Integer, Integer> m = new HashMap<>();
+        int result = 0;
+        for (int i : nums) {
+            if (m.containsKey(k - i)) {
+                result += 1;
+                m.put(k - i, m.get(k - i) - 1);
+                if (m.get(k - i) == 0) {
+                    m.remove(k - i);
+                }
+            } else {
+                m.put(i, m.getOrDefault(i, 0) + 1);
+            }
+        }
+        return result;
+    }
+
     // LC795 ** from Solution
     public int numSubarrayBoundedMax(int[] nums, int lowBound, int highBound) {
         return lc795Helper(nums, highBound) - lc795Helper(nums, lowBound - 1);
