@@ -8,10 +8,25 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.numSubarrayBoundedMax(new int[]{2, 1, 4, 3}, 2, 3));
+        System.out.println(s.eraseOverlapIntervals(new int[][]{{-52, 31}, {-73, -26}, {82, 97}, {-65, -11}, {-62, -49}, {95, 99}, {58, 95}, {-31, 49}, {66, 98}, {-63, 2}, {30, 47}, {-40, -26}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC435 **
+    public int eraseOverlapIntervals(int[][] intervals) {
+        if (intervals.length <= 1) return intervals.length;
+        Arrays.sort(intervals, Comparator.comparingInt(o -> o[1]));
+        int selected = 1;
+        int right = intervals[0][1];
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] >= right) {
+                selected++;
+                right = intervals[i][1];
+            }
+        }
+        return intervals.length - selected;
     }
 
     // LC986 ** 复习区间交集
