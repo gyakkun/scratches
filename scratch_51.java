@@ -64,19 +64,21 @@ class Scratch {
         }
     }
 
-    Map<Pair<Integer, Integer>, Integer> crossMap = new HashMap<Pair<Integer, Integer>, Integer>() {{
-        put(new Pair<>(1, 3), 2);
-        put(new Pair<>(1, 7), 4);
-        put(new Pair<>(1, 9), 5);
-        put(new Pair<>(2, 8), 5);
-        put(new Pair<>(3, 7), 5);
-        put(new Pair<>(3, 9), 6);
-        put(new Pair<>(4, 6), 5);
-        put(new Pair<>(7, 9), 8);
-    }};
+    int[][] crossMap = new int[][]{
+            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+            {-1, -1, -1, 2, -1, -1, -1, 4, -1, 5},
+            {-1, -1, -1, -1, -1, -1, -1, -1, 5, -1},
+            {-1, -1, -1, -1, -1, -1, -1, 5, -1, 6},
+            {-1, -1, -1, -1, -1, -1, 5, -1, -1, -1},
+            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+            {-1, -1, -1, -1, -1, -1, -1, -1, -1, 8},
+            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+            {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+    };
 
     private Integer getCross(int i, int j) {
-        return i == j ? null : crossMap.get(new Pair<>(Math.min(i, j), Math.max(i, j)));
+        return i == j ? null : (crossMap[Math.min(i, j)][Math.max(i, j)] == -1 ? null : crossMap[Math.min(i, j)][Math.max(i, j)]);
     }
 
     // LC1954
