@@ -9,10 +9,103 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minimumPerimeter(13));
+        System.out.println(s.numberOfPatterns(1, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1901 **
+    public int maxDepthBST(int[] order) {
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        tm.put(0, 0);
+        tm.put(Integer.MAX_VALUE, 0);
+        tm.put(order[0], 1);
+        int result = 1;
+        for (int i = 1; i < order.length; i++) {
+            int ceil = tm.ceilingKey(order[i]), floor = tm.floorKey(order[i]);
+            int depth = Math.max(tm.get(ceil), tm.get(floor)) + 1;
+            tm.put(order[i], depth);
+            result = Math.max(result, depth);
+        }
+        return result;
+    }
+
+    // LC351
+    Set<Pair<Integer, Integer>> result = new HashSet<>();
+//    Set<String> result = new HashSet<>();
+
+    public int numberOfPatterns(int m, int n) {
+        StringBuilder sb = new StringBuilder(n + 1);
+        boolean[] usable = new boolean[9];
+        Arrays.fill(usable, true);
+        backtrack(sb, usable, m, n);
+        return result.size();
+    }
+
+    private void backtrack(StringBuilder sb, boolean[] usable, int m, int n) {
+        if (sb.length() >= m && sb.length() <= n) {
+            if (!result.add(new Pair<>(sb.toString().hashCode(), sb.length()))) {
+//            if (!result.add(sb.toString())) {
+                return;
+            }
+            if (sb.length() == n) return;
+        }
+        for (int i = 0; i < 9; i++) {
+            if (usable[i]) {
+                if (sb.length() != 0) {
+                    int last = sb.charAt(sb.length() - 1) - '0'; // 处理一下+1 -1
+                    Integer cross = getCross(i + 1, last + 1);
+                    if (cross != null) {
+                        char crossChar = (char) (cross - 1 + '0');
+                        boolean hasCrossed = false;
+                        for (char c : sb.toString().toCharArray()) {
+                            if (c == crossChar) {
+                                hasCrossed = true;
+                                break;
+                            }
+                        }
+                        if (hasCrossed) {
+                            sb.append(i);
+                            usable[i] = false;
+                            backtrack(sb, usable, m, n);
+                            usable[i] = true;
+                            sb.deleteCharAt(sb.length() - 1);
+                        }
+                    } else {
+                        sb.append(i);
+                        usable[i] = false;
+                        backtrack(sb, usable, m, n);
+                        usable[i] = true;
+                        sb.deleteCharAt(sb.length() - 1);
+                    }
+                } else {
+                    sb.append(i);
+                    usable[i] = false;
+                    backtrack(sb, usable, m, n);
+                    usable[i] = true;
+                    sb.deleteCharAt(sb.length() - 1);
+                }
+            }
+        }
+    }
+
+    Map<Pair<Integer, Integer>, Integer> crossMap = new HashMap<Pair<Integer, Integer>, Integer>() {{
+        put(new Pair<>(1, 3), 2);
+        put(new Pair<>(1, 7), 4);
+        put(new Pair<>(1, 9), 5);
+        put(new Pair<>(2, 8), 5);
+        put(new Pair<>(3, 7), 5);
+        put(new Pair<>(3, 9), 6);
+        put(new Pair<>(4, 6), 5);
+        put(new Pair<>(7, 9), 8);
+    }};
+
+    private Integer getCross(int i, int j) {
+        if (i == j) return null;
+        int smaller = i > j ? j : i;
+        int bigger = smaller == j ? i : j;
+        return crossMap.get(new Pair<>(smaller, bigger));
     }
 
     // LC1954
