@@ -69,6 +69,7 @@ class Scratch {
         return l;
     }
 
+    // LC989
     public static List<Integer> addToArrayForm(int[] A, int K) {
 
         long a = 0;
@@ -91,6 +92,7 @@ class Scratch {
         return result;
     }
 
+    // LC1365
     public int[] smallerNumbersThanCurrent(int[] nums) {
         final int n = nums.length;
         List<Integer> l = Arrays.stream(nums).boxed().collect(Collectors.toList());
