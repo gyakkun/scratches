@@ -14,6 +14,13 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC540
+    public int singleNonDuplicate(int[] nums) {
+        int result = 0;
+        for(int i:nums) result^=i;
+        return result;
+    }
+
     // LC1901 **
     public int maxDepthBST(int[] order) {
         TreeMap<Integer, Integer> tm = new TreeMap<>();
