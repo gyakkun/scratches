@@ -14,6 +14,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC881
+    public int numRescueBoats(int[] people, int limit) {
+        int result = people.length;
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        for (int w : people) tm.put(w, tm.getOrDefault(w, 0) + 1);
+        while (tm.size() != 0) {
+            int smallest = tm.firstKey();
+            Integer floor = tm.floorKey(limit - smallest);
+            if (floor != null) {
+                if (floor != smallest || tm.get(smallest) > 1) {
+                    result--;
+                    tm.put(floor, tm.get(floor) - 1);
+                    if (tm.get(floor) == 0) tm.remove(floor);
+                }
+            }
+            tm.put(smallest, tm.get(smallest) - 1);
+            if (tm.get(smallest) == 0) tm.remove(smallest);
+        }
+        return result;
+    }
+
     // LC41 **
     public int firstMissingPositive(int[] nums) {
         int n = nums.length;

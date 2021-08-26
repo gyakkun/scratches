@@ -15,6 +15,7 @@ class Scratch {
         return search(l, 9);
     }
 
+    // LC881
     public int numRescueBoats2(int[] people, int limit) {
         Arrays.sort(people);
         int i = 0, j = people.length - 1;
@@ -30,6 +31,7 @@ class Scratch {
         return ans;
     }
 
+    // LC881
     public static int numRescueBoats(int[] people, int limit) {
         Arrays.sort(people);
         List<Integer> l = Arrays.stream(people).boxed().collect(Collectors.toList());
@@ -102,6 +104,7 @@ class Scratch {
         return result;
     }
 
+    // LC926
     public static int minFlipsMonoIncr(String S) {
         // 对于一个位置 我们希望知道自己及其前面有多少个1, 自己及后面有多少个0
         int len = S.length();
@@ -142,6 +145,7 @@ class Scratch {
         return Collections.min(flipTimes);
     }
 
+    // LC1653
     public static int minimumDeletions(String s) {
         int len = s.length();
         // 包括自己有多少个A
