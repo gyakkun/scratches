@@ -2,7 +2,6 @@ import javafx.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
@@ -32,57 +31,38 @@ class Scratch {
     }
 
     // LC351
-    Set<Pair<Integer, Integer>> result = new HashSet<>();
-//    Set<String> result = new HashSet<>();
+    int lc351Result;
 
     public int numberOfPatterns(int m, int n) {
         StringBuilder sb = new StringBuilder(n + 1);
         boolean[] usable = new boolean[9];
         Arrays.fill(usable, true);
-        backtrack(sb, usable, m, n);
-        return result.size();
+        lc351Backtrack(sb, usable, m, n);
+        return lc351Result;
     }
 
-    private void backtrack(StringBuilder sb, boolean[] usable, int m, int n) {
+    private void lc351Backtrack(StringBuilder sb, boolean[] usable, int m, int n) {
         if (sb.length() >= m && sb.length() <= n) {
-            if (!result.add(new Pair<>(sb.toString().hashCode(), sb.length()))) {
-//            if (!result.add(sb.toString())) {
-                return;
-            }
+            lc351Result++;
             if (sb.length() == n) return;
         }
         for (int i = 0; i < 9; i++) {
             if (usable[i]) {
+                boolean canBacktrack = true;
                 if (sb.length() != 0) {
                     int last = sb.charAt(sb.length() - 1) - '0'; // 处理一下+1 -1
                     Integer cross = getCross(i + 1, last + 1);
                     if (cross != null) {
-                        char crossChar = (char) (cross - 1 + '0');
-                        boolean hasCrossed = false;
-                        for (char c : sb.toString().toCharArray()) {
-                            if (c == crossChar) {
-                                hasCrossed = true;
-                                break;
-                            }
+                        int crossNum = cross - 1;
+                        if (usable[crossNum]) {
+                            canBacktrack = false;
                         }
-                        if (hasCrossed) {
-                            sb.append(i);
-                            usable[i] = false;
-                            backtrack(sb, usable, m, n);
-                            usable[i] = true;
-                            sb.deleteCharAt(sb.length() - 1);
-                        }
-                    } else {
-                        sb.append(i);
-                        usable[i] = false;
-                        backtrack(sb, usable, m, n);
-                        usable[i] = true;
-                        sb.deleteCharAt(sb.length() - 1);
                     }
-                } else {
+                }
+                if (canBacktrack) {
                     sb.append(i);
                     usable[i] = false;
-                    backtrack(sb, usable, m, n);
+                    lc351Backtrack(sb, usable, m, n);
                     usable[i] = true;
                     sb.deleteCharAt(sb.length() - 1);
                 }
@@ -102,10 +82,7 @@ class Scratch {
     }};
 
     private Integer getCross(int i, int j) {
-        if (i == j) return null;
-        int smaller = i > j ? j : i;
-        int bigger = smaller == j ? i : j;
-        return crossMap.get(new Pair<>(smaller, bigger));
+        return i == j ? null : crossMap.get(new Pair<>(Math.min(i, j), Math.max(i, j)));
     }
 
     // LC1954
