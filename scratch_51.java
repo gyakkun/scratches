@@ -17,17 +17,13 @@ class Scratch {
 
     // LC1954
     public long minimumPerimeter(long neededApples) {
-        Function<Long, Long> f = n -> {
-            long oneForth = (n + 1) * (2 * n + 1) * n / 2;
-            return oneForth * 4;
-        };
         long lo = 1, hi = 62997;
         while (lo < hi) {
-            long mid = (lo + hi) >> 1;
-            if (f.apply(mid) >= neededApples) {
-                hi = mid;
+            long n = (lo + hi) >> 1;
+            if (2 * (n + 1) * (2 * n + 1) * n >= neededApples) {
+                hi = n;
             } else {
-                lo = mid + 1;
+                lo = n + 1;
             }
         }
         return lo * 8;
