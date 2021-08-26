@@ -14,6 +14,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 10
+    public int numWays(int n) {
+        final int mod = 1000000007;
+        int[] result = new int[]{1, 1, 2};
+        for (int i = 3; i <= n; i++) {
+            result[i % 3] = (result[(i - 1) % 3] + result[(i - 2) % 3]) % mod;
+        }
+        return result[n % 3];
+    }
+
     // LC1653
     public int minimumDeletions(String s) {
         int n = s.length();
