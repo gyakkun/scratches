@@ -35,7 +35,7 @@ class Scratch {
 
     public int numberOfPatterns(int m, int n) {
         StringBuilder sb = new StringBuilder(n + 1);
-        boolean[] usable = new boolean[9];
+        boolean[] usable = new boolean[10];
         Arrays.fill(usable, true);
         lc351Backtrack(sb, usable, m, n);
         return lc351Result;
@@ -46,26 +46,20 @@ class Scratch {
             lc351Result++;
             if (sb.length() == n) return;
         }
-        for (int i = 0; i < 9; i++) {
+        for (int i = 1; i <= 9; i++) {
             if (usable[i]) {
-                boolean canBacktrack = true;
                 if (sb.length() != 0) {
-                    int last = sb.charAt(sb.length() - 1) - '0'; // 处理一下+1 -1
-                    Integer cross = getCross(i + 1, last + 1);
-                    if (cross != null) {
-                        int crossNum = cross - 1;
-                        if (usable[crossNum]) {
-                            canBacktrack = false;
-                        }
+                    int last = sb.charAt(sb.length() - 1) - '0';
+                    Integer cross = getCross(i, last);
+                    if (cross != null && usable[cross]) {
+                        continue;
                     }
                 }
-                if (canBacktrack) {
-                    sb.append(i);
-                    usable[i] = false;
-                    lc351Backtrack(sb, usable, m, n);
-                    usable[i] = true;
-                    sb.deleteCharAt(sb.length() - 1);
-                }
+                sb.append(i);
+                usable[i] = false;
+                lc351Backtrack(sb, usable, m, n);
+                usable[i] = true;
+                sb.deleteCharAt(sb.length() - 1);
             }
         }
     }
