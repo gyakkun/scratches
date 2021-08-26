@@ -14,6 +14,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC298
+    int lc298Result = 0;
+
+    public int longestConsecutive(TreeNode root) {
+        lc298Preorder(root, 1);
+        return lc298Result;
+    }
+
+    private void lc298Preorder(TreeNode root, int curLen) {
+        lc298Result = Math.max(lc298Result, curLen);
+        if (root == null) return;
+        if (root.left != null) {
+            if (root.left.val == root.val + 1) {
+                lc298Preorder(root.left, curLen + 1);
+            } else {
+                lc298Preorder(root.left, 1);
+            }
+        }
+        if (root.right != null) {
+            if (root.right.val == root.val + 1) {
+                lc298Preorder(root.right, curLen + 1);
+            } else {
+                lc298Preorder(root.right, 1);
+            }
+        }
+    }
+
     // JZOF 10
     public int numWays(int n) {
         final int mod = 1000000007;
