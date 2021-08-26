@@ -2,16 +2,37 @@ import javafx.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minimumDeletions("aababbab"));
+        System.out.println(s.minimumPerimeter(13));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1954
+    public long minimumPerimeter(long neededApples) {
+        Function<Long, Long> f = n -> {
+            long oneForth = (n + 1) * (2 * n) * n / 2;
+            oneForth += (n + 1) * n;
+            oneForth -= (1 + n) * n / 2;
+            return oneForth * 4;
+        };
+        long lo = 1, hi = 100000;
+        while (lo < hi) {
+            long mid = (lo + hi) >> 1;
+            if (f.apply(mid) >= neededApples) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo * 8;
     }
 
     // LC298
