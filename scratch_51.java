@@ -17,20 +17,16 @@ class Scratch {
     // LC881
     public int numRescueBoats(int[] people, int limit) {
         int result = people.length;
-        TreeMap<Integer, Integer> tm = new TreeMap<>();
-        for (int w : people) tm.put(w, tm.getOrDefault(w, 0) + 1);
-        while (tm.size() != 0) {
-            int smallest = tm.firstKey();
-            Integer floor = tm.floorKey(limit - smallest);
-            if (floor != null) {
-                if (floor != smallest || tm.get(smallest) > 1) {
-                    result--;
-                    tm.put(floor, tm.get(floor) - 1);
-                    if (tm.get(floor) == 0) tm.remove(floor);
-                }
+        Arrays.sort(people);
+        int left = 0, right = people.length - 1;
+        while (left < right) {
+            if (people[left] + people[right] <= limit) {
+                left++;
+                right--;
+                result--;
+            } else {
+                right--;
             }
-            tm.put(smallest, tm.get(smallest) - 1);
-            if (tm.get(smallest) == 0) tm.remove(smallest);
         }
         return result;
     }
