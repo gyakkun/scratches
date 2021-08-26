@@ -8,10 +8,32 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.eraseOverlapIntervals(new int[][]{{-52, 31}, {-73, -26}, {82, 97}, {-65, -11}, {-62, -49}, {95, 99}, {58, 95}, {-31, 49}, {66, 98}, {-63, 2}, {30, 47}, {-40, -26}}));
+        System.out.println(s.minimumDeletions("aababbab"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1653
+    public int minimumDeletions(String s) {
+        int n = s.length();
+        char[] ca = s.toCharArray();
+        int[] aNum = new int[n]; // 截至i有多少个a, 含自身
+        aNum[0] = ca[0] == 'a' ? 1 : 0;
+        for (int i = 1; i < n; i++) {
+            aNum[i] = aNum[i - 1] + (ca[i] == 'a' ? 1 : 0);
+        }
+        int aTotal = aNum[n - 1], bTotal = n - aNum[n - 1];
+        int result = Math.min(aTotal, bTotal);
+        for (int i = 0; i < n; i++) {
+            int countALeftInclusive = aNum[i];
+            int countBLeftInclusive = i + 1 - countALeftInclusive;
+            int countARightExclusive = aTotal - countALeftInclusive;
+            int countBRightExclusive = bTotal - countBLeftInclusive;
+            // 删除左侧所有b, 删除右侧所有a
+            result = Math.min(result, countBLeftInclusive + countARightExclusive);
+        }
+        return result;
     }
 
     // LC881
