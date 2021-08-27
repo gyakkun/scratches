@@ -8,11 +8,26 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        MedianFinder mf = new MedianFinder();
+
+        mf.addNum(-1);
+        System.out.println(mf.findMedian());
+        mf.addNum(-2);
+        System.out.println(mf.findMedian());
+        mf.addNum(-3);
+        System.out.println(mf.findMedian());
+        mf.addNum(-4);
+        System.out.println(mf.findMedian());
+        mf.addNum(-5);
+        System.out.println(mf.findMedian());
+
+
         System.out.println(s.numberOfPatterns(1, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
 
     // LC540 ***
     public int singleNonDuplicate(int[] nums) {
@@ -873,5 +888,46 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+// LC295
+class MedianFinder {
+
+    PriorityQueue<Integer> minPq = new PriorityQueue<>(); // 存大的半边
+    PriorityQueue<Integer> maxPq = new PriorityQueue<>(Comparator.reverseOrder()); // 存小的半边, 数量要等于minPq 或 等于 minPq.size()+1
+
+    /**
+     * initialize your data structure here.
+     */
+    public MedianFinder() {
+
+    }
+
+    public void addNum(int num) {
+        if (maxPq.isEmpty()) {
+            maxPq.offer(num);
+        } else {
+            if (num > maxPq.peek()) {
+                minPq.offer(num);
+            } else {
+                maxPq.offer(num);
+            }
+        }
+
+        // 调整
+        while (minPq.size() < maxPq.size()) {
+            minPq.offer(maxPq.poll());
+        }
+        while (minPq.size() > maxPq.size()) {
+            maxPq.offer(minPq.poll());
+        }
+    }
+
+    public double findMedian() {
+        if (minPq.size() == maxPq.size()) {
+            return (minPq.peek() + maxPq.peek()) / 2d;
+        }
+        return maxPq.peek() + 0d;
     }
 }
