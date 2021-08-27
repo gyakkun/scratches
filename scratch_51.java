@@ -16,6 +16,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 074
+    public int[][] merge(int[][] intervals) {
+        List<Integer> first = new ArrayList<>(), second = new ArrayList<>();
+        Arrays.sort(intervals, Comparator.comparingInt(o -> o[0]));
+        first.add(intervals[0][0]);
+        second.add(intervals[0][1]);
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] > second.get(second.size() - 1)) {
+                first.add(intervals[i][0]);
+                second.add(intervals[i][1]);
+            } else {
+                second.set(second.size() - 1, Math.max(second.get(second.size() - 1), intervals[i][1]));
+            }
+        }
+        int[][] result = new int[first.size()][];
+        for (int i = 0; i < first.size(); i++) {
+            result[i] = new int[]{first.get(i), second.get(i)};
+        }
+        return result;
+    }
+
 
     // LC786
     public int[] kthSmallestPrimeFraction(int[] arr, int k) {
