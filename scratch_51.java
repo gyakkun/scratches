@@ -1149,3 +1149,38 @@ class DisjointSetUnion {
 
 
 }
+
+// LC288
+class ValidWordAbbr {
+    Map<String, String> m = new HashMap<>();
+    Map<String, Set<String>> reverse = new HashMap<>();
+
+
+    public ValidWordAbbr(String[] dictionary) {
+        for (String word : dictionary) {
+            String abbr = getAbbr(word);
+            m.put(word, abbr);
+            reverse.putIfAbsent(abbr, new HashSet<>());
+            reverse.get(abbr).add(word);
+        }
+    }
+
+    public boolean isUnique(String word) {
+        String abbr = getAbbr(word);
+        if (!reverse.containsKey(abbr)) return true;
+        boolean flag = true;
+        for (String e : reverse.get(abbr)) {
+            if (!e.equals(word)) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) return true;
+        return false;
+    }
+
+    private String getAbbr(String word) {
+        if (word.length() == 2) return word;
+        return "" + word.charAt(0) + String.valueOf(word.length() - 2) + word.charAt(word.length() - 1);
+    }
+}
