@@ -28,6 +28,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC572 **
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s == null && t == null) return true;
+        if (s == null) return false;
+        return check(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+    }
+
+    private boolean check(TreeNode s, TreeNode t) {// 检查子树专用
+        if (s == null && t == null) return true;
+        if (s == null || t == null || s.val != t.val) return false;
+        return check(s.left, t.left) && check(s.right, t.right);
+    }
+
     // LC687 **
     int lc687Result = 0;
 
