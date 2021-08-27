@@ -28,6 +28,63 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC687 **
+    int lc687Result = 0;
+
+    public int longestUnivaluePath(TreeNode root) {
+        lc687Dfs(root);
+        return lc687Result;
+    }
+
+    private int lc687Dfs(TreeNode root) { // 返回的是同值节点数
+        if (root == null) return 0;
+        int sameValNodeCount = 1;
+        int leftGain = lc687Dfs(root.left), rightGain = lc687Dfs(root.right);
+        int l4Cmp = 1, r4Cmp = 1;
+        if (root.left != null && root.val == root.left.val) {
+            sameValNodeCount += leftGain;
+            l4Cmp = 1 + leftGain;
+        }
+        if (root.right != null && root.val == root.right.val) {
+            sameValNodeCount += rightGain;
+            r4Cmp = 1 + rightGain;
+        }
+        lc687Result = Math.max(lc687Result, sameValNodeCount - 1);
+        return Math.max(l4Cmp, r4Cmp);
+    }
+
+    // LC250
+    int lc250Result = 0;
+
+    public int countUnivalSubtrees(TreeNode root) {
+        lc250Dfs(root);
+        return lc250Result;
+    }
+
+    private Set<Integer> lc250Dfs(TreeNode root) {
+        if (root == null) return new HashSet<>();
+        Set<Integer> result = new HashSet<>();
+        Set<Integer> left = lc250Dfs(root.left);
+        Set<Integer> right = lc250Dfs(root.right);
+        if (left.size() == 0 && right.size() == 0) {
+            lc250Result++;
+        } else if (left.size() == 0 && right.size() == 1) {
+            if (right.iterator().next() == root.val) {
+                lc250Result++;
+            }
+        } else if (right.size() == 0 && left.size() == 1) {
+            if (left.iterator().next() == root.val) {
+                lc250Result++;
+            }
+        } else if (left.size() == 1 && left.equals(right) && root.val == left.iterator().next()) {
+            lc250Result++;
+        }
+        result.addAll(left);
+        result.addAll(right);
+        result.add(root.val);
+        return result;
+    }
+
 
     // LC540 ***
     public int singleNonDuplicate(int[] nums) {
