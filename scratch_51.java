@@ -17,6 +17,30 @@ class Scratch {
     }
 
 
+    // LC786
+    public int[] kthSmallestPrimeFraction(int[] arr, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o2[0] * o1[1] - o1[0] * o2[1]); // 大根堆
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = i + 1; j < arr.length; j++) {
+                int c = arr[i], p = arr[j];
+                double r = (c + 0d) / (p + 0d);
+                int[] entry = new int[]{c, p};
+                if (pq.size() < k) {
+                    pq.offer(entry);
+                } else {
+                    int[] peek = pq.peek();
+                    double peekR = (peek[0] + 0d) / (peek[1] + 0d);
+                    if (peekR > r) {
+                        pq.poll();
+                        pq.offer(entry);
+                    }
+                }
+
+            }
+        }
+        return pq.peek();
+    }
+
     // LC1559 Try DSU
     public boolean containsCycleDSU(char[][] grid) {
         int n = grid.length, m = grid[0].length;
