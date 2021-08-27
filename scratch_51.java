@@ -16,6 +16,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC320 有印象做过 但当时没有提交???
+    public List<String> generateAbbreviations(String word) {
+        List<String> result = new ArrayList<>();
+        int len = word.length();
+        int maxMask = 1 << len;
+        for (int mask = 0; mask < maxMask; mask++) {
+            StringBuilder sb = new StringBuilder();
+            int bitCount = 0;
+            for (int i = 0; i < len; i++) {
+                if (((mask >> i) & 1) == 1) {
+                    bitCount++;
+                } else {
+                    if (bitCount != 0) {
+                        sb.append(bitCount);
+                    }
+                    sb.append(word.charAt(i));
+                    bitCount = 0;
+                }
+            }
+            if (bitCount != 0) {
+                sb.append(bitCount);
+            }
+            result.add(sb.toString());
+        }
+        return result;
+    }
+
     // JZOF II 074
     public int[][] merge(int[][] intervals) {
         List<Integer> first = new ArrayList<>(), second = new ArrayList<>();
