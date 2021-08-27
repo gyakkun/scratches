@@ -38,34 +38,24 @@ class Scratch {
             if (bitCount != 0) {
                 abbr.add(bitCount);
             }
-            StringBuilder sb = new StringBuilder();
-            for (Object o : abbr) {
-                if (o instanceof Character) sb.append((Character) o);
-                else sb.append((Integer) o);
-            }
-            String abbrStr = sb.toString();
             if (abbr.size() > minLen) continue;
             boolean isSomeWordsAbbr = false;
             for (String word : dictionary) {
-                if (checkIfAbbr(abbr, word)) {
+                if (word.length() == target.length() && checkIfAbbr(abbr, word)) {
                     isSomeWordsAbbr = true;
                     break;
                 }
             }
             if (isSomeWordsAbbr) continue;
             minLen = abbr.size();
+            StringBuilder sb = new StringBuilder();
+            for (Object o : abbr) sb.append(o);
             result = sb.toString();
         }
         return result;
     }
 
     private boolean checkIfAbbr(List<Object> abbr, String word) {
-        int len = 0;
-        for (Object o : abbr) {
-            if (o instanceof Character) len++;
-            else len += (Integer) o;
-        }
-        if (word.length() != len) return false;
         int ptr = 0;
         for (Object o : abbr) {
             if (o instanceof Integer) ptr += (Integer) o;
