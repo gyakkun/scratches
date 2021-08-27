@@ -8,37 +8,74 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        MedianFinder mf = new MedianFinder();
-
-        mf.addNum(-1);
-        System.out.println(mf.findMedian());
-        mf.addNum(-2);
-        System.out.println(mf.findMedian());
-        mf.addNum(-3);
-        System.out.println(mf.findMedian());
-        mf.addNum(-4);
-        System.out.println(mf.findMedian());
-        mf.addNum(-5);
-        System.out.println(mf.findMedian());
-
-
-        System.out.println(s.numberOfPatterns(1, 2));
+//        System.out.println(s.containsCycle(new char[][]{{'a', 'a', 'a', 'a'}, {'a', 'b', 'b', 'a'}, {'a', 'b', 'b', 'a'}, {'a', 'a', 'a', 'a'}}));
+//        System.out.println(s.containsCycle(new char[][]{{'c', 'c', 'c', 'a'}, {'c', 'd', 'c', 'c'}, {'c', 'c', 'e', 'c'}, {'f', 'c', 'c', 'c'}}));
+        System.out.println(s.containsCycle(new char[][]{{'a', 'b', 'b'}, {'b', 'z', 'b'}, {'b', 'b', 'a'}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1559
+    boolean[][] lc1559IsCycleAndVisited;
+    int[][] lc1559Directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    public boolean containsCycle(char[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        lc1559IsCycleAndVisited = new boolean[n][m];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int[] dir : lc1559Directions) {
+                    int newX = i + dir[0], newY = j + dir[1];
+                    if (true
+                            && !lc1559IsCycleAndVisited[i][j]
+                            && newX >= 0 && newX < grid.length
+                            && newY >= 0 && newY < grid[0].length
+                            && grid[newX][newY] == grid[i][j]
+                            && !lc1559IsCycleAndVisited[newX][newY]
+                    ) {
+                        if (lc1559Dfs(newX, newY, i, j, grid[i][j], grid)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean lc1559Dfs(int curX, int curY, int fromX, int fromY, char srcVal, char[][] grid) {
+        if (grid[curX][curY] != srcVal) return false;
+        if (lc1559IsCycleAndVisited[curX][curY]) {
+            return true;
+        }
+        lc1559IsCycleAndVisited[curX][curY] = true;
+        for (int[] dir : lc1559Directions) {
+            int newX = curX + dir[0], newY = curY + dir[1];
+            if (true
+                    && !(newX == fromX && newY == fromY)
+                    && newX >= 0 && newX < grid.length
+                    && newY >= 0 && newY < grid[0].length
+                    && grid[newX][newY] == srcVal) {
+                if (lc1559Dfs(newX, newY, curX, curY, srcVal, grid)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // LC572 **
     public boolean isSubtree(TreeNode s, TreeNode t) {
         if (s == null && t == null) return true;
         if (s == null) return false;
-        return check(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+        return lc572Check(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
     }
 
-    private boolean check(TreeNode s, TreeNode t) {// 检查子树专用
+    private boolean lc572Check(TreeNode s, TreeNode t) {// 检查子树专用
         if (s == null && t == null) return true;
         if (s == null || t == null || s.val != t.val) return false;
-        return check(s.left, t.left) && check(s.right, t.right);
+        return lc572Check(s.left, t.left) && lc572Check(s.right, t.right);
     }
 
     // LC687 **
