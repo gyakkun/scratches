@@ -9,12 +9,40 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.containsCycle(new char[][]{{'a', 'a', 'a', 'a'}, {'a', 'b', 'b', 'a'}, {'a', 'b', 'b', 'a'}, {'a', 'a', 'a', 'a'}}));
-//        System.out.println(s.containsCycle(new char[][]{{'c', 'c', 'c', 'a'}, {'c', 'd', 'c', 'c'}, {'c', 'c', 'e', 'c'}, {'f', 'c', 'c', 'c'}}));
-        System.out.println(s.containsCycle(new char[][]{{'a', 'b', 'b'}, {'b', 'z', 'b'}, {'b', 'b', 'a'}}));
+        System.out.println(s.containsCycle(new char[][]{{'c', 'c', 'c', 'a'}, {'c', 'd', 'c', 'c'}, {'c', 'c', 'e', 'c'}, {'f', 'c', 'c', 'c'}}));
+//        System.out.println(s.containsCycle(new char[][]{{'a', 'b', 'b'}, {'b', 'z', 'b'}, {'b', 'b', 'a'}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+
+    // LC1559 Try DSU
+    public boolean containsCycleDSU(char[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        DisjointSetUnion dsu = new DisjointSetUnion();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int idx = i * m + j;
+                char curVal = grid[i][j];
+                dsu.add(idx);
+                for (int[] dir : new int[][]{{1, 0}, {0, 1}}) { // 不能是之前加入过的(上一列/上一行)!!
+                    int newX = i + dir[0], newY = j + dir[1];
+                    int newIdx = newX * m + newY;
+                    if (true
+                            && newX >= 0 && newX < grid.length
+                            && newY >= 0 && newY < grid[0].length
+                            && grid[newX][newY] == curVal
+                    ) {
+                        dsu.add(newIdx);
+                        if (!dsu.merge(idx, newIdx)) return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     // LC1559
     boolean[][] lc1559IsCycleAndVisited;
@@ -1037,4 +1065,42 @@ class MedianFinder {
         }
         return maxPq.peek() + 0d;
     }
+}
+
+class DisjointSetUnion {
+    Map<Integer, Integer> parent = new HashMap<>();
+
+    public boolean add(int i) {
+        if (parent.containsKey(i)) return false;
+        parent.put(i, i);
+        return true;
+    }
+
+    public int find(int i) {
+        int cur = i;
+        while (parent.get(cur) != cur) {
+            cur = parent.get(cur);
+        }
+        int finalParent = cur;
+        cur = i;
+        while (parent.get(cur) != finalParent) { // 路径压缩
+            int origCur = cur;
+            parent.put(cur, finalParent);
+            cur = parent.get(origCur);
+        }
+        return finalParent;
+    }
+
+    public boolean merge(int i, int j) {
+        int iParent = find(i), jParent = find(j);
+        if (iParent == jParent) return false;
+        parent.put(iParent, jParent);
+        return true;
+    }
+
+    public boolean isConnect(int i, int j) {
+        return find(i) == find(j);
+    }
+
+
 }
