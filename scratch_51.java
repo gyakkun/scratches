@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,6 +15,55 @@ class Scratch {
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1293 TBD
+    int result = Integer.MAX_VALUE;
+    int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    Set<String> memo;
+
+    public int shortestPath(int[][] grid, int k) {
+        int m = grid.length, n = grid[0].length;
+        memo = new HashSet<>();
+        boolean[][] visited = new boolean[m][n];
+        dfs(0, 0, grid, visited, k, 0);
+        return result == Integer.MAX_VALUE ? -1 : result;
+    }
+
+    private void dfs(int curX, int curY, int[][] grid, boolean[][] visited, int leftCandy, int curSteps) {
+        if (curX == grid.length - 1 && curY == grid[0].length - 1) {
+            result = Math.min(curSteps, result);
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(curX);
+        sb.append(",");
+        sb.append(curY);
+        sb.append(",");
+        sb.append(leftCandy);
+        sb.append(",");
+        sb.append(curSteps);
+        String key = sb.toString();
+        if (memo.contains(key)) return;
+        visited[curX][curY] = true;
+        for (int[] dir : directions) {
+            int newX = curX + dir[0], newY = curY + dir[1];
+            if (true
+                    && newX >= 0 && newX < grid.length
+                    && newY >= 0 && newY < grid[0].length
+                    && !visited[newX][newY]) {
+                if (grid[newX][newY] == 0) {
+                    dfs(newX, newY, grid, visited, leftCandy, curSteps + 1);
+                } else {
+                    if (leftCandy > 0) {
+                        dfs(newX, newY, grid, visited, leftCandy - 1, curSteps + 1);
+                    }
+                }
+            }
+        }
+        visited[curX][curY] = false;
+        memo.add(key);
+    }
+
 
     // LC1271
     public String toHexspeak(String num) {
