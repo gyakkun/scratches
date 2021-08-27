@@ -8,12 +8,73 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.out.println(s.containsCycle(new char[][]{{'a', 'a', 'a', 'a'}, {'a', 'b', 'b', 'a'}, {'a', 'b', 'b', 'a'}, {'a', 'a', 'a', 'a'}}));
-        System.out.println(s.containsCycle(new char[][]{{'c', 'c', 'c', 'a'}, {'c', 'd', 'c', 'c'}, {'c', 'c', 'e', 'c'}, {'f', 'c', 'c', 'c'}}));
-//        System.out.println(s.containsCycle(new char[][]{{'a', 'b', 'b'}, {'b', 'z', 'b'}, {'b', 'b', 'a'}}));
+        System.out.println(s.minAbbreviation("abcdef",
+                new String[]{"ablade", "xxxxef", "abdefi"}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC411
+    public String minAbbreviation(String target, String[] dictionary) {
+        int len = target.length();
+        int maxMask = 1 << len;
+        int minLen = Integer.MAX_VALUE;
+        String result = "";
+        for (int mask = 0; mask < maxMask; mask++) {
+            List<Object> abbr = new ArrayList<>();
+            int bitCount = 0;
+            for (int i = 0; i < len; i++) {
+                if (((mask >> i) & 1) == 1) {
+                    bitCount++;
+                } else {
+                    if (bitCount != 0) {
+                        abbr.add(bitCount);
+                    }
+                    abbr.add(target.charAt(i));
+                    bitCount = 0;
+                }
+            }
+            if (bitCount != 0) {
+                abbr.add(bitCount);
+            }
+            StringBuilder sb = new StringBuilder();
+            for (Object o : abbr) {
+                if (o instanceof Character) sb.append((Character) o);
+                else sb.append((Integer) o);
+            }
+            String abbrStr = sb.toString();
+            if (abbr.size() > minLen) continue;
+            boolean isSomeWordsAbbr = false;
+            for (String word : dictionary) {
+                if (checkIfAbbr(abbr, word)) {
+                    isSomeWordsAbbr = true;
+                    break;
+                }
+            }
+            if (isSomeWordsAbbr) continue;
+            minLen = abbr.size();
+            result = sb.toString();
+        }
+        return result;
+    }
+
+    private boolean checkIfAbbr(List<Object> abbr, String word) {
+        int len = 0;
+        for (Object o : abbr) {
+            if (o instanceof Character) len++;
+            else len += (Integer) o;
+        }
+        if (word.length() != len) return false;
+        int ptr = 0;
+        for (Object o : abbr) {
+            if (o instanceof Integer) ptr += (Integer) o;
+            else {
+                if (word.charAt(ptr) != (Character) o) return false;
+                ptr++;
+            }
+        }
+        return true;
     }
 
     // LC320 有印象做过 但当时没有提交???
