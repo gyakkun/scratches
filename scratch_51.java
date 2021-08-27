@@ -15,6 +15,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1271
+    public String toHexspeak(String num) {
+        String hex = Long.toHexString(Long.valueOf(num)).toUpperCase();
+        StringBuilder sb = new StringBuilder();
+        for (char c : hex.toCharArray()) {
+            if (c >= 2 + '0' && c <= 9 + '0') return "ERROR";
+            if (c == '1') sb.append("I");
+            else if (c == '0') sb.append('O');
+            else sb.append(c);
+        }
+        return sb.toString();
+    }
+
     // LC411
     public String minAbbreviation(String target, String[] dictionary) {
         int len = target.length();
