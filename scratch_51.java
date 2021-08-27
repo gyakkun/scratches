@@ -1211,3 +1211,42 @@ class ValidWordAbbr {
         return "" + word.charAt(0) + String.valueOf(word.length() - 2) + word.charAt(word.length() - 1);
     }
 }
+
+// LC170
+class TwoSum {
+    Map<Integer, Integer> m = new HashMap<>();
+
+
+    /**
+     * Initialize your data structure here.
+     */
+    public TwoSum() {
+
+    }
+
+    /**
+     * Add the number to an internal data structure..
+     */
+    public void add(int number) {
+        m.put(number, m.getOrDefault(number, 0) + 1);
+    }
+
+    /**
+     * Find if there exists any pair of numbers which sum is equal to the value.
+     */
+    public boolean find(int value) {
+        for (int i : m.keySet()) {
+            if (m.keySet().contains(value - i)) {
+                if (value - i == i) {
+                    if (m.get(i) > 1) {
+                        return true;
+                    } else {
+                        continue;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+}
