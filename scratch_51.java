@@ -14,6 +14,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC6
+    public String convert(String s, int numRows) {
+        if (numRows == 1) return s;
+        StringBuilder[] sbg = new StringBuilder[numRows];
+        for (int i = 0; i < numRows; i++) sbg[i] = new StringBuilder();
+        char[] ca = s.toCharArray();
+        for (int i = 0; i < ca.length; i++) {
+            int groupNum = i / (numRows - 1);
+            int offset = i % (numRows - 1);
+            if (groupNum % 2 == 0) { // down
+                sbg[offset].append(ca[i]);
+            } else {
+                sbg[numRows - 1 - offset].append(ca[i]);
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        for (StringBuilder sb : sbg) {
+            result.append(sb);
+        }
+        return result.toString();
+    }
+
     // LC1293 BFS
     int[][] lc1293Directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
