@@ -2188,7 +2188,7 @@ class Scratch {
         return total >= n;
     }
 
-    // LC735
+    // LC735 **
     public int[] asteroidCollision(int[] asteroids) {
         Deque<Integer> stack = new LinkedList<>();
         for (int i : asteroids) {

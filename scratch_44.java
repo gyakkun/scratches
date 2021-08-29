@@ -1083,7 +1083,7 @@ class Scratch {
         return result;
     }
 
-    // LC1049 DP
+    // LC1049 DP **
     public int lastStoneWeightII(int[] stones) {
         // 目标: 找到绝对值差最小的一个划分
         int n = stones.length;
