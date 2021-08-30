@@ -1583,24 +1583,71 @@ class TwoSum {
 
 // Interview 10.10
 class StreamRank {
-    TreeMap<Integer, Integer> tm = new TreeMap<>();
+    BIT bit = new BIT(50001);
 
     public StreamRank() {
 
     }
 
     public void track(int x) {
-        tm.put(x, tm.getOrDefault(x, 0) + 1);
+        bit.update(x, 1);
     }
 
     public int getRankOfNumber(int x) {
-        Integer floorKey = tm.floorKey(x);
-        if (floorKey == null) return 0;
+        return bit.sumRange(0, x);
+    }
+}
+
+class BIT {
+    int[] tree;
+    int len;
+
+    public BIT(int len) {
+        this.len = len;
+        tree = new int[len + 1];
+    }
+
+    public BIT(int[] arr) {
+        this.len = arr.length;
+        tree = new int[len + 1];
+        for (int i = 0; i < arr.length; i++) {
+            update(i, arr[i]);
+        }
+    }
+
+    public int get(int zeroBased) {
+        return sum(zeroBased + 1) - sum(zeroBased);
+    }
+
+    public void set(int zeroBased, int val) {
+        update(zeroBased, val - get(zeroBased));
+    }
+
+    public void update(int zeroBased, int delta) {
+        updateOneBased(zeroBased + 1, delta);
+    }
+
+    public int sumRange(int left, int right) {
+        return sum(right + 1) - sum(left);
+    }
+
+    private void updateOneBased(int oneBased, int delta) {
+        while (oneBased <= len) {
+            tree[oneBased] += delta;
+            oneBased += lowbit(oneBased);
+        }
+    }
+
+    private int sum(int oneBasedRight) {
         int result = 0;
-        for (int i : tm.keySet()) {
-            result += tm.get(i);
-            if (i == floorKey) break;
+        while (oneBasedRight > 0) {
+            result += tree[oneBasedRight];
+            oneBasedRight -= lowbit(oneBasedRight);
         }
         return result;
+    }
+
+    private int lowbit(int x) {
+        return x & (-x);
     }
 }
