@@ -2306,7 +2306,7 @@ class BIT {
     }
 }
 
-// LC528
+// LC528 **
 class Lc528 {
     int[] acc;
 
@@ -2320,6 +2320,7 @@ class Lc528 {
     public int pickIndex() {
         int target = (int) (Math.random() * acc[acc.length - 1]);
         int lo = 0, hi = acc.length - 1;
+        // 大于等于 target 的最小值
         while (lo < hi) {
             int mid = lo + (hi - lo) / 2;
             if (acc[mid] >= target) {
@@ -2330,5 +2331,17 @@ class Lc528 {
         }
         while (acc[lo] == target) lo++;
         return lo - 1;
+
+        //  大于 target 的第一个值
+        //  while (lo < hi) {
+        //      int mid = lo + (hi - lo) / 2;
+        //      if (acc[mid] > target) {
+        //          hi = mid;
+        //      } else {
+        //          lo = mid + 1;
+        //      }
+        //  }
+        //  return lo-1;
+
     }
 }
