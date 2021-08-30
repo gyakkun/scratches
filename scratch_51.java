@@ -15,40 +15,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // Interview 17.05 O(n^2) TLE
+    // Interview 17.05 O(n) 参考 LC525
     public String[] findLongestSubarray(String[] array) {
         int n = array.length;
-        int[] digitPrefix = new int[n + 1];
-        int[] letterPrefix = new int[n + 1];
-        for (int i = 1; i <= n; i++) {
-            if (Character.isLetter(array[i - 1].charAt(0))) {
-                letterPrefix[i] = letterPrefix[i - 1] + 1;
-            } else {
-                letterPrefix[i] = letterPrefix[i - 1];
-            }
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (Character.isLetter(array[i].charAt(0))) arr[i] = 1;
+            else arr[i] = -1;
         }
-        for (int i = 1; i <= n; i++) {
-            if (Character.isDigit(array[i - 1].charAt(0))) {
-                digitPrefix[i] = digitPrefix[i - 1] + 1;
-            } else {
-                digitPrefix[i] = digitPrefix[i - 1];
-            }
-        }
-        int maxLen = 0, maxLenStartIdx = -1;
-        for (int len = 2; len <= n; len += 2) {
-            for (int start = 0; start + len - 1 < n; start++) {
-                int end = start + len - 1;
-                int numDigit = digitPrefix[end + 1] - digitPrefix[start];
-                int numLetter = letterPrefix[end + 1] - letterPrefix[start];
-                if (numDigit == numLetter) {
-                    if (maxLen < numLetter * 2) {
-                        maxLen = numLetter * 2;
-                        maxLenStartIdx = start;
-                    }
+        Map<Integer, Integer> m = new HashMap<>();
+        int count = 0, maxLen = 0, maxLenStartIdx = -1;
+        m.put(0, -1); // 因为(1)处要+1
+        // 目标 prefix[j] - prefix[i] = 0 , j>i
+        for (int i = 0; i < n; i++) {
+            count = count + arr[i];
+            if (m.containsKey(count)) {
+                if (i - m.get(count) > maxLen) {
+                    maxLen = i - m.get(count);
+                    maxLenStartIdx = m.get(count) + 1; // (1)
                 }
-
+            } else {
+                m.put(count, i);
             }
         }
+        if (maxLenStartIdx == -1) return new String[]{};
         return Arrays.copyOfRange(array, maxLenStartIdx, maxLenStartIdx + maxLen);
     }
 
