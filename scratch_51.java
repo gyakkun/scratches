@@ -9,6 +9,12 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        StringIterator stritr = new StringIterator("L1e2t1C1o1d1e1");
+        stritr.hasNext();
+        stritr.next();
+        stritr.hasNext();
+        stritr.next();
+
         System.out.println(s.findLongestSubarray(new String[]{"A", "1", "B", "C", "D", "2", "3", "4", "E", "5", "F", "G", "6", "7", "H", "I", "J", "K", "L", "M"}));
 
         timing = System.currentTimeMillis() - timing;
@@ -1650,4 +1656,58 @@ class BIT {
     private int lowbit(int x) {
         return x & (-x);
     }
+}
+
+// LC601
+class StringIterator {
+    String cs;
+    int charPtr = 0;
+    int curCharCount = 0;
+    int curNumLen = 0;
+    char curChar = '\0';
+
+
+    public StringIterator(String compressedString) {
+        cs = compressedString;
+        if (cs.length() > 0) curChar = cs.charAt(0);
+        int ptr = 1;
+        while (ptr < cs.length() && Character.isDigit(cs.charAt(ptr))) {
+            curCharCount *= 10;
+            curCharCount += (cs.charAt(ptr) - '0');
+            ptr++;
+            curNumLen++;
+        }
+    }
+
+    public char next() {
+        if (curCharCount > 0) {
+            curCharCount--;
+            return curChar;
+        } else {
+            if (!hasNext()) return ' ';
+            charPtr = charPtr + curNumLen + 1;
+            curNumLen = 0;
+            curChar = cs.charAt(charPtr);
+            curCharCount = 0;
+            int ptr = charPtr + 1;
+            while (ptr < cs.length() && Character.isDigit(cs.charAt(ptr))) {
+                curCharCount *= 10;
+                curCharCount += (cs.charAt(ptr) - '0');
+                ptr++;
+                curNumLen++;
+            }
+            return next();
+        }
+    }
+
+    public boolean hasNext() {
+        if (curCharCount > 0) return true;
+        int n = charPtr + curNumLen;
+        while (n < cs.length()) {
+            if (Character.isLetter(cs.charAt(n))) return true;
+            n++;
+        }
+        return false;
+    }
+
 }
