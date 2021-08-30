@@ -1580,3 +1580,27 @@ class TwoSum {
         return false;
     }
 }
+
+// Interview 10.10
+class StreamRank {
+    TreeMap<Integer, Integer> tm = new TreeMap<>();
+
+    public StreamRank() {
+
+    }
+
+    public void track(int x) {
+        tm.put(x, tm.getOrDefault(x, 0) + 1);
+    }
+
+    public int getRankOfNumber(int x) {
+        Integer floorKey = tm.floorKey(x);
+        if (floorKey == null) return 0;
+        int result = 0;
+        for (int i : tm.keySet()) {
+            result += tm.get(i);
+            if (i == floorKey) break;
+        }
+        return result;
+    }
+}
