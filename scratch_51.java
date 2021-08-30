@@ -14,6 +14,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1824
+    Integer[][] lc1824Memo;
+
+    public int minSideJumps(int[] obstacles) {
+        int n = obstacles.length;
+        lc1824Memo = new Integer[n + 2][4];
+        return lc1824Dfs(obstacles, 0, 2);
+    }
+
+    private int lc1824Dfs(int[] obstacles, int curLen, int curTrack) {
+        final int MY_MAX_VALUE = 0x3f3f3f3f;
+        if (curTrack == obstacles[curLen]) return MY_MAX_VALUE; // (1)
+        if (lc1824Memo[curLen][curTrack] != null) return lc1824Memo[curLen][curTrack];
+        if (curLen == obstacles.length - 1) { // obstacles.length == n+1
+            return 0;
+        }
+        int min = MY_MAX_VALUE;
+        for (int i = 1; i <= 3; i++) {
+            if (obstacles[curLen + 1] != i) { // 剪枝, 也可不剪, 在(1)处返回
+                if (i != curTrack) {
+                    if (obstacles[curLen] == 0 || i != obstacles[curLen]) {
+                        min = Math.min(min, 1 + lc1824Dfs(obstacles, curLen + 1, i));
+                    }
+                } else {
+                    min = Math.min(min, lc1824Dfs(obstacles, curLen + 1, i));
+                }
+            }
+        }
+        return lc1824Memo[curLen][curTrack] = min;
+    }
+
     // LC6
     public String convert(String s, int numRows) {
         if (numRows == 1) return s;
