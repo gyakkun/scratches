@@ -14,6 +14,56 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 108 LC127
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        wordList.add(beginWord);
+        int n = wordList.size();
+        String[] wordArr = wordList.toArray(new String[n]);
+        int beginWordIdx = n - 1, endWordIdx = -1;
+        boolean[][] memo = new boolean[n][n];
+        boolean[] visited = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            if (wordArr[i].equals(endWord)) {
+                endWordIdx = i;
+                break;
+            }
+        }
+        if (endWordIdx == -1) return 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                memo[i][j] = memo[j][i] = isOneLetterDiff(wordArr[i], wordArr[j]);
+            }
+        }
+        Deque<Integer> q = new LinkedList<>();
+        int layer = 0;
+        q.offer(beginWordIdx);
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            layer++;
+            for (int i = 0; i < qs; i++) {
+                int p = q.poll();
+                if (p == endWordIdx) return layer;
+                if (visited[p]) continue;
+                visited[p] = true;
+                for (int j = 0; j < n; j++) {
+                    if (!visited[j] && memo[p][j]) {
+                        q.offer(j);
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    private boolean isOneLetterDiff(String a, String b) {
+        int ctr = 0;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) ctr++;
+            if (ctr > 1) return false;
+        }
+        return ctr == 1;
+    }
+
     // LC1824
     Integer[][] lc1824Memo;
 
