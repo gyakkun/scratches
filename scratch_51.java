@@ -21,6 +21,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP23 TBD
+    public boolean isMagic(int[] target) {
+        return false;
+    }
+
     // Interview 17.05 O(n) 参考 LC525
     public String[] findLongestSubarray(String[] array) {
         int n = array.length;
