@@ -15,6 +15,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 14-I LC343
+    public int cuttingRope(int n) {
+        // 1 - 1
+        // 2 - 1*1
+        // 3 - 2*1
+        // 4 - 2*2
+        // 5 - 2*3 = 6
+        // 6 - 3*3 = 9
+        // 7 - 3*4 = 12
+        if (n == 1 || n == 2) return 1;
+        if (n == 3) return 2;
+        if (n % 3 == 0) return (int) Math.pow(3, n / 3);
+        else if (n % 3 == 1) return 4 * (int) Math.pow(3, (n - 4) / 3);
+        else return 2 * (int) Math.pow(3, n / 3);
+    }
+
     // LC229 摩尔投票法
     public List<Integer> majorityElement(int[] nums) {
         int n = nums.length;
