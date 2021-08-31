@@ -18,6 +18,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1134
+    public boolean isArmstrong(int n) {
+        int numDigit = 0;
+        int orig = n;
+        if (n == 0) numDigit = 1;
+        else {
+            while (n != 0) {
+                n /= 10;
+                numDigit++;
+            }
+        }
+        int sum = 0;
+        n = orig;
+        while (n != 0) {
+            int last = n % 10;
+            double pow = Math.pow(last, numDigit);
+            if (pow > orig) return false;
+            sum += pow;
+            if (sum > orig) return false;
+            n /= 10;
+        }
+        return sum == orig;
+    }
+
     // LCP25 ** 组合数学
     long[][] combMtx;
     Integer[][][] dfsMemo;
