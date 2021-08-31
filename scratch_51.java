@@ -1997,3 +1997,38 @@ class ListNode {
         val = x;
     }
 }
+
+// JZOF 30
+class MinStack {
+    Deque<Integer> stack = new LinkedList<>();
+    Deque<Integer> min = new LinkedList<>();
+
+    /**
+     * initialize your data structure here.
+     */
+    public MinStack() {
+
+    }
+
+    public void push(int x) {
+        if (stack.isEmpty()) {
+            stack.push(x);
+            min.push(x);
+        } else {
+            stack.push(x);
+            min.push(Math.min(min.peek(), x));
+        }
+    }
+
+    public void pop() {
+        stack.pop();
+    }
+
+    public int top() {
+        return stack.peek();
+    }
+
+    public int min() {
+        return min.peek();
+    }
+}
