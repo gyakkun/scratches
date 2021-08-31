@@ -1,11 +1,8 @@
-import com.sun.corba.se.impl.naming.cosnaming.InternalBindingKey;
 import javafx.util.Pair;
-import org.apache.http.conn.ConnectTimeoutException;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -23,6 +20,32 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 04.03
+    public ListNode[] listOfDepth(TreeNode tree) {
+        if (tree == null) return new ListNode[0];
+        Deque<TreeNode> q = new LinkedList<>();
+        List<ListNode> result = new ArrayList<>();
+        q.offer(tree);
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            TreeNode first = q.poll();
+            if (first.left != null) q.offer(first.left);
+            if (first.right != null) q.offer(first.right);
+            ListNode head = new ListNode(first.val);
+            result.add(head);
+            ListNode cur = head;
+            for (int i = 1; i < qs; i++) {
+                TreeNode p = q.poll();
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+                ListNode pLN = new ListNode(p.val);
+                cur.next = pLN;
+                cur = cur.next;
+            }
+        }
+        return result.toArray(new ListNode[result.size()]);
     }
 
     // LC1160
@@ -1873,4 +1896,13 @@ class StringIterator {
         return false;
     }
 
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode(int x) {
+        val = x;
+    }
 }
