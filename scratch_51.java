@@ -18,6 +18,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 003 ** 最高有效位 HSB
+    public int[] countBits(int n) {
+        int[] bit = new int[n + 1];
+        int high = 0;
+        for (int i = 1; i <= n; i++) {
+            if ((i & (i - 1)) == 0) { // 2的幂
+                high = i;
+            }
+            bit[i] = bit[i - high] + 1;
+        }
+        return bit;
+    }
+
     // LC1134
     public boolean isArmstrong(int n) {
         int numDigit = 0;
