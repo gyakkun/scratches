@@ -26,6 +26,16 @@ class Scratch {
         return false;
     }
 
+    // LC1822
+    public int arraySign(int[] nums) {
+        int negCtr = 0;
+        for (int i : nums) {
+            if (i < 0) negCtr++;
+            if (i == 0) return 0;
+        }
+        return negCtr % 2 == 0 ? 1 : -1;
+    }
+
     // Interview 17.05 O(n) 参考 LC525
     public String[] findLongestSubarray(String[] array) {
         int n = array.length;
