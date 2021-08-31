@@ -738,8 +738,8 @@ class Scratch {
 
         if (lc983DaySet.contains(ithDay)) {
             memo[ithDay] = Math.min(Math.min(
-                    costs[0] + lc983Helper(ithDay + 1, costs, memo),
-                    costs[1] + lc983Helper(ithDay + 7, costs, memo)),
+                            costs[0] + lc983Helper(ithDay + 1, costs, memo),
+                            costs[1] + lc983Helper(ithDay + 7, costs, memo)),
                     costs[2] + lc983Helper(ithDay + 30, costs, memo));
         } else {
             memo[ithDay] = lc983Helper(ithDay + 1, costs, memo);
@@ -1158,17 +1158,15 @@ class Scratch {
 
     // LC1109 区间修改 差分数组
     public int[] corpFlightBookings(int[][] bookings, int n) {
-        int[] diff = new int[n + 1];
-        int[] result = new int[n];
-        for (int[] book : bookings) {
-            diff[book[0] - 1] += book[2];
-            diff[book[1]] -= book[2];
+        int[] diff = new int[n];
+        for (int[] b : bookings) {
+            diff[b[0] - 1] += b[2];
+            if (b[1] != n) diff[b[1]] -= b[2];
         }
-        result[0] = diff[0];
         for (int i = 1; i < n; i++) {
-            result[i] = diff[i] + result[i - 1];
+            diff[i] += diff[i - 1];
         }
-        return result;
+        return diff;
     }
 
     // LC1033
