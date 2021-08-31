@@ -4,6 +4,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class Scratch {
@@ -22,6 +23,25 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1160
+    public int countCharacters(String[] words, String chars) {
+        int[] freq = new int[26];
+        for (char c : chars.toCharArray()) freq[c - 'a']++;
+        int result = 0;
+        Function<String, Boolean> check = s -> {
+            int[] myFreq = Arrays.copyOf(freq, freq.length);
+            for (char c : s.toCharArray()) {
+                if (myFreq[c - 'a'] == 0) return false;
+                myFreq[c - 'a']--;
+            }
+            return true;
+        };
+        for (String w : words) {
+            if (check.apply(w)) result += w.length();
+        }
+        return result;
     }
 
     // LC335 **
