@@ -12,10 +12,24 @@ class Scratch {
 //        System.out.println(s.comb(1, 1));
 //        System.out.println(s.comb(2, 1));
 //        System.out.println(s.comb(130, 20));
-        System.out.println(s.keyboard(5, 130));
+        System.out.println(s.stringMatching(new String[]{"mass", "as", "hero", "superhero"}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1408
+    public List<String> stringMatching(String[] words) {
+        int n = words.length;
+        Set<String> set = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j && words[i].indexOf(words[j]) >= 0) {
+                    set.add(words[j]);
+                }
+            }
+        }
+        return new ArrayList<>(set);
     }
 
     // JZOF II 003 ** 最高有效位 HSB
