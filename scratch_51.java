@@ -15,6 +15,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1064 **
+    public int fixedPoint(int[] arr) {
+        int result = Integer.MAX_VALUE;
+        int lo = 0, hi = arr.length - 1;
+        while (lo <= hi) { // 终止条件是lo hi 交叉
+            int mid = lo + (hi - lo) / 2;
+            if (arr[mid] == mid) {
+                result = Math.min(result, mid);
+            }
+            // 如果值大于等于下标, 说明左边有可能出现两者相等的
+            if (arr[mid] >= mid) {
+                hi = mid - 1;
+            } else {
+                // 否则一定在右边
+                lo = mid + 1;
+            }
+        }
+        if (result == Integer.MAX_VALUE) return -1;
+        return result;
+    }
+
     // LC960 LIS 变体 ** Hard
     public int minDeletionSize(String[] strs) {
         int wordLen = strs[0].length(), listSize = strs.length;
