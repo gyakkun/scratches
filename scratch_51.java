@@ -2324,6 +2324,7 @@ class MinStack {
     }
 
     public void pop() {
+        min.pop();
         stack.pop();
     }
 
