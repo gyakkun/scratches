@@ -22,6 +22,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 17.12 **
+    TreeNode dummyHead = new TreeNode(-1);
+    TreeNode prev = dummyHead;
+
+    public TreeNode convertBiNode(TreeNode root) {
+        inorder(root);
+        return dummyHead.right;
+    }
+
+    private void inorder(TreeNode root) {
+        if (root == null) return;
+        inorder(root.left);
+        root.left = null;
+        prev.right = root;
+        prev = root;
+        inorder(root.right);
+    }
+
     // LC549
     int lc549MaxLen = 0;
     Map<TreeNode, Integer> lc549DiCache;
