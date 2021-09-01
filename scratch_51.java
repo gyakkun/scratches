@@ -15,42 +15,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC960 TLE
+    // LC960 LIS 变体 ** Hard
     public int minDeletionSize(String[] strs) {
         int wordLen = strs[0].length(), listSize = strs.length;
-        StringBuilder[] working = new StringBuilder[listSize];
-        for (int i = 0; i < listSize; i++) working[i] = new StringBuilder();
-        return backtrack(0, working, strs);
-    }
 
-    private int backtrack(int cur, StringBuilder[] working, String[] strs) {
-        if (cur == strs[0].length()) {
-            return 0;
-        }
-        int result = Integer.MAX_VALUE / 2;
-        // working 里的都是按照字典序排好的
-        // 检查当前列是否可以加入working
-        boolean canAdd = true;
-        for (int i = 0; i < strs.length; i++) {
-            if (working[i].length() > 0) {
-                if (strs[i].charAt(cur) >= working[i].charAt(working[i].length() - 1)) {
-                    ;
-                } else {
-                    canAdd = false;
+        // LIS O(n^2)算法
+        // int[] nums = new int[]{1, 9, 2, 8, 3, 7, 4, 6, 5};
+        // int[] dpNums = new int[nums.length + 1]; // dp[i] 表示以i结尾的最长递增子序列长度
+        // Arrays.fill(dpNums, 1);
+        // for (int i = 0; i < nums.length; i++) {
+        //     for (int j = 0; j < i; j++) {
+        //         if (nums[i] > nums[j]) {
+        //             dpNums[i] = Math.max(dpNums[i], 1 + dpNums[j]);
+        //         }
+        //     }
+        // }
+
+        int[] dp = new int[wordLen];
+        Arrays.fill(dp, 1);
+        for (int i = 0; i < wordLen; i++) {
+            for (int j = 0; j < i; j++) {
+                // 判断是否递增
+                boolean isIncreasing = true;
+                for (int k = 0; k < listSize; k++) {
+                    if (strs[k].charAt(i) >= strs[k].charAt(j)) {
+                        ;
+                    } else {
+                        isIncreasing = false;
+                        break;
+                    }
                 }
+                if (isIncreasing) {
+                    dp[i] = Math.max(dp[i], 1 + dp[j]);
+                }
+
             }
         }
-        // 不选则直接进入下一轮, 即删除本行
-        result = Math.min(result, 1 + backtrack(cur + 1, working, strs));
-
-
-        if (canAdd) {
-            for (int i = 0; i < working.length; i++) {
-                working[i].append(strs[i].charAt(cur));
-            }
-            result = Math.min(result, backtrack(cur + 1, working, strs));
-        }
-        return result;
+        return wordLen - Arrays.stream(dp).max().getAsInt();
     }
 
     // Interview 17.06 Hard 数位DP **
