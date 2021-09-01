@@ -15,6 +15,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1678 尝试状态机思路
+    public String interpret(String command) {
+        StringBuilder sb = new StringBuilder();
+
+        Map<Character, Integer> stepMap = new HashMap<Character, Integer>() {{
+            put('G', 1);
+            put('(', 1);
+            put('a', 3); // 跳过"o)", 要+3
+        }};
+        Map<Character, String> appendMap = new HashMap<Character, String>() {{
+            put('G', "G");
+            put(')', "o");
+            put('a', "al");
+        }};
+
+        int ptr = 0;
+        while(ptr<command.length()){
+            sb.append(appendMap.getOrDefault(command.charAt(ptr), ""));
+            ptr += stepMap.getOrDefault(command.charAt(ptr), 1);
+        }
+        return sb.toString();
+    }
+
     // LC1064 **
     public int fixedPoint(int[] arr) {
         int result = Integer.MAX_VALUE;
