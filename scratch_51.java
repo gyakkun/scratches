@@ -9,17 +9,53 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode t0 = new TreeNode(0);
-        TreeNode t1 = new TreeNode(1);
-        TreeNode t2 = new TreeNode(2);
-        TreeNode t3 = new TreeNode(3);
-        t0.left = t1;
-        t1.left = t2;
-        t2.left = t3;
-        System.out.println(s.longestConsecutiveLc549(t0));
+        System.out.println(s.numberOf2sInRange(2048));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 17.06 Hard 数位DP **
+    public int numberOf2sInRange(int n) {
+        // f[i] 表示 i位整数内最多有多少个同个数字(不包括0), 如f[1]=1, 表示1位数(0~9)最多有1个1/2/3/4/5/6...
+        long[] f = new long[12];
+        for (int i = 1; i < 12; i++) {
+            // f[i-1]*10: 即 2,12,2_2_, 32... 里的这些上一个f里面的2, 在扩增位数后是原来的10倍
+            // Math.pow(10,i-1): 即 20, 21, _2_2, ... 这里的2, 个数是10^(位数-1)
+            f[i] = f[i - 1] * 10 + (long) Math.pow(10, i - 1);
+        }
+        int[] digits = new int[12];
+        int len = 0;
+        if (n == 0) {
+            len = 1;
+        } else {
+            while (n != 0) {
+                digits[++len] = n % 10;
+                n /= 10;
+            }
+        }
+        long result = 0;
+        for (int i = len; i >= 1; i--) {
+            result += f[i - 1] * digits[i]; // 如现在是 31, 迭代到3, 位第二位, 则加上 0~9 10~19 20~29 里面的各个第一位里的2的个数
+            // 即 3 * f[i-1]
+            if (digits[i] > 2) {
+                result += (long) Math.pow(10, i - 1); // 如果大于2, 如31, 迭代到3, 则直接加上10^(2-1), 表示 20, 21,_2_2,....中的2
+            } else if (digits[i] == 2) {
+                // 如果恰好等于2, 如231, 则要加上 200,201,202...
+                long rightPart = 0;
+                for (int j = i - 1; j >= 1; j--) {
+                    rightPart = rightPart * 10 + digits[j];
+                }
+                rightPart++;
+                result += rightPart;
+            }
+        }
+
+        // 如对2048: 先算千位 0~1999 中由百位、十位、各位贡献的2, 然后算 2000~2048中因为千位的2贡献的的49个2
+        // 然后跳过百位的0
+        // 然后算十位2000~2039中各位贡献的2, 因为4>2, 所以10位(2020~2029)贡献的10^(2-1)个2全部计入
+        // 最后算个位
+        return (int) result;
     }
 
     // Interview 17.12 **
