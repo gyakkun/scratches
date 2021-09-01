@@ -18,74 +18,76 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // Interview 17.25 TLE
-    String[] result;
+    // Interview 17.25 Hard 拒绝暴搜 反复剪枝
+    String[] iv1725Result;
+    int iv1725MaxArea = 0;
+    TreeSet<Integer> iv1725WordLenTs;
 
     public String[] maxRectangle(String[] words) {
+//        Arrays.sort(words, Comparator.comparingInt(o -> -o.length()));
         Trie trie = new Trie();
-        int[] wordLenCounter = new int[101];
+        iv1725WordLenTs = new TreeSet<>();
         for (String w : words) {
             trie.insert(w);
-            wordLenCounter[w.length()]++;
+            iv1725WordLenTs.add(w.length());
         }
-        backtrack(new ArrayList<>(), trie, words, wordLenCounter);
-        return result;
+        iv1725Backtrack(new ArrayList<>(), new ArrayList<>(), trie, words);
+        return iv1725Result;
     }
 
-    private void backtrack(List<String> tmp, Trie trie, String[] words, int[] wordLenCounter) {
-        if (tmp.size() > 0 && checkFinal(tmp, trie)) {
-            if (result == null) {
-                result = tmp.toArray(new String[tmp.size()]);
-            } else {
-                int origSize = result.length * result[0].length();
-                int curSize = tmp.size() * tmp.get(0).length();
-                if (curSize > origSize) {
-                    result = tmp.toArray(new String[tmp.size()]);
-                }
-            }
+    private void iv1725Backtrack(List<String> horizontal, List<StringBuilder> vertical, Trie trie, String[] words) {
+        // vertical.size = 行数, horizontal.size = 列数, 相乘即为面积
+        if (vertical.size() * horizontal.size() > iv1725MaxArea && checkFinal(vertical, trie)) {
+            iv1725Result = horizontal.toArray(new String[horizontal.size()]);
+            iv1725MaxArea = vertical.size() * horizontal.size();
         }
 
         for (String w : words) {
-            if (tmp.size() == 0) {
-                tmp.add(w);
-                backtrack(tmp, trie, words, wordLenCounter);
-                tmp.remove(tmp.size() - 1);
+            if (horizontal.size() == 0) {
+
+                // 剪枝, 如果要超越最大面积, 必须要有长度大于(maxArea/wLen)的单词, 否则无法超越最大面积
+                int wLen = w.length();
+                int minHLen = iv1725MaxArea / wLen;
+                if (iv1725WordLenTs.higher(minHLen) == null) continue;
+
+                horizontal.add(w);
+                for (int i = 0; i < w.length(); i++) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(w.charAt(i));
+                    vertical.add(sb);
+                }
+                iv1725Backtrack(horizontal, vertical, trie, words);
+                vertical.clear();
+                horizontal.clear();
             } else {
-                if (w.length() == tmp.get(0).length()) {
-                    tmp.add(w);
-                    if (checkInterval(tmp, trie)) {
-                        backtrack(tmp, trie, words, wordLenCounter);
+                if (w.length() == horizontal.get(0).length()) {
+                    horizontal.add(w);
+                    int origVerLen = vertical.get(0).length();
+                    for (int i = 0; i < w.length(); i++) {
+                        vertical.get(i).append(w.charAt(i));
                     }
-                    tmp.remove(tmp.size() - 1);
+                    if (checkInterval(vertical, trie)) {
+                        iv1725Backtrack(horizontal, vertical, trie, words);
+                    }
+                    for (int i = 0; i < w.length(); i++) {
+                        vertical.get(i).deleteCharAt(origVerLen);
+                    }
+                    horizontal.remove(horizontal.size() - 1);
                 }
             }
         }
     }
 
-    private boolean checkInterval(List<String> tmp, Trie trie) {
-        int m = tmp.size(), n = tmp.get(0).length();
-        for (int i = 0; i < n; i++) {
-            StringBuilder sb = new StringBuilder();
-            for (int j = 0; j < m; j++) {
-                sb.append(tmp.get(j).charAt(i));
-            }
-            if (!trie.startsWith(sb.toString())) {
-                return false;
-            }
+    private boolean checkInterval(List<StringBuilder> vertical, Trie trie) {
+        for (StringBuilder sb : vertical) {
+            if (!trie.startsWith(sb.toString())) return false;
         }
         return true;
     }
 
-    private boolean checkFinal(List<String> tmp, Trie trie) {
-        int m = tmp.size(), n = tmp.get(0).length();
-        for (int i = 0; i < n; i++) {
-            StringBuilder sb = new StringBuilder();
-            for (int j = 0; j < m; j++) {
-                sb.append(tmp.get(j).charAt(i));
-            }
-            if (!trie.search(sb.toString())) {
-                return false;
-            }
+    private boolean checkFinal(List<StringBuilder> vertical, Trie trie) {
+        for (StringBuilder sb : vertical) {
+            if (!trie.search(sb.toString())) return false;
         }
         return true;
     }
@@ -2102,5 +2104,40 @@ class MinStack {
 
     public int min() {
         return min.peek();
+    }
+}
+
+class TrieHM {
+    Map<String, Boolean> m;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public TrieHM() {
+        m = new HashMap<>();
+    }
+
+    /**
+     * Inserts a word into the trie.
+     */
+    public void insert(String word) {
+        for (int i = 0; i < word.length(); i++) {
+            m.putIfAbsent(word.substring(0, i + 1), false);
+        }
+        m.put(word, true);
+    }
+
+    /**
+     * Returns if the word is in the trie.
+     */
+    public boolean search(String word) {
+        return m.getOrDefault(word, false);
+    }
+
+    /**
+     * Returns if there is any word in the trie that starts with the given prefix.
+     */
+    public boolean startsWith(String prefix) {
+        return m.containsKey(prefix);
     }
 }
