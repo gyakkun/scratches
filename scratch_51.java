@@ -15,6 +15,44 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC960 TLE
+    public int minDeletionSize(String[] strs) {
+        int wordLen = strs[0].length(), listSize = strs.length;
+        StringBuilder[] working = new StringBuilder[listSize];
+        for (int i = 0; i < listSize; i++) working[i] = new StringBuilder();
+        return backtrack(0, working, strs);
+    }
+
+    private int backtrack(int cur, StringBuilder[] working, String[] strs) {
+        if (cur == strs[0].length()) {
+            return 0;
+        }
+        int result = Integer.MAX_VALUE / 2;
+        // working 里的都是按照字典序排好的
+        // 检查当前列是否可以加入working
+        boolean canAdd = true;
+        for (int i = 0; i < strs.length; i++) {
+            if (working[i].length() > 0) {
+                if (strs[i].charAt(cur) >= working[i].charAt(working[i].length() - 1)) {
+                    ;
+                } else {
+                    canAdd = false;
+                }
+            }
+        }
+        // 不选则直接进入下一轮, 即删除本行
+        result = Math.min(result, 1 + backtrack(cur + 1, working, strs));
+
+
+        if (canAdd) {
+            for (int i = 0; i < working.length; i++) {
+                working[i].append(strs[i].charAt(cur));
+            }
+            result = Math.min(result, backtrack(cur + 1, working, strs));
+        }
+        return result;
+    }
+
     // Interview 17.06 Hard 数位DP **
     public int numberOf2sInRange(int n) {
         // f[i] 表示 i位整数内最多有多少个同个数字(不包括0), 如f[1]=1, 表示1位数(0~9)最多有1个1/2/3/4/5/6...
