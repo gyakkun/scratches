@@ -1,3 +1,4 @@
+import com.taobao.api.internal.toplink.channel.netty.MaxIdleTimeHandler;
 import javafx.util.Pair;
 
 import java.util.Comparator;
@@ -8,11 +9,32 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-//        System.out.println("a".substring(0));
-        System.out.println(s.palindromePairs(new String[]{"a", ""}));
+
+        System.out.println(s.isReflected(new int[][]{{0, 1}, {0, 0}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC356
+    public boolean isReflected(int[][] points) {
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
+        for (int[] p : points) {
+            minX = Math.min(minX, p[0]);
+            maxX = Math.max(maxX, p[0]);
+        }
+        int midXTimes2 = (minX + maxX);
+        Set<Pair<Integer, Integer>> all = new HashSet<>();
+        for (int[] p : points) {
+            if ((double) p[0] == ((double) midXTimes2 / 2)) continue;
+            all.add(new Pair<>(p[0], p[1]));
+        }
+        while (!all.isEmpty()) {
+            Pair<Integer, Integer> t = all.iterator().next();
+            if (!all.remove(new Pair<>(midXTimes2 - t.getKey(), t.getValue()))) return false;
+            all.remove(t);
+        }
+        return true;
     }
 
     // LC336 **
