@@ -1,19 +1,64 @@
+import javafx.util.Pair;
+
 import java.util.Comparator;
 import java.util.*;
+import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.out.println(s.maxEqualFreq(new int[]{2, 2, 1, 1, 5, 3, 3, 5}));
-        System.out.println(s.maxEqualFreq(new int[]{1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5}));
-        System.out.println(s.maxEqualFreq(new int[]{1, 1, 1, 2, 2, 2}));
-        System.out.println(s.maxEqualFreq(new int[]{10, 2, 8, 9, 3, 8, 1, 5, 2, 3, 7, 6}));
-        System.out.println(s.maxEqualFreq(new int[]{1, 1, 1, 2, 2, 2, 3, 3, 3}));
+//        System.out.println("a".substring(0));
+        System.out.println(s.palindromePairs(new String[]{"a", ""}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC336 **
+    public List<List<Integer>> palindromePairs(String[] words) {
+        Set<Pair<Integer, Integer>> result = new HashSet<>();
+        int wLen = words.length;
+        String[] rWords = new String[wLen];
+        Map<String, Integer> rWordIdx = new HashMap<>();
+        for (int i = 0; i < wLen; i++) {
+            rWords[i] = new StringBuilder(words[i]).reverse().toString();
+            rWordIdx.put(rWords[i], i);
+        }
+        for (int i = 0; i < words.length; i++) {
+            String cur = words[i];
+            int len = cur.length();
+            if (len == 0) continue;
+            for (int j = 0; j <= len; j++) { // 注意边界, 为了取到空串, 截取长度可以去到len, 同时为了去重用到Set<Pair<>>
+                if (checkPal(cur, j, len)) {
+                    int leftId = rWordIdx.getOrDefault(cur.substring(0, j), -1);
+                    if (leftId != -1 && leftId != i) {
+                        result.add(new Pair<>(i, leftId));
+                    }
+                }
+                if (checkPal(cur, 0, j)) {
+                    int rightId = rWordIdx.getOrDefault(cur.substring(j), -1);
+                    if (rightId != -1 && rightId != i) {
+                        result.add(new Pair<>(rightId, i));
+                    }
+                }
+            }
+        }
+        List<List<Integer>> listResult = new ArrayList<>(result.size());
+        for (Pair<Integer, Integer> p : result) {
+            listResult.add(Arrays.asList(p.getKey(), p.getValue()));
+        }
+        return listResult;
+    }
+
+    private boolean checkPal(String s, int startIdx, int endIdxExclude) {
+        if (startIdx > endIdxExclude) return false;
+        if (startIdx == endIdxExclude) return true;
+        int len = endIdxExclude - startIdx;
+        for (int i = 0; i < len / 2; i++) {
+            if (s.charAt(startIdx + i) != s.charAt(endIdxExclude - 1 - i)) return false;
+        }
+        return true;
     }
 
     // LC747
@@ -151,5 +196,39 @@ class ListNode {
 
     ListNode(int x) {
         val = x;
+    }
+}
+
+class Trie {
+    Trie[] children = new Trie[26];
+    boolean isEnd = false;
+
+    public void addWord(String word) {
+        Trie cur = this;
+        for (char c : word.toCharArray()) {
+            if (cur.children[c - 'a'] == null) {
+                cur.children[c - 'a'] = new Trie();
+            }
+            cur = cur.children[c - 'a'];
+        }
+        cur.isEnd = true;
+    }
+
+    public boolean startsWith(String word) {
+        Trie cur = this;
+        for (char c : word.toCharArray()) {
+            if (cur.children[c - 'a'] == null) return false;
+            cur = cur.children[c - 'a'];
+        }
+        return true;
+    }
+
+    public boolean search(String word) {
+        Trie cur = this;
+        for (char c : word.toCharArray()) {
+            if (cur.children[c - 'a'] == null) return false;
+            cur = cur.children[c - 'a'];
+        }
+        return cur.isEnd;
     }
 }
