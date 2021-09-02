@@ -2,7 +2,6 @@ import javafx.util.Pair;
 
 import java.util.Comparator;
 import java.util.*;
-import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
@@ -14,6 +13,47 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC905
+    public int[] sortArrayByParity(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            if (nums[left] % 2 == 1) {
+                int tmp = nums[right];
+                nums[right] = nums[left];
+                nums[left] = tmp;
+                left--;
+                right--;
+            }
+            left++;
+        }
+        return nums;
+    }
+
+    // JZOF II 056 LC653
+    List<Integer> lc653List = new ArrayList<>();
+
+    public boolean findTarget(TreeNode root, int k) {
+        lc653Inorder(root);
+        int left = 0, right = lc653List.size() - 1;
+        while (left < right) {
+            if (lc653List.get(left) + lc653List.get(right) > k) {
+                right--;
+            } else if (lc653List.get(left) + lc653List.get(right) < k) {
+                left++;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void lc653Inorder(TreeNode root) {
+        if (root == null) return;
+        lc653Inorder(root.left);
+        lc653List.add(root.val);
+        lc653Inorder(root.right);
     }
 
     // LC1611 Hard ** Reverse Gray Code
@@ -371,5 +411,24 @@ class Trie {
             cur = cur.children[c - 'a'];
         }
         return cur.isEnd;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
