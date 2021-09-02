@@ -9,10 +9,8 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        String[] g = "2001:9:9:9:9:9:9::1".split("::", -10);
 
-//        System.out.println(s.checkIpv6("2001::1"));
-        System.out.println(s.checkIpv6("2001:9:9:9:9:9::1"));
+        System.out.println(s.checkIpv6("2001::1"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -63,13 +61,12 @@ class Scratch {
         }
         groupsByOneColon = ip.split(":", -1);
         if (groupsByOneColon.length != 8) return false;
-        long ipv6Left = 0, ipv6Right = 0, emptyCount = 0;
+        long ipv6Left = 0, ipv6Right = 0;
         for (int i = 0; i < 8; i++) {
             String w = groupsByOneColon[i];
             int part = 0;
             if (w.equals("")) {
-                emptyCount++;
-                if (emptyCount > 1) return false;
+                if (i == 7) return false;
             } else {
                 part = Integer.parseInt(w, 16);
             }
