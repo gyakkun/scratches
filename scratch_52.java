@@ -1,4 +1,3 @@
-import com.taobao.api.internal.toplink.channel.netty.MaxIdleTimeHandler;
 import javafx.util.Pair;
 
 import java.util.Comparator;
@@ -10,11 +9,55 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.isReflected(new int[][]{{0, 1}, {0, 0}}));
+        System.out.println(s.ipToCIDR("0.0.0.0", 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC751 **
+    public List<String> ipToCIDR(String ip, int n) {
+        final int INT_MASK = 0xffffffff;
+        long start = ipStrToInt(ip);
+        long end = start + n - 1;
+        List<String> result = new ArrayList<>();
+        while (n > 0) {
+            int numTrailingZero = Long.numberOfTrailingZeros(start);
+            int mask = 0, bitsInCidr = 1;
+            while (bitsInCidr < n && mask < numTrailingZero) {
+                bitsInCidr <<= 1;
+                mask++;
+            }
+            if (bitsInCidr > n) {
+                bitsInCidr >>= 1;
+                mask--;
+            }
+            result.add(longToIpStr(start) + "/" + (32 - mask));
+            start += bitsInCidr;
+            n -= bitsInCidr;
+        }
+        return result;
+    }
+
+    private int bitLength(long x) {
+        if (x == 0) return 1;
+        return Long.SIZE - Long.numberOfLeadingZeros(x);
+    }
+
+    private String longToIpStr(long ipLong) {
+        return String.format("%d.%d.%d.%d", (ipLong >> 24) & 0xff, (ipLong >> 16) & 0xff, (ipLong >> 8) & 0xff, ipLong & 0xff);
+    }
+
+    private long ipStrToInt(String ip) {
+        String[] split = ip.split("\\.");
+        long result = 0;
+        for (String s : split) {
+            int i = Integer.valueOf(s);
+            result = (result << 8) | i;
+        }
+        return result;
+    }
+
 
     // LC356
     public boolean isReflected(int[][] points) {
