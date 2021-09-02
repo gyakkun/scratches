@@ -35,7 +35,7 @@ class Scratch {
 
             // 情况1: freqMap.keySet.size > 2 此时删除哪个都没用
             if (freqIntSetMap.keySet().size() > 2) {
-                ;
+                continue;
             } else if (freqIntSetMap.keySet().size() == 2) {
                 // 情况2: size == 2 时候, 看哪个set 的size ==1
                 Iterator<Integer> it = freqIntSetMap.keySet().iterator();
@@ -43,12 +43,12 @@ class Scratch {
                 int smallFreq = freq1 < freq2 ? freq1 : freq2;
                 int largeFreq = smallFreq == freq1 ? freq2 : freq1;
                 Set<Integer> smallFreqSet = freqIntSetMap.get(smallFreq), largeFreqSet = freqIntSetMap.get(largeFreq);
+                // 如果两个set都有超过一个元素, 则删除哪个元素都没用
                 if (smallFreqSet.size() != 1 && largeFreqSet.size() != 1) {
-                    ;
+                    continue;
                 } else {
                     Set<Integer> oneEleSet = smallFreqSet.size() == 1 ? smallFreqSet : largeFreqSet;
                     Set<Integer> anotherSet = oneEleSet == smallFreqSet ? largeFreqSet : smallFreqSet;
-
 
                     int oneEle = oneEleSet.iterator().next();
                     int eleFreq = numFreqMap.get(oneEle);
@@ -56,14 +56,15 @@ class Scratch {
 
                     // 情况1： 这个元素的当前频率是1
                     if (eleFreq == 1) return i + 1;
-                        // 情况2: 当前元素的频率比另一个频率大1
+                    // 情况2: 当前元素的频率比另一个频率大1
                     else if (eleFreq == anotherFreq + 1) return i + 1;
-                        // 特判一下 111 22 这种情况
+                    // 特判一下 111 22 这种情况, 即两个freq的set的大小都是1
+                    // 前面只判断了2不能删除, 没有判断1能不能删除, 此处补充判断一次
                     else if (anotherSet.size() == 1) {
                         if (anotherFreq == 1) return i + 1;
                         else if (anotherFreq == eleFreq + 1) return i + 1;
                     }
-                    // 否则没办法
+                    // 否则没办法 只能删除当前元素
                 }
             }
 
