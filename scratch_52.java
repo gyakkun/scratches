@@ -16,6 +16,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1611 Hard ** Reverse Gray Code
+    public int minimumOneBitOperations(int n) {
+        // Function<Integer, Integer> gray = orig -> orig ^ (orig >> 1);
+        int orig = 0;
+        while (n != 0) {
+            orig ^= n;
+            n >>= 1;
+        }
+        return orig;
+    }
+
     // LC468
     public String validIPAddress(String IP) {
         final String NEITHER = "Neither", IPV4 = "IPv4", IPV6 = "IPv6";
