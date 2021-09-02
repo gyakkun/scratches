@@ -9,10 +9,77 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.ipToCIDR("0.0.0.0", 1));
+        String[] g = "2001:9:9:9:9:9:9::1".split("::", -10);
+
+//        System.out.println(s.checkIpv6("2001::1"));
+        System.out.println(s.checkIpv6("2001:9:9:9:9:9::1"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC468
+    public String validIPAddress(String IP) {
+        final String NEITHER = "Neither", IPV4 = "IPv4", IPV6 = "IPv6";
+        if (checkIpv4(IP)) return IPV4;
+        if (checkIpv6(IP)) return IPV6;
+        return NEITHER;
+    }
+
+    private boolean checkIpv4(String ip) {
+        String[] groups = ip.split("\\.", -1);
+        if (groups.length != 4) return false;
+        for (String w : groups) {
+            for (char c : w.toCharArray()) if (!Character.isDigit(c)) return false;
+            if (w.length() > 3 || w.length() == 0) return false;
+            if (w.charAt(0) == '0' && w.length() != 1) return false;
+            if (Integer.valueOf(w) > 255 || Integer.valueOf(w) < 0) return false;
+        }
+        return true;
+    }
+
+    private boolean checkIpv6(String ip) {
+        String[] groupsByTwoColon = ip.split("::", -1);
+        if (groupsByTwoColon.length > 2) return false; // 注意LC题目这里要改成>1, 因为题目不允许双冒号表示
+        String[] groupsByOneColon = ip.split(":", -1);
+        if (groupsByOneColon.length > 8) return false;
+        for (String w : groupsByOneColon) {
+            if (w.length() > 4) return false;
+            String wlc = w.toLowerCase();
+            for (char c : wlc.toCharArray()) {
+                if (!Character.isLetter(c) && !Character.isDigit(c)) return false;
+                if (Character.isLetter(c) && c > 'f') return false;
+            }
+        }
+        int numColon = groupsByOneColon.length - 1;
+        if (numColon != 7) {
+            StringBuilder sb = new StringBuilder();
+            int remain = 7 - numColon + 1;
+            for (int i = 0; i < remain; i++) {
+                sb.append(":0");
+            }
+            sb.append(":");
+            ip = ip.replaceFirst("::", sb.toString());
+        }
+        groupsByOneColon = ip.split(":", -1);
+        if (groupsByOneColon.length != 8) return false;
+        long ipv6Left = 0, ipv6Right = 0, emptyCount = 0;
+        for (int i = 0; i < 8; i++) {
+            String w = groupsByOneColon[i];
+            int part = 0;
+            if (w.equals("")) {
+                emptyCount++;
+                if (emptyCount > 1) return false;
+            } else {
+                part = Integer.parseInt(w, 16);
+            }
+            if (i < 4) {
+                ipv6Left = (ipv6Left << 16) | part;
+            } else {
+                ipv6Right = (ipv6Right << 16) | part;
+            }
+        }
+        return true;
     }
 
     // LC751 **
