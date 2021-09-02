@@ -15,6 +15,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC798 TBD
+    public int bestRotation(int[] nums) {
+        return -1;
+    }
+
     // LC905
     public int[] sortArrayByParity(int[] nums) {
         int left = 0, right = nums.length - 1;
