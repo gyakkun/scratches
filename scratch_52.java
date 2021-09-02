@@ -26,15 +26,16 @@ class Scratch {
         int midXTimes2 = (minX + maxX);
         Set<Pair<Integer, Integer>> all = new HashSet<>();
         for (int[] p : points) {
-            if ((double) p[0] == ((double) midXTimes2 / 2)) continue;
             all.add(new Pair<>(p[0], p[1]));
         }
-        while (!all.isEmpty()) {
-            Pair<Integer, Integer> t = all.iterator().next();
-            if (!all.remove(new Pair<>(midXTimes2 - t.getKey(), t.getValue()))) return false;
-            all.remove(t);
+        Set<Pair<Integer, Integer>> s = new HashSet<>();
+        for (Pair<Integer, Integer> p : all) {
+            if ((double) p.getKey() == ((double) midXTimes2 / 2)) continue;
+            if (!s.remove(new Pair<>(p.getKey(), p.getValue()))) {
+                s.add(new Pair<>(midXTimes2 - p.getKey(), p.getValue()));
+            }
         }
-        return true;
+        return s.size() == 0;
     }
 
     // LC336 **
