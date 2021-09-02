@@ -16,6 +16,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC747
+    public int dominantIndex(int[] nums) {
+        if (nums.length == 1) return 0;
+        int[] idxMap = new int[101];
+        for (int i = 0; i < nums.length; i++) {
+            idxMap[nums[i]] = i;
+        }
+        Arrays.sort(nums);
+        if (nums[nums.length - 1] >= nums[nums.length - 2] * 2) return idxMap[nums[nums.length - 1]];
+        return -1;
+    }
+
     // LC1224
     public int maxEqualFreq(int[] nums) {
         Map<Integer, Integer> numFreqMap = new HashMap<>();
@@ -56,10 +68,10 @@ class Scratch {
 
                     // 情况1： 这个元素的当前频率是1
                     if (eleFreq == 1) return i + 1;
-                    // 情况2: 当前元素的频率比另一个频率大1
+                        // 情况2: 当前元素的频率比另一个频率大1
                     else if (eleFreq == anotherFreq + 1) return i + 1;
-                    // 特判一下 111 22 这种情况, 即两个freq的set的大小都是1
-                    // 前面只判断了2不能删除, 没有判断1能不能删除, 此处补充判断一次
+                        // 特判一下 111 22 这种情况, 即两个freq的set的大小都是1
+                        // 前面只判断了2不能删除, 没有判断1能不能删除, 此处补充判断一次
                     else if (anotherSet.size() == 1) {
                         if (anotherFreq == 1) return i + 1;
                         else if (anotherFreq == eleFreq + 1) return i + 1;
