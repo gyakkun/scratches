@@ -9,7 +9,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.checkIpv6("2001::1"));
+        System.out.println(s.permutation("sde"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -18,6 +18,34 @@ class Scratch {
     // LC798 TBD
     public int bestRotation(int[] nums) {
         return -1;
+    }
+
+    // Interview 08.08 全排列
+    List<String> iv0808Result;
+
+    public String[] permutation(String S) {
+        iv0808Result = new ArrayList<>();
+        iv0808Dfs(S.toCharArray(), 0);
+        return iv0808Result.toArray(new String[iv0808Result.size()]);
+    }
+
+    private void iv0808Dfs(char[] ca, int cur) {
+        if (cur == ca.length) {
+            iv0808Result.add(new String(ca));
+        }
+        Set<Character> set = new HashSet<>();
+        for (int i = cur; i < ca.length; i++) {
+            if (!set.contains(ca[i])) {
+                set.add(ca[i]);
+                char tmp = ca[i];
+                ca[i] = ca[cur];
+                ca[cur] = tmp;
+                iv0808Dfs(ca, cur + 1);
+                tmp = ca[i];
+                ca[i] = ca[cur];
+                ca[cur] = tmp;
+            }
+        }
     }
 
     // LC905
