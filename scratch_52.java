@@ -13,6 +13,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 22
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        ListNode fast = head, slow = head;
+        for (int i = 0; i < k; i++) {
+            fast = fast.next;
+        }
+        while (fast != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return slow;
+    }
+
     // LC1705
     public int eatenApples(int[] apples, int[] days) {
         // pq 存数对 [i,j], i表示苹果数量, j表示过期时间
@@ -45,5 +58,14 @@ class Scratch {
             i++;
         } while (!pq.isEmpty() || i < n);
         return result;
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode(int x) {
+        val = x;
     }
 }
