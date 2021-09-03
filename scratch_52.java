@@ -67,11 +67,11 @@ class Scratch {
                 if (boxRow == target[0] && boxCol == target[1]) return layer;
 
                 // 去到箱子的旁边推箱子
-                // 1. 确定箱子四周是否是障碍物 找出非障碍物的立足点
+                // 1. 确定箱子四周是否是障碍物, 找出立足点和相对方向上的目标点
                 // 2. 确定是否有路径到这些立足点, 此时应把箱子本身也视作障碍物
-                // 3. 从立足点和相对方向来推动箱子
+                // 3. 若有路到立足点, 向队列推入[箱子位置, 新箱子位置](玩家到了箱子的位置)
 
-                // [人相对箱子的行变动, 人相对箱子的列变动, 目标位置相对箱子的行变动, 目标位置相对箱子的列变动], 后两者可以通过前两者乘以-1取到
+                // 立足点和箱子目标位置的delta_row,delta_col可以通过简单取负数得到(因为两个delta必有一个是0)
                 List<Pair<int[], int[]>> legalStandPointTargetPosList = new ArrayList<>();
                 for (int[] dir : directions) {
                     int[] standPoint = new int[]{boxRow + dir[0], boxCol + dir[1]};
@@ -87,6 +87,7 @@ class Scratch {
                     int[] innerStartPoint = new int[]{selfRow, selfCol};
                     Deque<int[]> innerQ = new LinkedList<>();
                     boolean canReach = false;
+                    // 这里可以用offer/poll 做bfs, 也可以用push/pop 做dfs
                     innerQ.offer(innerStartPoint);
                     while (!innerQ.isEmpty()) {
                         int[] innerP = innerQ.poll();
@@ -105,7 +106,7 @@ class Scratch {
                         }
                     }
                     if (canReach) {
-                        // 若推得动, 则此时玩家位置变为原石头位置, 石头位置变为targetPos(即pair.getValue())
+                        // 若推得动, 则此时玩家位置变为原箱子位置, 箱子位置变为targetPos(即pair.getValue())
                         q.offer(new int[]{boxRow, boxCol, pair.getValue()[0], pair.getValue()[1]});
                     }
                 }
