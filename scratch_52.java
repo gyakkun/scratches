@@ -761,7 +761,7 @@ class quickSelect {
 
 // LC635 TBD
 class LogSystem {
-    final SimpleDateFormat sdf= new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss");
+    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss");
     final TreeSet<Integer> MAGIC_NUMBER = new TreeSet<Integer>() {{
         add(Calendar.YEAR);
         add(Calendar.MONTH);
@@ -772,9 +772,6 @@ class LogSystem {
     }};
 
     TreeMap<Long, Integer> tm = new TreeMap<>();
-
-    public LogSystem() {
-    }
 
     public void put(int id, String timestamp) {
         try {
@@ -800,11 +797,10 @@ class LogSystem {
 
     private long granHelper(String timestamp, String gran, boolean isRight) throws ParseException {
         Date ts = sdf.parse(timestamp);
-        int granInt = granStrToMagic(gran);
+        int granMagic = granStrToMagic(gran);
         Calendar cal = Calendar.getInstance();
         cal.setTime(ts);
-        Set<Integer> tailSet = MAGIC_NUMBER.tailSet(granInt, false);
-        for (int mn : tailSet) {
+        for (int mn : MAGIC_NUMBER.tailSet(granMagic, false)) {
             if (mn <= Calendar.DAY_OF_MONTH) {
                 if (mn == Calendar.MONTH) {
                     cal.set(mn, 0);
@@ -814,13 +810,10 @@ class LogSystem {
             } else {
                 cal.set(mn, 0);
             }
-            System.err.println(cal.getTime());
         }
         if (isRight) {
-            cal.add(granInt, 1);
-            System.err.println(cal.getTime());
+            cal.add(granMagic, 1);
         }
-        Date d = cal.getTime();
         return cal.getTimeInMillis();
     }
 
