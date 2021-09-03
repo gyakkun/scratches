@@ -2,6 +2,7 @@ import javafx.util.Pair;
 
 import java.util.Comparator;
 import java.util.*;
+import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
@@ -9,10 +10,108 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.permutation("sde"));
+        System.out.println(s.minPushBox(new char[][]{
+                {'#', '#', '#', '#', '#', '#'},
+                {'#', 'T', '#', '#', '#', '#'},
+                {'#', '.', '.', 'B', '.', '#'},
+                {'#', '.', '#', '#', '.', '#'},
+                {'#', '.', '.', '.', 'S', '#'},
+                {'#', '#', '#', '#', '#', '#'}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1263 Hard
+    public int minPushBox(char[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        Deque<int[]> q = new LinkedList<>();
+        boolean[][][][] visited = new boolean[m][n][m][n];
+        int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int[] box = new int[]{-1, -1}, target = new int[]{-1, -1}, self = new int[]{-1, -1};
+        Function<int[], Boolean> checkLegalPos = new Function<int[], Boolean>() {
+            @Override
+            public Boolean apply(int[] pos) {
+                return pos[0] >= 0 && pos[0] < m && pos[1] >= 0 && pos[1] < n && grid[pos[0]][pos[1]] != '#';
+            }
+        };
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                switch (grid[i][j]) {
+                    case 'S':
+                        self = new int[]{i, j};
+                        break;
+                    case 'T':
+                        target = new int[]{i, j};
+                        break;
+                    case 'B':
+                        box = new int[]{i, j};
+                    default:
+                        continue;
+                }
+            }
+        }
+        // [selfRow, selfCol, boxRow, boxCol]
+        int[] initState = new int[]{self[0], self[1], box[0], box[1]};
+        q.offer(initState);
+        int layer = -1;
+        while (!q.isEmpty()) {
+            layer++;
+            int qs = q.size();
+            for (int i = 0; i < qs; i++) {
+                int[] p = q.poll();
+                if (visited[p[0]][p[1]][p[2]][p[3]]) continue;
+                visited[p[0]][p[1]][p[2]][p[3]] = true;
+                int selfRow = p[0], selfCol = p[1];
+                int boxRow = p[2], boxCol = p[3];
+                if (boxRow == target[0] && boxCol == target[1]) return layer;
+
+                // 去到箱子的旁边推箱子
+                // 1. 确定箱子四周是否是障碍物 找出非障碍物的立足点
+                // 2. 确定是否有路径到这些立足点, 此时应把箱子本身也视作障碍物
+                // 3. 从立足点和相对方向来推动箱子
+
+                // [人相对箱子的行变动, 人相对箱子的列变动, 目标位置相对箱子的行变动, 目标位置相对箱子的列变动], 后两者可以通过前两者乘以-1取到
+                List<Pair<int[], int[]>> legalStandPointTargetPosList = new ArrayList<>();
+                for (int[] dir : directions) {
+                    int[] standPoint = new int[]{boxRow + dir[0], boxCol + dir[1]};
+                    int[] targetPos = new int[]{boxRow - dir[0], boxCol - dir[1]};
+                    if (checkLegalPos.apply(standPoint) && checkLegalPos.apply(targetPos)) {
+                        legalStandPointTargetPosList.add(new Pair<>(standPoint, targetPos));
+                    }
+                }
+
+                for (Pair<int[], int[]> pair : legalStandPointTargetPosList) {
+                    boolean[][] innerVisited = new boolean[m][n];
+                    int[] innerTarget = pair.getKey();
+                    int[] innerStartPoint = new int[]{selfRow, selfCol};
+                    Deque<int[]> innerQ = new LinkedList<>();
+                    boolean canReach = false;
+                    innerQ.offer(innerStartPoint);
+                    while (!innerQ.isEmpty()) {
+                        int[] innerP = innerQ.poll();
+                        if (innerP[0] == innerTarget[0] && innerP[1] == innerTarget[1]) {
+                            canReach = true;
+                            break;
+                        }
+                        if (innerVisited[innerP[0]][innerP[1]]) continue;
+                        innerVisited[innerP[0]][innerP[1]] = true;
+                        for (int[] dir : directions) {
+                            int nextRow = innerP[0] + dir[0], nextCol = innerP[1] + dir[1];
+                            int[] next = new int[]{nextRow, nextCol};
+                            if (checkLegalPos.apply(next) && !(nextRow == boxRow && nextCol == boxCol) && !innerVisited[nextRow][nextCol]) {
+                                innerQ.offer(next);
+                            }
+                        }
+                    }
+                    if (canReach) {
+                        // 若推得动, 则此时玩家位置变为原石头位置, 石头位置变为targetPos(即pair.getValue())
+                        q.offer(new int[]{boxRow, boxCol, pair.getValue()[0], pair.getValue()[1]});
+                    }
+                }
+            }
+        }
+        return -1;
     }
 
     // LCP10 Hard **
@@ -49,7 +148,7 @@ class Scratch {
         return result;
     }
 
-    // LC1719 **
+    // LC1719 Hard **
 
     // DFS
     Map<Integer, Set<Integer>> lc1719DfsMap;
