@@ -16,6 +16,50 @@ class Scratch {
     }
 
     // LC1719 **
+
+    // DFS
+    Map<Integer, Set<Integer>> lc1719DfsMap;
+
+    public int checkWaysDfs(int[][] pairs) {
+        lc1719DfsMap = new HashMap<>();
+        for (int[] p : pairs) {
+            lc1719DfsMap.putIfAbsent(p[0], new HashSet<>());
+            lc1719DfsMap.putIfAbsent(p[1], new HashSet<>());
+            lc1719DfsMap.get(p[0]).add(p[1]);
+            lc1719DfsMap.get(p[1]).add(p[0]);
+        }
+        int numEle = lc1719DfsMap.size();
+        List<Integer> validNodes = new ArrayList<>(lc1719DfsMap.keySet());
+        validNodes.sort(Comparator.comparingInt(o -> -lc1719DfsMap.get(o).size()));
+        if (lc1719DfsMap.get(validNodes.get(0)).size() != numEle - 1) return 0;
+        int rootNode = validNodes.get(0);
+        return lc1719Dfs(rootNode);
+    }
+
+    private int lc1719Dfs(int root) {
+        Set<Integer> subNode = new HashSet<>(lc1719DfsMap.get(root)); // root的children, 记subnode
+        lc1719DfsMap.get(root).clear();
+        for (int c : subNode) {
+            lc1719DfsMap.get(c).remove(root);
+        }
+        boolean multi = false;
+        List<Integer> subNodeList = new ArrayList<>(subNode);
+        subNodeList.sort(Comparator.comparingInt(o -> -lc1719DfsMap.get(o).size()));
+        for (int c : subNodeList) {
+            // subNode 的 children
+            for (int snc : lc1719DfsMap.get(c)) {
+                if (!subNode.contains(snc)) return 0;
+            }
+            if (lc1719DfsMap.get(c).size() == subNode.size() - 1) {
+                multi = true;
+            }
+            int result = lc1719Dfs(c);
+            if (result == 0) return 0;
+            if (result == 2) multi = true;
+        }
+        return multi ? 2 : 1;
+    }
+
     public int checkWays(int[][] pairs) {
         final int maxSize = 501;
         int result = 1;
