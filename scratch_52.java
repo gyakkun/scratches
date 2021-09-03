@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.*;
 import java.util.function.Function;
@@ -748,5 +749,22 @@ class quickSelect {
         Integer rightResult = helper(arr, right + 1, end, topK);
         if (rightResult != null) return rightResult;
         return null;
+    }
+}
+
+// LC635 TBD
+class LogSystem {
+    final SimpleDateFormat sdf = new SimpleDateFormat("YYYY:MM:dd:hh:mm:ss");
+
+    public LogSystem() {
+
+    }
+
+    public void put(int id, String timestamp) {
+
+    }
+
+    public List<Integer> retrieve(String start, String end, String granularity) {
+
     }
 }
