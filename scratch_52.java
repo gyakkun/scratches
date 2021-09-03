@@ -50,7 +50,7 @@ class Scratch {
             for (int snc : lc1719DfsMap.get(c)) {
                 if (!subNode.contains(snc)) return 0;
             }
-            if (lc1719DfsMap.get(c).size() == subNode.size() - 1) {
+            if (lc1719DfsMap.get(c).size() == subNode.size() - 1) { // -1是因为之前remove了root
                 multi = true;
             }
             int result = lc1719Dfs(c);
