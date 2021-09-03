@@ -15,9 +15,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC798 TBD
+    // LC798 Hard ** 差分数组 学习分析方法
+    // https://leetcode-cn.com/problems/smallest-rotation-with-highest-score/solution/chai-fen-shu-zu-by-sssz-qdut/
     public int bestRotation(int[] nums) {
-        return -1;
+        // 数组向左平移轮转
+        int n = nums.length;
+        int[] diff = new int[n + 1];
+        // [0,Math.min(i,i-arr[i])], [i+1,Math.min(i-arr[i]+arr.len),arr.len-1)] 为可以得分的范围
+        for (int i = 0; i < n; i++) {
+            diff[0]++;
+            int r1 = Math.min(i, i - nums[i]) + 1;
+            if (r1 >= 0)
+                diff[r1]--;
+            diff[i + 1]++;
+            int r2 = Math.min(i - nums[i] + n, n - 1) + 1;
+            if (r2 >= 0 && r2 <= n)
+                diff[r2]--;
+        }
+        int accumulate = 0, max = 0, maxIdx = -1;
+        for (int i = 0; i < n; i++) {
+            accumulate += diff[i];
+            if (accumulate > max) {
+                max = accumulate;
+                maxIdx = i;
+            }
+        }
+        return maxIdx;
     }
 
     // Interview 17.14
