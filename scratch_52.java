@@ -17,25 +17,19 @@ class Scratch {
 
     // LCP10 Hard **
     public double minimalExecTime(TreeNode root) {
-        double[] result = dfs(root);
-        return result[0] - result[1];
+        double[] result = betterDfs(root);
+        return result[1];
     }
 
-    // 返回[任务总时间, 最大并行时间]
-    private double[] dfs(TreeNode root) {
-        if (root.left == null && root.right == null) {
-            return new double[]{root.val, 0d};
-        }
-        double[] left = new double[]{0, 0}, right = new double[]{0, 0};
-        if (root.left != null) left = dfs(root.left);
-        if (root.right != null) right = dfs(root.right);
-        double[] largerSumTime = left[0] >= right[0] ? left : right;
-        double[] smallerSumTime = largerSumTime == left ? right : left;
-        if (largerSumTime[0] - 2 * largerSumTime[1] <= smallerSumTime[0]) {
-            return new double[]{root.val + left[0] + right[0], (left[0] + right[0]) / 2d};
-        } else {
-            return new double[]{root.val + left[0] + right[0], largerSumTime[1] + smallerSumTime[0]};
-        }
+    // 返回[任务总时间, 最短执行时间]
+    private double[] betterDfs(TreeNode root) {
+        if (root == null) return new double[]{0, 0};
+        double[] left = betterDfs(root.left);
+        double[] right = betterDfs(root.right);
+        return new double[]{
+                left[0] + right[0] + root.val,
+                root.val + Math.max(Math.max(left[1], right[1]), (left[0] + right[0]) / 2d)
+        };
     }
 
     // LC1103
