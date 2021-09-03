@@ -15,6 +15,40 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1719 **
+    public int checkWays(int[][] pairs) {
+        final int maxSize = 501;
+        int result = 1;
+        int[] parent = new int[maxSize];
+        Map<Integer, List<Integer>> mtx = new HashMap<>();
+        for (int[] p : pairs) {
+            mtx.putIfAbsent(p[0], new ArrayList<>());
+            mtx.putIfAbsent(p[1], new ArrayList<>());
+            mtx.get(p[0]).add(p[1]);
+            mtx.get(p[1]).add(p[0]);
+            parent[p[0]] = parent[p[1]] = -1;
+        }
+        int numEle = mtx.size();
+        List<Integer> validEle = new ArrayList<>(mtx.keySet());
+        validEle.sort(Comparator.comparingInt(o -> -mtx.get(o).size()));
+        if (mtx.get(validEle.get(0)).size() != numEle - 1) return 0;
+        boolean[] visited = new boolean[maxSize];
+        for (int u : validEle) { // 按照关系数倒序排序, 按此顺序遍历后遍历到的只能是前面的子节点
+            for (int v : mtx.get(u)) {
+                if (mtx.get(u).size() == mtx.get(v).size()) result = 2;
+                if (!visited[v]) {
+                    // parent[v] 是 当前已知的v最近的父节点, 如果p[u]!=p[v],
+                    // 说明v有比u更近的父节点(否则在p[v]未更新前, p[v]应该和p[u]拥有相同的最近父节点
+                    // p[v]!=p[u] 说明v在不从属于u的一支中已被更新, 而u又是v一个可能的父节点, 说明v会存在两个入度, 此时无解
+                    if (parent[u] != parent[v]) return 0;
+                    parent[v] = u;
+                }
+            }
+            visited[u] = true; // 将确定了所有可能孩子的u加入已访问
+        }
+        return result;
+    }
+
     // LC798 Hard ** 差分数组 学习分析方法
     // https://leetcode-cn.com/problems/smallest-rotation-with-highest-score/solution/chai-fen-shu-zu-by-sssz-qdut/
     public int bestRotation(int[] nums) {
