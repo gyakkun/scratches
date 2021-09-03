@@ -15,6 +15,46 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP10 Hard **
+    public double minimalExecTime(TreeNode root) {
+        double[] result = dfs(root);
+        return result[0] - result[1];
+    }
+
+    // 返回[任务总时间, 最大并行时间]
+    private double[] dfs(TreeNode root) {
+        if (root.left == null && root.right == null) {
+            return new double[]{root.val, 0d};
+        }
+        double[] left = new double[]{0, 0}, right = new double[]{0, 0};
+        if (root.left != null) left = dfs(root.left);
+        if (root.right != null) right = dfs(root.right);
+        double[] largerSumTime = left[0] >= right[0] ? left : right;
+        double[] smallerSumTime = largerSumTime == left ? right : left;
+        if (largerSumTime[0] - 2 * largerSumTime[1] <= smallerSumTime[0]) {
+            return new double[]{root.val + left[0] + right[0], (left[0] + right[0]) / 2d};
+        } else {
+            return new double[]{root.val + left[0] + right[0], largerSumTime[1] + smallerSumTime[0]};
+        }
+    }
+
+    // LC1103
+    public int[] distributeCandies(int candies, int num_people) {
+        int[] result = new int[num_people];
+        int ptr = 0;
+        while (candies != 0) {
+            if (candies >= ptr + 1) {
+                result[ptr % num_people] += ptr + 1;
+                candies -= ptr + 1;
+                ptr++;
+            } else {
+                result[ptr % num_people] += candies;
+                break;
+            }
+        }
+        return result;
+    }
+
     // LC1719 **
 
     // DFS
