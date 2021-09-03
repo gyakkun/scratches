@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.*;
@@ -10,6 +11,12 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        LogSystem ls = new LogSystem();
+        // ["LogSystem","put","put","retrieve"]
+        //[[],[1,"2017:01:01:23:59:59"],[2,"2017:01:02:23:59:59"],["2017:01:01:23:59:59","2017:01:02:23:59:59","Year"]]
+
+        ls.put(9, "2004:01:26:20:24:11");
+        System.out.println(ls.retrieve("2004:04:14:23:31:12", "2004:05:05:16:57:30", "Year"));
 
         System.out.println(s.minPushBox(new char[][]{
                 {'#', '#', '#', '#', '#', '#'},
@@ -754,17 +761,85 @@ class quickSelect {
 
 // LC635 TBD
 class LogSystem {
-    final SimpleDateFormat sdf = new SimpleDateFormat("YYYY:MM:dd:hh:mm:ss");
+    final SimpleDateFormat sdf= new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss");
+    final TreeSet<Integer> MAGIC_NUMBER = new TreeSet<Integer>() {{
+        add(Calendar.YEAR);
+        add(Calendar.MONTH);
+        add(Calendar.DAY_OF_MONTH);
+        add(Calendar.HOUR_OF_DAY);
+        add(Calendar.MINUTE);
+        add(Calendar.SECOND);
+    }};
+
+    TreeMap<Long, Integer> tm = new TreeMap<>();
 
     public LogSystem() {
-
     }
 
     public void put(int id, String timestamp) {
+        try {
+            long ts = sdf.parse(timestamp).getTime();
+            tm.put(ts, id);
+        } catch (Exception e) {
 
+        }
     }
 
     public List<Integer> retrieve(String start, String end, String granularity) {
-
+        try {
+            long sts = granHelper(start, granularity, false), ets = granHelper(end, granularity, true);
+            List<Integer> result = new ArrayList<>();
+            for (Map.Entry<Long, Integer> e : tm.subMap(sts, true, ets, false).entrySet()) {
+                result.add(e.getValue());
+            }
+            return result;
+        } catch (Exception e) {
+            return null;
+        }
     }
+
+    private long granHelper(String timestamp, String gran, boolean isRight) throws ParseException {
+        Date ts = sdf.parse(timestamp);
+        int granInt = granStrToMagic(gran);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(ts);
+        Set<Integer> tailSet = MAGIC_NUMBER.tailSet(granInt, false);
+        for (int mn : tailSet) {
+            if (mn <= Calendar.DAY_OF_MONTH) {
+                if (mn == Calendar.MONTH) {
+                    cal.set(mn, 0);
+                } else {
+                    cal.set(mn, 1);
+                }
+            } else {
+                cal.set(mn, 0);
+            }
+            System.err.println(cal.getTime());
+        }
+        if (isRight) {
+            cal.add(granInt, 1);
+            System.err.println(cal.getTime());
+        }
+        Date d = cal.getTime();
+        return cal.getTimeInMillis();
+    }
+
+    private int granStrToMagic(String gran) {
+        switch (gran) {
+            case "Year":
+                return Calendar.YEAR;
+            case "Month":
+                return Calendar.MONTH;
+            case "Day":
+                return Calendar.DAY_OF_MONTH;
+            case "Hour":
+                return Calendar.HOUR_OF_DAY;
+            case "Minute":
+                return Calendar.MINUTE;
+            case "Second":
+                return Calendar.SECOND;
+        }
+        return -1;
+    }
+
 }
