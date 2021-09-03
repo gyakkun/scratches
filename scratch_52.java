@@ -20,6 +20,12 @@ class Scratch {
         return -1;
     }
 
+    // Interview 17.14
+    public int[] smallestK(int[] arr, int k) {
+        quickSelect.topK(arr, arr.length - k);
+        return Arrays.copyOfRange(arr, 0, k);
+    }
+
     // Interview 08.08 全排列
     List<String> iv0808Result;
 
@@ -463,5 +469,49 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+class quickSelect {
+    static Random r = new Random();
+
+    public static int topK(int[] arr, int topK) {
+        return helper(arr, 0, arr.length - 1, topK);
+    }
+
+    private static Integer helper(int[] arr, int start, int end, int topK) {
+        if (start == end && start == arr.length - topK) return arr[start];
+        if (start >= end) return null;
+        int randPivot = r.nextInt(end - start + 1) + start;
+        if (arr[start] != arr[randPivot]) {
+            int o = arr[start];
+            arr[start] = arr[randPivot];
+            arr[randPivot] = o;
+        }
+        int pivotVal = arr[start];
+        int left = start, right = end;
+        while (left < right) {
+            while (left < right && arr[right] > pivotVal) {
+                right--;
+            }
+            if (left < right) {
+                arr[left] = arr[right];
+                left++;
+            }
+            while (left < right && arr[left] < pivotVal) {
+                left++;
+            }
+            if (left < right) {
+                arr[right] = arr[left];
+                right--;
+            }
+        }
+        arr[left] = pivotVal;
+        if (left == arr.length - topK) return arr[left];
+        Integer leftResult = helper(arr, start, left - 1, topK);
+        if (leftResult != null) return leftResult;
+        Integer rightResult = helper(arr, right + 1, end, topK);
+        if (rightResult != null) return rightResult;
+        return null;
     }
 }
