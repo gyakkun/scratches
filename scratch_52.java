@@ -20,6 +20,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC410 二分
+
+    public int splitArrayBS(int[] nums, int m) {
+        int n = nums.length;
+        int lo = Arrays.stream(nums).max().getAsInt();
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
+        int hi = prefix[n];
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (countSeg(nums, prefix, mid) <= m) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+    }
+
+    private int countSeg(int[] nums, int[] prefix, int segLen) {
+        int count = 1, sum = 0;
+        for (int i : nums) {
+            if (sum + i > segLen) {
+                count++;
+                sum = i;
+            } else {
+                sum += i;
+            }
+        }
+        return count;
+    }
+
     // LC410 Hard Minmax, 极小化极大, DFS
     Integer[][] lc410Memo;
 
