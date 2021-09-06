@@ -13,11 +13,119 @@ class Scratch {
 
 
 //        System.out.println(s.splitArray(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 5));
-        System.out.println(s.lc410CountSeg(new int[]{0, 1, 3, 6}, 3));
+//        System.out.println(s.containVirus(new int[][]{{0, 1, 0, 0, 0, 0, 0, 1}, {0, 1, 0, 1, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, 0, 1}}));
+        System.out.println(s.containVirus(new int[][]{{1}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC749 The implementation is long.
+    public int containVirus(int[][] isInfected) {
+        int m = isInfected.length, n = isInfected[0].length;
+        Function<int[], Boolean> checkLegalPos = new Function<int[], Boolean>() {
+            @Override
+            public Boolean apply(int[] pos) {
+                return pos[0] >= 0 && pos[0] < m && pos[1] >= 0 && pos[1] < n;
+            }
+        };
+        int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int totalCount = m * n, stillInfectCount = 0, wallCount = 0, isolatedCount = 0;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                stillInfectCount += isInfected[i][j];
+            }
+        }
+
+        while (stillInfectCount != 0) {
+            DisjointSetUnion dsu = new DisjointSetUnion();
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    int idx = i * n + j;
+                    if (isInfected[i][j] == 1) {
+                        dsu.add(idx);
+                        for (int[] dir : directions) {
+                            int nr = i + dir[0], nc = j + dir[1];
+                            int nIdx = nr * n + nc;
+                            if (checkLegalPos.apply(new int[]{nr, nc}) && isInfected[nr][nc] == 1) {
+                                dsu.add(nIdx);
+                                dsu.merge(idx, nIdx);
+                            }
+                        }
+                    }
+                }
+            }
+            Map<Integer, Set<Integer>> allGroups = dsu.getAllGroups();
+            Set<Integer> victim = null;
+            int maxCountInfect = -1;
+            for (Set<Integer> virus : allGroups.values()) {
+                boolean[][] visited = new boolean[m][n];
+                int countInfect = 0;
+                for (int idx : virus) {
+                    int r = idx / n, c = idx % n;
+                    for (int[] dir : directions) {
+                        int nr = r + dir[0], nc = c + dir[1];
+                        if (checkLegalPos.apply(new int[]{nr, nc})) {
+                            if (!visited[nr][nc] && isInfected[nr][nc] == 0) {
+                                visited[nr][nc] = true;
+                                countInfect++;
+                            }
+                        }
+                    }
+                }
+                if (countInfect > maxCountInfect) {
+                    maxCountInfect = countInfect;
+                    victim = virus;
+                }
+            }
+            isolatedCount += victim.size();
+            int wallCountDiff = 0;
+            boolean[][] wallVisited = new boolean[m][n];
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (!wallVisited[i][j] && isInfected[i][j] == 0) {
+                        for (int[] dir : directions) {
+                            int nr = i + dir[0], nc = j + dir[1];
+                            int nIdx = nr * n + nc;
+                            if (checkLegalPos.apply(new int[]{nr, nc}) && victim.contains(nIdx)) {
+                                wallCountDiff++;
+                            }
+                        }
+                        wallVisited[i][j] = true;
+                    }
+                }
+            }
+            wallCount += wallCountDiff;
+            for (int idx : victim) {
+                int r = idx / n, c = idx % n;
+                isInfected[r][c] = 2; // 用2表示已被隔离
+            }
+            for (Set<Integer> virus : allGroups.values()) {
+                if (virus != victim) {
+                    for (int idx : virus) {
+                        int r = idx / n, c = idx % n;
+                        for (int[] dir : directions) {
+                            int nr = r + dir[0], nc = c + dir[1];
+                            if (checkLegalPos.apply(new int[]{nr, nc})) {
+                                if (isInfected[nr][nc] == 0) {
+                                    isInfected[nr][nc] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            stillInfectCount = 0;
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (isInfected[i][j] == 1) stillInfectCount++;
+                }
+            }
+            if (stillInfectCount == totalCount - isolatedCount) return wallCount;
+        }
+        return wallCount;
     }
 
     // LC501
@@ -974,6 +1082,89 @@ class LogSystem {
                 return Calendar.SECOND;
         }
         return -1;
+    }
+
+}
+
+class DisjointSetUnion {
+
+    Map<Integer, Integer> father;
+    Map<Integer, Integer> rank;
+
+    public DisjointSetUnion() {
+        father = new HashMap<>();
+        rank = new HashMap<>();
+    }
+
+    public void add(int i) {
+        if (!father.containsKey(i)) {
+            // 置初始父亲为自身
+            // 之后判断连通分量个数时候, 遍历father, 找value==key的
+            father.put(i, i);
+        }
+        if (!rank.containsKey(i)) {
+            rank.put(i, 1);
+        }
+    }
+
+    // 找父亲, 路径压缩
+    public int find(int i) {
+        //先找到根 再压缩
+        int root = i;
+        while (father.get(root) != root) {
+            root = father.get(root);
+        }
+        // 找到根, 开始对一路上的子节点进行路径压缩
+        while (father.get(i) != root) {
+            int origFather = father.get(i);
+            father.put(i, root);
+            // 更新秩, 按照节点数
+            rank.put(root, rank.get(root) + 1);
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(int i, int j) {
+        int iFather = find(i);
+        int jFather = find(j);
+        if (iFather == jFather) return false;
+        // 按秩合并
+        if (rank.get(iFather) >= rank.get(jFather)) {
+            father.put(jFather, iFather);
+            rank.put(iFather, rank.get(jFather) + rank.get(iFather));
+        } else {
+            father.put(iFather, jFather);
+            rank.put(jFather, rank.get(jFather) + rank.get(iFather));
+        }
+        return true;
+    }
+
+    public boolean isConnected(int i, int j) {
+        return find(i) == find(j);
+    }
+
+    public Map<Integer, Set<Integer>> getAllGroups() {
+        Map<Integer, Set<Integer>> result = new HashMap<>();
+        // 找出所有根
+        for (Integer i : father.keySet()) {
+            int f = find(i);
+            result.putIfAbsent(f, new HashSet<>());
+            result.get(f).add(i);
+        }
+        return result;
+    }
+
+    public int getNumOfGroups() {
+        Set<Integer> s = new HashSet<Integer>();
+        for (Integer i : father.keySet()) {
+            s.add(find(i));
+        }
+        return s.size();
+    }
+
+    public boolean contains(int i) {
+        return father.containsKey(i);
     }
 
 }
