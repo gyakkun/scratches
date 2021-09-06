@@ -12,8 +12,8 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.splitArray(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 5));
-//        System.out.println(s.splitArray(new int[]{1, 2, 3}, 3));
+//        System.out.println(s.splitArray(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 5));
+        System.out.println(s.countSeg(new int[]{0, 1, 3, 6}, 3));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -21,7 +21,6 @@ class Scratch {
     }
 
     // LC410 二分
-
     public int splitArrayBS(int[] nums, int m) {
         int n = nums.length;
         int lo = Arrays.stream(nums).max().getAsInt();
@@ -30,7 +29,7 @@ class Scratch {
         int hi = prefix[n];
         while (lo < hi) {
             int mid = lo + (hi - lo) / 2;
-            if (countSeg(nums, prefix, mid) <= m) {
+            if (countSeg(prefix, mid) <= m) {
                 hi = mid;
             } else {
                 lo = mid + 1;
@@ -39,15 +38,21 @@ class Scratch {
         return lo;
     }
 
-    private int countSeg(int[] nums, int[] prefix, int segLen) {
-        int count = 1, sum = 0;
-        for (int i : nums) {
-            if (sum + i > segLen) {
-                count++;
-                sum = i;
-            } else {
-                sum += i;
+    private int countSeg(int[] prefix, int segLen) {
+        int count = 0, ptr = 0;
+        int len = prefix.length - 1;
+        while (ptr < len) {
+            int lo = ptr, hi = len;
+            while (lo < hi) {
+                int mid = lo + (hi - lo + 1) / 2;
+                if (prefix[mid] <= prefix[ptr] + segLen) {
+                    lo = mid;
+                } else {
+                    hi = mid - 1;
+                }
             }
+            count++;
+            ptr = lo;
         }
         return count;
     }
