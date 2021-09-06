@@ -13,11 +13,42 @@ class Scratch {
 
 
 //        System.out.println(s.splitArray(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 5));
-        System.out.println(s.countSeg(new int[]{0, 1, 3, 6}, 3));
+        System.out.println(s.lc410CountSeg(new int[]{0, 1, 3, 6}, 3));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+
+    // LCP 12 TBD 参考 LC410
+    public int minTime(int[] time, int m) {
+        // m 天 完成 time.length 题, 按顺序做题, 每天耗时最长的一题可以不计入耗时, 求最长的一天的耗时
+        int lo = 0, hi = Arrays.stream(time).sum();
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (lcp12Helper(time, mid) <= m) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+    }
+
+    private int lcp12Helper(int[] nums, int segLen) {
+        int count = 1, sum = 0, curMax = 0; // 多维护一个当前最大值, 判断是否大于segLen的时候先减去当前最大值
+        for (int i : nums) {
+            if (sum + i - Math.max(i, curMax) > segLen) {
+                sum = i;
+                curMax = i;
+                count++;
+            } else {
+                sum += i;
+                curMax = Math.max(curMax, i);
+            }
+        }
+        return count;
     }
 
     // LC410 二分
@@ -29,7 +60,7 @@ class Scratch {
         int hi = prefix[n];
         while (lo < hi) {
             int mid = lo + (hi - lo) / 2;
-            if (countSeg(prefix, mid) <= m) {
+            if (lc410CountSeg(prefix, mid) <= m) {
                 hi = mid;
             } else {
                 lo = mid + 1;
@@ -38,7 +69,7 @@ class Scratch {
         return lo;
     }
 
-    private int countSeg(int[] prefix, int segLen) {
+    private int lc410CountSeg(int[] prefix, int segLen) {
         int count = 0, ptr = 0;
         int len = prefix.length - 1;
         while (ptr < len) {
@@ -103,14 +134,6 @@ class Scratch {
         }
 
         return lc410Memo[begin][leftSegNum] = result;
-    }
-
-    // LCP 12 TBD 参考 LC410
-    public int minTime(int[] time, int m) {
-        // m 天 完成 time.length 题, 按顺序做题, 每天耗时最长的一题可以不计入耗时, 求最长的一天的耗时
-
-
-        return -1;
     }
 
     // Interview 01.02
