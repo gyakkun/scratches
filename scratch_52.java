@@ -11,23 +11,50 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        LogSystem ls = new LogSystem();
-        // ["LogSystem","put","put","retrieve"]
-        //[[],[1,"2017:01:01:23:59:59"],[2,"2017:01:02:23:59:59"],["2017:01:01:23:59:59","2017:01:02:23:59:59","Year"]]
 
-        ls.put(9, "2004:01:26:20:24:11");
-        System.out.println(ls.retrieve("2004:04:14:23:31:12", "2004:05:05:16:57:30", "Year"));
+        System.out.println(s.splitArray(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 5));
+//        System.out.println(s.splitArray(new int[]{1, 2, 3}, 3));
 
-        System.out.println(s.minPushBox(new char[][]{
-                {'#', '#', '#', '#', '#', '#'},
-                {'#', 'T', '#', '#', '#', '#'},
-                {'#', '.', '.', 'B', '.', '#'},
-                {'#', '.', '#', '#', '.', '#'},
-                {'#', '.', '.', '.', 'S', '#'},
-                {'#', '#', '#', '#', '#', '#'}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC410 Hard Minmax, 极小化极大, DFS
+    Integer[][] memo;
+
+    public int splitArray(int[] nums, int m) {
+        int n = nums.length;
+        memo = new Integer[n + 1][m + 1];
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
+        return helper(prefix, 0, m);
+    }
+
+    private int helper(int[] prefix, int begin, int leftSegNum) {
+        if (leftSegNum == 1) {
+            return prefix[prefix.length - 1] - prefix[begin];
+        }
+
+        if (memo[begin][leftSegNum] != null) return memo[begin][leftSegNum];
+        int result = 0x3f3f3f3f;
+        int len = prefix.length - 1;
+
+        for(int i=begin+1;i<=len-(leftSegNum-1);i++){
+            int sum = prefix[i] - prefix[begin];
+            int maxSum = Math.max(sum, helper(prefix, i, leftSegNum - 1));
+            result = Math.min(result, maxSum);
+        }
+
+        return memo[begin][leftSegNum] = result;
+    }
+
+    // LCP 12 TBD 参考 LC410
+    public int minTime(int[] time, int m) {
+        // m 天 完成 time.length 题, 按顺序做题, 每天耗时最长的一题可以不计入耗时, 求最长的一天的耗时
+
+
+        return -1;
     }
 
     // Interview 01.02
