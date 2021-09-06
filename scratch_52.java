@@ -30,6 +30,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 01.02
+    public boolean CheckPermutation(String s1, String s2) {
+        if (s1.length() != s2.length()) return false;
+        int[] freq = new int[26];
+        for (int i = 0; i < s1.length(); i++) {
+            freq[s1.charAt(i) - 'a']++;
+            freq[s2.charAt(i) - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) if (freq[i] != 0) return false;
+        return true;
+    }
+
     // LC1263 Hard
     public int minPushBox(char[][] grid) {
         int m = grid.length, n = grid[0].length;
