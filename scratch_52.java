@@ -21,32 +21,51 @@ class Scratch {
     }
 
     // LC410 Hard Minmax, 极小化极大, DFS
-    Integer[][] memo;
+    Integer[][] lc410Memo;
 
     public int splitArray(int[] nums, int m) {
         int n = nums.length;
-        memo = new Integer[n + 1][m + 1];
+        lc410Memo = new Integer[n + 1][m + 1];
         int[] prefix = new int[n + 1];
         for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
-        return helper(prefix, 0, m);
+        return lc410Helper(prefix, 0, m);
     }
 
-    private int helper(int[] prefix, int begin, int leftSegNum) {
+    private int lc410Helper(int[] prefix, int begin, int leftSegNum) {
         if (leftSegNum == 1) {
             return prefix[prefix.length - 1] - prefix[begin];
         }
 
-        if (memo[begin][leftSegNum] != null) return memo[begin][leftSegNum];
+        if (lc410Memo[begin][leftSegNum] != null) return lc410Memo[begin][leftSegNum];
         int result = 0x3f3f3f3f;
         int len = prefix.length - 1;
 
-        for(int i=begin+1;i<=len-(leftSegNum-1);i++){
+        // 理想值: 即平均分配所有划分的和, 实际的最小值总是大于等于理想值, 所以可以找到小于等于理想值的第一个下标开始枚举
+        int ideal = (prefix[len + 1] - prefix[begin]) / leftSegNum;
+        int lo = begin, hi = len;
+
+        // 找到小于等于ideal的第一个下标
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (prefix[mid] <= prefix[begin] + ideal) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+
+        // 枚举下一子数组的开始下标i
+        // 初始化 i = begin+1 是因为子数组的长度最少为1
+        // i<= nums.length-(segNum-1): 保证剩下的子数组至少分配到有1个数
+        // for (int i = begin+1; i <= len - (leftSegNum - 1); i++) {
+        for (int i = lo; i <= len - (leftSegNum - 1); i++) {
+            if (lo == 0) continue;
             int sum = prefix[i] - prefix[begin];
-            int maxSum = Math.max(sum, helper(prefix, i, leftSegNum - 1));
+            int maxSum = Math.max(sum, lc410Helper(prefix, i, leftSegNum - 1));
             result = Math.min(result, maxSum);
         }
 
-        return memo[begin][leftSegNum] = result;
+        return lc410Memo[begin][leftSegNum] = result;
     }
 
     // LCP 12 TBD 参考 LC410
