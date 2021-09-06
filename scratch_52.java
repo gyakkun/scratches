@@ -20,6 +20,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC501
+    Map<Integer, Integer> lc501Freq;
+
+    public int[] findMode(TreeNode root) {
+        lc501Freq = new HashMap<>();
+        lc501Dfs(root);
+        List<Integer> k = new ArrayList<>(lc501Freq.keySet());
+        k.sort(Comparator.comparingInt(o -> -lc501Freq.get(o)));
+        int maxFreq = lc501Freq.get(k.get(0));
+        int end = 0;
+        for (int i : k) {
+            if (lc501Freq.get(i) != maxFreq) break;
+            end++;
+        }
+        return k.subList(0, end).stream().mapToInt(Integer::valueOf).toArray();
+    }
+
+    private void lc501Dfs(TreeNode root) {
+        if (root == null) return;
+        lc501Freq.put(root.val, lc501Freq.getOrDefault(root.val, 0) + 1);
+        lc501Dfs(root.left);
+        lc501Dfs(root.right);
+    }
 
     // LCP 12 TBD 参考 LC410
     public int minTime(int[] time, int m) {
