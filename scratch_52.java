@@ -19,6 +19,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 017 LC76 **
+    public String minWindow(String s, String t) {
+        int m = s.length(), n = t.length(), overlap = 0;
+        char[] cs = s.toCharArray(), ct = t.toCharArray();
+        String result = "";
+        int[] freq = new int[256];
+        for (char c : ct) freq[c]--;
+        for (int left = 0, right = 0; right < m; right++) {
+            freq[cs[right]]++;
+            if (freq[cs[right]] <= 0) overlap++;
+            while (overlap == n && freq[cs[left]] > 0) freq[cs[left++]]--;
+            if (overlap == n) {
+                if (result.equals("") || result.length() > right - left + 1) {
+                    result = s.substring(left, right + 1);
+                }
+            }
+        }
+        return result;
+    }
+
     // LC1088
     int lc1088Result = 0;
     int[] lc1088Valid = new int[]{0, 1, 6, 8, 9};
