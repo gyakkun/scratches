@@ -19,6 +19,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 088
+    public int minCostClimbingStairs(int[] cost) {
+        int[] sum = new int[]{cost[0], cost[1], 0};
+        for (int i = 2; i < cost.length; i++) {
+            sum[i % 3] = Math.min(sum[(i - 2) % 3] + cost[i], sum[(i - 1) % 3] + cost[i]);
+        }
+        return Math.min(sum[(cost.length - 1) % 3], sum[(cost.length - 2) % 3]);
+    }
+
     // JZOF II 017 LC76 **
     public String minWindow(String s, String t) {
         int m = s.length(), n = t.length(), overlap = 0;
