@@ -30,6 +30,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1660
+    Map<TreeNode, TreeNode> parent;
+
+    public TreeNode correctBinaryTree(TreeNode root) {
+        parent = new HashMap<>();
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            if (p.left != null) {
+                q.offer(p.left);
+            }
+            if (p.right != null) {
+                q.offer(p.right);
+            }
+            if (parent.get(p.right) != null) {
+                TreeNode victim = p;
+                TreeNode vp = parent.get(victim);
+                if (vp.left == victim) vp.left = null;
+                else if (vp.right == victim) vp.right = null;
+                break;
+            }
+            if (p.left != null) {
+                parent.put(p.left, p);
+            }
+            if (p.right != null) {
+                parent.put(p.right, p);
+            }
+        }
+        return root;
+    }
+
     // LCP 34 ** 树形DP
     int lcp34Limit;
 
@@ -44,15 +76,10 @@ class Scratch {
         if (root == null) return dp;
         int[] left = lcp34Dfs(root.left);
         int[] right = lcp34Dfs(root.right);
-        // 不染root, 两个子树都可以染色, 数量不限
-        int maxLeft = 0, maxRight = 0;
-        for (int i = 0; i <= lcp34Limit; i++) {
-            maxLeft = Math.max(maxLeft, left[i]);
-            maxRight = Math.max(maxRight, right[i]);
-        }
-        dp[0] = maxLeft + maxRight;
+        // 不染 root, 两个子树都可以染色, 数量不限
+        dp[0] = Arrays.stream(left).max().getAsInt() + Arrays.stream(right).max().getAsInt();
 
-        // 染色root, 则 左+右最多 = limit-1
+        // 染色 root, 则 左+右最多 = limit-1
         for (int i = 1; i <= lcp34Limit; i++) {
             for (int j = 0; j < i; j++) {
                 dp[i] = Math.max(dp[i], root.val + left[j] + right[i - 1 - j]);
