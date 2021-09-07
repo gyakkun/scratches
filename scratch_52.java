@@ -39,12 +39,6 @@ class Scratch {
         q.offer(root);
         while (!q.isEmpty()) {
             TreeNode p = q.poll();
-            if (p.left != null) {
-                q.offer(p.left);
-            }
-            if (p.right != null) {
-                q.offer(p.right);
-            }
             if (parent.get(p.right) != null) {
                 TreeNode victim = p;
                 TreeNode vp = parent.get(victim);
@@ -53,9 +47,11 @@ class Scratch {
                 break;
             }
             if (p.left != null) {
+                q.offer(p.left);
                 parent.put(p.left, p);
             }
             if (p.right != null) {
+                q.offer(p.right);
                 parent.put(p.right, p);
             }
         }
