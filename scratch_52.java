@@ -19,6 +19,63 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1882
+    public int[] assignTasks(int[] servers, int[] tasks) {
+        // servers : 权重
+        // tasks: 任务耗时
+        // 第i秒时才可以开始执行tasks[i]任务
+
+        int[] result = new int[tasks.length];
+
+        // availServer: [权重, 下标]
+        PriorityQueue<int[]> availServer = new PriorityQueue<>((o1, o2) -> o1[0] == o2[0] ? o1[1] - o2[1] : o1[0] - o2[0]);
+        // working: [结束时间, 下标]
+        PriorityQueue<int[]> working = new PriorityQueue<>(Comparator.comparingInt(o -> o[0]));
+        // availTask : [下标, 耗时]
+        Deque<int[]> availTask = new LinkedList<>();
+        for (int i = 0; i < servers.length; i++) {
+            availServer.offer(new int[]{servers[i], i});
+        }
+        int taskPtr = 0, timing = 0;
+        while (taskPtr < tasks.length || !availTask.isEmpty()) {
+            if (taskPtr < tasks.length) {
+                availTask.offer(new int[]{taskPtr, tasks[taskPtr]});
+                taskPtr++;
+                // 先执行退出working队列检查
+                while (!working.isEmpty() && working.peek()[0] <= timing) {
+                    int[] happy = working.poll();
+                    availServer.offer(new int[]{servers[happy[1]], happy[1]});
+                }
+                // 再执行进入working队列操作 (顺序很重要!!!)
+                while (!availServer.isEmpty() && !availTask.isEmpty()) {
+                    int[] victim = availServer.poll();
+                    int[] workload = availTask.poll();
+                    working.offer(new int[]{workload[1] + timing, victim[1]});
+                    result[workload[0]] = victim[1];
+                }
+                timing++;
+            } else {
+                // 此时全部任务都已经进入可用任务队列, 队列中仍有元素,  等待working 中的工作完成
+                if (!working.isEmpty()) {
+                    int[] workTop = working.poll();
+                    timing = workTop[0];
+                    availServer.offer(new int[]{servers[workTop[1]], workTop[1]});
+                    while (!working.isEmpty() && working.peek()[0] <= timing) {
+                        int[] happy = working.poll();
+                        availServer.offer(new int[]{servers[happy[1]], happy[1]});
+                    }
+                }
+                while (!availServer.isEmpty() && !availTask.isEmpty()) {
+                    int[] victim = availServer.poll();
+                    int[] workload = availTask.poll();
+                    working.offer(new int[]{workload[1] + timing, victim[1]});
+                    result[workload[0]] = victim[1];
+                }
+            }
+        }
+        return result;
+    }
+
     // JZOF II 088
     public int minCostClimbingStairs(int[] cost) {
         int[] sum = new int[]{cost[0], cost[1], 0};
