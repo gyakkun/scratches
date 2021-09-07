@@ -12,8 +12,30 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
+        System.out.println(s.shortestSubarray(new int[]{84, -37, 32, 40, 95}, 167));
+
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC862 ** Hard 单调队列 WA TBD
+    public int shortestSubarray(int[] nums, int k) {
+        // 非空子数组
+        int minLeftIdx = -1, minRightIdx = -1, minLen = Integer.MAX_VALUE / 2, curSum = 0;
+        for (int left = 0, right = 0; right < nums.length; right++) {
+            curSum += nums[right];
+            while (curSum > k && curSum - nums[left] >= k) curSum -= nums[left++];
+            if (curSum >= k) {
+                int len = right - left + 1;
+                if (len < minLen) {
+                    minLen = len;
+                    minLeftIdx = left;
+                    minRightIdx = right;
+                }
+            }
+        }
+        if (minLeftIdx == -1 && minRightIdx == -1) return -1;
+        return minLen;
     }
 
     // LC906
