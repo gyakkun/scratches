@@ -11,12 +11,54 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        TreeNode t1 = new TreeNode(1);
+        TreeNode t2 = new TreeNode(2);
+        TreeNode t3 = new TreeNode(3);
+        TreeNode t4 = new TreeNode(4);
+        TreeNode t9 = new TreeNode(9);
 
-        System.out.println(s.confusingNumberII(1000000000));
+        t4.left = t1;
+        t4.right = t3;
+        t1.left = t9;
+        t3.right = t2;
+
+
+        System.out.println(s.maxValue(t4, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LCP 34 ** 树形DP
+    int lcp34Limit;
+
+    public int maxValue(TreeNode root, int k) {
+        lcp34Limit = k;
+        int[] result = lcp34Dfs(root);
+        return Arrays.stream(result).max().getAsInt();
+    }
+
+    private int[] lcp34Dfs(TreeNode root) {
+        int[] dp = new int[lcp34Limit + 1];
+        if (root == null) return dp;
+        int[] left = lcp34Dfs(root.left);
+        int[] right = lcp34Dfs(root.right);
+        // 不染root, 两个子树都可以染色, 数量不限
+        int maxLeft = 0, maxRight = 0;
+        for (int i = 0; i <= lcp34Limit; i++) {
+            maxLeft = Math.max(maxLeft, left[i]);
+            maxRight = Math.max(maxRight, right[i]);
+        }
+        dp[0] = maxLeft + maxRight;
+
+        // 染色root, 则 左+右最多 = limit-1
+        for (int i = 1; i <= lcp34Limit; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i] = Math.max(dp[i], root.val + left[j] + right[i - 1 - j]);
+            }
+        }
+        return dp;
     }
 
     // LC1882
@@ -1241,17 +1283,17 @@ class LogSystem {
 
 }
 
-class DisjointSetUnion {
+class DisjointSetUnion<T> {
 
-    Map<Integer, Integer> father;
-    Map<Integer, Integer> rank;
+    Map<T, T> father;
+    Map<T, Integer> rank;
 
     public DisjointSetUnion() {
         father = new HashMap<>();
         rank = new HashMap<>();
     }
 
-    public void add(int i) {
+    public void add(T i) {
         if (!father.containsKey(i)) {
             // 置初始父亲为自身
             // 之后判断连通分量个数时候, 遍历father, 找value==key的
@@ -1263,15 +1305,15 @@ class DisjointSetUnion {
     }
 
     // 找父亲, 路径压缩
-    public int find(int i) {
+    public T find(T i) {
         //先找到根 再压缩
-        int root = i;
+        T root = i;
         while (father.get(root) != root) {
             root = father.get(root);
         }
         // 找到根, 开始对一路上的子节点进行路径压缩
         while (father.get(i) != root) {
-            int origFather = father.get(i);
+            T origFather = father.get(i);
             father.put(i, root);
             // 更新秩, 按照节点数
             rank.put(root, rank.get(root) + 1);
@@ -1280,9 +1322,9 @@ class DisjointSetUnion {
         return root;
     }
 
-    public boolean merge(int i, int j) {
-        int iFather = find(i);
-        int jFather = find(j);
+    public boolean merge(T i, T j) {
+        T iFather = find(i);
+        T jFather = find(j);
         if (iFather == jFather) return false;
         // 按秩合并
         if (rank.get(iFather) >= rank.get(jFather)) {
@@ -1295,15 +1337,15 @@ class DisjointSetUnion {
         return true;
     }
 
-    public boolean isConnected(int i, int j) {
+    public boolean isConnected(T i, T j) {
         return find(i) == find(j);
     }
 
-    public Map<Integer, Set<Integer>> getAllGroups() {
-        Map<Integer, Set<Integer>> result = new HashMap<>();
+    public Map<T, Set<T>> getAllGroups() {
+        Map<T, Set<T>> result = new HashMap<>();
         // 找出所有根
-        for (Integer i : father.keySet()) {
-            int f = find(i);
+        for (T i : father.keySet()) {
+            T f = find(i);
             result.putIfAbsent(f, new HashSet<>());
             result.get(f).add(i);
         }
@@ -1311,8 +1353,8 @@ class DisjointSetUnion {
     }
 
     public int getNumOfGroups() {
-        Set<Integer> s = new HashSet<Integer>();
-        for (Integer i : father.keySet()) {
+        Set<T> s = new HashSet<T>();
+        for (T i : father.keySet()) {
             s.add(find(i));
         }
         return s.size();
