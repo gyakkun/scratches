@@ -14,11 +14,33 @@ class Scratch {
 
 //        System.out.println(s.splitArray(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 5));
 //        System.out.println(s.containVirus(new int[][]{{0, 1, 0, 0, 0, 0, 0, 1}, {0, 1, 0, 1, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, 0, 1}}));
-        System.out.println(s.containVirus(new int[][]{{1}}));
+        System.out.println(s.minOperationsMaxProfit(new int[]{2}, 2, 4));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1599
+    public int minOperationsMaxProfit(int[] customers, int boardingCost, int runningCost) {
+        int waiting = 0, maxProfit = -1, curProfit = 0, cstPtr = 0, boardPtr = 0, board = 0, maxCount = 0, rotateCount = 0;
+        while (waiting != 0 || cstPtr != customers.length) {
+            if (cstPtr < customers.length) waiting += customers[cstPtr++];
+            if (waiting > 4) {
+                board = 4;
+            } else {
+                board = waiting;
+            }
+            waiting -= board;
+            rotateCount++;
+            curProfit += board * boardingCost - runningCost;
+            if (curProfit > maxProfit) {
+                maxProfit = curProfit;
+                maxCount = rotateCount;
+            }
+        }
+        if (maxCount < 4) maxProfit -= (4 - maxCount) * runningCost;
+        return maxProfit < 0 ? -1 : maxCount;
     }
 
     // LC1221
