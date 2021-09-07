@@ -21,6 +21,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1221
+    public int balancedStringSplit(String s) {
+        char[] ca = s.toCharArray();
+        int diff = 0, count = 0, ptr = 0;
+        while (ptr != ca.length) {
+            if (ca[ptr++] == 'L') diff++;
+            else diff--;
+            if (diff == 0) count++;
+        }
+        return count;
+    }
+
     // LC749 The implementation is long.
     public int containVirus(int[][] isInfected) {
         int m = isInfected.length, n = isInfected[0].length;
