@@ -12,13 +12,43 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.splitArray(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, 5));
-//        System.out.println(s.containVirus(new int[][]{{0, 1, 0, 0, 0, 0, 0, 1}, {0, 1, 0, 1, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, 0, 1}}));
-        System.out.println(s.minOperationsMaxProfit(new int[]{2}, 2, 4));
+        System.out.println(s.confusingNumberII(1000000000));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1088
+    int lc1088Result = 0;
+    int[] lc1088Valid = new int[]{0, 1, 6, 8, 9};
+    int lc1088Limit;
+
+    public int confusingNumberII(int n) {
+        lc1088Limit = n;
+        lc1088Backtrack(0);
+        return lc1088Result;
+    }
+
+    private void lc1088Backtrack(long cur) {
+        if (lc1088Check(cur)) lc1088Result++;
+        for (int i : lc1088Valid) {
+            cur = cur * 10 + i;
+            if (cur >= 1 && cur <= lc1088Limit) lc1088Backtrack(cur);
+            cur /= 10;
+        }
+    }
+
+    private boolean lc1088Check(long num) {
+        long reversed = 0, orig = num;
+        while (num != 0) {
+            long next = num % 10;
+            if (next == 9) next = 6;
+            else if (next == 6) next = 9;
+            reversed = reversed * 10 + next;
+            num /= 10;
+        }
+        return reversed != orig;
     }
 
     // LC1599
