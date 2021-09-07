@@ -6,7 +6,7 @@ class Scratch {
         System.err.println(s.maxCoins(new int[]{3, 1, 5, 8}));
     }
 
-    // LC337
+    // LC337 树形DP
     public int rob(TreeNode root) {
         // 构造两个map<node,int>, 分别存储rob该节点和不rob该节点能取到的最大值
         Map<TreeNode, Integer> choose = new HashMap<>();
