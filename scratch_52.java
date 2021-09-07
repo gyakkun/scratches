@@ -11,23 +11,69 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode t1 = new TreeNode(1);
-        TreeNode t2 = new TreeNode(2);
-        TreeNode t3 = new TreeNode(3);
-        TreeNode t4 = new TreeNode(4);
-        TreeNode t9 = new TreeNode(9);
-
-        t4.left = t1;
-        t4.right = t3;
-        t1.left = t9;
-        t3.right = t2;
-
-
-        System.out.println(s.maxValue(t4, 2));
-
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC906
+    public int superpalindromesInRange(String left, String right) {
+        long l = Long.valueOf(left), r = Long.valueOf(right);
+        String rightLeftHalf = right.substring(0, (right.length() + 1) / 2);
+        long upperBound = (long) Math.sqrt(Long.valueOf(rightLeftHalf)) + 1;
+        List<Long> result = new ArrayList<>();
+        if (l <= 1) result.add(1l);
+        if (4l >= l && 4 <= r) result.add(4l);
+        if (9l >= l && 9 <= r) result.add(9l);
+        for (int i = 1; i <= upperBound; i++) {
+            // 构造回文数
+            String str = String.valueOf(i);
+            // 如果长度大于等于2, 可以不重复最右侧的数
+            if (str.length() > 1) {
+                String pal = str + new StringBuilder(str.substring(0, str.length() - 1)).reverse().toString();
+                long test = Long.valueOf(pal);
+                long testPow2 = test * test;
+                if (checkPal(testPow2) && testPow2 >= l && testPow2 <= r) {
+                    result.add(testPow2);
+                }
+            }
+            String pal = str + new StringBuilder(str).reverse().toString();
+            long test = Long.valueOf(pal);
+            long testPow2 = test * test;
+            if (checkPal(testPow2) && testPow2 >= l && testPow2 <= r) {
+                result.add(testPow2);
+            }
+        }
+        return result.size();
+    }
+
+    private boolean checkPal(long num) {
+        if (num < 10) return true;
+        List<Integer> l = new ArrayList<>();
+        while (num != 0) {
+            l.add((int) (num % 10));
+            num /= 10;
+        }
+        int mid = l.size() / 2, len = l.size();
+        for (int i = 0; i < mid; i++) {
+            if (l.get(i) != l.get(len - 1 - i)) return false;
+        }
+        return true;
+    }
+
+    // LC370
+    public int[] getModifiedArray(int length, int[][] updates) {
+        int[] result = new int[length];
+        BIT bit = new BIT(length);
+        for (int[] u : updates) {
+            bit.update(u[0], u[2]);
+            bit.update(u[1] + 1, -u[2]);
+        }
+        result[0] = bit.get(0);
+        for (int i = 1; i < length; i++) {
+            result[i] = result[i - 1] + bit.get(i);
+        }
+        return result;
     }
 
     // LC1265
@@ -1402,4 +1448,62 @@ class DisjointSetUnion<T> {
         return father.containsKey(i);
     }
 
+}
+
+class BIT {
+    int[] tree;
+    int len;
+
+    public BIT(int len) {
+        this.len = len;
+        this.tree = new int[len + 1];
+    }
+
+    public BIT(int[] arr) {
+        this.len = arr.length;
+        this.tree = new int[len + 1];
+        for (int i = 0; i < arr.length; i++) {
+            int oneBasedIdx = i + 1;
+            tree[oneBasedIdx] += arr[i];
+            int nextOneBasedIdx = oneBasedIdx + lowbit(oneBasedIdx);
+            if (nextOneBasedIdx <= len) tree[nextOneBasedIdx] += tree[oneBasedIdx];
+        }
+    }
+
+    public void set(int idxZeroBased, int val) {
+        int delta = val - get(idxZeroBased);
+        update(idxZeroBased, delta);
+    }
+
+    public int get(int idxZeroBased) {
+        return sumOneBased(idxZeroBased + 1) - sumOneBased(idxZeroBased);
+    }
+
+    public void update(int idxZeroBased, int delta) {
+        updateOneBased(idxZeroBased + 1, delta);
+    }
+
+    public int sumRange(int left, int right) {
+        return sumOneBased(right + 1) - sumOneBased(left);
+    }
+
+    private void updateOneBased(int idxOneBased, int delta) {
+        while (idxOneBased <= len) {
+            tree[idxOneBased] += delta;
+            idxOneBased += lowbit(idxOneBased);
+        }
+    }
+
+    private int sumOneBased(int idxOneBased) {
+        int sum = 0;
+        while (idxOneBased > 0) {
+            sum += tree[idxOneBased];
+            idxOneBased -= lowbit(idxOneBased);
+        }
+        return sum;
+    }
+
+    private int lowbit(int x) {
+        return x & (-x);
+    }
 }
