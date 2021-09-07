@@ -30,29 +30,44 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1265
+    public void printLinkedListInReverse(ImmutableListNode head) {
+        if (head == null) return;
+        printLinkedListInReverse(head.getNext());
+        head.printValue();
+    }
+
+    interface ImmutableListNode {
+        public void printValue(); // print the value of this node.
+
+        public ImmutableListNode getNext(); // return the next node.
+    }
+
+    ;
+
     // LC1660
-    Map<TreeNode, TreeNode> parent;
+    Map<TreeNode, TreeNode> lc1660Parent;
 
     public TreeNode correctBinaryTree(TreeNode root) {
-        parent = new HashMap<>();
+        lc1660Parent = new HashMap<>();
         Deque<TreeNode> q = new LinkedList<>();
         q.offer(root);
         while (!q.isEmpty()) {
             TreeNode p = q.poll();
-            if (parent.get(p.right) != null) {
+            if (lc1660Parent.get(p.right) != null) {
                 TreeNode victim = p;
-                TreeNode vp = parent.get(victim);
+                TreeNode vp = lc1660Parent.get(victim);
                 if (vp.left == victim) vp.left = null;
                 else if (vp.right == victim) vp.right = null;
                 break;
             }
             if (p.left != null) {
                 q.offer(p.left);
-                parent.put(p.left, p);
+                lc1660Parent.put(p.left, p);
             }
             if (p.right != null) {
                 q.offer(p.right);
-                parent.put(p.right, p);
+                lc1660Parent.put(p.right, p);
             }
         }
         return root;
