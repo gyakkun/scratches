@@ -39,10 +39,15 @@ class Scratch {
         }
     }
 
+    // LC1056
     private boolean lc1088Check(long num) {
         long reversed = 0, orig = num;
         while (num != 0) {
             long next = num % 10;
+            // LC1056 Part
+            // boolean flag = false;
+            // for (long v : lc1088Valid) if (next == v) flag = true;
+            // if (!flag) return false;
             if (next == 9) next = 6;
             else if (next == 6) next = 9;
             reversed = reversed * 10 + next;
