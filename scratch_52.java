@@ -185,14 +185,25 @@ class Scratch {
                 return profits[o1] == profits[o2] ? capital[o1] - capital[o2] : profits[o2] - profits[o1];
             }
         });
-        for (int i = 0; i < profits.length; i++) pq.offer(i);
+        Set<Integer> notAllow = new HashSet<>();
+        for (int i = 0; i < profits.length; i++) {
+            if (capital[i] <= w) {
+                pq.offer(i);
+            } else {
+                notAllow.add(i);
+            }
+        }
         while (k != 0 && !pq.isEmpty()) {
-            Set<Integer> notAllow = new HashSet<>();
-            while (!pq.isEmpty() && capital[pq.peek()] > w) notAllow.add(pq.poll());
-            if (pq.isEmpty()) return w;
             w += profits[pq.poll()];
             k--;
-            pq.addAll(notAllow);
+            Iterator<Integer> it = notAllow.iterator();
+            while (it.hasNext()) {
+                int next = it.next();
+                if (capital[next] <= w) {
+                    pq.offer(next);
+                    it.remove();
+                }
+            }
         }
         return w;
     }
