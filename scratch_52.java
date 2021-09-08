@@ -1509,14 +1509,14 @@ class BIT {
         return sumOneBased(right + 1) - sumOneBased(left);
     }
 
-    private void updateOneBased(int idxOneBased, int delta) {
+    public void updateOneBased(int idxOneBased, int delta) {
         while (idxOneBased <= len) {
             tree[idxOneBased] += delta;
             idxOneBased += lowbit(idxOneBased);
         }
     }
 
-    private int sumOneBased(int idxOneBased) {
+    public int sumOneBased(int idxOneBased) {
         int sum = 0;
         while (idxOneBased > 0) {
             sum += tree[idxOneBased];
@@ -1527,5 +1527,40 @@ class BIT {
 
     private int lowbit(int x) {
         return x & (-x);
+    }
+}
+
+
+// LC1756 fetch: O(log(n)*log(n))
+class MRUQueue {
+
+    BIT bit = new BIT(4002);
+    int[] arr = new int[4002];
+    int tail = -1;
+
+    public MRUQueue(int n) {
+        tail = n;
+        for (int i = 1; i <= n; i++) {
+            arr[i] = i;
+            bit.updateOneBased(i, 1);
+        }
+    }
+
+    public int fetch(int k) {
+        int lo = 1, hi = tail;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (bit.sumOneBased(mid) >= k) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        arr[tail + 1] = arr[lo];
+        arr[lo] = 0;
+        bit.updateOneBased(tail + 1, 1);
+        bit.updateOneBased(lo, -1);
+        tail++;
+        return arr[tail];
     }
 }
