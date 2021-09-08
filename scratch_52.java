@@ -16,13 +16,68 @@ class Scratch {
         //[-52,48]
         //[-45,43]
 
-        System.out.println(s.intersection(new int[]{-25, 67}, new int[]{-67, 24}, new int[]{-52, 48}, new int[]{-45, 43}));
+        System.out.println(s.strongPasswordChecker("aaaaAAAAAA000000123456"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // Interview 16.03 写得太丑陋了
+    // LC420 ** Hard
+    public int strongPasswordChecker(String password) {
+        // 规则: 1) 小写字母、大写字母、数字至少各一个
+        //      2) 不能有3个或以上连续的相同字符
+        // 返回: 到符合规则为止的最少修改次数, 增删改都算一次修改
+        char[] ca = password.toCharArray();
+        int lc = 1, uc = 1, digit = 1;
+        for (char c : ca) {
+            if (Character.isLowerCase(c)) lc = 0;
+            if (Character.isUpperCase(c)) uc = 0;
+            if (Character.isDigit(c)) digit = 0;
+        }
+        int missing = lc + uc + digit;
+        int ptr = 1, dupCount = 1;
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o % 3));
+        while (ptr < ca.length) {
+            if (ca[ptr - 1] == ca[ptr]) {
+                dupCount++;
+            } else {
+                if (dupCount > 2) {
+                    pq.offer(dupCount);
+                }
+                dupCount = 1;
+            }
+            ptr++;
+        }
+        if (dupCount > 2) pq.offer(dupCount);
+
+        if (ca.length < 6) {
+            return Math.max(6 - ca.length, missing);
+        } else {
+            int len = ca.length, replace = 0, delete = 0, result = 0;
+            while (len > 20 && !pq.isEmpty()) { //  优先删除连续段中长度为3的倍数(模3=0)的连续段中的元素, 因为剩余的连续段中, 长度模3=0的替换效率最低
+                int p = pq.poll();              //  考虑以下算例: 有 4 3 3 三个连续段, 总长度为22, 如果删除4,3中的一个元素, 剩余连续段 3 3, 仍需替换2次
+                                                //  如果删除3,3中的各一个元素, 剩余连续段4, 只需替换1次
+                                                //  又比如 6 6 4 三个连续段, 总长度22, 如果删除6,4 中的一个元素, 剩余连续段6 5 3, 仍需替换4次
+                                                //  若删除 6 6 中的一个元素, 剩余连续段 5 5 4, 只需替换3次
+                result++;  // 删除p的一个元素, 操作次数+1
+                len--;
+                if (p - 1 > 2) pq.offer(p - 1);
+            }
+            if (len > 20) { // 如果连续段都没了, 但还是太长了, 只能删除, 再替换缺失的元素
+                result += len - 20 + missing;
+            } else { // 如果还有连续段
+                while (!pq.isEmpty()) {
+                    int p = pq.poll();
+                    replace += p / 3; // 处理一次需要替换 len/3个字符
+                }
+                result += Math.max(replace, missing); // 如果替换个数只有1个, 而缺失元素有2个, 则将一个连续元素替换, 然后再增加一个缺失元素, 也就是两次操作
+                                                      // 其他情况都是需要替换的更多, 直接取最大值
+            }
+            return result;
+        }
+    }
+
+    // Interview 16.03 Hard 判断线段有无交点 写得太丑陋了
     public double[] intersection(int[] start1, int[] end1, int[] start2, int[] end2) {
         // 1 计算斜率 判断是否平行
         boolean parallel = false;
@@ -1767,12 +1822,12 @@ class MaxHeap<E extends Comparable<E>> {
     }
 
     public E peek() {
-        if (isEmpty()) throw new IndexOutOfBoundsException("No element!");
+        if (isEmpty()) throw new NoSuchElementException("Queue is empty!");
         return arr.get(0);
     }
 
     public E poll() {
-        if (isEmpty()) throw new IndexOutOfBoundsException("No element!");
+        if (isEmpty()) throw new NoSuchElementException("Queue is empty!");
         E result = arr.get(0);
         arr.set(0, arr.get(arr.size() - 1));
         arr.remove(arr.size() - 1);
