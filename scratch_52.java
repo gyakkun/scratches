@@ -22,6 +22,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC862 ** Hard 单调队列 WA TBD
+    public int shortestSubarray(int[] nums, int k) {
+        Deque<Integer> dq = new LinkedList<>();
+    }
+
     // LC420 ** Hard
     public int strongPasswordChecker(String password) {
         // 规则: 1) 小写字母、大写字母、数字至少各一个
@@ -261,26 +266,6 @@ class Scratch {
             }
         }
         return w;
-    }
-
-    // LC862 ** Hard 单调队列 WA TBD
-    public int shortestSubarray(int[] nums, int k) {
-        // 非空子数组
-        int minLeftIdx = -1, minRightIdx = -1, minLen = Integer.MAX_VALUE / 2, curSum = 0;
-        for (int left = 0, right = 0; right < nums.length; right++) {
-            curSum += nums[right];
-            while (curSum > k && curSum - nums[left] >= k) curSum -= nums[left++];
-            if (curSum >= k) {
-                int len = right - left + 1;
-                if (len < minLen) {
-                    minLen = len;
-                    minLeftIdx = left;
-                    minRightIdx = right;
-                }
-            }
-        }
-        if (minLeftIdx == -1 && minRightIdx == -1) return -1;
-        return minLen;
     }
 
     // LC906

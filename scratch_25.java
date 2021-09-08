@@ -6,7 +6,7 @@ class Scratch {
         System.err.println(s.longestOnes(new int[]{1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0}, 2));
     }
 
-    // LC1493 ?
+    // LC1438
     public int longestSubarrayAVL(int[] nums,int limit){
         TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
         int n = nums.length;
@@ -27,7 +27,7 @@ class Scratch {
         return ret;
     }
 
-    // LC1493 ?
+    // LC1438
     public int longestSubarray(int[] nums, int limit) {
         int n = nums.length;
         int left = 0, right = 0;
