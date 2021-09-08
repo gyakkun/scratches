@@ -11,25 +11,170 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        MaxHeap<Integer> mh = new MaxHeap();
+        // [-25,67]
+        //[-67,24]
+        //[-52,48]
+        //[-45,43]
 
-        mh.offer(1);
-        mh.offer(2);
-        mh.offer(3);
-        mh.offer(4);
-        mh.offer(5);
-        mh.offer(6);
-        mh.offer(7);
-
-        for (int i = 0; i < 7; i++) {
-            System.out.println(mh.poll());
-        }
-
-
-//        System.out.println(s.shortestSubarray(new int[]{84, -37, 32, 40, 95}, 167));
+        System.out.println(s.intersection(new int[]{-25, 67}, new int[]{-67, 24}, new int[]{-52, 48}, new int[]{-45, 43}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 16.03 写得太丑陋了
+    public double[] intersection(int[] start1, int[] end1, int[] start2, int[] end2) {
+        // 1 计算斜率 判断是否平行
+        boolean parallel = false;
+        boolean[] vertical = new boolean[3], horizontal = new boolean[3];
+        double k1 = Integer.MAX_VALUE / 2, k2 = Integer.MAX_VALUE / 2;
+        double b1 = Integer.MAX_VALUE / 2, b2 = Integer.MAX_VALUE / 2;
+        double[] xRange1 = new double[2], xRange2 = new double[2];
+        double[] yRange1 = new double[2], yRange2 = new double[2];
+        xRange1[0] = start1[0] < end1[0] ? start1[0] : end1[0];
+        xRange1[1] = start1[0] > end1[0] ? start1[0] : end1[0];
+        xRange2[0] = start2[0] < end2[0] ? start2[0] : end2[0];
+        xRange2[1] = start2[0] > end2[0] ? start2[0] : end2[0];
+
+        yRange1[0] = start1[1] < end1[1] ? start1[1] : end1[1];
+        yRange1[1] = start1[1] > end1[1] ? start1[1] : end1[1];
+        yRange2[0] = start2[1] < end2[1] ? start2[1] : end2[1];
+        yRange2[1] = start2[1] > end2[1] ? start2[1] : end2[1];
+        // 1) 判断是否平行于Y轴
+
+        if (start1[0] - end1[0] == 0) vertical[1] = true;
+        if (start2[0] - end2[0] == 0) vertical[2] = true;
+        if (start1[1] - end1[1] == 0) horizontal[1] = true;
+        if (start2[1] - end2[1] == 0) horizontal[2] = true;
+        if (vertical[1] && vertical[2]) parallel = true;
+        if (horizontal[1] && horizontal[2]) parallel = true;
+
+        if (!parallel) {
+            if (!vertical[1]) {
+                k1 = (start1[1] - end1[1] + 0d) / (start1[0] - end1[0] + 0d);
+                b1 = start1[1] - k1 * start1[0]; // b = y1-kx1 = y2-kx2
+            }
+            if (!vertical[2]) {
+                k2 = (start2[1] - end2[1] + 0d) / (start2[0] - end2[0] + 0d);
+                b2 = start2[1] - k2 * start2[0];
+            }
+            if (k1 == k2) { // 平行
+                parallel = true;
+            }
+        }
+
+        if (parallel) {
+            if (vertical[1] && vertical[2]) {
+                if (start1[0] == start2[0]) {
+                    // 判断有无重叠
+                    if (yRange1[0] < yRange2[0]) {
+                        if (yRange1[1] < yRange2[0]) {
+                            return new double[]{};
+                        } else {
+                            return new double[]{start1[0], yRange2[0]};
+                        }
+                    } else if (yRange1[0] > yRange2[0]) {
+                        if (yRange2[1] < yRange1[0]) {
+                            return new double[]{};
+                        } else {
+                            return new double[]{start1[0], yRange1[0]};
+                        }
+                    } else {
+                        return new double[]{start1[0], yRange1[0]};
+                    }
+                } else {
+                    return new double[]{};
+                }
+            }
+            if (horizontal[1] && horizontal[2]) {
+                if (start1[1] == start2[1]) { // 两线水平, 距离Y轴方向相等即重叠
+                    // 判断有无重叠
+                    if (xRange1[0] < xRange2[0]) {
+                        if (xRange1[1] < xRange2[0]) {
+                            return new double[]{};
+                        } else {
+                            return new double[]{xRange2[0], start1[1]};
+                        }
+                    } else if (xRange1[0] > xRange2[0]) {
+                        if (xRange2[1] < xRange1[0]) {
+                            return new double[]{};
+                        } else {
+                            return new double[]{xRange1[0], start1[1]};
+                        }
+                    } else {
+                        return new double[]{xRange1[0], start1[1]};
+                    }
+                } else {
+                    return new double[]{};
+                }
+            }
+            if (b1 != b2) { // 截距不同必定无交点
+                return new double[]{};
+            }
+            // 返回x最小的点, 都一样小则返回y最小的点, 因为两条斜线的四个点不可能x都一样, 所以根据x判断即可
+
+            // 判断有无重叠
+            if (xRange1[0] < xRange2[0]) {
+                if (xRange1[1] < xRange2[0]) {
+                    return new double[]{};
+                } else {
+                    return new double[]{xRange2[0], k1 * xRange2[0] + b1};
+                }
+            } else if (xRange1[0] > xRange2[0]) {
+                if (xRange2[1] < xRange1[0]) {
+                    return new double[]{};
+                } else {
+                    return new double[]{xRange1[0], k1 * xRange1[0] + b1};
+                }
+            } else {
+                return new double[]{xRange1[0], start1[1]};
+            }
+
+        } else {
+            // 若不平行
+            if (vertical[1] || vertical[2]) {
+                if (vertical[1]) {
+                    double y = start1[0] * k2 + b2;
+                    if (y >= yRange1[0] && y <= yRange1[1] && y >= yRange2[0] && y <= yRange2[1]) {
+                        return new double[]{start1[0], y};
+                    } else {
+                        return new double[]{};
+                    }
+                } else {
+                    double y = start2[0] * k1 + b1;
+                    if (y >= yRange1[0] && y <= yRange1[1] && y >= yRange2[0] && y <= yRange2[1]) {
+                        return new double[]{start2[0], y};
+                    } else {
+                        return new double[]{};
+                    }
+                }
+            }
+            if (horizontal[1] || horizontal[2]) {
+                if (horizontal[1]) {
+                    double x = (start1[1] - b2) / k2;
+                    if (x >= xRange1[0] && x <= xRange1[1] && x >= xRange2[0] && x <= xRange2[1]) {
+                        return new double[]{x, start1[1]};
+                    } else {
+                        return new double[]{};
+                    }
+                } else {
+                    double x = (start2[1] - b1) / k1;
+                    if (x >= xRange1[0] && x <= xRange1[1] && x >= xRange2[0] && x <= xRange2[1]) {
+                        return new double[]{x, start2[1]};
+                    } else {
+                        return new double[]{};
+                    }
+                }
+            }
+            double x = (b2 - b1) / (k1 - k2);
+            double y = k1 * x + b1;
+            if (x >= xRange1[0] && x <= xRange1[1] && x >= xRange2[0] && x <= xRange2[1]
+                    && y >= yRange1[0] && y <= yRange1[1] && y >= yRange2[0] && y <= yRange2[1]) {
+                return new double[]{x, y};
+            } else {
+                return new double[]{};
+            }
+        }
     }
 
     // LC502 Hard
