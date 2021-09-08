@@ -22,24 +22,42 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC862 Try TreeSet
+    // LC862 Try TreeMap / Binary Search
     public int shortestSubarrayTS(int[] nums, int lowerBound) {
         int n = nums.length;
         int[] prefix = new int[n + 1];
         for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
-        TreeMap<Integer, Integer> tm = new TreeMap<>(); // <前缀和, 前缀和下标>
+        List<Pair<Integer, Integer>> stack = new ArrayList<>(); // <前缀和, 前缀和下标>
+        // 缺少一个StackArray这样的Stack实现, 万幸ArrayList也不是不能用
         int right = 0, result = Integer.MAX_VALUE;
         while (right <= n) {
-            // 类似单调栈, 但由于需要快速找到upperbound, 所以使用TreeMap维护
-            while (!tm.isEmpty() && tm.lastKey() >= prefix[right]) {
-                tm.remove(tm.lastKey());
+            // 单调栈, 同时需要O(1)/O(log(n))的寻址, TreeMap和普通的ArrayList都可以
+            while (!stack.isEmpty() && stack.get(stack.size() - 1).getKey() >= prefix[right]) {
+                stack.remove(stack.size() - 1);
             }
 
-            Integer floor = tm.floorKey(prefix[right] - lowerBound);
-            if (floor != null) {
-                result = Math.min(result, right - tm.get(floor));
+            if (!stack.isEmpty()) {
+                int target = prefix[right] - lowerBound;
+                int lo = 0, hi = stack.size() - 1;
+                while (lo < hi) { // 相当于求floor
+                    int mid = lo + (hi - lo + 1) / 2;
+                    if (stack.get(mid).getKey() <= target) {
+                        lo = mid;
+                    } else {
+                        hi = mid - 1;
+                    }
+                }
+                if (stack.get(lo).getKey() > target) {
+                    // 无效下界
+                } else {
+                    result = Math.min(result, right - stack.get(lo).getValue());
+                }
             }
-            tm.put(prefix[right], right); // 最大的问题是可能有连续的0?
+
+            stack.add(new Pair<>(prefix[right], right));
+            // 如果是treeMap put的话, 开始还担心重复key问题, 但实际上不需要担心, 因为如果key重复,
+            // 则最小长度已经在这一轮循环中得到, 下一轮循环得到的更大的长度不会更新result
+            // TreeMap最主要的缺点是寻址(lastKey)是O(log(n))的, 比单纯ArrayList的O(1)寻址慢
             right++;
         }
         return result == Integer.MAX_VALUE ? -1 : result;
