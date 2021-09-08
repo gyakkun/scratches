@@ -16,7 +16,7 @@ class Scratch {
         //[-52,48]
         //[-45,43]
 
-        System.out.println(s.shortestSubarrayTS(new int[]{84,-37,32,40,95}, 167));
+        System.out.println(s.shortestSubarrayTS(new int[]{84, -37, 32, 40, 95}, 167));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -30,13 +30,12 @@ class Scratch {
         TreeMap<Integer, Integer> tm = new TreeMap<>(); // <前缀和, 前缀和下标>
         int right = 0, result = Integer.MAX_VALUE;
         while (right <= n) {
-            while (!tm.isEmpty()) {
-                Integer ceil = tm.ceilingKey(prefix[right]);
-                if (ceil == null) break;
-                tm.remove(ceil);
+            // 类似单调栈, 但由于需要快速找到upperbound, 所以使用TreeMap维护
+            while (!tm.isEmpty() && tm.lastKey() >= prefix[right]) {
+                tm.remove(tm.lastKey());
             }
 
-            Integer floor = tm.floorKey(prefix[right]-lowerBound);
+            Integer floor = tm.floorKey(prefix[right] - lowerBound);
             if (floor != null) {
                 result = Math.min(result, right - tm.get(floor));
             }
