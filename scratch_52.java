@@ -16,10 +16,34 @@ class Scratch {
         //[-52,48]
         //[-45,43]
 
-        System.out.println(s.shortestSubarray(new int[]{1}, 1));
+        System.out.println(s.shortestSubarrayTS(new int[]{84,-37,32,40,95}, 167));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC862 Try TreeSet
+    public int shortestSubarrayTS(int[] nums, int lowerBound) {
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
+        TreeMap<Integer, Integer> tm = new TreeMap<>(); // <前缀和, 前缀和下标>
+        int right = 0, result = Integer.MAX_VALUE;
+        while (right <= n) {
+            while (!tm.isEmpty()) {
+                Integer ceil = tm.ceilingKey(prefix[right]);
+                if (ceil == null) break;
+                tm.remove(ceil);
+            }
+
+            Integer floor = tm.floorKey(prefix[right]-lowerBound);
+            if (floor != null) {
+                result = Math.min(result, right - tm.get(floor));
+            }
+            tm.put(prefix[right], right); // 最大的问题是可能有连续的0?
+            right++;
+        }
+        return result == Integer.MAX_VALUE ? -1 : result;
     }
 
     // LC862 ** Hard 单调队列
