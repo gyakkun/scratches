@@ -11,8 +11,22 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        MaxHeap<Integer> mh = new MaxHeap();
 
-        System.out.println(s.shortestSubarray(new int[]{84, -37, 32, 40, 95}, 167));
+        mh.offer(1);
+        mh.offer(2);
+        mh.offer(3);
+        mh.offer(4);
+        mh.offer(5);
+        mh.offer(6);
+        mh.offer(7);
+
+        for (int i = 0; i < 7; i++) {
+            System.out.println(mh.poll());
+        }
+
+
+//        System.out.println(s.shortestSubarray(new int[]{84, -37, 32, 40, 95}, 167));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -1583,4 +1597,79 @@ class MRUQueue {
         tail++;
         return arr[tail];
     }
+}
+
+class MaxHeap<E extends Comparable<E>> {
+    ArrayList<E> arr = new ArrayList<>();
+
+    public int size() {
+        return arr.size();
+    }
+
+    public boolean isEmpty() {
+        return arr.size() == 0;
+    }
+
+    public E peek() {
+        if (isEmpty()) throw new IndexOutOfBoundsException("No element!");
+        return arr.get(0);
+    }
+
+    public E poll() {
+        if (isEmpty()) throw new IndexOutOfBoundsException("No element!");
+        E result = arr.get(0);
+        arr.set(0, arr.get(arr.size() - 1));
+        arr.remove(arr.size() - 1);
+        siftDown(0);
+        return result;
+    }
+
+    public void offer(E ele) {
+        arr.add(ele);
+        siftUp(arr.size() - 1);
+    }
+
+    private void siftUp(int tail) {
+        // 如果比自己的父节点大, 则交换上浮
+        while (tail > 0) {
+            int parent = parentIdx(tail);
+            if (arr.get(tail).compareTo(arr.get(parent)) > 0) {
+                E tmp = arr.get(parent);
+                arr.set(parent, arr.get(tail));
+                arr.set(tail, tmp);
+                tail = parent;
+            } else {
+                return;
+            }
+        }
+    }
+
+    private void siftDown(int root) {
+        // 如果比自己的孩子小, 则交换下沉
+        while (leftChildIdx(root) < arr.size()) {
+            int child = leftChildIdx(root);
+            if (rightChildIdx(root) < arr.size() && arr.get(rightChildIdx(root)).compareTo(arr.get(leftChildIdx(root))) > 0) {
+                child = rightChildIdx(root);
+            }
+            if (arr.get(root).compareTo(arr.get(child)) >= 0) return;
+            E tmp = arr.get(root);
+            arr.set(root, arr.get(child));
+            arr.set(child, tmp);
+            root = child;
+        }
+    }
+
+    private int leftChildIdx(int idx) {
+        return idx * 2 + 1;
+    }
+
+    private int rightChildIdx(int idx) {
+        return idx * 2 + 2;
+    }
+
+    private int parentIdx(int idx) {
+        if (idx == 0) throw new IllegalArgumentException("Root node has no parent!");
+        return (idx - 1) / 2;
+    }
+
 }
