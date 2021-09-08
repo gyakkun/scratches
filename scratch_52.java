@@ -22,6 +22,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1647 TBD
+    public int minDeletions(String s) {
+        int[] freq = new int[26];
+        for (char c : s.toCharArray()) {
+            freq[c - 'a']++;
+        }
+        List<Pair<Character, Integer>> list = new ArrayList<>(26);
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] != 0) {
+                list.add(new Pair<>((char) ('a' + i), freq[i]));
+            }
+        }
+        list.sort(Comparator.comparingInt(o -> o.getValue()));
+        int totalUniqLetter = list.size();
+        if (totalUniqLetter == 1) return 0;
+        int lowerBound = list.get(0).getValue() - totalUniqLetter + 1;
+        int dupCount = 1, deleteCount = 0;
+        for (int i = 1; i > 0; i++) {
+            if (list.get(i - 1).getValue() == list.get(i).getValue()) {
+                dupCount++;
+                deleteCount += Math.min(list.get(i).getValue(), dupCount - 1);
+            } else {
+                dupCount = 1;
+            }
+        }
+        return deleteCount;
+    }
+
     // LC862 Try TreeMap / Binary Search
     public int shortestSubarrayTS(int[] nums, int lowerBound) {
         int n = nums.length;
