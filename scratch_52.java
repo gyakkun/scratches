@@ -16,38 +16,29 @@ class Scratch {
         //[-52,48]
         //[-45,43]
 
-        System.out.println(s.shortestSubarrayTS(new int[]{84, -37, 32, 40, 95}, 167));
+        System.out.println(s.minDeletions("bbcebab"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1647 TBD
+    // LC1647
     public int minDeletions(String s) {
+        int result = 0;
         int[] freq = new int[26];
         for (char c : s.toCharArray()) {
             freq[c - 'a']++;
         }
-        List<Pair<Character, Integer>> list = new ArrayList<>(26);
-        for (int i = 0; i < 26; i++) {
-            if (freq[i] != 0) {
-                list.add(new Pair<>((char) ('a' + i), freq[i]));
+        Arrays.sort(freq);
+        for (int i = 24; i >= 0; i--) {
+            if (freq[i] == 0) break;
+            if (freq[i] >= freq[i + 1]) {
+                int delta = Math.min(freq[i], Math.max(0, freq[i] - freq[i + 1]) + 1);
+                freq[i] -= delta;
+                result += delta;
             }
         }
-        list.sort(Comparator.comparingInt(o -> o.getValue()));
-        int totalUniqLetter = list.size();
-        if (totalUniqLetter == 1) return 0;
-        int lowerBound = list.get(0).getValue() - totalUniqLetter + 1;
-        int dupCount = 1, deleteCount = 0;
-        for (int i = 1; i > 0; i++) {
-            if (list.get(i - 1).getValue() == list.get(i).getValue()) {
-                dupCount++;
-                deleteCount += Math.min(list.get(i).getValue(), dupCount - 1);
-            } else {
-                dupCount = 1;
-            }
-        }
-        return deleteCount;
+        return result;
     }
 
     // LC862 Try TreeMap / Binary Search
