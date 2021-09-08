@@ -18,6 +18,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC502 Hard
+    public int findMaximizedCapital(int k, int w, int[] profits, int[] capital) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return profits[o1] == profits[o2] ? capital[o1] - capital[o2] : profits[o2] - profits[o1];
+            }
+        });
+        for (int i = 0; i < profits.length; i++) pq.offer(i);
+        while (k != 0 && !pq.isEmpty()) {
+            Set<Integer> notAllow = new HashSet<>();
+            while (!pq.isEmpty() && capital[pq.peek()] > w) notAllow.add(pq.poll());
+            if (pq.isEmpty()) return w;
+            w += profits[pq.poll()];
+            k--;
+            pq.addAll(notAllow);
+        }
+        return w;
+    }
+
     // LC862 ** Hard 单调队列 WA TBD
     public int shortestSubarray(int[] nums, int k) {
         // 非空子数组
