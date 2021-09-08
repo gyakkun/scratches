@@ -16,15 +16,47 @@ class Scratch {
         //[-52,48]
         //[-45,43]
 
-        System.out.println(s.strongPasswordChecker("aaaaAAAAAA000000123456"));
+        System.out.println(s.shortestSubarray(new int[]{1}, 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC862 ** Hard 单调队列 WA TBD
-    public int shortestSubarray(int[] nums, int k) {
-        Deque<Integer> dq = new LinkedList<>();
+    // LC862 ** Hard 单调队列
+    public int shortestSubarray(int[] nums, int lowerBound) {
+        int n = nums.length;
+        Deque<Integer> dq = new LinkedList<>(); // 存的是prefix的下标, 存储一个单调增的前缀和下标, 队首最小
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
+        int right = 0, result = Integer.MAX_VALUE;
+        while (right <= n) {
+            while (!dq.isEmpty() && prefix[right] <= prefix[dq.peekLast()]) {
+                dq.pollLast();
+            }
+            while (!dq.isEmpty() && prefix[right] - prefix[dq.peekFirst()] >= lowerBound) {
+                result = Math.min(result, right - dq.pollFirst());
+            }
+            dq.offerLast(right);
+            right++;
+        }
+        return result == Integer.MAX_VALUE ? -1 : result;
+
+        // 顺带一提 如果是整个数组都是正数 前一个方法是正确的
+        // int minLeftIdx = -1, minRightIdx = -1, minLen = Integer.MAX_VALUE / 2, curSum = 0;
+        // for (int left = 0, right = 0; right < nums.length; right++) {
+        //     curSum += nums[right];
+        //     while (curSum > k && curSum - nums[left] >= k) curSum -= nums[left++];
+        //     if (curSum >= k) {
+        //         int len = right - left + 1;
+        //         if (len < minLen) {
+        //             minLen = len;
+        //             minLeftIdx = left;
+        //             minRightIdx = right;
+        //         }
+        //     }
+        // }
+        // if(minLeftIdx==-1&&minRightIdx==-1) return -1;
+        // return minLen;
     }
 
     // LC420 ** Hard
@@ -61,9 +93,9 @@ class Scratch {
             int len = ca.length, replace = 0, delete = 0, result = 0;
             while (len > 20 && !pq.isEmpty()) { //  优先删除连续段中长度为3的倍数(模3=0)的连续段中的元素, 因为剩余的连续段中, 长度模3=0的替换效率最低
                 int p = pq.poll();              //  考虑以下算例: 有 4 3 3 三个连续段, 总长度为22, 如果删除4,3中的一个元素, 剩余连续段 3 3, 仍需替换2次
-                                                //  如果删除3,3中的各一个元素, 剩余连续段4, 只需替换1次
-                                                //  又比如 6 6 4 三个连续段, 总长度22, 如果删除6,4 中的一个元素, 剩余连续段6 5 3, 仍需替换4次
-                                                //  若删除 6 6 中的一个元素, 剩余连续段 5 5 4, 只需替换3次
+                //  如果删除3,3中的各一个元素, 剩余连续段4, 只需替换1次
+                //  又比如 6 6 4 三个连续段, 总长度22, 如果删除6,4 中的一个元素, 剩余连续段6 5 3, 仍需替换4次
+                //  若删除 6 6 中的一个元素, 剩余连续段 5 5 4, 只需替换3次
                 result++;  // 删除p的一个元素, 操作次数+1
                 len--;
                 if (p - 1 > 2) pq.offer(p - 1);
@@ -76,7 +108,7 @@ class Scratch {
                     replace += p / 3; // 处理一次需要替换 len/3个字符
                 }
                 result += Math.max(replace, missing); // 如果替换个数只有1个, 而缺失元素有2个, 则将一个连续元素替换, 然后再增加一个缺失元素, 也就是两次操作
-                                                      // 其他情况都是需要替换的更多, 直接取最大值
+                // 其他情况都是需要替换的更多, 直接取最大值
             }
             return result;
         }
