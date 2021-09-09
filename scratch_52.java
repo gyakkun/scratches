@@ -18,6 +18,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC599
+    public String[] findRestaurant(String[] list1, String[] list2) {
+        Map<String, Integer> idxMap1 = new HashMap<>(), idxMap2 = new HashMap<>();
+        for (int i = 0; i < list1.length; i++) idxMap1.put(list1[i], i);
+        for (int i = 0; i < list2.length; i++) idxMap2.put(list2[i], i);
+        Set<String> s1 = new HashSet<>(idxMap1.keySet());
+        Set<String> s2 = new HashSet<>(idxMap2.keySet());
+        s1.retainAll(s2);
+        List<String> result = new ArrayList<>();
+        int minSum = Integer.MAX_VALUE / 2;
+        for (String s : s1) {
+            int i1 = idxMap1.get(s), i2 = idxMap2.get(s);
+            if (i1 + i2 < minSum) {
+                minSum = i1 + i2;
+                result.clear();
+                result.add(s);
+            } else if (i1 + i2 == minSum) {
+                result.add(s);
+            }
+        }
+        return result.toArray(new String[result.size()]);
+    }
+
     // LC1272
     public List<List<Integer>> removeInterval(int[][] intervals, int[] toBeRemoved) {
         List<List<Integer>> result = new ArrayList<>();
