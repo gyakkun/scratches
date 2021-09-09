@@ -11,19 +11,60 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        // [-25,67]
-        //[-67,24]
-        //[-52,48]
-        //[-45,43]
-        List<String> l = new ArrayList<>();
-//        l.add("abc");
-//        l.add("def");
-        System.out.println(s.lineWordLen(l));
-
-        System.out.println(s.minDeletions("bbcebab"));
+//        System.out.println(s.removeInterval(new int[][]{{0, 2}, {3, 4}, {5, 7}}, new int[]{1, 6}));
+        System.out.println(s.removeInterval(new int[][]{{-10, 10}, {50, 60}}, new int[]{-100, 100}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1272
+    public List<List<Integer>> removeInterval(int[][] intervals, int[] toBeRemoved) {
+        // 原区间不相交
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        for (int[] i : intervals) tm.put(i[0], i[1]);
+        Integer floorKey = tm.floorKey(toBeRemoved[0]); // 这个key及其其value可能会被包含在待删除范围中
+        Integer lowerKey = tm.lowerKey(toBeRemoved[1]); // 这个key左边的所有区间(不包含key自身)会被包含在待删除范围中
+        TreeMap<Integer, Integer> ntm = new TreeMap<>();
+        Iterator<Integer> it;
+        NavigableMap<Integer, Integer> nm = tm.subMap(floorKey != null ? floorKey : tm.firstKey(), true, lowerKey != null ? lowerKey : tm.lastKey(), true);
+        if (nm == null || nm.size() == 0) {
+            it = tm.keySet().iterator();
+        } else {
+            NavigableSet<Integer> ns = nm.navigableKeySet();
+            it = ns.iterator();
+        }
+        while (it.hasNext()) {
+            int key = it.next();
+            Integer left = key, right = tm.get(key);
+            if (right == null) continue;
+            // 找交集
+            if (right <= toBeRemoved[0]) continue; // 没有交集
+            int intersectionRight = Math.min(right, toBeRemoved[1]);
+            int intersectionLeft = Math.max(left, toBeRemoved[0]);
+
+
+            if (intersectionLeft == left && intersectionRight == right) {
+                // tm.remove(key);
+                it.remove();
+                continue;
+            }
+            if (intersectionLeft == left) {
+                ntm.put(intersectionRight, right);
+            } else if (intersectionRight == right) {
+                ntm.put(left, intersectionLeft);
+            } else {
+                ntm.put(left, intersectionLeft);
+                ntm.put(intersectionRight, right);
+            }
+            it.remove();
+        }
+        tm.putAll(ntm);
+        List<List<Integer>> result = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> e : tm.entrySet()) {
+            result.add(Arrays.asList(e.getKey(), e.getValue()));
+        }
+        return result;
     }
 
     // LC1964 Hard ** LIS 变体
