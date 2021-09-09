@@ -20,42 +20,29 @@ class Scratch {
 
     // LC1272
     public List<List<Integer>> removeInterval(int[][] intervals, int[] toBeRemoved) {
-        // 原区间不相交
-        TreeMap<Integer, Integer> tm = new TreeMap<>();
-        for (int[] i : intervals) tm.put(i[0], i[1]);
-        Integer floorKey = tm.floorKey(toBeRemoved[0]); // 这个key及其其value可能会被包含在待删除范围中
-        Integer lowerKey = tm.lowerKey(toBeRemoved[1]); // 这个key左边的所有区间(不包含key自身)会被包含在待删除范围中
-        TreeMap<Integer, Integer> ntm = new TreeMap<>();
-        NavigableMap<Integer, Integer> nm = tm.subMap(floorKey != null ? floorKey : tm.firstKey(), true, lowerKey != null ? lowerKey : tm.lastKey(), true);
-        Iterator<Integer> it = nm.navigableKeySet().iterator();
-        while (it.hasNext()) {
-            int key = it.next();
-            Integer left = key, right = tm.get(key);
-            if (right == null) continue;
-            // 找交集
-            if (right <= toBeRemoved[0]) continue; // 没有交集
+        List<List<Integer>> result = new ArrayList<>();
+        for (int[] i : intervals) {
+            int left = i[0], right = i[1];
+            if (right <= toBeRemoved[0] || left >= toBeRemoved[1]) {
+                result.add(Arrays.asList(left, right));
+                continue;
+            }
             int intersectionRight = Math.min(right, toBeRemoved[1]);
             int intersectionLeft = Math.max(left, toBeRemoved[0]);
 
             if (intersectionLeft == left && intersectionRight == right) { // 交集竟是我自己
-                it.remove();
                 continue;
             }
             if (intersectionLeft == left) {
-                ntm.put(intersectionRight, right);
+                result.add(Arrays.asList(intersectionRight, right));
             } else if (intersectionRight == right) {
-                ntm.put(left, intersectionLeft);
+                result.add(Arrays.asList(left, intersectionLeft));
             } else { // 中间挖空
-                ntm.put(left, intersectionLeft);
-                ntm.put(intersectionRight, right);
+                result.add(Arrays.asList(left, intersectionLeft));
+                result.add(Arrays.asList(intersectionRight, right));
             }
-            it.remove();
         }
-        tm.putAll(ntm);
-        List<List<Integer>> result = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> e : tm.entrySet()) {
-            result.add(Arrays.asList(e.getKey(), e.getValue()));
-        }
+
         return result;
     }
 
