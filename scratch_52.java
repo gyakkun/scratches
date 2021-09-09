@@ -18,6 +18,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1372 ** 树形DP 树上DP
+    int lc1372Max = 0;
+
+    public int longestZigZag(TreeNode root) {
+        lc1372Helper(root);
+        return lc1372Max - 1;
+    }
+
+    private int[] lc1372Helper(TreeNode root) {
+        int[] result = new int[]{0, 0};
+        if (root == null) return result;
+        // 0-left 1-right
+        int[] l = lc1372Helper(root.left), r = lc1372Helper(root.right);
+        result = new int[]{l[1] + 1, r[0] + 1};
+        lc1372Max = Math.max(lc1372Max, Math.max(result[0], result[1]));
+        return result;
+    }
+
     // LC785 二分图判定 染色
     public boolean isBipartite(int[][] graph) {
         int n = graph.length;
