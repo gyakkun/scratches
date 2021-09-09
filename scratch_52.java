@@ -26,14 +26,8 @@ class Scratch {
         Integer floorKey = tm.floorKey(toBeRemoved[0]); // 这个key及其其value可能会被包含在待删除范围中
         Integer lowerKey = tm.lowerKey(toBeRemoved[1]); // 这个key左边的所有区间(不包含key自身)会被包含在待删除范围中
         TreeMap<Integer, Integer> ntm = new TreeMap<>();
-        Iterator<Integer> it;
         NavigableMap<Integer, Integer> nm = tm.subMap(floorKey != null ? floorKey : tm.firstKey(), true, lowerKey != null ? lowerKey : tm.lastKey(), true);
-        if (nm == null || nm.size() == 0) {
-            it = tm.keySet().iterator();
-        } else {
-            NavigableSet<Integer> ns = nm.navigableKeySet();
-            it = ns.iterator();
-        }
+        Iterator<Integer> it = nm.navigableKeySet().iterator();
         while (it.hasNext()) {
             int key = it.next();
             Integer left = key, right = tm.get(key);
@@ -43,9 +37,7 @@ class Scratch {
             int intersectionRight = Math.min(right, toBeRemoved[1]);
             int intersectionLeft = Math.max(left, toBeRemoved[0]);
 
-
-            if (intersectionLeft == left && intersectionRight == right) {
-                // tm.remove(key);
+            if (intersectionLeft == left && intersectionRight == right) { // 交集竟是我自己
                 it.remove();
                 continue;
             }
@@ -53,7 +45,7 @@ class Scratch {
                 ntm.put(intersectionRight, right);
             } else if (intersectionRight == right) {
                 ntm.put(left, intersectionLeft);
-            } else {
+            } else { // 中间挖空
                 ntm.put(left, intersectionLeft);
                 ntm.put(intersectionRight, right);
             }
