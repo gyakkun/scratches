@@ -26,26 +26,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1964 Hard WA 忽略了顺序问题 但个人认为是很好的思路
+    // LC1964 Hard ** LIS 变体
     public int[] longestObstacleCourseAtEachPosition(int[] obstacles) {
-        // 找出obstacles[i] 前面有多少个小于等于obstacle[i】的个数
-
-        // 离散化
-        Set<Integer> set = new HashSet<>();
-        for (int i : obstacles) set.add(i);
-        List<Integer> l = new ArrayList<>(set);
-        Collections.sort(l);
-        Map<Integer, Integer> m = new HashMap<>();
-        for (int i = 0; i < l.size(); i++) {
-            m.put(l.get(i), i);
-        }
-
         int[] result = new int[obstacles.length];
-        BIT bit = new BIT(l.size() + 5);
+        List<Integer> l = new ArrayList<>();
         for (int i = 0; i < obstacles.length; i++) {
-            result[i] = 1;
-            result[i] += bit.sumRange(0, m.get(obstacles[i]) - 1);
-            bit.update(m.get(obstacles[i]), 1);
+            int o = obstacles[i];
+            if (l.isEmpty() || o >= l.get(l.size() - 1)) {
+                l.add(o);
+                result[i] = l.size();
+            } else {
+                int lo = 0, hi = l.size() - 1;
+                while (lo < hi) {
+                    int mid = lo + (hi - lo) / 2;
+                    if (l.get(mid) > o) { // 第一个大于o的数的下标
+                        hi = mid;
+                    } else {
+                        lo = mid + 1;
+                    }
+                }
+                result[i] = lo + 1;
+                l.set(lo, o);
+            }
         }
         return result;
     }
