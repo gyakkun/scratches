@@ -18,6 +18,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC785 二分图判定 染色
+    public boolean isBipartite(int[][] graph) {
+        int n = graph.length;
+        int[] color = new int[n]; // 顺便当visited用
+        for (int i = 0; i < n; i++) {
+            if (color[i] == 0) {
+                Deque<Integer> q = new LinkedList<>();
+                q.offer(i);
+                while (!q.isEmpty()) {
+                    int p = q.poll();
+                    int pcolor = color[p];
+                    int otherColor = pcolor == 1 ? 2 : 1;
+                    for (int next : graph[p]) {
+                        if (color[next] == 0) {
+                            color[next] = otherColor;
+                            q.offer(next);
+                        } else if (color[next] == pcolor) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     // LC599
     public String[] findRestaurant(String[] list1, String[] list2) {
         Map<String, Integer> idxMap1 = new HashMap<>(), idxMap2 = new HashMap<>();
