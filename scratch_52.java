@@ -26,7 +26,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC68
+    // LC1964 Hard WA 忽略了顺序问题 但个人认为是很好的思路
+    public int[] longestObstacleCourseAtEachPosition(int[] obstacles) {
+        // 找出obstacles[i] 前面有多少个小于等于obstacle[i】的个数
+
+        // 离散化
+        Set<Integer> set = new HashSet<>();
+        for (int i : obstacles) set.add(i);
+        List<Integer> l = new ArrayList<>(set);
+        Collections.sort(l);
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i = 0; i < l.size(); i++) {
+            m.put(l.get(i), i);
+        }
+
+        int[] result = new int[obstacles.length];
+        BIT bit = new BIT(l.size() + 5);
+        for (int i = 0; i < obstacles.length; i++) {
+            result[i] = 1;
+            result[i] += bit.sumRange(0, m.get(obstacles[i]) - 1);
+            bit.update(m.get(obstacles[i]), 1);
+        }
+        return result;
+    }
+
+    // LC68 Hard
     public List<String> fullJustify(String[] words, int maxWidth) {
         Deque<String> wordQueue = new LinkedList<>();
         for (String w : words) wordQueue.offer(w);
