@@ -28,26 +28,33 @@ class Scratch {
 
     // LC1964 Hard ** LIS 变体
     public int[] longestObstacleCourseAtEachPosition(int[] obstacles) {
+        // 离散化
+        Set<Integer> set = new HashSet<>();
+        for (int i : obstacles) set.add(i);
+        List<Integer> l = new ArrayList<>(set);
+        Collections.sort(l);
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i = 0; i < l.size(); i++) {
+            m.put(l.get(i), i);
+        }
+
         int[] result = new int[obstacles.length];
-        List<Integer> l = new ArrayList<>();
+        BIT bit = new BIT(l.size() + 5);
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
         for (int i = 0; i < obstacles.length; i++) {
-            int o = obstacles[i];
-            if (l.isEmpty() || o >= l.get(l.size() - 1)) {
-                l.add(o);
-                result[i] = l.size();
+            int o = m.get(obstacles[i]);
+            if (tm.isEmpty() || tm.lastKey() <= o) {
+                tm.put(o, tm.getOrDefault(o, 0) + 1);
+                bit.update(o, 1);
             } else {
-                int lo = 0, hi = l.size() - 1;
-                while (lo < hi) {
-                    int mid = lo + (hi - lo) / 2;
-                    if (l.get(mid) > o) { // 第一个大于o的数的下标
-                        hi = mid;
-                    } else {
-                        lo = mid + 1;
-                    }
-                }
-                result[i] = lo + 1;
-                l.set(lo, o);
+                Integer higer = tm.higherKey(o);
+                tm.put(higer, tm.get(higer) - 1);
+                if (tm.get(higer) == 0) tm.remove(higer);
+                tm.put(o, tm.getOrDefault(o, 0) + 1);
+                bit.update(higer, -1);
+                bit.update(o, 1);
             }
+            result[i] = bit.sumRange(0, o);
         }
         return result;
     }
