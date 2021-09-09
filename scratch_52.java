@@ -18,7 +18,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1372 ** 树形DP 树上DP
+    // LC337 树形DP
+    public int rob(TreeNode root) {
+        int[] result = lc337Helper(root);
+        return Math.max(result[0], result[1]);
+    }
+
+    private int[] lc337Helper(TreeNode root) {
+        // [不偷, 偷]
+        int[] result = new int[]{0, 0};
+        if (root == null) return result;
+        int[] left = lc337Helper(root.left), right = lc337Helper(root.right);
+        result[0] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+        result[1] = left[0] + right[0] + root.val;
+        return result;
+    }
+
+    // LC1372 ** 树形DP
     int lc1372Max = 0;
 
     public int longestZigZag(TreeNode root) {
