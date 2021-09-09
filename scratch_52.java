@@ -15,11 +15,74 @@ class Scratch {
         //[-67,24]
         //[-52,48]
         //[-45,43]
+        List<String> l = new ArrayList<>();
+//        l.add("abc");
+//        l.add("def");
+        System.out.println(s.lineWordLen(l));
 
         System.out.println(s.minDeletions("bbcebab"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC68
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        Deque<String> wordQueue = new LinkedList<>();
+        for (String w : words) wordQueue.offer(w);
+        List<String> line = new ArrayList<>();
+        List<String> result = new ArrayList<>();
+        while (!wordQueue.isEmpty()) {
+            // 当前行词的长度 + 下一个词的长度 + 最少空格个数 <= maxWidth
+            while (!wordQueue.isEmpty() && lineWordLen(line) + wordQueue.peekFirst().length() + line.size() <= maxWidth) {
+                line.add(wordQueue.pollFirst());
+            }
+
+            // 处理空格个数
+            StringBuilder sb = new StringBuilder();
+            // 除了最后一行之外不应该在右侧添加空格
+            if (!wordQueue.isEmpty()) {
+                // 植树问题, 间隙个数
+                int intervalNum = line.size() - 1;
+                if (intervalNum == 0) {
+                    sb.append(line.get(0));
+                    while (sb.length() < maxWidth) sb.append(" ");
+                } else {
+                    int totalSpace = maxWidth - lineWordLen(line);
+                    int lowerBound = totalSpace / intervalNum;
+                    int remain = totalSpace - lowerBound * intervalNum;
+
+                    for (int i = 0; i < line.size() - 1; i++) {
+                        sb.append(line.get(i));
+                        for (int j = 0; j < lowerBound; j++) {
+                            sb.append(" ");
+                        }
+                        if (remain != 0) {
+                            sb.append(" ");
+                            remain--;
+                        }
+                    }
+                    sb.append(line.get(line.size() - 1));
+                }
+
+            } else {
+                for (int i = 0; i < line.size() - 1; i++) {
+                    sb.append(line.get(i));
+                    sb.append(" ");
+                }
+                sb.append(line.get(line.size() - 1));
+                while (sb.length() < maxWidth) {
+                    sb.append(" ");
+                }
+            }
+            result.add(sb.toString());
+            line = new ArrayList<>();
+        }
+        return result;
+    }
+
+    private int lineWordLen(List<String> line) {
+        return line.stream().mapToInt(o -> o.length()).sum();
     }
 
     // LC1647
