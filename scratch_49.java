@@ -8,8 +8,11 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        int[] a = {5, 4, 3, 2, 1};
 
-        System.out.println(s.powerfulIntegers(2, 1, 10));
+        quickSort.sort(a);
+
+        System.out.println(a);
 
 
         timing = System.currentTimeMillis() - timing;
@@ -2103,21 +2106,15 @@ class quickSort {
         int pivotVal = arr[start];
         int left = start, right = end;
         while (left < right) {
-            while (left < right && arr[right] > pivotVal) {
-                right--;
-            }
+            while (left < right && pivotVal <= arr[right]) right--;
+            while (left < right && pivotVal >= arr[left]) left++;
             if (left < right) {
+                int t = arr[left];
                 arr[left] = arr[right];
-                left++;
-            }
-            while (left < right && arr[left] < pivotVal) {
-                left++;
-            }
-            if (left < right) {
-                arr[right] = arr[left];
-                right--;
+                arr[right] = t;
             }
         }
+        arr[start] = arr[left];
         arr[left] = pivotVal;
         helper(arr, start, left - 1);
         helper(arr, right + 1, end);
