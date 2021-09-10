@@ -1,23 +1,65 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.numberOfWeeks(new int[]{16, 7, 5, 3}));
+        System.out.println(s.findStrobogrammatic(2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC247
+    int[] validDigit = {0, 1, 6, 8, 9};
+    int[] symmetryDigit = {0, 1, 8};
+    List<String> lc247Result = new ArrayList<>();
+
+    public List<String> findStrobogrammatic(int n) {
+        if (n == 1) return Arrays.asList("0", "1", "8");
+        lc247Helper(new StringBuilder(), n);
+        return lc247Result;
+    }
+
+    private void lc247Helper(StringBuilder sb, int total) {
+        if (sb.length() == total / 2) {
+            if (sb.charAt(0) == '0') return;
+            if (total % 2 == 1) {
+                for (int i : symmetryDigit) {
+                    String r = sb.toString() + i + getReverse(sb);
+                    lc247Result.add(r);
+                }
+            } else {
+                String r = sb + getReverse(sb);
+                lc247Result.add(r);
+            }
+            return;
+        }
+        for (int i : validDigit) {
+            sb.append(i);
+            lc247Helper(sb, total);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+
+    private String getReverse(StringBuilder input) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = input.length() - 1; i >= 0; i--) {
+            if (input.charAt(i) == '6') {
+                sb.append('9');
+            } else if (input.charAt(i) == '9') {
+                sb.append('6');
+            } else {
+                sb.append(input.charAt(i));
+            }
+        }
+        return sb.toString();
+    }
+
     // LC246
     public boolean isStrobogrammatic(String num) {
-        int[] valid = {0, 1, 6, 8, 9};
         int[] notValid = {2, 3, 4, 5, 7};
-        // List<Integer> validList = Arrays.stream(valid).boxed().collect(Collectors.toList());
-        // Set<Integer> validSet = new HashSet<>(validList);
         char[] ca = num.toCharArray();
         for (int i = 0; i <= ca.length / 2; i++) {
             char c = ca[i];
