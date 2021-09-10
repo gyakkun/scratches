@@ -12,10 +12,35 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.removeInterval(new int[][]{{0, 2}, {3, 4}, {5, 7}}, new int[]{1, 6}));
-        System.out.println(s.removeInterval(new int[][]{{-10, 10}, {50, 60}}, new int[]{-100, 100}));
+        System.out.println(s.numDifferentIntegers("a1b01c001"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1805
+    public int numDifferentIntegers(String word) {
+        Set<String> s = new HashSet<>();
+        boolean zeroFlag = false;
+        StringBuilder cur = new StringBuilder("0");
+        char[] ca = word.toCharArray();
+        for (int i = 0; i < ca.length; i++) {
+            char c = ca[i];
+            if (Character.isLetter(c)) {
+                if (i > 0 && ca[i - 1] == '0' && cur.toString().equals("0")) {
+                    zeroFlag = true;
+                }
+                s.add(cur.toString());
+                cur = new StringBuilder("0");
+            } else {
+                if (cur.toString().equals("0") && c == '0') continue;
+                cur.append(c);
+            }
+        }
+        s.add(cur.toString());
+        if (cur.toString().equals("0") && ca[ca.length - 1] == '0') zeroFlag = true;
+        if (!zeroFlag) s.remove("0");
+        return s.size();
     }
 
     // LC1894
