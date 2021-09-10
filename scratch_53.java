@@ -11,6 +11,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC898 **
+    public int subarrayBitwiseORs(int[] arr) {
+        Set<Integer> result = new HashSet<>();
+        Set<Integer> cur = new HashSet<>();
+        cur.add(0);
+        for (int i : arr) {
+            Set<Integer> tmp = new HashSet<>();
+            for (int j : cur) {
+                tmp.add(i | j);
+            }
+            tmp.add(i);
+            cur = tmp;
+            result.addAll(cur);
+        }
+        return result.size();
+    }
+
     // LC248
     public int strobogrammaticInRange(String low, String high) {
         int count = 0;
