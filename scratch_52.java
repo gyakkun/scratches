@@ -18,6 +18,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1947 **
+    public int maxCompatibilitySum(int[][] students, int[][] mentors) {
+        int n = students.length, m = students[0].length; // n个人 m个问题
+        int fullMask = (1 << m) - 1;
+        int[] syes = new int[n], sno = new int[n], myes = new int[n], mno = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (students[i][j] == 1) {
+                    syes[i] ^= (1 << j);
+                }
+                if (mentors[i][j] == 1) {
+                    myes[i] ^= (1 << j);
+                }
+            }
+            sno[i] = fullMask & (~syes[i]);
+            mno[i] = fullMask & (~myes[i]);
+        }
+        int[][] matrix = new int[n][n]; // 匹配度矩阵 [学生, 老师]
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = Integer.bitCount(syes[i] & myes[j]) + Integer.bitCount(sno[i] & mno[j]);
+            }
+        }
+
+        // 如法炮制 LC1879
+        int maxMask = 1 << n;
+        int[] dp = new int[maxMask];
+        for (int mask = 1; mask < maxMask; mask++) {
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 1) {
+                    dp[mask] = Math.max(dp[mask], dp[mask ^ (1 << i)] + matrix[Integer.bitCount(mask) - 1][i]);
+                }
+            }
+        }
+        return dp[maxMask - 1];
+    }
+
     // LC1879 Hard ** 状压DP
     public int minimumXORSum(int[] nums1, int[] nums2) {
         int n = nums1.length;
