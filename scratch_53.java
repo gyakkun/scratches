@@ -5,18 +5,44 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findStrobogrammatic(2));
+        System.out.println(s.strobogrammaticInRange("50", "100"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC248
+    public int strobogrammaticInRange(String low, String high) {
+        int count = 0;
+        for (int i = low.length(); i <= high.length(); i++) {
+            List<String> result = findStrobogrammatic(i);
+            for (String s : result) {
+                if (bigIntCompare(s, low) >= 0 && bigIntCompare(s, high) <= 0) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private int bigIntCompare(String a, String b) {
+        if (a.equals(b)) return 0;
+        if (a.length() < b.length()) return -1;
+        if (a.length() > b.length()) return 1;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) > b.charAt(i)) return 1;
+            if (a.charAt(i) < b.charAt(i)) return -1;
+        }
+        return 0;
+    }
+
     // LC247
     int[] validDigit = {0, 1, 6, 8, 9};
     int[] symmetryDigit = {0, 1, 8};
-    List<String> lc247Result = new ArrayList<>();
+    List<String> lc247Result;
 
     public List<String> findStrobogrammatic(int n) {
+        lc247Result = new ArrayList<>();
         if (n == 1) return Arrays.asList("0", "1", "8");
         lc247Helper(new StringBuilder(), n);
         return lc247Result;
