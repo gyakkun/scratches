@@ -1949,7 +1949,7 @@ class RangeBit {
     }
 
     public void update(int zeroBased, int delta) {
-        updateOneBased(zeroBased + 1, delta);
+        rangeUpdate(zeroBased,zeroBased,delta);
     }
 
     public int sumRange(int l, int r) {

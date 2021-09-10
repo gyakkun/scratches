@@ -11,11 +11,38 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+//        RangeBit rbit = new RangeBit(10);
+////        rbit.rangeUpdate(2, 7, 1);
+//        for (int i = 2; i <= 7; i++) {
+//            rbit.set(i, 1);
+//            System.out.println(rbit.get(i));
+//        }
+//        System.out.println(rbit.sumRange(3, 5));
+
 //        System.out.println(s.removeInterval(new int[][]{{0, 2}, {3, 4}, {5, 7}}, new int[]{1, 6}));
-        System.out.println(s.minimumXORSum(new int[]{1, 0, 3}, new int[]{5, 3, 4}));
+        System.out.println(s.removeCoveredIntervals(new int[][]{{1, 4}, {4, 7}, {3, 6}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1288 WA
+    public int removeCoveredIntervals(int[][] intervals) {
+        int delete = 0;
+        RangeBit rbit = new RangeBit(100000);
+        Arrays.sort(intervals, Comparator.comparingInt(o -> -(o[1] - o[0])));
+        for (int[] i : intervals) {
+            System.err.println(i[0] + "," + i[1]);
+            long sum = rbit.sumRange(i[0], i[1] - 1);
+            System.err.println(sum);
+            if (sum == i[1] - i[0]) delete++;
+            else {
+                for (int j = i[0]; j < i[1]; j++) {
+                    rbit.set(j, 1);
+                }
+            }
+        }
+        return intervals.length - delete;
     }
 
     // LC1947 **
@@ -299,7 +326,7 @@ class Scratch {
                 bit.update(higer, -1);
                 bit.update(o, 1);
             }
-            result[i] = bit.sumRange(0, o);
+            result[i] = (int) bit.sumRange(0, o);
         }
         return result;
     }
@@ -754,9 +781,9 @@ class Scratch {
             bit.update(u[0], u[2]);
             bit.update(u[1] + 1, -u[2]);
         }
-        result[0] = bit.get(0);
+        result[0] = (int) bit.get(0);
         for (int i = 1; i < length; i++) {
-            result[i] = result[i - 1] + bit.get(i);
+            result[i] = result[i - 1] + (int) bit.get(i);
         }
         return result;
     }
@@ -2136,17 +2163,17 @@ class DisjointSetUnion<T> {
 }
 
 class BIT {
-    int[] tree;
+    long[] tree;
     int len;
 
     public BIT(int len) {
         this.len = len;
-        this.tree = new int[len + 1];
+        this.tree = new long[len + 1];
     }
 
     public BIT(int[] arr) {
         this.len = arr.length;
-        this.tree = new int[len + 1];
+        this.tree = new long[len + 1];
         for (int i = 0; i < arr.length; i++) {
             int oneBasedIdx = i + 1;
             tree[oneBasedIdx] += arr[i];
@@ -2155,31 +2182,31 @@ class BIT {
         }
     }
 
-    public void set(int idxZeroBased, int val) {
-        int delta = val - get(idxZeroBased);
+    public void set(int idxZeroBased, long val) {
+        long delta = val - get(idxZeroBased);
         update(idxZeroBased, delta);
     }
 
-    public int get(int idxZeroBased) {
+    public long get(int idxZeroBased) {
         return sumOneBased(idxZeroBased + 1) - sumOneBased(idxZeroBased);
     }
 
-    public void update(int idxZeroBased, int delta) {
+    public void update(int idxZeroBased, long delta) {
         updateOneBased(idxZeroBased + 1, delta);
     }
 
-    public int sumRange(int left, int right) {
+    public long sumRange(int left, int right) {
         return sumOneBased(right + 1) - sumOneBased(left);
     }
 
-    public void updateOneBased(int idxOneBased, int delta) {
+    public void updateOneBased(int idxOneBased, long delta) {
         while (idxOneBased <= len) {
             tree[idxOneBased] += delta;
             idxOneBased += lowbit(idxOneBased);
         }
     }
 
-    public int sumOneBased(int idxOneBased) {
+    public long sumOneBased(int idxOneBased) {
         int sum = 0;
         while (idxOneBased > 0) {
             sum += tree[idxOneBased];
@@ -2299,6 +2326,65 @@ class MaxHeap<E extends Comparable<E>> {
     private int parentIdx(int idx) {
         if (idx == 0) throw new IllegalArgumentException("Root node has no parent!");
         return (idx - 1) / 2;
+    }
+
+}
+
+class RangeBit {
+    BIT diff;
+    BIT iDiff;
+    int len;
+
+    public RangeBit(int len) {
+        diff = new BIT(len);
+        iDiff = new BIT(len);
+        this.len = len;
+    }
+
+    public RangeBit(int[] arr) {
+        this.len = arr.length;
+        diff = new BIT(len);
+        iDiff = new BIT(len);
+    }
+
+    public long get(int zeroBased) {
+        return sumRangeOneBased(zeroBased + 1) - sumRangeOneBased(zeroBased);
+    }
+
+    public void set(int idx, long val) {
+        update(idx, val - get(idx));
+    }
+
+    public void update(int idx, long delta) {
+        rangeUpdate(idx, idx, delta);
+    }
+
+    public void rangeUpdate(int left, int right, long delta) {
+        rangeUpdateOneBased(left + 1, right + 1, delta);
+    }
+
+    public long sumRange(int left, int right) {
+        return sumRangeOneBased(right + 1) - sumRangeOneBased(left);
+    }
+
+    private void rangeUpdateOneBased(int left, int right, long delta) {
+        updateOneBased(left, delta);
+        updateOneBased(right + 1, -delta);
+    }
+
+    private void updateOneBased(int idx, long delta) {
+        long iDelta = idx * delta;
+        diff.updateOneBased(idx, delta);
+        iDiff.updateOneBased(idx, iDelta);
+    }
+
+    private long sumRangeOneBased(int r) {
+        return (r + 1) * diff.sumOneBased(r) - iDiff.sumOneBased(r);
+    }
+
+
+    private int lowbit(int x) {
+        return x & (-x);
     }
 
 }
