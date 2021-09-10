@@ -19,6 +19,7 @@ class Scratch {
     }
 
     // LC1947 **
+    // Further reading: 二分图的最优匹配 带权二分图的最大匹配 KM算法(O(n^4))(可优化到O(n^3) 联动: 匈牙利算法
     public int maxCompatibilitySum(int[][] students, int[][] mentors) {
         int n = students.length, m = students[0].length; // n个人 m个问题
         int fullMask = (1 << m) - 1;
