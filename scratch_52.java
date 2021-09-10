@@ -18,6 +18,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1879 TLE
+    int[] n1, n2;
+    int min = Integer.MAX_VALUE;
+
+    public int minimumXORSum(int[] nums1, int[] nums2) {
+        n1 = nums1;
+        n2 = nums2;
+        int n = nums1.length;
+        int[] per = new int[n];
+        for (int i = 0; i < n; i++) per[i] = i;
+        permutation(per, 0);
+        return min;
+    }
+
+    private void permutation(int[] per, int cur) {
+        if (cur == per.length) {
+            int sum = 0;
+            for (int i = 0; i < per.length; i++) {
+                sum += n1[i] ^ n2[per[i]];
+            }
+            min = Math.min(min, sum);
+            return;
+        }
+        Set<Integer> s = new HashSet<>();
+        for (int i = cur; i < per.length; i++) {
+            if (s.contains(n2[per[i]])) continue;
+            s.add(n2[per[i]]);
+            int tmp = per[cur];
+            per[cur] = per[i];
+            per[i] = tmp;
+            permutation(per, cur + 1);
+            tmp = per[cur];
+            per[cur] = per[i];
+            per[i] = tmp;
+        }
+    }
+
     // LC1291
     public List<Integer> sequentialDigits(int low, int high) {
         int[] l = {12, 23, 34, 45, 56, 67, 78, 89, 123, 234, 345, 456, 567, 678, 789, 1234, 2345, 3456, 4567, 5678, 6789, 12345, 23456, 34567, 45678, 56789, 123456, 234567, 345678, 456789, 1234567, 2345678, 3456789, 12345678, 23456789, 123456789};
@@ -1396,7 +1433,7 @@ class Scratch {
     }
 
     // LC798 Hard ** 差分数组 学习分析方法
-    // https://leetcode-cn.com/problems/smallest-rotation-with-highest-score/solution/chai-fen-shu-zu-by-sssz-qdut/
+// https://leetcode-cn.com/problems/smallest-rotation-with-highest-score/solution/chai-fen-shu-zu-by-sssz-qdut/
     public int bestRotation(int[] nums) {
         // 数组向左平移轮转
         int n = nums.length;
