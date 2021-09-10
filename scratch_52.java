@@ -18,6 +18,36 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1894
+    public int chalkReplacer(int[] chalk, int k) {
+        int n = chalk.length, total = k;
+        long[] prefix = new long[n + 1];
+        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + chalk[i - 1];
+        long remain = total % prefix[n];
+        int lo = 1, hi = n;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (prefix[mid] > remain) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo - 1;
+
+        // or
+        // int lo = 0, hi = n;
+        // while (lo < hi) {
+        //     int mid = lo + (hi - lo + 1)/2;
+        //     if (prefix[mid] <= remain) {
+        //         lo = mid;
+        //     } else {
+        //         hi = mid - 1;
+        //     }
+        // }
+        // return lo;
+    }
+
     // LC337 树形DP
     public int rob(TreeNode root) {
         int[] result = lc337Helper(root);
