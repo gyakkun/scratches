@@ -5,7 +5,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.groupStrings(new String[]{"a", "a"}));
+        System.out.println(s.numberOfWeeks(new int[]{16,7,5,3}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -18,16 +18,10 @@ class Scratch {
         for (int i = 0; i < n; i++) pq.offer(i);
         int count = 0;
         while (!pq.isEmpty()) {
-            if (prevWeek == -1) {
-                int thisWeek = pq.poll();
-                milestones[thisWeek]--;
-                prevWeek = thisWeek;
-            } else {
-                int thisWeek = pq.poll();
-                milestones[thisWeek]--;
-                if (milestones[prevWeek] != 0) pq.offer(prevWeek);
-                prevWeek = thisWeek;
-            }
+            int thisWeek = pq.poll();
+            milestones[thisWeek]--;
+            if (prevWeek != -1 && milestones[prevWeek] != 0) pq.offer(prevWeek);
+            prevWeek = thisWeek;
             count++;
             // 检查
             // if (pq.isEmpty()) break;
