@@ -11,17 +11,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC898 **
+    // LC898 ** 看题解
+    // https://leetcode-cn.com/problems/bitwise-ors-of-subarrays/solution/zi-shu-zu-an-wei-huo-cao-zuo-by-leetcode/
     public int subarrayBitwiseORs(int[] arr) {
         Set<Integer> result = new HashSet<>();
         Set<Integer> cur = new HashSet<>();
-        cur.add(0);
         for (int i : arr) {
             Set<Integer> tmp = new HashSet<>();
-            for (int j : cur) {
+            for (int j : cur) { // 最多有32个数 (1的个数是递增的) ???
                 tmp.add(i | j);
             }
-            tmp.add(i);
+            tmp.add(i); // 记得加上自身(长度为1)
             cur = tmp;
             result.addAll(cur);
         }
