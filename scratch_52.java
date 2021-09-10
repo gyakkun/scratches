@@ -12,47 +12,27 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.removeInterval(new int[][]{{0, 2}, {3, 4}, {5, 7}}, new int[]{1, 6}));
-        System.out.println(s.sequentialDigits(100, 300));
+        System.out.println(s.minimumXORSum(new int[]{1, 0, 3}, new int[]{5, 3, 4}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1879 TLE
-    int[] n1, n2;
-    int min = Integer.MAX_VALUE;
-
+    // LC1879 Hard ** 状压DP
     public int minimumXORSum(int[] nums1, int[] nums2) {
-        n1 = nums1;
-        n2 = nums2;
         int n = nums1.length;
-        int[] per = new int[n];
-        for (int i = 0; i < n; i++) per[i] = i;
-        permutation(per, 0);
-        return min;
-    }
-
-    private void permutation(int[] per, int cur) {
-        if (cur == per.length) {
-            int sum = 0;
-            for (int i = 0; i < per.length; i++) {
-                sum += n1[i] ^ n2[per[i]];
+        int maxMask = 1 << n;
+        int[] dp = new int[maxMask]; // dp[mask]表示选了nums1前bitCount(mask)个值能够组成的异或最小和
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        for (int mask = 1; mask < maxMask; mask++) {
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 1) {
+                    dp[mask] = Math.min(dp[mask], dp[mask ^ (1 << i)] + (nums1[Integer.bitCount(mask) - 1] ^ nums2[i]));
+                }
             }
-            min = Math.min(min, sum);
-            return;
         }
-        Set<Integer> s = new HashSet<>();
-        for (int i = cur; i < per.length; i++) {
-            if (s.contains(n2[per[i]])) continue;
-            s.add(n2[per[i]]);
-            int tmp = per[cur];
-            per[cur] = per[i];
-            per[i] = tmp;
-            permutation(per, cur + 1);
-            tmp = per[cur];
-            per[cur] = per[i];
-            per[i] = tmp;
-        }
+        return dp[maxMask - 1];
     }
 
     // LC1291
