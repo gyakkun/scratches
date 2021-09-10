@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -9,6 +10,27 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC246
+    public boolean isStrobogrammatic(String num) {
+        int[] valid = {0, 1, 6, 8, 9};
+        int[] notValid = {2, 3, 4, 5, 7};
+        // List<Integer> validList = Arrays.stream(valid).boxed().collect(Collectors.toList());
+        // Set<Integer> validSet = new HashSet<>(validList);
+        char[] ca = num.toCharArray();
+        for (int i = 0; i <= ca.length / 2; i++) {
+            char c = ca[i];
+            for (int j : notValid) if (c - '0' == j) return false;
+            if (c == '6') {
+                if (ca[ca.length - 1 - i] != '9') return false;
+            } else if (c == '9') {
+                if (ca[ca.length - 1 - i] != '6') return false;
+            } else {
+                if (ca[ca.length - 1 - i] != c) return false;
+            }
+        }
+        return true;
     }
 
     // LC1953 Hint: 只和最大时间有关
