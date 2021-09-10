@@ -26,6 +26,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC520
+    public boolean detectCapitalUse(String word) {
+        char[] ca = word.toCharArray();
+        boolean isFirst = Character.isUpperCase(ca[0]);
+        int count = 0;
+        for (char c : ca) {
+            if (Character.isUpperCase(c)) count++;
+        }
+        if (count == 0) return true;
+        if (isFirst && count == 1) return true;
+        if (count == ca.length) return true;
+        return false;
+    }
+
     // LC1288
     public int removeCoveredIntervals(int[][] intervals) {
         int count = 0;
