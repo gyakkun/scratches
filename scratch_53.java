@@ -16,6 +16,10 @@ class Scratch {
         int count = 0;
         for (int i = low.length(); i <= high.length(); i++) {
             List<String> result = findStrobogrammatic(i);
+            if (i > low.length() && i < high.length()) {
+                count += result.size();
+                continue;
+            }
             for (String s : result) {
                 if (bigIntCompare(s, low) >= 0 && bigIntCompare(s, high) <= 0) {
                     count++;
@@ -63,6 +67,7 @@ class Scratch {
             return;
         }
         for (int i : validDigit) {
+            if (i == 0 && sb.length() == 0) continue;
             sb.append(i);
             lc247Helper(sb, total);
             sb.deleteCharAt(sb.length() - 1);
