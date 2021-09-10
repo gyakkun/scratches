@@ -28,24 +28,19 @@ class Scratch {
 
     // LC1288
     public int removeCoveredIntervals(int[][] intervals) {
-        int delete = 0;
+        int count = 0;
         // 根据开始下标比, 开始下标相同则根据长度比较, 长度更大的排前面, 即结束坐标更大的排前面
-        Arrays.sort(intervals, Comparator.comparingInt(o -> o[0] - o[1]));
-
-        for (int i = 0; i < intervals.length; i++) {
-            for (int j = 0; j < i; j++) {
-                int[] left = intervals[i][0] < intervals[j][0] ? intervals[i] : intervals[j];
-                int[] right = left == intervals[i] ? intervals[j] : intervals[i];
-                if (left[1] <= right[0]) continue; // 没有交集
-                int intersectLeft = right[0], intersectRight = Math.min(right[1], left[1]);
-                if (intersectLeft == intervals[i][0] && intersectRight == intervals[i][1]) {
-                    delete++;
-                    break;
-                }
+        Arrays.sort(intervals, (o1, o2) -> o1[0] != o2[0] ? o1[0] - o2[0] : o2[1] - o1[1]);
+        int prevEnd = -1;
+        for (int[] i : intervals) {
+            int end = i[1];
+            if (end > prevEnd) {
+                prevEnd = end;
+                count++;
             }
         }
 
-        return intervals.length - delete;
+        return count;
     }
 
     // LC1947 **
