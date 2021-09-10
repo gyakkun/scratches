@@ -12,10 +12,44 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.removeInterval(new int[][]{{0, 2}, {3, 4}, {5, 7}}, new int[]{1, 6}));
-        System.out.println(s.numDifferentIntegers("a1b01c001"));
+        System.out.println(s.sequentialDigits(100, 300));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1291
+    public List<Integer> sequentialDigits(int low, int high) {
+        int[] l = {12, 23, 34, 45, 56, 67, 78, 89, 123, 234, 345, 456, 567, 678, 789, 1234, 2345, 3456, 4567, 5678, 6789, 12345, 23456, 34567, 45678, 56789, 123456, 234567, 345678, 456789, 1234567, 2345678, 3456789, 12345678, 23456789, 123456789};
+        int lo = 0, hi = l.length - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (l[mid] <= high) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        int higherBound = lo;
+        if (l[lo] > high) higherBound = -1;
+        lo = 0;
+        hi = l.length - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (l[mid] >= low) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        int lowerBound = lo;
+        if (l[lo] < low) lowerBound = -1;
+        List<Integer> result = new ArrayList<>(higherBound - lowerBound + 1);
+        if (lowerBound == -1 || higherBound == -1) return result;
+        for (int i = lowerBound; i <= higherBound; i++) {
+            result.add(l[i]);
+        }
+        return result;
     }
 
     // LC1805
