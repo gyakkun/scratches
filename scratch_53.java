@@ -5,11 +5,12 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.strobogrammaticInRange("50", "100"));
+        System.out.println();
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
 
     // LC898 ** 看题解
     // https://leetcode-cn.com/problems/bitwise-ors-of-subarrays/solution/zi-shu-zu-an-wei-huo-cao-zuo-by-leetcode/
@@ -166,6 +167,40 @@ class Scratch {
                 }
                 result.add(list);
             }
+        }
+        return result;
+    }
+}
+
+// LC600 **
+class Lc600 {
+
+    static int[][] dp; // dp[i][j] 表示二进制中小于等于 不包括前缀零, 长度为i的数有多少个
+
+    static {
+        dp = new int[50][2];
+        dp[1][0] = 1;
+        dp[1][1] = 2;
+        for (int i = 1; i < 49; i++) {
+            dp[i + 1][0] = dp[i][1]; // 不能加dp[i][0], 否则会因为前导零有重复计算
+            dp[i + 1][1] = dp[i][1] + dp[i][0];
+        }
+    }
+
+    private int len(int n) {
+        return Integer.SIZE - Integer.numberOfLeadingZeros(n);
+    }
+
+    public int findIntegers(int n) {
+        if (n == 0) return 1;
+        int len = len(n);
+        int result = 0, prev = 0;
+        for (int i = len; i >= 1; i--) {
+            int cur = (n >> (i - 1)) & 1;
+            if (cur == 1) result += dp[i][0];
+            if (prev == 1 && cur == 1) break;
+            prev = cur;
+            if (i == 1) result += 1;
         }
         return result;
     }
