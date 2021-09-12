@@ -11,6 +11,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1955 ** DP
+    public int countSpecialSubsequences(int[] nums) {
+        int i0 = 0, i1 = 0, i2 = 0;
+        final int mod = 1000000007;
+        for (int i : nums) {
+            switch (i) {
+                case 0:
+                    i0 = ((i0 * 2) + 1) % mod;
+                    break;
+                case 1:
+                    i1 = (((i1 * 2) % mod) + i0) % mod;
+                    break;
+                case 2:
+                    i2 = (((i2 * 2) % mod) + i1) % mod;
+                    break;
+                default:
+                    continue;
+            }
+        }
+        return i2;
+    }
 
     // LC600 ** 数位DP
     public int findIntegers(int n) {
