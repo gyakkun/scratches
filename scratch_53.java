@@ -12,8 +12,72 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1580 O(nlog(n)) 写得太复杂了!
+    // LC1564
     public int maxBoxesInWarehouse(int[] boxes, int[] warehouse) {
+        Arrays.sort(boxes);
+        // Next Smaller Element 双向
+        int n = warehouse.length;
+        Deque<Integer> stack = new LinkedList<>();
+        int[] nseLeft = new int[n], nseRight = new int[n];
+        Arrays.fill(nseLeft, -1);
+        Arrays.fill(nseRight, -1);
+        for (int i = 0; i < warehouse.length; i++) {
+            while (!stack.isEmpty() && warehouse[stack.peek()] > warehouse[i]) {
+                nseLeft[stack.pop()] = i;
+            }
+            stack.push(i);
+        }
+        stack.clear();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && warehouse[stack.peek()] > warehouse[i]) {
+                nseRight[stack.pop()] = i;
+            }
+            stack.push(i);
+        }
+
+        // 找出从左出发的NSE 的第一个负数, 表名不会有比这个更小的元素
+        int leftLowestPoint = -1;
+        for (int i = 0; i < n; i++) {
+            if (nseLeft[i] == -1) {
+                leftLowestPoint = i;
+                break;
+            }
+        }
+
+        TreeMap<Integer, Integer> tmLeft = new TreeMap<>();
+        int ptr = 0;
+        while (ptr != leftLowestPoint) {
+            int nseIdx = nseLeft[ptr];
+            tmLeft.put(warehouse[ptr], nseIdx - ptr);
+            ptr = nseIdx;
+        }
+        // 因为从左边看, 在leftLowestPoint之后的点都大于等于该点的高度, 所以所有后面的点都可以视作推进小于等于该点高度的箱子
+        tmLeft.put(warehouse[leftLowestPoint], n - 1 - leftLowestPoint + 1);
+
+        int result = 0;
+        for (int i : boxes) {
+            // 计算哪一侧可以装入当前箱子, 以及哪一侧的可以装入箱子的仓库的容积和箱子的体积的差最小, 选可行的且较小的一侧推入箱子
+
+            // 左侧
+            Integer ceilingLeft = tmLeft.ceilingKey(i);
+            boolean leftAble = ceilingLeft != null;
+
+            if (!leftAble) break;
+
+            while (tmLeft.firstKey() < i) {
+                tmLeft.remove(tmLeft.firstKey());
+            }
+            tmLeft.put(tmLeft.firstKey(), tmLeft.get(tmLeft.firstKey()) - 1);
+            if (tmLeft.get(tmLeft.firstKey()) == 0) tmLeft.remove(tmLeft.firstKey());
+            result++;
+
+        }
+
+        return result;
+    }
+
+    // LC1580 O(nlog(n)) 写得太复杂了!
+    public int maxBoxesInWarehouseII(int[] boxes, int[] warehouse) {
         Arrays.sort(boxes);
         // Next Smaller Element 双向
         int n = warehouse.length;
