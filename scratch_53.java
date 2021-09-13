@@ -1,5 +1,3 @@
-import org.springframework.boot.actuate.mail.MailHealthIndicator;
-
 import java.util.*;
 import java.util.function.Function;
 
@@ -8,10 +6,46 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.validSubarrays(new int[]{1, 4, 2, 5, 3}));
+        System.out.println(s.minCut("fiefhgdcdcgfeibggchibffahiededbbegegdfibdbfdadfbdbceaadeceeefiheibahgececggaehbdcgebaigfacifhdbecbebfhiefchaaheiichgdbheacfbhfiaffaecicbegdgeiaiccghggdfggbebdaefcagihbdhhigdgbghbahhhdagbdaefeccfiaifffcfehfcdiiieibadcedibbedgfegibefagfccahfcbegdfdhhdgfhgbchiaieehdgdabhidhfeecgfiibediiafacagigbhchcdhbaigdcedggehhgdhedaebchcafcdehcffdiagcafcgiidhdhedgaaegdchibhdaegdfdaiiidcihifbfidechicighbcbgibadbabieaafgeagfhebfaheaeeibagdfhadifafghbfihehgcgggffgbfccgafigieadfehieafaehaggeeaaaehggffccddchibegfhdfafhadgeieggiigacbfgcagigbhbhefcadafhafdiegahbhccidbeeagcgebehheebfaechceefdiafgeddhdfcadfdafbhiifigcbddahbabbeedidhaieagheihhgffbfbiacgdaifbedaegbhigghfeiahcdieghhdabdggfcgbafgibiifdeefcbegcfcdihaeacihgdchihdadifeifdgecbchgdgdcifedacfddhhbcagaicbebbiadgbddcbagbafeadhddaeebdgdebafabghcabdhdgieiahggddigefddccfccibifgbfcdccghgceigdfdbghdihechfabhbacifgbiiiihcgifhdbhfcaiefhccibebcahidachfabicbdabibiachahggffiibbgchbidfbbhfcicfafgcagaaadbacddfiigdiiffhbbehaaacidggfbhgeaghigihggfcdcidbfccahhgaffiibbhidhdacacdfebedbiacaidaachegffaiiegeabfdgdcgdacfcfhdcbfiaaifgfaciacfghagceaaebhhibbieehhcbiggabefbeigcbhbcidbfhfcgdddgdffghidbbbfbdhcgabaagddcebaechbbiegeiggbabdhgghciheabdibefdfghbfbfebidhicdhbeghebeddgfdfhefebiiebdchifbcbahaddhbfafbbcebiigadhgcfbebgbebhfddgdeehhgdegaeedfadegfeihcgeefbbagbbacbgggciehdhiggcgaaicceeaefgcehfhfdciaghcbbgdihbhecfbgffefhgiefgeiggcebgaacefidghdfdhiabgibchdicdehahbibeddegfciaeaffgbefbbeihbafbagagedgbdadfdggfeaebaidchgdbcifhahgfdcehbahhdggcdggceiabhhafghegfdiegbcadgaecdcdddfhicabdfhbdiiceiegiedecdifhbhhfhgdbhibbdgafhgdcheefdhifgddchadbdggiidhbhegbdfdidhhfbehibiaacdfbiagcbheabaaebfeaeafbgigiefeaeheabifgcfibiddadicheahgbfhbhddaheghddceedigddhchecaghdegigbegcbfgbggdgbbigegffhcfcbbebdchffhddbfhhfgegggibhafiebcfgeaeehgdgbccbfghagfdbdfcbcigbigaccecfehcffahiafgabfcaefbghccieehhhiighcfeabffggfchfdgcfhadgidabdceediefdccceidcfbfiiaidechhbhdccccaigeegcaicabbifigcghcefaafaefd"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF II 094 LC132 TLE
+    public int minCut(String s) {
+        char[] ca = s.toCharArray();
+        int n = ca.length;
+        // 判定数组
+        boolean[][] judge = new boolean[n][n];
+        for (int i = 0; i < n; i++) {
+            judge[i][i] = true;
+        }
+        for (int len = 1; len <= n; len++) {
+            for (int left = 0; left < n; left++) {
+                if (left + len >= n) break;
+                if (ca[left] == ca[left + len]) {
+                    if (len == 1) judge[left][left + len] = true;
+                    else {
+                        judge[left][left + len] = judge[left + 1][left + len - 1];
+                    }
+                }
+            }
+        }
+        Integer[][] memo = new Integer[n][n];
+
+        return helper(judge, 0, n - 1, memo);
+    }
+
+    private int helper(boolean[][] judge, int start, int end, Integer[][] memo) {
+        if (judge[start][end] == true) return 0;
+        if (memo[start][end] != null) return memo[start][end];
+        // 切割
+        int result = Integer.MAX_VALUE;
+        for (int i = start; i < end; i++) {
+            result = Math.min(result, 1 + helper(judge, start, i, memo) + helper(judge, i + 1, end, memo));
+        }
+        return memo[start][end] = result;
     }
 
     // LC695 JZOF II 105
@@ -28,7 +62,7 @@ class Scratch {
                     for (int[] dir : directions) {
                         int nr = i + dir[0], nc = j + dir[1];
                         int next = nr * n + nc;
-                        if (check.apply(new int[]{nr, nc})&&grid[nr][nc]==1) {
+                        if (check.apply(new int[]{nr, nc}) && grid[nr][nc] == 1) {
                             dsu.add(next);
                             dsu.merge(cur, next);
                         }
