@@ -34,13 +34,7 @@ class Scratch {
                 return;
             }
             for (char c : valid) {
-                if (cur.length() > 0) {
-                    if (cur.charAt(cur.length() - 1) != c) {
-                        cur.append(c);
-                        backtrack(cur);
-                        cur.deleteCharAt(cur.length() - 1);
-                    }
-                } else {
+                if ((cur.length() > 0 && cur.charAt(cur.length() - 1) != c) || cur.length() == 0) {
                     cur.append(c);
                     backtrack(cur);
                     cur.deleteCharAt(cur.length() - 1);
