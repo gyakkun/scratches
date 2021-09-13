@@ -5,10 +5,48 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findIntegers(1023));
+        System.out.println(s.getHappyString(1, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1415
+    class Lc1415 {
+        int kth = 0;
+        int targetTh, len;
+        String result;
+        char[] valid = {'a', 'b', 'c'};
+
+        public String getHappyString(int n, int k) {
+            targetTh = k;
+            len = n;
+            backtrack(new StringBuilder());
+            if (result == null) return "";
+            return result;
+        }
+
+        private void backtrack(StringBuilder cur) {
+            if (cur.length() == len) {
+                if (++kth == targetTh) {
+                    result = cur.toString();
+                }
+                return;
+            }
+            for (char c : valid) {
+                if (cur.length() > 0) {
+                    if (cur.charAt(cur.length() - 1) != c) {
+                        cur.append(c);
+                        backtrack(cur);
+                        cur.deleteCharAt(cur.length() - 1);
+                    }
+                } else {
+                    cur.append(c);
+                    backtrack(cur);
+                    cur.deleteCharAt(cur.length() - 1);
+                }
+            }
+        }
     }
 
     // LC536
