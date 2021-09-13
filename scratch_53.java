@@ -32,9 +32,20 @@ class Scratch {
                 }
             }
         }
-        Integer[][] memo = new Integer[n][n];
 
-        return helper(judge, 0, n - 1, memo);
+        int[] dp = new int[n];
+        Arrays.fill(dp, n - 1);
+        for (int i = 0; i < n; i++) {
+            if(judge[0][i]) dp[i] = 0;
+            else {
+                for (int j = 0; j < i; j++) {
+                    if(judge[j+1][i]){
+                        dp[i] = Math.min(dp[i], 1 + dp[j]);
+                    }
+                }
+            }
+        }
+        return dp[n - 1];
     }
 
     private int helper(boolean[][] judge, int start, int end, Integer[][] memo) {
