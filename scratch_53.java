@@ -12,7 +12,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // JZOF II 094 LC132 TLE
+    // JZOF II 094 LC132
     public int minCut(String s) {
         char[] ca = s.toCharArray();
         int n = ca.length;
@@ -36,27 +36,31 @@ class Scratch {
         int[] dp = new int[n];
         Arrays.fill(dp, n - 1);
         for (int i = 0; i < n; i++) {
-            if(judge[0][i]) dp[i] = 0;
+            if (judge[0][i]) dp[i] = 0;
             else {
                 for (int j = 0; j < i; j++) {
-                    if(judge[j+1][i]){
+                    if (judge[j + 1][i]) {
                         dp[i] = Math.min(dp[i], 1 + dp[j]);
                     }
                 }
             }
         }
-        return dp[n - 1];
+        Integer[] memo = new Integer[n];
+
+        return lc132Helper(judge, n - 1, memo);
     }
 
-    private int helper(boolean[][] judge, int start, int end, Integer[][] memo) {
-        if (judge[start][end] == true) return 0;
-        if (memo[start][end] != null) return memo[start][end];
+    private int lc132Helper(boolean[][] judge, int end, Integer[] memo) {
+        if (judge[0][end] == true) return 0;
+        if (memo[end] != null) return memo[end];
         // 切割
-        int result = Integer.MAX_VALUE;
-        for (int i = start; i < end; i++) {
-            result = Math.min(result, 1 + helper(judge, start, i, memo) + helper(judge, i + 1, end, memo));
+        int result = judge.length - 1;
+        for (int i = 0; i < end; i++) {
+            if (judge[i + 1][end]) {
+                result = Math.min(result, 1 + lc132Helper(judge, i, memo));
+            }
         }
-        return memo[start][end] = result;
+        return memo[end] = result;
     }
 
     // LC695 JZOF II 105
