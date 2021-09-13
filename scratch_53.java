@@ -1,3 +1,4 @@
+
 import java.util.*;
 
 class Scratch {
@@ -5,13 +6,63 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxBoxesInWarehouseII(
-                new int[]{3, 5, 5, 2},
-                new int[]{2, 1, 3, 4, 5}
+        System.out.println(s.deleteTreeNodes(7,
+                new int[]{-1, 0, 0, 1, 2, 2, 2},
+                new int[]{1, -2, 4, 0, -2, -1, -1}
         ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1273
+    Map<Integer, Integer> lc1273ParentMap;
+    Map<Integer, Set<Integer>> lc1273ChildrenMap;
+    Integer[] lc1273SubTreeSum;
+    int[] lc1273Value;
+
+    public int deleteTreeNodes(int nodes, int[] parent, int[] value) {
+        lc1273ParentMap = new HashMap<>();
+        lc1273ChildrenMap = new HashMap<>();
+        this.lc1273Value = value;
+        lc1273SubTreeSum = new Integer[nodes];
+        for (int i = 0; i < nodes; i++) {
+            lc1273ParentMap.put(i, parent[i]);
+            lc1273ChildrenMap.putIfAbsent(i, new HashSet<>());
+            lc1273ChildrenMap.putIfAbsent(parent[i], new HashSet<>());
+            lc1273ChildrenMap.get(parent[i]).add(i);
+        }
+        lc1273Helper(lc1273ChildrenMap.get(-1).iterator().next());
+        Deque<Integer> toRemove = new LinkedList<>();
+        for (int i = 0; i < nodes; i++) {
+            if (lc1273SubTreeSum[i] == 0) {
+                toRemove.offer(i);
+            }
+        }
+        while (!toRemove.isEmpty()) {
+            int n = toRemove.poll();
+            if (lc1273ChildrenMap.containsKey(n)) {
+                for (int child : lc1273ChildrenMap.get(n)) {
+                    toRemove.offer(child);
+                }
+            }
+            lc1273ChildrenMap.remove(n);
+            if (lc1273ChildrenMap.containsKey(lc1273ParentMap.get(n))) lc1273ChildrenMap.get(lc1273ParentMap.get(n)).remove(n);
+        }
+        int result = 0;
+        for (Set<Integer> s : lc1273ChildrenMap.values()) {
+            result += s.size();
+        }
+        return result;
+    }
+
+    private int lc1273Helper(int idx) {
+        if (lc1273SubTreeSum[idx] != null) return lc1273SubTreeSum[idx];
+        lc1273SubTreeSum[idx] = lc1273Value[idx];
+        for (int child : lc1273ChildrenMap.get(idx)) {
+            lc1273SubTreeSum[idx] += lc1273Helper(child);
+        }
+        return lc1273SubTreeSum[idx];
     }
 
     // LC1779
