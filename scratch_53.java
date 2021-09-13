@@ -1,4 +1,5 @@
 
+import javax.swing.plaf.TreeUI;
 import java.util.*;
 
 class Scratch {
@@ -6,13 +7,71 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.deleteTreeNodes(7,
-                new int[]{-1, 0, 0, 1, 2, 2, 2},
-                new int[]{1, -2, 4, 0, -2, -1, -1}
+        System.out.println(s.hasPath(
+                new int[][]{{0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 1, 0}, {1, 1, 0, 1, 1}, {0, 0, 0, 0, 0}},
+                new int[]{0, 4},
+                new int[]{4, 4}
         ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC490
+    public boolean hasPath(int[][] maze, int[] start, int[] destination) {
+        int m = maze.length, n = maze[0].length;
+        boolean[][] visited = new boolean[m][n];
+        Deque<int[]> q = new LinkedList<>();
+        q.offer(start);
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            if (visited[p[0]][p[1]]) continue;
+            visited[p[0]][p[1]] = true;
+            if (p[0] == destination[0] && p[1] == destination[1]) return true;
+
+            // 上下左右 边缘都是墙壁
+
+            // 上
+            int upWallIdx = 0;
+            for (int i = p[0]; i >= 0; i--) {
+                if (maze[i][p[1]] == 1) {
+                    upWallIdx = i + 1;
+                    break;
+                }
+            }
+            q.offer(new int[]{upWallIdx, p[1]});
+
+            // 下
+            int downWallIdx = m - 1;
+            for (int i = p[0]; i < m; i++) {
+                if (maze[i][p[1]] == 1) {
+                    downWallIdx = i - 1;
+                    break;
+                }
+            }
+            q.offer(new int[]{downWallIdx, p[1]});
+
+            // 左
+            int leftWallIdx = 0;
+            for (int i = p[1]; i >= 0; i--) {
+                if (maze[p[0]][i] == 1) {
+                    leftWallIdx = i + 1;
+                    break;
+                }
+            }
+            q.offer(new int[]{p[0], leftWallIdx});
+
+
+            int rightWallIdx = n - 1;
+            for (int i = p[1]; i < n; i++) {
+                if (maze[p[0]][i] == 1) {
+                    rightWallIdx = i - 1;
+                    break;
+                }
+            }
+            q.offer(new int[]{p[0], rightWallIdx});
+        }
+        return false;
     }
 
     // LC1273
@@ -47,7 +106,8 @@ class Scratch {
                 }
             }
             lc1273ChildrenMap.remove(n);
-            if (lc1273ChildrenMap.containsKey(lc1273ParentMap.get(n))) lc1273ChildrenMap.get(lc1273ParentMap.get(n)).remove(n);
+            if (lc1273ChildrenMap.containsKey(lc1273ParentMap.get(n)))
+                lc1273ChildrenMap.get(lc1273ParentMap.get(n)).remove(n);
         }
         int result = 0;
         for (Set<Integer> s : lc1273ChildrenMap.values()) {
