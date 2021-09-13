@@ -5,11 +5,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.getHappyString(1, 3));
+        System.out.println();
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1283 二分
+    public int smallestDivisor(int[] nums, int threshold) {
+        int lo = 1, hi = Integer.MAX_VALUE;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (sumDivide(nums, mid) <= threshold) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+    }
+
+    private int sumDivide(int[] nums, int divider) {
+        int result = 0;
+        for (int i : nums) result += divideUpper(i, divider);
+        return result;
+    }
+
+    private int divideUpper(int a, int b) {
+        if (b == 0) throw new ArithmeticException("Zero divider!");
+        if (a == 0) return 0;
+        if (a % b == 0) return a / b;
+        return a / b + 1;
+    }
+
 
     // LC1415
     class Lc1415 {
