@@ -1,4 +1,3 @@
-import javax.swing.text.html.HTMLDocument;
 import java.util.*;
 
 class Scratch {
@@ -13,6 +12,22 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1779
+    public int nearestValidPoint(int x, int y, int[][] points) {
+        int minIdx = -1, minDistance = Integer.MAX_VALUE;
+        for (int i = 0; i < points.length; i++) {
+            int[] p = points[i];
+            if (p[0] == x || p[1] == y) {
+                int dis = Math.abs(p[0] - x) + Math.abs(p[1] - y);
+                if (dis < minDistance) {
+                    minIdx = i;
+                    minDistance = dis;
+                }
+            }
+        }
+        return minIdx;
     }
 
     // LC1564
