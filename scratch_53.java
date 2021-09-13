@@ -6,7 +6,11 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxBoxesInWarehouse(new int[]{9, 8, 8, 10, 20, 7, 7, 5, 6, 4, 3, 1}, new int[]{5, 5, 4, 5, 3, 2, 1, 1, 2, 5, 3, 6}));
+        System.out.println(s.maxBoxesInWarehouse(
+
+                new int[]{31, 28, 1, 22, 28, 22, 26, 26, 16, 24, 36, 31, 21, 9, 3, 12, 4, 1, 13},
+                new int[]{12, 1, 14, 37, 34, 25, 4, 13, 7, 37, 22, 21, 20, 29}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -17,54 +21,20 @@ class Scratch {
         Arrays.sort(boxes);
         // Next Smaller Element
         int n = warehouse.length;
-        Deque<Integer> stack = new LinkedList<>();
-        int[] nseLeft = new int[n];
-        Arrays.fill(nseLeft, -1);
-        for (int i = 0; i < warehouse.length; i++) {
-            while (!stack.isEmpty() && warehouse[stack.peek()] > warehouse[i]) {
-                nseLeft[stack.pop()] = i;
-            }
-            stack.push(i);
-        }
-
-        // 找出从左出发的NSE 的第一个负数, 说明不会有比这个更小的元素
-        int leftLowestPoint = -1;
+        int min = warehouse[0];
         for (int i = 0; i < n; i++) {
-            if (nseLeft[i] == -1) {
-                leftLowestPoint = i;
-                break;
+            if (warehouse[i] >= min) {
+                warehouse[i] = min;
+            } else {
+                min = warehouse[i];
             }
         }
-
-        TreeMap<Integer, Integer> tmLeft = new TreeMap<>();
-        int ptr = 0;
-        while (ptr != leftLowestPoint) {
-            int nseIdx = nseLeft[ptr];
-            tmLeft.put(warehouse[ptr], nseIdx - ptr);
-            ptr = nseIdx;
+        int ptr = n - 1, result = 0;
+        for (int i = 0; i < boxes.length; i++) {
+            if (ptr < 0) break;
+            while (ptr >= 0 && warehouse[ptr] < boxes[i]) ptr--;
+            if (ptr-- >= 0) result++;
         }
-        // 因为从左边看, 在leftLowestPoint之后的点都大于等于该点的高度, 所以所有后面的点都可以视作推进小于等于该高度的箱子
-        tmLeft.put(warehouse[leftLowestPoint], n - 1 - leftLowestPoint + 1);
-
-        int result = 0;
-        for (int i : boxes) {
-            // 计算哪一侧可以装入当前箱子, 以及哪一侧的可以装入箱子的仓库的容积和箱子的体积的差最小, 选可行的且较小的一侧推入箱子
-
-            // 左侧
-            Integer ceilingLeft = tmLeft.ceilingKey(i);
-            boolean leftAble = ceilingLeft != null;
-
-            if (!leftAble) break;
-
-            while (tmLeft.firstKey() < i) {
-                tmLeft.remove(tmLeft.firstKey());
-            }
-            tmLeft.put(tmLeft.firstKey(), tmLeft.get(tmLeft.firstKey()) - 1);
-            if (tmLeft.get(tmLeft.firstKey()) == 0) tmLeft.remove(tmLeft.firstKey());
-            result++;
-
-        }
-
         return result;
     }
 
