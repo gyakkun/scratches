@@ -15,27 +15,19 @@ class Scratch {
     // LC1564
     public int maxBoxesInWarehouse(int[] boxes, int[] warehouse) {
         Arrays.sort(boxes);
-        // Next Smaller Element 双向
+        // Next Smaller Element
         int n = warehouse.length;
         Deque<Integer> stack = new LinkedList<>();
-        int[] nseLeft = new int[n], nseRight = new int[n];
+        int[] nseLeft = new int[n];
         Arrays.fill(nseLeft, -1);
-        Arrays.fill(nseRight, -1);
         for (int i = 0; i < warehouse.length; i++) {
             while (!stack.isEmpty() && warehouse[stack.peek()] > warehouse[i]) {
                 nseLeft[stack.pop()] = i;
             }
             stack.push(i);
         }
-        stack.clear();
-        for (int i = n - 1; i >= 0; i--) {
-            while (!stack.isEmpty() && warehouse[stack.peek()] > warehouse[i]) {
-                nseRight[stack.pop()] = i;
-            }
-            stack.push(i);
-        }
 
-        // 找出从左出发的NSE 的第一个负数, 表名不会有比这个更小的元素
+        // 找出从左出发的NSE 的第一个负数, 说明不会有比这个更小的元素
         int leftLowestPoint = -1;
         for (int i = 0; i < n; i++) {
             if (nseLeft[i] == -1) {
@@ -51,7 +43,7 @@ class Scratch {
             tmLeft.put(warehouse[ptr], nseIdx - ptr);
             ptr = nseIdx;
         }
-        // 因为从左边看, 在leftLowestPoint之后的点都大于等于该点的高度, 所以所有后面的点都可以视作推进小于等于该点高度的箱子
+        // 因为从左边看, 在leftLowestPoint之后的点都大于等于该点的高度, 所以所有后面的点都可以视作推进小于等于该高度的箱子
         tmLeft.put(warehouse[leftLowestPoint], n - 1 - leftLowestPoint + 1);
 
         int result = 0;
