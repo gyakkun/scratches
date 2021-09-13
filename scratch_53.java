@@ -1,5 +1,3 @@
-
-import javax.swing.plaf.TreeUI;
 import java.util.*;
 
 class Scratch {
@@ -7,14 +5,34 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.hasPath(
-                new int[][]{{0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 1, 0}, {1, 1, 0, 1, 1}, {0, 0, 0, 0, 0}},
-                new int[]{0, 4},
-                new int[]{4, 4}
-        ));
+        System.out.println(s.validSubarrays(new int[]{1, 4, 2, 5, 3}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1063 Hard
+    public int validSubarrays(int[] nums) {
+        // NSE
+        int n = nums.length;
+        int[] nse = new int[n];
+        Arrays.fill(nse, -1);
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) {
+                nse[stack.pop()] = i;
+            }
+            stack.push(i);
+        }
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            if (nse[i] == -1) {
+                result += n - i;
+            } else {
+                result += nse[i] - i;
+            }
+        }
+        return result;
     }
 
     // LC490
