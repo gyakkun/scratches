@@ -6,10 +6,9 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxBoxesInWarehouse(
-
-                new int[]{31, 28, 1, 22, 28, 22, 26, 26, 16, 24, 36, 31, 21, 9, 3, 12, 4, 1, 13},
-                new int[]{12, 1, 14, 37, 34, 25, 4, 13, 7, 37, 22, 21, 20, 29}
+        System.out.println(s.maxBoxesInWarehouseII(
+                new int[]{3, 5, 5, 2},
+                new int[]{2, 1, 3, 4, 5}
         ));
 
         timing = System.currentTimeMillis() - timing;
@@ -38,103 +37,74 @@ class Scratch {
         return result;
     }
 
-    // LC1580 O(nlog(n)) 写得太复杂了!
+    // LC1580 O(nlog(n))
     public int maxBoxesInWarehouseII(int[] boxes, int[] warehouse) {
         Arrays.sort(boxes);
-        // Next Smaller Element 双向
         int n = warehouse.length;
-        Deque<Integer> stack = new LinkedList<>();
-        int[] nseLeft = new int[n], nseRight = new int[n];
-        Arrays.fill(nseLeft, -1);
-        Arrays.fill(nseRight, -1);
-        for (int i = 0; i < warehouse.length; i++) {
-            while (!stack.isEmpty() && warehouse[stack.peek()] > warehouse[i]) {
-                nseLeft[stack.pop()] = i;
-            }
-            stack.push(i);
-        }
-        stack.clear();
-        for (int i = n - 1; i >= 0; i--) {
-            while (!stack.isEmpty() && warehouse[stack.peek()] > warehouse[i]) {
-                nseRight[stack.pop()] = i;
-            }
-            stack.push(i);
-        }
-
-        // 找出从左出发的NSE 的第一个负数, 表名不会有比这个更小的元素
-        int leftLowestPoint = -1;
+        int min = Arrays.stream(warehouse).min().getAsInt();
+        int leftMost = -1, rightMost = -1;
+        int curMin = warehouse[0];
         for (int i = 0; i < n; i++) {
-            if (nseLeft[i] == -1) {
-                leftLowestPoint = i;
+            if (warehouse[i] != min) {
+                if (warehouse[i] >= curMin) {
+                    warehouse[i] = curMin;
+                } else {
+                    curMin = warehouse[i];
+                }
+            } else {
+                leftMost = i;
                 break;
             }
         }
 
-        int rightLowestPoint = n;
+        curMin = warehouse[n - 1];
         for (int i = n - 1; i >= 0; i--) {
-            if (nseRight[i] == -1) {
-                rightLowestPoint = i;
+            if (warehouse[i] != min) {
+                if (warehouse[i] >= curMin) {
+                    warehouse[i] = curMin;
+                } else {
+                    curMin = warehouse[i];
+                }
+            } else {
+                rightMost = i;
                 break;
             }
         }
 
-        TreeMap<Integer, Integer> tmLeft = new TreeMap<>();
-        int ptr = 0;
-        while (ptr != leftLowestPoint) {
-            int nseIdx = nseLeft[ptr];
-            tmLeft.put(warehouse[ptr], nseIdx - ptr);
-            ptr = nseIdx;
-        }
-        // 将两个lowestPoint之间的间隙也归入tmLeft
-        tmLeft.put(warehouse[leftLowestPoint], rightLowestPoint - leftLowestPoint + 1);
-
-        TreeMap<Integer, Integer> tmRight = new TreeMap<>();
-        ptr = n - 1;
-
-        while (ptr != rightLowestPoint) {
-            int nseIdx = nseRight[ptr];
-            tmRight.put(warehouse[ptr], ptr - nseIdx);
-            ptr = nseIdx;
+        for (int i = leftMost; i < rightMost; i++) {
+            warehouse[i] = min;
         }
 
+        int leftPtr = rightMost, rightPtr = rightMost + 1;
         int result = 0;
-        for (int i : boxes) {
-            // 计算哪一侧可以装入当前箱子, 以及哪一侧的可以装入箱子的仓库的容积和箱子的体积的差最小, 选可行的且较小的一侧推入箱子
 
-            // 左侧
-            Integer ceilingLeft = tmLeft.ceilingKey(i);
-            boolean leftAble = ceilingLeft != null;
+        for (int i = 0; i < boxes.length; i++) {
+            if (leftPtr < 0 && rightPtr >= n) break;
+
+            // 比较左右两边哪一侧的格子的绝对值差最小
+
+            int shadowLeftPtr = leftPtr, shadowRightPtr = rightPtr;
+
+            while (shadowLeftPtr >= 0 && warehouse[shadowLeftPtr] < boxes[i]) shadowLeftPtr--;
+            while (shadowRightPtr < n && warehouse[shadowRightPtr] < boxes[i]) shadowRightPtr++;
+
             int leftDistance = -1;
-            if (leftAble) leftDistance = ceilingLeft - i;
-
-            // 右侧
-            Integer ceilingRight = tmRight.ceilingKey(i);
-            boolean rightAble = ceilingRight != null;
+            if (shadowLeftPtr >= 0) leftDistance = warehouse[shadowLeftPtr] - boxes[i];
             int rightDistance = -1;
-            if (rightAble) rightDistance = ceilingRight - i;
+            if (shadowRightPtr < n) rightDistance = warehouse[shadowRightPtr] - boxes[i];
 
-            if (!leftAble && !rightAble) {
-                break;
-            }
-            if ((leftAble && !rightAble) || (leftAble && rightAble && leftDistance <= rightDistance)) {
-                while (tmLeft.firstKey() < i) {
-                    tmLeft.remove(tmLeft.firstKey());
-                }
-                tmLeft.put(tmLeft.firstKey(), tmLeft.get(tmLeft.firstKey()) - 1);
-                if (tmLeft.get(tmLeft.firstKey()) == 0) tmLeft.remove(tmLeft.firstKey());
+            if (leftDistance == -1 && rightDistance == -1) break;
+            if ((leftDistance == -1 && rightDistance != -1) || (leftDistance != -1 && rightDistance != -1 && leftDistance > rightDistance)) {
+                rightPtr = ++shadowRightPtr;
                 result++;
-            } else if ((!leftAble && rightAble) || (leftAble && rightAble && leftDistance > rightDistance)) {
-                while (tmRight.firstKey() < i) {
-                    tmRight.remove(tmRight.firstKey());
-                }
-                tmRight.put(tmRight.firstKey(), tmRight.get(tmRight.firstKey()) - 1);
-                if (tmRight.get(tmRight.firstKey()) == 0) tmRight.remove(tmRight.firstKey());
+            } else if ((leftDistance != -1 && rightDistance == -1) || (leftDistance != -1 && rightDistance != -1 && leftDistance <= rightDistance)) {
+                leftPtr = --shadowLeftPtr;
                 result++;
             }
+
         }
-
-
         return result;
+
     }
 
     // LC1283 二分
