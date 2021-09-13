@@ -381,3 +381,49 @@ class TreeNode {
         this.right = right;
     }
 }
+
+// JZOF II 30 LC380
+class RandomizedSet {
+
+    Map<Integer, Integer> idxMap = new HashMap<>();
+    List<Integer> entities = new ArrayList<>();
+
+    /**
+     * Initialize your data structure here.
+     */
+    public RandomizedSet() {
+
+    }
+
+    /**
+     * Inserts a value to the set. Returns true if the set did not already contain the specified element.
+     */
+    public boolean insert(int val) {
+        if (idxMap.containsKey(val)) return false;
+        idxMap.put(val, entities.size());
+        entities.add(val);
+        return true;
+    }
+
+    /**
+     * Removes a value from the set. Returns true if the set contained the specified element.
+     */
+    public boolean remove(int val) {
+        if (!idxMap.containsKey(val)) return false;
+        int lastEntity = entities.get(entities.size() - 1);
+        int targetIdx = idxMap.get(val);
+        entities.set(targetIdx, lastEntity);
+        idxMap.put(lastEntity, targetIdx);
+        idxMap.remove(val);
+        entities.remove(entities.size() - 1);
+        return true;
+    }
+
+    /**
+     * Get a random element from the set.
+     */
+    public int getRandom() {
+        int idx = (int) (Math.random() * entities.size());
+        return entities.get(idx);
+    }
+}
