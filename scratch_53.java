@@ -1,4 +1,7 @@
+import org.springframework.boot.actuate.mail.MailHealthIndicator;
+
 import java.util.*;
+import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
@@ -9,6 +12,36 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC695 JZOF II 105
+    public int maxAreaOfIsland(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        Function<int[], Boolean> check = i -> i[0] >= 0 && i[0] < m && i[1] >= 0 && i[1] < n;
+        DisjointSetUnion<Integer> dsu = new DisjointSetUnion<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int cur = i * n + j;
+                    dsu.add(cur);
+                    for (int[] dir : directions) {
+                        int nr = i + dir[0], nc = j + dir[1];
+                        int next = nr * n + nc;
+                        if (check.apply(new int[]{nr, nc})&&grid[nr][nc]==1) {
+                            dsu.add(next);
+                            dsu.merge(cur, next);
+                        }
+                    }
+                }
+            }
+        }
+        Map<Integer, Set<Integer>> allGroups = dsu.getAllGroups();
+        int maxGroupSize = 0;
+        for (Set<Integer> s : allGroups.values()) {
+            maxGroupSize = Math.max(maxGroupSize, s.size());
+        }
+        return maxGroupSize;
     }
 
     // LC1063 Hard
@@ -666,4 +699,87 @@ class RandomizedSet {
         int idx = (int) (Math.random() * entities.size());
         return entities.get(idx);
     }
+}
+
+class DisjointSetUnion<T> {
+
+    Map<T, T> father;
+    Map<T, Integer> rank;
+
+    public DisjointSetUnion() {
+        father = new HashMap<>();
+        rank = new HashMap<>();
+    }
+
+    public void add(T i) {
+        if (!father.containsKey(i)) {
+            // 置初始父亲为自身
+            // 之后判断连通分量个数时候, 遍历father, 找value==key的
+            father.put(i, i);
+        }
+        if (!rank.containsKey(i)) {
+            rank.put(i, 1);
+        }
+    }
+
+    // 找父亲, 路径压缩
+    public T find(T i) {
+        //先找到根 再压缩
+        T root = i;
+        while (father.get(root) != root) {
+            root = father.get(root);
+        }
+        // 找到根, 开始对一路上的子节点进行路径压缩
+        while (father.get(i) != root) {
+            T origFather = father.get(i);
+            father.put(i, root);
+            // 更新秩, 按照节点数
+            rank.put(root, rank.get(root) + 1);
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(T i, T j) {
+        T iFather = find(i);
+        T jFather = find(j);
+        if (iFather == jFather) return false;
+        // 按秩合并
+        if (rank.get(iFather) >= rank.get(jFather)) {
+            father.put(jFather, iFather);
+            rank.put(iFather, rank.get(jFather) + rank.get(iFather));
+        } else {
+            father.put(iFather, jFather);
+            rank.put(jFather, rank.get(jFather) + rank.get(iFather));
+        }
+        return true;
+    }
+
+    public boolean isConnected(T i, T j) {
+        return find(i) == find(j);
+    }
+
+    public Map<T, Set<T>> getAllGroups() {
+        Map<T, Set<T>> result = new HashMap<>();
+        // 找出所有根
+        for (T i : father.keySet()) {
+            T f = find(i);
+            result.putIfAbsent(f, new HashSet<>());
+            result.get(f).add(i);
+        }
+        return result;
+    }
+
+    public int getNumOfGroups() {
+        Set<T> s = new HashSet<T>();
+        for (T i : father.keySet()) {
+            s.add(find(i));
+        }
+        return s.size();
+    }
+
+    public boolean contains(int i) {
+        return father.containsKey(i);
+    }
+
 }
