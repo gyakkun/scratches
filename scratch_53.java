@@ -11,6 +11,59 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC536
+    public TreeNode str2tree(String s) {
+        if (s.equals("")) return null;
+        StringBuilder sb = new StringBuilder();
+        char[] ca = s.toCharArray();
+        boolean number = true, left = false, right = false;
+        TreeNode root = new TreeNode();
+        int val = -1, pair = 0;
+        int startOfLeft = -1, endOfLeft = -1, startOfRight = -1, endOfRight = -1;
+        for (int i = 0; i < ca.length; i++) {
+            char c = ca[i];
+            if (number && (c == '(' || c == ')')) {
+                number = false;
+                val = Integer.valueOf(sb.toString());
+                root.val = val;
+                left = true;
+                startOfLeft = i;
+            }
+            if (number) {
+                sb.append(c);
+            } else if (left) {
+                if (c == '(') pair++;
+                else if (c == ')') {
+                    pair--;
+                    if (pair == 0) {
+                        endOfLeft = i;
+                        TreeNode leftNode = str2tree(s.substring(startOfLeft + 1, endOfLeft));
+                        root.left = leftNode;
+                        startOfRight = i + 1;
+                        right = true;
+                        left = false;
+                    }
+                }
+            } else if (right) {
+                if (c == '(') pair++;
+                else if (c == ')') {
+                    pair--;
+                    if (pair == 0) {
+                        endOfRight = i;
+                        TreeNode rightNode = str2tree(s.substring(startOfRight + 1, endOfRight));
+                        root.right = rightNode;
+                        right = false;
+                    }
+                }
+            }
+        }
+        if (number) {
+            val = Integer.valueOf(sb.toString());
+            root.val = val;
+        }
+        return root;
+    }
+
     // LC1608
     public int specialArray(int[] nums) {
         int[] count = new int[1001];
@@ -247,5 +300,24 @@ class Scratch {
             }
         }
         return result;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
