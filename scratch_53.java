@@ -11,6 +11,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1608
+    public int specialArray(int[] nums) {
+        int[] count = new int[1001];
+        for (int i : nums) count[i]++;
+        int ctr = 0;
+        for (int i = 1000; i >= 0; i--) {
+            ctr += count[i];
+            if (ctr == i) return i;
+        }
+        return -1;
+    }
+
     // LC447
     public int numberOfBoomerangs(int[][] points) {
         int result = 0;
