@@ -11,6 +11,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC447
+    public int numberOfBoomerangs(int[][] points) {
+        int result = 0;
+        for (int i = 0; i < points.length; i++) {
+            int[] pi = points[i];
+            Map<Integer, Integer> m = new HashMap<>();
+            for (int j = 0; j < points.length; j++) {
+                if (i != j) {
+                    int[] pj = points[j];
+                    int distance = (pi[0] - pj[0]) * (pi[0] - pj[0]) + (pi[1] - pj[1]) * (pi[1] - pj[1]);
+                    m.put(distance, m.getOrDefault(distance, 0) + 1);
+                }
+            }
+            for (int e : m.keySet()) {
+                result += m.get(e) * (m.get(e) - 1);
+            }
+        }
+        return result;
+    }
+
     // LC1955 ** DP
     public int countSpecialSubsequences(int[] nums) {
         int i0 = 0, i1 = 0, i2 = 0;
