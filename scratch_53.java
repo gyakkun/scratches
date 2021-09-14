@@ -1,4 +1,6 @@
 import java.util.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 class Scratch {
@@ -969,5 +971,59 @@ class MovingAverage {
         }
         q[(++last) % SIZE] = val;
         return sum / count;
+    }
+}
+
+
+// LC1117 ** 多线程
+class H2O {
+
+    final ReentrantLock lock = new ReentrantLock();
+    Condition enough = lock.newCondition();
+    int hCount = 0;
+    int oCount = 0;
+
+    public H2O() {
+
+    }
+
+    public void hydrogen(Runnable releaseHydrogen) throws InterruptedException {
+        lock.lock();
+        try {
+            while (hCount == 2) {
+                enough.await();
+            }
+            hCount++;
+            if (hCount >= 2 && oCount >= 1) {
+                hCount -= 2;
+                oCount -= 1;
+            }
+            releaseHydrogen.run();
+            enough.signalAll();
+        } finally {
+            lock.unlock();
+        }
+        // releaseHydrogen.run() outputs "H". Do not change or remove this line.
+//        releaseHydrogen.run();
+    }
+
+    public void oxygen(Runnable releaseOxygen) throws InterruptedException {
+        lock.lock();
+        try {
+            while (oCount == 1) {
+                enough.await();
+            }
+            oCount++;
+            if(hCount>=2&&oCount>=1){
+                hCount -= 2;
+                oCount -= 1;
+            }
+            releaseOxygen.run();
+            enough.signalAll();
+        } finally {
+            lock.unlock();
+        }
+        // releaseOxygen.run() outputs "O". Do not change or remove this line.
+//        releaseOxygen.run();
     }
 }
