@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
@@ -978,51 +979,39 @@ class MovingAverage {
 // LC1117 ** 多线程
 class H2O {
 
-    final ReentrantLock lock = new ReentrantLock();
-    Condition enough = lock.newCondition();
-    int hCount = 0;
-    int oCount = 0;
+    int count = 0;
+    ArrayBlockingQueue<Integer> hq = new ArrayBlockingQueue<>(2);
+    ArrayBlockingQueue<Integer> oq = new ArrayBlockingQueue<>(1);
 
     public H2O() {
 
     }
 
     public void hydrogen(Runnable releaseHydrogen) throws InterruptedException {
-        lock.lock();
-        try {
-            while (hCount == 2) {
-                enough.await();
-            }
-            hCount++;
-            if (hCount >= 2 && oCount >= 1) {
-                hCount -= 2;
-                oCount -= 1;
-            }
-            releaseHydrogen.run();
-            enough.signalAll();
-        } finally {
-            lock.unlock();
+        hq.put(1);
+        releaseHydrogen.run();
+        count++;
+
+        if (count >= 3) {
+            count = 0;
+            hq.clear();
+            oq.clear();
         }
+
         // releaseHydrogen.run() outputs "H". Do not change or remove this line.
 //        releaseHydrogen.run();
     }
 
     public void oxygen(Runnable releaseOxygen) throws InterruptedException {
-        lock.lock();
-        try {
-            while (oCount == 1) {
-                enough.await();
-            }
-            oCount++;
-            if(hCount>=2&&oCount>=1){
-                hCount -= 2;
-                oCount -= 1;
-            }
-            releaseOxygen.run();
-            enough.signalAll();
-        } finally {
-            lock.unlock();
+        oq.put(1);
+        releaseOxygen.run();
+        count++;
+        if (count >= 3) {
+            count = 0;
+            hq.clear();
+            oq.clear();
         }
+
         // releaseOxygen.run() outputs "O". Do not change or remove this line.
 //        releaseOxygen.run();
     }
