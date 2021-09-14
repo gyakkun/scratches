@@ -1,6 +1,7 @@
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
@@ -10,23 +11,20 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        MKAverage mka = new MKAverage(3, 1);
-        mka.addElement(3);
-        mka.addElement(1);
-        mka.addElement(10);
-        System.out.println(mka.calculateMKAverage());
+        Lc1242 lc1242 = new Lc1242();
 
+        System.out.println(lc1242.crawl("http://leetcode.com/", new HP()));
 
-        mka.addElement(5);
-        mka.addElement(5);
-        mka.addElement(5);
-
-        System.out.println(mka.calculateMKAverage());
+//        System.out.println(s.getHostName("http://leetcode.com/"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
+    private String getHostName(String url) {
+        return url.substring(7, url.indexOf('/', 7) <= 0 ? url.length() : url.indexOf('/', 7));
+    }
 
     // LC524
     public String findLongestWord(String s, List<String> dictionary) {
@@ -1220,5 +1218,91 @@ class FizzBuzz {
                 }
             }
         }
+    }
+}
+
+// LC1242
+interface HtmlParser {
+    List<String> getUrls(String url);
+}
+
+class HP implements HtmlParser {
+
+    @Override
+    public List<String> getUrls(String url) {
+        LockSupport.parkNanos(3000 * 1000);
+        List<String> s = Arrays.asList(
+                "http：//leetcode.com",
+                "http：//leetcode.com/",
+                "http：//leetcode.com/b",
+                "http：//leetcode.com/c",
+                "http：//leetcode.com/d",
+                "http：//leetcode.com/e",
+                "http：//leetcode.com/f",
+                "http：//leetcode.com/g");
+        Collections.shuffle(s);
+        return s.subList(0, 5);
+    }
+}
+
+// LC1242 TLE
+class Lc1242 {
+    ConcurrentHashMap<String, Object> set = new ConcurrentHashMap<>();
+
+    public List<String> crawl(String startUrl, HtmlParser htmlParser) {
+        ForkJoinPool fjp = new ForkJoinPool();
+
+        Task t = new Task(startUrl, htmlParser);
+        Future<Set<String>> result = fjp.submit(t);
+        try {
+            return new ArrayList<>(result.get());
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
+            return null;
+        }
+    }
+
+    class Task extends RecursiveTask<Set<String>> {
+        String startUrl;
+        HtmlParser htmlParser;
+
+        public Task(String startUrl, HtmlParser htmlParser) {
+            this.startUrl = startUrl;
+            this.htmlParser = htmlParser;
+        }
+
+        @Override
+        protected Set<String> compute() {
+            Set<String> result = new HashSet<>();
+            if (set.containsKey(startUrl)) return result;
+            set.put(startUrl, new Object());
+            List<Task> taskList = new ArrayList<>();
+
+            List<String> nextLevel = htmlParser.getUrls(startUrl);
+            for (String next : nextLevel) {
+                if (!set.containsKey(next) && isSameHost(next, startUrl) && !next.equals(startUrl)) {
+                    result.add(next);
+                    Task nt = new Task(next, htmlParser);
+                    taskList.add(nt);
+                    nt.fork();
+                }
+            }
+            for (Task t : taskList) {
+                result.addAll(t.join());
+            }
+            return result;
+        }
+    }
+
+    private String getHostName(String url) {
+        int thirdSlashIdx = url.indexOf('/', 7);
+        return url.substring(7, thirdSlashIdx <= 0 ? url.length() : thirdSlashIdx);
+    }
+
+    private boolean isSameHost(String a, String b) {
+        return getHostName(a).equals(getHostName(b));
     }
 }
