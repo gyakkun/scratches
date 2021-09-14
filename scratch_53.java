@@ -1076,3 +1076,75 @@ class Foo {
         }
     }
 }
+
+// LC1188 阻塞队列 参考了jdk8 ArrayBlockingQueue的实现
+class BoundedBlockingQueue {
+
+    ReentrantLock lock = new ReentrantLock();
+    Condition notEmpty = lock.newCondition();
+    Condition notFull = lock.newCondition();
+    int size = 0;
+    int[] queue;
+    int len;
+    int takeIdx = 0;
+    int putIdx = 0;
+
+    public BoundedBlockingQueue(int capacity) {
+        len = capacity;
+        queue = new int[len];
+    }
+
+    public void enqueue(int element) throws InterruptedException {
+        lock.lock();
+        try {
+            while (size == len) {
+                notFull.await();
+            }
+            insert(element);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public int dequeue() throws InterruptedException {
+        lock.lock();
+        try {
+            while (size == 0) {
+                notEmpty.await();
+            }
+
+            return extract();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private int extract() {
+        int result = queue[takeIdx];
+        queue[takeIdx] = 0;
+        takeIdx = inc(takeIdx);
+        size--;
+        notFull.signalAll();
+        return result;
+    }
+
+    private void insert(int ele) {
+        queue[putIdx] = ele;
+        putIdx = inc(putIdx);
+        size++;
+        notEmpty.signalAll();
+
+    }
+
+    public int size() {
+        return size;
+    }
+
+    private int inc(int idx) {
+        return (++idx == len) ? 0 : idx;
+    }
+
+    private int dec(int idx) {
+        return (idx == 0 ? len : idx) - 1;
+    }
+}
