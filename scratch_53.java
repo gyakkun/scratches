@@ -3,6 +3,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
+import java.util.function.IntConsumer;
 
 class Scratch {
     public static void main(String[] args) {
@@ -1146,5 +1147,91 @@ class BoundedBlockingQueue {
 
     private int dec(int idx) {
         return (idx == 0 ? len : idx) - 1;
+    }
+}
+
+// LC1195
+class FizzBuzz {
+
+    ReentrantLock lock = new ReentrantLock();
+    Condition condition = lock.newCondition();
+    int cur = 1;
+
+    private int n;
+
+    public FizzBuzz(int n) {
+        this.n = n;
+    }
+
+    // printFizz.run() outputs "fizz". // MOD 3 = 0
+    public void fizz(Runnable printFizz) throws InterruptedException {
+        lock.lock();
+        try {
+            while (cur <= n) {
+                if (cur % 3 == 0 && cur % 5 != 0) {
+                    printFizz.run();
+                    cur++;
+                    condition.signalAll();
+                } else {
+                    condition.await();
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    // printBuzz.run() outputs "buzz". // MOD 5 = 0
+    public void buzz(Runnable printBuzz) throws InterruptedException {
+        lock.lock();
+        try {
+            while (cur <= n) {
+                if (cur % 3 != 0 && cur % 5 == 0) {
+                    printBuzz.run();
+                    cur++;
+                    condition.signalAll();
+                } else {
+                    condition.await();
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    // printFizzBuzz.run() outputs "fizzbuzz". // MOD 15 = 0
+    public void fizzbuzz(Runnable printFizzBuzz) throws InterruptedException {
+        lock.lock();
+        try {
+            while (cur <= n) {
+                if (cur % 3 == 0 && cur % 5 == 0) {
+                    printFizzBuzz.run();
+                    cur++;
+                    condition.signalAll();
+                } else {
+                    condition.await();
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    // printNumber.accept(x) outputs "x", where x is an integer. // ELSE
+    public void number(IntConsumer printNumber) throws InterruptedException {
+        lock.lock();
+        try {
+            while (cur <= n) {
+                if (cur % 3 != 0 && cur % 5 != 0) {
+                    printNumber.accept(cur);
+                    cur++;
+                    condition.signalAll();
+                } else {
+                    condition.await();
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 }
