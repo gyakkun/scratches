@@ -946,7 +946,9 @@ class MKAverage {
 class MovingAverage {
     final int SIZE;
     double sum = 0d;
-    Deque<Integer> q = new LinkedList<>();
+    int[] q;
+    int last = -1;
+    int count = 0;
 
 
     /**
@@ -954,14 +956,18 @@ class MovingAverage {
      */
     public MovingAverage(int size) {
         SIZE = size;
+        q = new int[size];
+        last = -1;
     }
 
     public double next(int val) {
-        q.offer(val);
         sum += val;
-        if (q.size() > SIZE) {
-            sum -= q.poll();
+        if (count < SIZE) {
+            count++;
+        } else {
+            sum -= q[(last + 1) % SIZE];
         }
-        return sum / q.size();
+        q[(++last) % SIZE] = val;
+        return sum / count;
     }
 }
