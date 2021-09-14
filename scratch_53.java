@@ -6,11 +6,23 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minCut("fiefhgdcdcgfeibggchibffahiededbbegegdfibdbfdadfbdbceaadeceeefiheibahgececggaehbdcgebaigfacifhdbecbebfhiefchaaheiichgdbheacfbhfiaffaecicbegdgeiaiccghggdfggbebdaefcagihbdhhigdgbghbahhhdagbdaefeccfiaifffcfehfcdiiieibadcedibbedgfegibefagfccahfcbegdfdhhdgfhgbchiaieehdgdabhidhfeecgfiibediiafacagigbhchcdhbaigdcedggehhgdhedaebchcafcdehcffdiagcafcgiidhdhedgaaegdchibhdaegdfdaiiidcihifbfidechicighbcbgibadbabieaafgeagfhebfaheaeeibagdfhadifafghbfihehgcgggffgbfccgafigieadfehieafaehaggeeaaaehggffccddchibegfhdfafhadgeieggiigacbfgcagigbhbhefcadafhafdiegahbhccidbeeagcgebehheebfaechceefdiafgeddhdfcadfdafbhiifigcbddahbabbeedidhaieagheihhgffbfbiacgdaifbedaegbhigghfeiahcdieghhdabdggfcgbafgibiifdeefcbegcfcdihaeacihgdchihdadifeifdgecbchgdgdcifedacfddhhbcagaicbebbiadgbddcbagbafeadhddaeebdgdebafabghcabdhdgieiahggddigefddccfccibifgbfcdccghgceigdfdbghdihechfabhbacifgbiiiihcgifhdbhfcaiefhccibebcahidachfabicbdabibiachahggffiibbgchbidfbbhfcicfafgcagaaadbacddfiigdiiffhbbehaaacidggfbhgeaghigihggfcdcidbfccahhgaffiibbhidhdacacdfebedbiacaidaachegffaiiegeabfdgdcgdacfcfhdcbfiaaifgfaciacfghagceaaebhhibbieehhcbiggabefbeigcbhbcidbfhfcgdddgdffghidbbbfbdhcgabaagddcebaechbbiegeiggbabdhgghciheabdibefdfghbfbfebidhicdhbeghebeddgfdfhefebiiebdchifbcbahaddhbfafbbcebiigadhgcfbebgbebhfddgdeehhgdegaeedfadegfeihcgeefbbagbbacbgggciehdhiggcgaaicceeaefgcehfhfdciaghcbbgdihbhecfbgffefhgiefgeiggcebgaacefidghdfdhiabgibchdicdehahbibeddegfciaeaffgbefbbeihbafbagagedgbdadfdggfeaebaidchgdbcifhahgfdcehbahhdggcdggceiabhhafghegfdiegbcadgaecdcdddfhicabdfhbdiiceiegiedecdifhbhhfhgdbhibbdgafhgdcheefdhifgddchadbdggiidhbhegbdfdidhhfbehibiaacdfbiagcbheabaaebfeaeafbgigiefeaeheabifgcfibiddadicheahgbfhbhddaheghddceedigddhchecaghdegigbegcbfgbggdgbbigegffhcfcbbebdchffhddbfhhfgegggibhafiebcfgeaeehgdgbccbfghagfdbdfcbcigbigaccecfehcffahiafgabfcaefbghccieehhhiighcfeabffggfchfdgcfhadgidabdceediefdccceidcfbfiiaidechhbhdccccaigeegcaicabbifigcghcefaafaefd"));
+        MKAverage mka = new MKAverage(3, 1);
+        mka.addElement(3);
+        mka.addElement(1);
+        mka.addElement(10);
+        System.out.println(mka.calculateMKAverage());
+
+
+        mka.addElement(5);
+        mka.addElement(5);
+        mka.addElement(5);
+
+        System.out.println(mka.calculateMKAverage());
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
 
     // LC524
     public String findLongestWord(String s, List<String> dictionary) {
@@ -859,4 +871,73 @@ class DisjointSetUnion<T> {
         return father.containsKey(i);
     }
 
+}
+
+
+// LC1825 Hard
+class MKAverage {
+    final int MK_M, MK_K;
+    Deque<Integer> dataStream = new LinkedList<>();
+    TreeMap<Integer, Integer> tm = new TreeMap<>();
+
+    public MKAverage(int m, int k) {
+        MK_M = m;
+        MK_K = k;
+    }
+
+    public void addElement(int num) {
+        dataStream.offer(num);
+        tm.put(num, tm.getOrDefault(num, 0) + 1);
+        while (dataStream.size() > MK_M) {
+            tm.put(dataStream.peekFirst(), tm.get(dataStream.peekFirst()) - 1);
+            if (tm.get(dataStream.peekFirst()) == 0) {
+                tm.remove(dataStream.peekFirst());
+            }
+            dataStream.poll();
+        }
+    }
+
+    public int calculateMKAverage() {
+        if (dataStream.size() < MK_M) return -1;
+        int leftBound = -1, rightBound = -1;
+        int origLeftBoundValue = -1, origRightBoundValue = -1;
+        int ctr = 0;
+        Iterator<Integer> it = tm.navigableKeySet().iterator();
+        while (ctr <= MK_K && it.hasNext()) {
+            int firstKey = it.next();
+            if (ctr + tm.get(firstKey) <= MK_K) {
+                ctr += tm.get(firstKey);
+            } else {
+                ctr += tm.get(firstKey);
+                leftBound = firstKey;
+                origLeftBoundValue = tm.get(firstKey);
+                tm.put(firstKey, ctr - MK_K);
+                break;
+            }
+        }
+        ctr = 0;
+        it = tm.descendingKeySet().iterator();
+        while (ctr <= MK_K && it.hasNext()) {
+            int lastKey = it.next();
+            if (ctr + tm.get(lastKey) <= MK_K) {
+                ctr += tm.get(lastKey);
+            } else {
+                ctr += tm.get(lastKey);
+                rightBound = lastKey;
+                origRightBoundValue = tm.get(rightBound);
+                tm.put(lastKey, ctr - MK_K);
+                break;
+            }
+        }
+
+        int sum = 0;
+        NavigableMap<Integer, Integer> subMap = tm.subMap(leftBound, true, rightBound, true);
+
+        for (int key : subMap.keySet()) {
+            sum += key * subMap.get(key);
+        }
+        tm.put(rightBound, origRightBoundValue);
+        tm.put(leftBound, origLeftBoundValue);
+        return sum / (MK_M - 2 * MK_K);
+    }
 }
