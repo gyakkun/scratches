@@ -1250,22 +1250,21 @@ class Lc1242 {
     ConcurrentHashMap<String, Object> set = new ConcurrentHashMap<>();
 
     public List<String> crawl(String startUrl, HtmlParser htmlParser) {
-        ForkJoinPool fjp = new ForkJoinPool();
+        ForkJoinPool fjp = new ForkJoinPool(32);
 
         Task t = new Task(startUrl, htmlParser);
-        Future<Set<String>> result = fjp.submit(t);
+        ForkJoinTask<Void> submit = fjp.submit(t);
         try {
-            return new ArrayList<>(result.get());
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            return null;
-        } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
-            return null;
+            submit.get();
+            return new ArrayList<>(set.keySet());
+        } catch (ExecutionException | InterruptedException e) {
+            return new ArrayList<>();
+        } finally {
+            fjp.shutdown();
         }
     }
 
-    class Task extends RecursiveTask<Set<String>> {
+    class Task extends RecursiveAction {
         String startUrl;
         HtmlParser htmlParser;
 
@@ -1275,25 +1274,22 @@ class Lc1242 {
         }
 
         @Override
-        protected Set<String> compute() {
-            Set<String> result = new HashSet<>();
-            if (set.containsKey(startUrl)) return result;
+        protected void compute() {
+            if (set.containsKey(startUrl)) return;
             set.put(startUrl, new Object());
             List<Task> taskList = new ArrayList<>();
 
             List<String> nextLevel = htmlParser.getUrls(startUrl);
             for (String next : nextLevel) {
-                if (!set.containsKey(next) && isSameHost(next, startUrl) && !next.equals(startUrl)) {
-                    result.add(next);
+                if (!set.containsKey(next) && isSameHost(next, startUrl)) {
                     Task nt = new Task(next, htmlParser);
                     taskList.add(nt);
                     nt.fork();
                 }
             }
             for (Task t : taskList) {
-                result.addAll(t.join());
+                t.join();
             }
-            return result;
         }
     }
 
