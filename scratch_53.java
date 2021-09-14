@@ -21,9 +21,39 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-
-    private String getHostName(String url) {
-        return url.substring(7, url.indexOf('/', 7) <= 0 ? url.length() : url.indexOf('/', 7));
+    // LC699
+    public List<Integer> fallingSquares(int[][] positions) {
+        List<Integer> result = new ArrayList<>();
+        // 离散化
+        Map<Integer, Integer> idxMap = new HashMap<>();
+        Set<Integer> coordinates = new HashSet<>();
+        for (int[] p : positions) {
+            coordinates.add(p[0]);
+            coordinates.add(p[0] + p[1] - 1);
+        }
+        List<Integer> coordList = new ArrayList<>(coordinates);
+        Collections.sort(coordList);
+        for (int i = 0; i < coordList.size(); i++) {
+            idxMap.put(coordList.get(i), i);
+        }
+        int[] maxHeight = new int[coordList.size()];
+        int curMax = 0;
+        for (int[] p : positions) {
+            int left = idxMap.get(p[0]), right = idxMap.get(p[0] + p[1] - 1);
+            // 找 [left, right]之间的最大值
+            int max = 0;
+            for (int i = left; i <= right; i++) {
+                max = Math.max(max, maxHeight[i]);
+            }
+            for (int i = left; i <= right; i++) {
+                maxHeight[i] = max + p[1];
+            }
+            // 更新全局最大值
+            curMax = Math.max(curMax, max + p[1]);
+            // 添加**全局最大值**到结果 (不是区间最大值!)
+            result.add(curMax);
+        }
+        return result;
     }
 
     // LC524
