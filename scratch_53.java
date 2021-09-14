@@ -12,6 +12,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC524
+    public String findLongestWord(String s, List<String> dictionary) {
+        char[] ca = s.toCharArray();
+        String result = "";
+        for (String word : dictionary) {
+            char[] cw = word.toCharArray();
+            int pc = 0, pw = 0;
+            while (pc < ca.length && pw < cw.length) {
+                if (ca[pc] == cw[pw]) {
+                    pc++;
+                    pw++;
+                } else {
+                    pc++;
+                }
+            }
+            if (pw == cw.length) {
+                if (word.length() > result.length()) {
+                    result = word;
+                } else if (word.length() == result.length()) {
+                    if (word.compareTo(result) < 0) {
+                        result = word;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     // JZOF II 094 LC132
     public int minCut(String s) {
         char[] ca = s.toCharArray();
