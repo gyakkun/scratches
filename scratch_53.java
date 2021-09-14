@@ -1016,3 +1016,63 @@ class H2O {
 //        releaseOxygen.run();
     }
 }
+
+// LC1114
+class Foo {
+
+    ReentrantLock lock = new ReentrantLock();
+    Condition firstReady = lock.newCondition();
+    Condition secondReady = lock.newCondition();
+    Condition thirdReady = lock.newCondition();
+    boolean secondAllow = false;
+    boolean thirdAllow = false;
+
+    public Foo() {
+
+    }
+
+    public void first(Runnable printFirst) throws InterruptedException {
+
+        lock.lock();
+        try {
+            // printFirst.run() outputs "first". Do not change or remove this line.
+            printFirst.run();
+            secondAllow = true;
+            firstReady.signalAll();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void second(Runnable printSecond) throws InterruptedException {
+        lock.lock();
+        try {
+            // printSecond.run() outputs "second". Do not change or remove this line.
+            while (!secondAllow) {
+                firstReady.await();
+            }
+            printSecond.run();
+            thirdAllow = true;
+            secondReady.signalAll();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void third(Runnable printThird) throws InterruptedException {
+        lock.lock();
+        try {
+            while (!thirdAllow) {
+                secondReady.await();
+            }
+
+            // printThird.run() outputs "third". Do not change or remove this line.
+            printThird.run();
+            secondAllow = false;
+            thirdAllow = false;
+
+        } finally {
+            lock.unlock();
+        }
+    }
+}
