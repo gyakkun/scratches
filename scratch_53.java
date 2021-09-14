@@ -1335,3 +1335,53 @@ class TrafficLight {
         }
     }
 }
+
+// LC1115
+class FooBar {
+
+    boolean barPrinted = true;
+    boolean fooPrinted = false;
+    ReentrantLock lock = new ReentrantLock();
+    Condition fooDone = lock.newCondition();
+    Condition barDone = lock.newCondition();
+
+    private int n;
+
+    public FooBar(int n) {
+        this.n = n;
+    }
+
+    public void foo(Runnable printFoo) throws InterruptedException {
+        for (int i = 0; i < n; i++) {
+            lock.lock();
+            try {
+                while (!barPrinted) {
+                    barDone.await();
+                }
+                printFoo.run();
+                fooPrinted = true;
+                barPrinted = false;
+                fooDone.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    public void bar(Runnable printBar) throws InterruptedException {
+        for (int i = 0; i < n; i++) {
+            lock.lock();
+            try {
+                while (!fooPrinted) {
+                    fooDone.await();
+                }
+                printBar.run();
+                fooPrinted = false;
+                barPrinted = true;
+                barDone.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+}
