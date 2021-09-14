@@ -1415,3 +1415,41 @@ class FooBar {
         }
     }
 }
+
+// LC1226
+class DiningPhilosophers {
+
+    ReentrantLock[] forks = new ReentrantLock[5];
+
+    public DiningPhilosophers() {
+        for (int i = 0; i < 5; i++) {
+            forks[i] = new ReentrantLock();
+        }
+    }
+
+    // call the run() method of any runnable to execute its code
+    public void wantsToEat(int philosopher,
+                           Runnable pickLeftFork,
+                           Runnable pickRightFork,
+                           Runnable eat,
+                           Runnable putLeftFork,
+                           Runnable putRightFork) throws InterruptedException {
+        int left = philosopher, right = (philosopher + 1) % 5;
+        ReentrantLock lockLeft = forks[left], lockRight = forks[right];
+        lockLeft.lock();
+        try {
+            lockRight.lock();
+            try {
+                pickLeftFork.run();
+                pickRightFork.run();
+                eat.run();
+                putLeftFork.run();
+                putRightFork.run();
+            } finally {
+                lockRight.unlock();
+            }
+        } finally {
+            lockLeft.unlock();
+        }
+    }
+}
