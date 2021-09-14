@@ -941,3 +941,27 @@ class MKAverage {
         return sum / (MK_M - 2 * MK_K);
     }
 }
+
+// LC346
+class MovingAverage {
+    final int SIZE;
+    double sum = 0d;
+    Deque<Integer> q = new LinkedList<>();
+
+
+    /**
+     * Initialize your data structure here.
+     */
+    public MovingAverage(int size) {
+        SIZE = size;
+    }
+
+    public double next(int val) {
+        q.offer(val);
+        sum += val;
+        if (q.size() > SIZE) {
+            sum -= q.poll();
+        }
+        return sum / q.size();
+    }
+}
