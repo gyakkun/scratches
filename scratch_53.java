@@ -11,10 +11,46 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.numTeams(new int[]{2, 5, 3, 4, 1}));
+        System.out.println(s.mostVisited(7, new int[]{1, 3, 5, 7}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1560
+    public List<Integer> mostVisited(int n, int[] rounds) {
+        int[] diff = new int[n + 1];
+        diff[rounds[0] - 1]++;
+        diff[rounds[0]]--;
+        for (int i = 0; i < rounds.length - 1; i++) {
+            int start = rounds[i] - 1, end = rounds[i + 1] - 1;
+            if (start < end) {
+                diff[start + 1]++;
+                diff[end + 1]--;
+            } else {
+                diff[start + 1]++;
+                diff[n]--;
+                diff[0]++;
+                diff[end + 1]--;
+            }
+        }
+        int[] count = new int[n];
+        count[0] = diff[0];
+        for (int i = 1; i < n; i++) {
+            count[i] = count[i - 1] + diff[i];
+        }
+        int max = 0;
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (count[i] > max) {
+                result.clear();
+                result.add(i + 1);
+                max = count[i];
+            } else if (count[i] == max) {
+                result.add(i + 1);
+            }
+        }
+        return result;
     }
 
     // LC1395 O(n^2+nlog(n)) Time O(n) Space
