@@ -1,3 +1,4 @@
+import javax.sound.midi.MidiChannel;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
@@ -19,6 +20,36 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 10.09 LC240 两次二分 (不如双指针)
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if (matrix.length == 0) return false;
+        if (matrix.length == 1 && matrix[0].length == 0) return false;
+        int lo = 0, hi = matrix.length - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (matrix[mid][0] <= target) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        if (matrix[lo][0] > target) return false;
+        for (int i = 0; i <= lo; i++) {
+            int[] row = matrix[i];
+            int innerLo = 0, innerHi = matrix[0].length - 1;
+            while (innerLo <= innerHi) {
+                int mid = innerLo + (innerHi - innerLo) / 2;
+                if (row[mid] == target) return true;
+                else if (matrix[i][mid] > target) {
+                    innerHi = mid - 1;
+                } else {
+                    innerLo = mid + 1;
+                }
+            }
+        }
+        return false;
     }
 
     // JZOF II 061 LC373 原来O(mnlogk)的方法现在会超时 以下为O(mk)的方法 **
