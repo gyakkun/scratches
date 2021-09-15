@@ -21,6 +21,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 061 LC373 原来O(mnlogk)的方法现在会超时 以下为O(mk)的方法 **
+    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
+        int m = nums1.length, n = nums2.length;
+        int[] idx = new int[m]; // minNums2IdxForNums1  , e.g. idx[0] = 0
+        List<List<Integer>> result = new ArrayList<>(k);
+        int loopingUpperBound = 1;
+        while (result.size() < k) {
+            int cur = 0; // nums1 中的下标
+            for (int j = 0; j < loopingUpperBound; j++) {
+                if (idx[j] == n) continue; // 在nums2中已经没有可用的下标了
+                if (idx[cur] == n || nums1[cur] + nums2[idx[cur]] > nums1[j] + nums2[idx[j]]) { // 获得当前最小组合的下标
+                    cur = j;
+                }
+            }
+            if (idx[cur] == n) break;
+            result.add(Arrays.asList(nums1[cur], nums2[idx[cur]]));
+            idx[cur]++;
+            if (cur == loopingUpperBound - 1) {
+                loopingUpperBound = Math.min(loopingUpperBound + 1, nums1.length);
+            }
+        }
+        return result;
+    }
+
     // Interview 02.07
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
         if (headA == null || headB == null) return null;
