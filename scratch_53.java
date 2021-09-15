@@ -21,7 +21,7 @@ class Scratch {
     }
 
     // LC1770 ** DP
-    public int maximumScore(int[] nums, int[] multipliers) {
+    public int maximumScoreDP(int[] nums, int[] multipliers) {
         int n = nums.length, m = multipliers.length;
         int[][] dp = new int[m + 1][m + 1];
         // dp[i][j] 表示从前面选i个数, 后面选j个数得到的最大结果
@@ -35,6 +35,29 @@ class Scratch {
         int result = Integer.MIN_VALUE;
         for (int i = 1; i <= m; i++) result = Math.max(result, dp[i][m - i]);
         return result;
+    }
+
+    // 原来空间开大了, 实际start 只能取到Multipliers.length, 这就不会MLE了
+    Integer[][] lc1770Memo;
+
+    public int maximumScore(int[] nums, int[] multipliers) {
+        lc1770Memo = new Integer[multipliers.length + 1][multipliers.length + 1];
+        return lc1770Helper(0, 0, nums, multipliers);
+    }
+
+    private int lc1770Helper(int start, int curStep, int[] nums, int[] multipliers) {
+        if (curStep == multipliers.length) return 0;
+        if (lc1770Memo[start][curStep] != null) return lc1770Memo[start][curStep];
+        // 记 diff = multipliers.length - nums.length
+        // totalSteps = multipliers.length
+        // dp[i][j] 表示正在以i为起点, 行走了j步骤, 取得的最大值
+        // 此时 终点应该是 end = start +totalStep-curStep+diff-1 -> start - curStep + nums.length - 1
+        int end = start - curStep + nums.length - 1;
+        int result = Math.max(
+                multipliers[curStep] * nums[start] + lc1770Helper(start + 1, curStep + 1, nums, multipliers),
+                multipliers[curStep] * nums[end] + lc1770Helper(start, curStep + 1, nums, multipliers)
+        );
+        return lc1770Memo[start][curStep] = result;
     }
 
     // LC1477 犯了弱智错误 O(nlogn)
