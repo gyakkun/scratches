@@ -11,10 +11,79 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.mostVisited(7, new int[]{1, 3, 5, 7}));
+        System.out.println(s.minSumOfLengths(new int[]{1, 2, 2, 3, 2, 6, 7, 2, 1, 4, 8}, 5));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1477 犯了弱智错误 O(nlogn)
+    public int minSumOfLengths(int[] arr, int target) {
+        int n = arr.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + arr[i];
+        int[] leftSide = new int[n]; // 左侧(含自身) 和为target的子数组的最小长度
+        Arrays.fill(leftSide, Integer.MAX_VALUE / 2);
+        for (int i = 0; i < n; i++) {
+            if (arr[i] == target) {
+                leftSide[i] = 1;
+            } else {
+                if (i > 0) {
+                    leftSide[i] = leftSide[i - 1];
+                    if (leftSide[i] == 1) continue; // 肯定是最小的
+                }
+                int targetPrefix = prefix[i + 1] - target;
+                if (targetPrefix < 0) continue;
+                // 在前缀和数组中二分, 找targetPrefix
+                int lo = 0, hi = i;
+                int targetIdx = -1;
+                while (lo <= hi) {
+                    int mid = lo + (hi - lo) / 2;
+                    if (prefix[mid] == targetPrefix) {
+                        targetIdx = mid;
+                        break;
+                    } else if (prefix[mid] > targetPrefix) {
+                        hi = mid - 1;
+                    } else {
+                        lo = mid + 1;
+                    }
+                }
+                if (targetIdx != -1) {
+                    leftSide[i] = Math.min(leftSide[i], i - targetIdx + 1);
+                }
+            }
+        }
+        int[] rightSide = new int[n]; // 右侧(不含自身) 和为 target 的子数组的最小长度
+        Arrays.fill(rightSide, Integer.MAX_VALUE / 2);
+        for (int i = n - 2; i >= 0; i--) {
+            rightSide[i] = rightSide[i + 1];
+            if (rightSide[i] == 1) continue;
+
+            int targetPrefix = prefix[i + 1] + target;
+            if (targetPrefix > prefix[n]) continue;
+            int lo = i + 2, hi = n;
+            int targetIdx = -1;
+            while (lo <= hi) {
+                int mid = lo + (hi - lo) / 2;
+                if (prefix[mid] == targetPrefix) {
+                    targetIdx = mid;
+                    break;
+                } else if (prefix[mid] > targetPrefix) {
+                    hi = mid - 1;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+            if (targetIdx != -1) {
+                rightSide[i] = Math.min(rightSide[i], targetIdx - i - 1);
+            }
+        }
+        int result = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < n; i++) {
+            result = Math.min(result, leftSide[i] + rightSide[i]);
+        }
+        return result == Integer.MAX_VALUE / 2 ? -1 : result;
+
     }
 
     // LC1560
