@@ -37,25 +37,20 @@ class Scratch {
         return result;
     }
 
-    // 原来空间开大了, 实际start 只能取到Multipliers.length, 这就不会MLE了
+    // 原来空间开大了, 实际start 只能取到Multipliers.length, end能根据start/curStep得到 这就不会MLE了
     Integer[][] lc1770Memo;
 
     public int maximumScore(int[] nums, int[] multipliers) {
         lc1770Memo = new Integer[multipliers.length + 1][multipliers.length + 1];
-        return lc1770Helper(0, 0, nums, multipliers);
+        return lc1770Helper(0, nums.length - 1, 0, nums, multipliers);
     }
 
-    private int lc1770Helper(int start, int curStep, int[] nums, int[] multipliers) {
+    private int lc1770Helper(int start, int end, int curStep, int[] nums, int[] multipliers) {
         if (curStep == multipliers.length) return 0;
         if (lc1770Memo[start][curStep] != null) return lc1770Memo[start][curStep];
-        // 记 diff = multipliers.length - nums.length
-        // totalSteps = multipliers.length
-        // dp[i][j] 表示正在以i为起点, 行走了j步骤, 取得的最大值
-        // 此时 终点应该是 end = start +totalStep-curStep+diff-1 -> start - curStep + nums.length - 1
-        int end = start - curStep + nums.length - 1;
         int result = Math.max(
-                multipliers[curStep] * nums[start] + lc1770Helper(start + 1, curStep + 1, nums, multipliers),
-                multipliers[curStep] * nums[end] + lc1770Helper(start, curStep + 1, nums, multipliers)
+                multipliers[curStep] * nums[start] + lc1770Helper(start + 1, end, curStep + 1, nums, multipliers),
+                multipliers[curStep] * nums[end] + lc1770Helper(start, end - 1, curStep + 1, nums, multipliers)
         );
         return lc1770Memo[start][curStep] = result;
     }
