@@ -1,4 +1,3 @@
-import javax.sound.midi.MidiChannel;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
@@ -20,6 +19,31 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC163 **
+    public List<String> findMissingRanges(int[] nums, int lower, int upper) {
+        lower--;
+        upper++;
+        List<String> result = new ArrayList<>();
+        int n = nums.length;
+        if (n == 0) {
+            lc163Helper(lower, upper, result);
+            return result;
+        }
+        lc163Helper(lower, nums[0], result);
+        for (int i = 1; i < n; i++) lc163Helper(nums[i - 1], nums[i], result);
+        lc163Helper(nums[n - 1], upper, result);
+        return result;
+    }
+
+    private void lc163Helper(int l, int r, List<String> result) {
+        if (l + 1 >= r) return;
+        if (l + 2 == r) {
+            result.add("" + (l + 1));
+        } else {
+            result.add("" + (l + 1) + "->" + (r - 1));
+        }
     }
 
     // Interview 10.09 双指针
