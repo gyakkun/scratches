@@ -21,6 +21,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 02.07
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) return null;
+        // 判断是否有共同终点
+        ListNode pa = headA, pb = headB;
+        int lenA = 1, lenB = 1;
+        while (pa.next != null) {
+            pa = pa.next;
+            lenA++;
+        }
+        while (pb.next != null) {
+            pb = pb.next;
+            lenB++;
+        }
+        if (pa != pb) return null;
+        int diff = Math.abs(lenA - lenB);
+        ListNode fast = lenA > lenB ? headA : headB;
+        ListNode slow = fast == headA ? headB : headA;
+        while (diff != 0) {
+            fast = fast.next;
+            diff--;
+        }
+        while (fast != slow) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return fast;
+    }
+
     // LC162
     public int findPeakElement(int[] nums) {
         int n = nums.length;
@@ -1480,5 +1509,15 @@ class DiningPhilosophers {
         } finally {
             lockLeft.unlock();
         }
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode(int x) {
+        val = x;
+        next = null;
     }
 }
