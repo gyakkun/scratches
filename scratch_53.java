@@ -20,6 +20,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1040 TBD
+    public int[] numMovesStonesII(int[] stones) {
+        return null;
+    }
+
     // LC1770 ** DP
     public int maximumScoreDP(int[] nums, int[] multipliers) {
         int n = nums.length, m = multipliers.length;
