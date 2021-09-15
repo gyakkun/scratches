@@ -21,6 +21,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 018 LC125
+    public boolean isPalindrome(String s) {
+        if (s.equals("")) return true;
+        char[] ca = s.toCharArray();
+        int left = 0, right = ca.length - 1;
+        while (left <= right) {
+            if (!Character.isDigit(ca[left]) && !Character.isLetter(ca[left])) {
+                left++;
+                continue;
+            }
+            if (!Character.isDigit(ca[right]) && !Character.isLetter(ca[right])) {
+                right--;
+                continue;
+            }
+            if (Character.isLetter(ca[left]) && Character.isUpperCase(ca[left]))
+                ca[left] = Character.toLowerCase(ca[left]);
+            if (Character.isLetter(ca[right]) && Character.isUpperCase(ca[right]))
+                ca[right] = Character.toLowerCase(ca[right]);
+            if (ca[left] != ca[right]) return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
+
     // LC935
     class Lc935 {
         final int[][] keyboard = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {-1, 0, -1}};
