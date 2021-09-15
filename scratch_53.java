@@ -11,14 +11,59 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        Lc1242 lc1242 = new Lc1242();
-
-        System.out.println(lc1242.crawl("http://leetcode.com/", new HP()));
-
-//        System.out.println(s.getHostName("http://leetcode.com/"));
+        System.out.println(s.numTeams(new int[]{2, 5, 3, 4, 1}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1395 O(n^2+nlog(n)) Time O(n) Space
+    public int numTeams(int[] rating) {
+        // 离散化
+        int n = rating.length;
+        int[] orig = new int[n];
+        System.arraycopy(rating, 0, orig, 0, n);
+        Arrays.sort(rating);
+        Map<Integer, Integer> idxMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            idxMap.put(rating[i], i);
+        }
+        for (int i = 0; i < n; i++) {
+            orig[i] = idxMap.get(orig[i]);
+        }
+        BIT bit = new BIT(n + 1);
+        int[] numLarget = new int[n];
+        // 记录后面有多少个比自己大的数
+        for (int i = n - 1; i >= 0; i--) {
+            numLarget[i] = (int) bit.sumRange(orig[i] + 1, n);
+            bit.update(orig[i], 1);
+        }
+        bit = new BIT(n + 1);
+        // 记录前面有多少个比自己大的数
+        int[] numLargerReverse = new int[n];
+        for (int i = 0; i < n; i++) {
+            numLargerReverse[i] = (int) bit.sumRange(orig[i] + 1, n);
+            bit.update(orig[i], 1);
+        }
+        int result = 0;
+        // 正向 升序
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (orig[j] > orig[i]) {
+                    result += numLarget[j];
+                }
+            }
+        }
+
+        // 反向 逆序
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (orig[j] > orig[i]) {
+                    result += numLargerReverse[j];
+                }
+            }
+        }
+        return result;
     }
 
     // JZOF II 018 LC125
@@ -1676,5 +1721,63 @@ class ListNode {
     ListNode(int x) {
         val = x;
         next = null;
+    }
+}
+
+class BIT {
+    long[] tree;
+    int len;
+
+    public BIT(int len) {
+        this.len = len;
+        this.tree = new long[len + 1];
+    }
+
+    public BIT(int[] arr) {
+        this.len = arr.length;
+        this.tree = new long[len + 1];
+        for (int i = 0; i < arr.length; i++) {
+            int oneBasedIdx = i + 1;
+            tree[oneBasedIdx] += arr[i];
+            int nextOneBasedIdx = oneBasedIdx + lowbit(oneBasedIdx);
+            if (nextOneBasedIdx <= len) tree[nextOneBasedIdx] += tree[oneBasedIdx];
+        }
+    }
+
+    public void set(int idxZeroBased, long val) {
+        long delta = val - get(idxZeroBased);
+        update(idxZeroBased, delta);
+    }
+
+    public long get(int idxZeroBased) {
+        return sumOneBased(idxZeroBased + 1) - sumOneBased(idxZeroBased);
+    }
+
+    public void update(int idxZeroBased, long delta) {
+        updateOneBased(idxZeroBased + 1, delta);
+    }
+
+    public long sumRange(int left, int right) {
+        return sumOneBased(right + 1) - sumOneBased(left);
+    }
+
+    public void updateOneBased(int idxOneBased, long delta) {
+        while (idxOneBased <= len) {
+            tree[idxOneBased] += delta;
+            idxOneBased += lowbit(idxOneBased);
+        }
+    }
+
+    public long sumOneBased(int idxOneBased) {
+        int sum = 0;
+        while (idxOneBased > 0) {
+            sum += tree[idxOneBased];
+            idxOneBased -= lowbit(idxOneBased);
+        }
+        return sum;
+    }
+
+    private int lowbit(int x) {
+        return x & (-x);
     }
 }
