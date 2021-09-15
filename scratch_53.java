@@ -21,6 +21,44 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC935
+    class Lc935 {
+        final int[][] keyboard = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {-1, 0, -1}};
+        final int[][] directions = {{-2, -1}, {-1, -2}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {1, 2}, {2, 1}};
+        final int mod = 1000000007;
+        Integer[][][] memo;
+
+        public int knightDialer(int n) {
+            memo = new Integer[4][3][n + 1];
+            long result = 0;
+            for (int row = 0; row < 4; row++) {
+                for (int col = 0; col < 3; col++) {
+                    if (keyboard[row][col] != -1) {
+                        result = (result + dfs(row, col, n - 1)) % mod;
+                    }
+                }
+            }
+            return (int) (result % mod);
+        }
+
+        private int dfs(int row, int col, int leftSteps) {
+            if (leftSteps == 0) return 1;
+            if (memo[row][col][leftSteps] != null) return memo[row][col][leftSteps];
+            int result = 0;
+            for (int[] dir : directions) {
+                int nr = row + dir[0], nc = col + dir[1];
+                if (check(nr, nc)) {
+                    result = (result + dfs(nr, nc, leftSteps - 1)) % mod;
+                }
+            }
+            return memo[row][col][leftSteps] = result;
+        }
+
+        private boolean check(int row, int col) {
+            return row >= 0 && row < 4 && col >= 0 && col < 3 && keyboard[row][col] != -1;
+        }
+    }
+
     // LC163 **
     public List<String> findMissingRanges(int[] nums, int lower, int upper) {
         lower--;
