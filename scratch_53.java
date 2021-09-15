@@ -17,6 +17,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1770 MLE
+    Integer[][] memo;
+
+    public int maximumScore(int[] nums, int[] multipliers) {
+        memo = new Integer[nums.length + 1][multipliers.length + 1];
+        return helper(0, nums.length - 1, 0, nums, multipliers);
+    }
+
+    private int helper(int start, int end, int curStep, int[] nums, int[] multipliers) {
+        if (curStep == multipliers.length) return 0;
+        if (memo[start][curStep] != null) return memo[start][curStep];
+        int result = 0;
+        result = Math.max(
+                multipliers[curStep] * nums[start] + helper(start + 1, end, curStep + 1, nums, multipliers),
+                multipliers[curStep] * nums[end] + helper(start, end - 1, curStep + 1, nums, multipliers)
+        );
+        return memo[start][curStep] = result;
+
+    }
+
     // LC1477 犯了弱智错误 O(nlogn)
     public int minSumOfLengths(int[] arr, int target) {
         int n = arr.length;
