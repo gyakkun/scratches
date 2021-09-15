@@ -11,30 +11,30 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minSumOfLengths(new int[]{1, 2, 2, 3, 2, 6, 7, 2, 1, 4, 8}, 5));
+        System.out.println(s.maximumScore(
+                new int[]{-5, -3, -3, -2, 7, 1},
+                new int[]{-10, -5, 3, 4, 6}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1770 MLE
-    Integer[][] memo;
-
+    // LC1770 ** DP
     public int maximumScore(int[] nums, int[] multipliers) {
-        memo = new Integer[nums.length + 1][multipliers.length + 1];
-        return helper(0, nums.length - 1, 0, nums, multipliers);
-    }
-
-    private int helper(int start, int end, int curStep, int[] nums, int[] multipliers) {
-        if (curStep == multipliers.length) return 0;
-        if (memo[start][curStep] != null) return memo[start][curStep];
-        int result = 0;
-        result = Math.max(
-                multipliers[curStep] * nums[start] + helper(start + 1, end, curStep + 1, nums, multipliers),
-                multipliers[curStep] * nums[end] + helper(start, end - 1, curStep + 1, nums, multipliers)
-        );
-        return memo[start][curStep] = result;
-
+        int n = nums.length, m = multipliers.length;
+        int[][] dp = new int[m + 1][m + 1];
+        // dp[i][j] 表示从前面选i个数, 后面选j个数得到的最大结果
+        for (int i = 1; i <= m; i++) dp[i][0] = dp[i - 1][0] + nums[i - 1] * multipliers[i - 1];
+        for (int i = 1; i <= m; i++) dp[0][i] = dp[0][i - 1] + nums[n - i] * multipliers[i - 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j + i <= m; j++) {
+                dp[i][j] = Math.max(dp[i - 1][j] + nums[i - 1] * multipliers[i + j - 1], dp[i][j - 1] + nums[n - j] * multipliers[i + j - 1]);
+            }
+        }
+        int result = Integer.MIN_VALUE;
+        for (int i = 1; i <= m; i++) result = Math.max(result, dp[i][m - i]);
+        return result;
     }
 
     // LC1477 犯了弱智错误 O(nlogn)
