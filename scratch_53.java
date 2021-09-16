@@ -20,47 +20,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC851 朴素的拓扑排序不行 偏序不能压扁成全序 WA
+    // LC851 朴素的拓扑排序不行 偏序不能压扁成全序
     public int[] loudAndRich(int[][] richer, int[] quiet) {
         int n = quiet.length;
+        int[] memo = new int[n];
+        Arrays.fill(memo, -1);
         List<List<Integer>> mtx = new ArrayList<>(n);
         for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
-        int[] indegree = new int[n];
         for (int[] r : richer) {
-            mtx.get(r[0]).add(r[1]);
-            indegree[r[1]]++;
+            mtx.get(r[1]).add(r[0]);
         }
-        Deque<Integer> q = new LinkedList<>();
-        for (int i = 0; i < n; i++) {
-            if (indegree[i] == 0) {
-                q.offer(i);
-            }
-        }
-        List<Integer> topo = new ArrayList<>(n);
-        while (!q.isEmpty()) {
-            int p = q.poll();
-            topo.add(p);
-            for (int next : mtx.get(p)) {
-                indegree[next]--;
-                if (indegree[next] == 0) {
-                    q.offer(next);
-                }
-            }
-        }
-
-        // topo 是 从富到穷的一个序列
         int[] result = new int[n];
         for (int i = 0; i < n; i++) {
-            int min = Integer.MAX_VALUE, minPerson = -1;
-            for (int j = i; j >= 0; j--) {
-                if (quiet[topo.get(j)] < min) {
-                    minPerson = topo.get(j);
-                    min = quiet[topo.get(j)];
-                }
-            }
-            result[topo.get(i)] = minPerson;
+            result[i] = lc851Helper(i, mtx, quiet, memo);
         }
         return result;
+    }
+
+    private int lc851Helper(int cur, List<List<Integer>> mtx, int[] quiet, int[] memo) {
+        if (memo[cur] != -1) return memo[cur];
+        if (mtx.get(cur).size() == 0) return memo[cur] = cur;
+        int min = quiet[cur], minPerson = cur;
+        for (int next : mtx.get(cur)) {
+            int nextPersonResult = lc851Helper(next, mtx, quiet, memo);
+            if (quiet[nextPersonResult] < min) {
+                min = quiet[nextPersonResult];
+                minPerson = nextPersonResult;
+            }
+        }
+        return memo[cur] = minPerson;
     }
 
     // JZOF II 026 LC143
