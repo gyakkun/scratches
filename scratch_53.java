@@ -20,6 +20,10 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCS 01 贪心: 一直加速, 直到速度大于等于目标值, 方才进行下载
+    public int leastMinutes(int n) {
+        return (int) Math.ceil(Math.log(n) / Math.log(2)) + 1;
+    }
 
     // LCP 36 不会
     // 改写自: https://leetcode-cn.com/problems/Up5XYM/solution/dp-wei-shi-yao-mei-chong-pai-zui-duo-liu-mun5/
