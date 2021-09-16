@@ -20,6 +20,81 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
+    // LCP 36 不会
+    // 改写自: https://leetcode-cn.com/problems/Up5XYM/solution/dp-wei-shi-yao-mei-chong-pai-zui-duo-liu-mun5/
+    public int maxGroupNumber(int[] tiles) {
+
+        // 容易想到按点数从小到大进行处理。因为三张成顺，所以考虑i的时候，还需要知道i-2和i-1各有多少张。
+        // 如果我们不进行限制，则状态空间会膨胀到O(N^2)，这是无法接受的。
+        //
+        // 那么，我们应该限制到几张呢？
+        //
+        // 考虑一个点数k。在(k-2,k-1,k)的情况讨论完毕后，它还可以组成(k-1,k,k+1)和(k,k+1,k+2)这两种顺子。
+        //
+        // 假设其中的某一种顺子的个数≥3，则我们可以将其转化为这三个点数的刻子，从而在总组数不变的情况下，将顺子个数减少到3以下。
+        // 因为有两种，所以最多有4个顺子。
+        //
+        // 也就是说，点数kk在结算完成后，最多还需要被用4次。因此，我们的状态空间中，每种牌最多留4张即可。
+
+
+        final int BOUND = 5;
+        TreeMap<Integer, Integer> count = new TreeMap<>();
+        for (int tile : tiles) {
+            count.put(tile, count.getOrDefault(tile, 0) + 1);
+        }
+        int[][] dp = new int[BOUND][BOUND];
+        for (int i = 0; i < BOUND; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        dp[0][0] = 0;
+        int last = 0;
+        for (Map.Entry<Integer, Integer> e : count.entrySet()) {
+            int tile = e.getKey(), freq = e.getValue();
+            // 当前点数无法与前面的点数组成顺子，只保留(0,0)的情形。
+            if (last != tile - 1) {
+                int hi = dp[0][0];
+                dp = new int[BOUND][BOUND];
+                for (int i = 0; i < BOUND; i++) {
+                    Arrays.fill(dp[i], -1);
+                }
+                dp[0][0] = hi;
+            }
+
+            int[][] next = new int[BOUND][BOUND];
+            for (int i = 0; i < BOUND; i++) {
+                Arrays.fill(next[i], -1);
+            }
+
+            for (int i = 0; i < BOUND; ++i)
+                for (int j = 0; j < BOUND; ++j) {
+                    if (dp[i][j] < 0) {
+                        continue;
+                    }
+                    // 凑多少个顺子
+                    for (int k = 0; k <= Math.min(i, Math.min(j, freq)); ++k) {
+                        int ni = j - k;
+                        // 当前点数留几张给后面用
+                        for (int nj = 0; nj <= Math.min(BOUND - 1, freq - k); ++nj) {
+                            next[ni][nj] = Math.max(next[ni][nj], dp[i][j] + k + (freq - k - nj) / 3);
+                        }
+                    }
+                }
+            // 滚动数组
+            dp = next;
+            last = tile;
+        }
+
+        int ans = 0;
+        for (int i = 0; i < BOUND; ++i) {
+            for (int j = 0; j < BOUND; ++j) {
+                ans = Math.max(ans, dp[i][j]);
+            }
+        }
+
+        return ans;
+    }
+
     // JZOF II 095 LC1143 ** 经典 注意下标以一为基方便处理
     public int longestCommonSubsequence(String text1, String text2) {
         int la = text1.length(), lb = text2.length();
