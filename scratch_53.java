@@ -17,6 +17,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1376
+    public int numOfMinutes(int n, int headID, int[] manager, int[] informTime) {
+        List<List<Integer>> subordinates = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) subordinates.add(new ArrayList<>());
+        for (int i = 0; i < n; i++) {
+            if (i != headID) {
+                subordinates.get(manager[i]).add(i);
+            }
+        }
+        return lc1376Helper(headID, subordinates, informTime);
+    }
+
+    private int lc1376Helper(int root, List<List<Integer>> subordinates, int[] informTime) {
+        if (subordinates.get(root).size() == 0) return 0;
+        int result = 0;
+        for (int sub : subordinates.get(root)) {
+            result = Math.max(result, lc1376Helper(sub, subordinates, informTime));
+        }
+        result += informTime[root];
+        return result;
+    }
+
     // LC1007 **
     public int minDominoRotations(int[] tops, int[] bottoms) {
         int count = lc1007Check(tops, bottoms, tops[0]);
