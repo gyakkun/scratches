@@ -135,78 +135,49 @@ class Scratch {
         return (int) Math.ceil(Math.log(n) / Math.log(2)) + 1;
     }
 
-    // LCP 36 不会
+    // LCP 36 HARD HARD HARD!
     // 改写自: https://leetcode-cn.com/problems/Up5XYM/solution/dp-wei-shi-yao-mei-chong-pai-zui-duo-liu-mun5/
+    // https://leetcode-cn.com/problems/Up5XYM/solution/gei-zui-gao-zan-de-ti-jie-jia-liao-zhu-s-jnsr/
     public int maxGroupNumber(int[] tiles) {
-
-        // 容易想到按点数从小到大进行处理。因为三张成顺，所以考虑i的时候，还需要知道i-2和i-1各有多少张。
-        // 如果我们不进行限制，则状态空间会膨胀到O(N^2)，这是无法接受的。
-        //
-        // 那么，我们应该限制到几张呢？
-        //
-        // 考虑一个点数k。在(k-2,k-1,k)的情况讨论完毕后，它还可以组成(k-1,k,k+1)和(k,k+1,k+2)这两种顺子。
-        //
-        // 假设其中的某一种顺子的个数≥3，则我们可以将其转化为这三个点数的刻子，从而在总组数不变的情况下，将顺子个数减少到3以下。
-        // 因为有两种，所以最多有4个顺子。
-        //
-        // 也就是说，点数kk在结算完成后，最多还需要被用4次。因此，我们的状态空间中，每种牌最多留4张即可。
-
-
-        final int BOUND = 5;
-        TreeMap<Integer, Integer> count = new TreeMap<>();
-        for (int tile : tiles) {
-            count.put(tile, count.getOrDefault(tile, 0) + 1);
-        }
-        int[][] dp = new int[BOUND][BOUND];
-        for (int i = 0; i < BOUND; i++) {
-            Arrays.fill(dp[i], -1);
-        }
+        final int bound = 5;
+        TreeMap<Integer, Integer> freq = new TreeMap<>();
+        for (int t : tiles) freq.put(t, freq.getOrDefault(t, 0) + 1);
+        Integer[][] dp = new Integer[bound][bound]; // dp[i][j] i:tile-2, j:tile-1
         dp[0][0] = 0;
-        int last = 0;
-        for (Map.Entry<Integer, Integer> e : count.entrySet()) {
-            int tile = e.getKey(), freq = e.getValue();
-            // 当前点数无法与前面的点数组成顺子，只保留(0,0)的情形。
-            if (last != tile - 1) {
-                int hi = dp[0][0];
-                dp = new int[BOUND][BOUND];
-                for (int i = 0; i < BOUND; i++) {
-                    Arrays.fill(dp[i], -1);
-                }
-                dp[0][0] = hi;
+        int lastTile = 0;
+        for (Map.Entry<Integer, Integer> e : freq.entrySet()) {
+            int tile = e.getKey(), count = e.getValue();
+            if (tile != lastTile + 1) {
+                int zeroZero = dp[0][0];
+                dp = new Integer[bound][bound];
+                dp[0][0] = zeroZero;
             }
+            Integer[][] next = new Integer[bound][bound];
+            for (int i = 0; i < bound; i++) { // tile-2
+                for (int j = 0; j < bound; j++) { // tile-1
+                    if (dp[i][j] == null) continue;// 不构成牌组 直接用null表示
 
-            int[][] next = new int[BOUND][BOUND];
-            for (int i = 0; i < BOUND; i++) {
-                Arrays.fill(next[i], -1);
-            }
-
-            for (int i = 0; i < BOUND; ++i)
-                for (int j = 0; j < BOUND; ++j) {
-                    if (dp[i][j] < 0) {
-                        continue;
-                    }
-                    // 凑多少个顺子
-                    for (int k = 0; k <= Math.min(i, Math.min(j, freq)); ++k) {
-                        int ni = j - k;
-                        // 当前点数留几张给后面用
-                        for (int nj = 0; nj <= Math.min(BOUND - 1, freq - k); ++nj) {
-                            next[ni][nj] = Math.max(next[ni][nj], dp[i][j] + k + (freq - k - nj) / 3);
+                    int lowBound = Math.min(Math.min(i, j), count);
+                    for (int sz = 0; sz <= lowBound; sz++) {
+                        int nextI = j - sz; // nextI: 即现在的j
+                        for (int nextJ = 0; nextJ <= Math.min(bound - 1, count - sz); nextJ++) { // nextJ 现在的tile, 打算预留多少给下一个tile
+                            int max = Integer.MIN_VALUE;
+                            if (next[nextI][nextJ] != null) max = next[nextI][nextJ];
+                            next[nextI][nextJ] = Math.max(max, dp[i][j] + sz + (count - sz - nextJ) / 3);
                         }
                     }
                 }
-            // 滚动数组
+            }
             dp = next;
-            last = tile;
+            lastTile = tile;
         }
-
-        int ans = 0;
-        for (int i = 0; i < BOUND; ++i) {
-            for (int j = 0; j < BOUND; ++j) {
-                ans = Math.max(ans, dp[i][j]);
+        int result = 0;
+        for (int i = 0; i < bound; i++) {
+            for (int j = 0; j < bound; j++) {
+                if (dp[i][j] != null) result = Math.max(dp[i][j], result);
             }
         }
-
-        return ans;
+        return result;
     }
 
     // JZOF II 095 LC1143 ** 经典 注意下标以一为基方便处理
@@ -591,43 +562,43 @@ class Scratch {
         return true;
     }
 
-    // LC935
-    class Lc935 {
-        final int[][] keyboard = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {-1, 0, -1}};
-        final int[][] directions = {{-2, -1}, {-1, -2}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {1, 2}, {2, 1}};
-        final int mod = 1000000007;
-        Integer[][][] memo;
+// LC935
+class Lc935 {
+    final int[][] keyboard = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {-1, 0, -1}};
+    final int[][] directions = {{-2, -1}, {-1, -2}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {1, 2}, {2, 1}};
+    final int mod = 1000000007;
+    Integer[][][] memo;
 
-        public int knightDialer(int n) {
-            memo = new Integer[4][3][n + 1];
-            long result = 0;
-            for (int row = 0; row < 4; row++) {
-                for (int col = 0; col < 3; col++) {
-                    if (keyboard[row][col] != -1) {
-                        result = (result + dfs(row, col, n - 1)) % mod;
-                    }
+    public int knightDialer(int n) {
+        memo = new Integer[4][3][n + 1];
+        long result = 0;
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (keyboard[row][col] != -1) {
+                    result = (result + dfs(row, col, n - 1)) % mod;
                 }
             }
-            return (int) (result % mod);
         }
-
-        private int dfs(int row, int col, int leftSteps) {
-            if (leftSteps == 0) return 1;
-            if (memo[row][col][leftSteps] != null) return memo[row][col][leftSteps];
-            int result = 0;
-            for (int[] dir : directions) {
-                int nr = row + dir[0], nc = col + dir[1];
-                if (check(nr, nc)) {
-                    result = (result + dfs(nr, nc, leftSteps - 1)) % mod;
-                }
-            }
-            return memo[row][col][leftSteps] = result;
-        }
-
-        private boolean check(int row, int col) {
-            return row >= 0 && row < 4 && col >= 0 && col < 3 && keyboard[row][col] != -1;
-        }
+        return (int) (result % mod);
     }
+
+    private int dfs(int row, int col, int leftSteps) {
+        if (leftSteps == 0) return 1;
+        if (memo[row][col][leftSteps] != null) return memo[row][col][leftSteps];
+        int result = 0;
+        for (int[] dir : directions) {
+            int nr = row + dir[0], nc = col + dir[1];
+            if (check(nr, nc)) {
+                result = (result + dfs(nr, nc, leftSteps - 1)) % mod;
+            }
+        }
+        return memo[row][col][leftSteps] = result;
+    }
+
+    private boolean check(int row, int col) {
+        return row >= 0 && row < 4 && col >= 0 && col < 3 && keyboard[row][col] != -1;
+    }
+}
 
     // LC163 **
     public List<String> findMissingRanges(int[] nums, int lower, int upper) {
@@ -1193,38 +1164,38 @@ class Scratch {
     }
 
 
-    // LC1415
-    class Lc1415 {
-        int kth = 0;
-        int targetTh, len;
-        String result;
-        char[] valid = {'a', 'b', 'c'};
+// LC1415
+class Lc1415 {
+    int kth = 0;
+    int targetTh, len;
+    String result;
+    char[] valid = {'a', 'b', 'c'};
 
-        public String getHappyString(int n, int k) {
-            targetTh = k;
-            len = n;
-            backtrack(new StringBuilder());
-            if (result == null) return "";
-            return result;
-        }
-
-        private void backtrack(StringBuilder cur) {
-            if (cur.length() == len) {
-                if (++kth == targetTh) {
-                    result = cur.toString();
-                }
-                return;
-            }
-            for (char c : valid) {
-                if ((cur.length() > 0 && cur.charAt(cur.length() - 1) != c) || cur.length() == 0) {
-                    cur.append(c);
-                    backtrack(cur);
-                    cur.deleteCharAt(cur.length() - 1);
-                }
-            }
-        }
-
+    public String getHappyString(int n, int k) {
+        targetTh = k;
+        len = n;
+        backtrack(new StringBuilder());
+        if (result == null) return "";
+        return result;
     }
+
+    private void backtrack(StringBuilder cur) {
+        if (cur.length() == len) {
+            if (++kth == targetTh) {
+                result = cur.toString();
+            }
+            return;
+        }
+        for (char c : valid) {
+            if ((cur.length() > 0 && cur.charAt(cur.length() - 1) != c) || cur.length() == 0) {
+                cur.append(c);
+                backtrack(cur);
+                cur.deleteCharAt(cur.length() - 1);
+            }
+        }
+    }
+
+}
 
     // LC536
     public TreeNode str2tree(String s) {
