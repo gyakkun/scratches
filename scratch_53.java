@@ -11,14 +11,42 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.sortTransformedArray(new int[]{-4, -2, 2, 4},
-                1,
-                3,
-                5
-        ));
+        System.out.println(s.numSimilarGroups(new String[]{"kccomwcgcs", "socgcmcwkc", "sgckwcmcoc", "coswcmcgkc", "cowkccmsgc", "cosgmccwkc", "sgmkwcccoc", "coswmccgkc", "kowcccmsgc", "kgcomwcccs"}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC839 并查集
+    public int numSimilarGroups(String[] strs) {
+        DisjointSetUnion<Integer> dsu = new DisjointSetUnion<>();
+        for (int i = 0; i < strs.length; i++) {
+            dsu.add(i);
+            for (int j = i + 1; j < strs.length; j++) {
+                dsu.add(j);
+                if (dsu.isConnected(i, j)) {
+                    continue;
+                }
+                if (isLike(strs[i], strs[j])) {
+                    dsu.merge(i, j);
+                }
+            }
+        }
+        return dsu.getNumOfGroups();
+    }
+
+    private boolean isLike(String a, String b) {
+        if (a.equals(b)) return true;
+        int la = a.length(), lb = b.length();
+        char[] ca = a.toCharArray(), cb = b.toCharArray();
+        int notEqualIdx = 0;
+        for (int i = 0; i < la; i++) {
+            if (ca[i] != cb[i]) {
+                notEqualIdx++;
+                if (notEqualIdx > 2) return false;
+            }
+        }
+        return true;
     }
 
     // LC360 O(n)
@@ -1195,6 +1223,7 @@ class Scratch {
                 }
             }
         }
+
     }
 
     // LC536
@@ -1631,7 +1660,7 @@ class DisjointSetUnion<T> {
         return s.size();
     }
 
-    public boolean contains(int i) {
+    public boolean contains(T i) {
         return father.containsKey(i);
     }
 
