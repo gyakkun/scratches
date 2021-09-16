@@ -17,6 +17,44 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 026 LC143
+    public void reorderList(ListNode head) {
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+
+        ListNode fast = head, slow = head;
+        while (fast.next != null && fast.next.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        ListNode nextHalf = slow.next;
+        ListNode nextHalfDummy = new ListNode(-2);
+        nextHalfDummy.next = nextHalf;
+        slow.next = null;
+
+        // 翻转nextHalf
+        ListNode prev = null, cur = nextHalf;
+        while (cur != null) {
+            ListNode origNext = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = origNext;
+        }
+
+        ListNode reversedNextHalfHead = prev;
+        nextHalfDummy.next = reversedNextHalfHead;
+
+        cur = dummy.next;
+        while (reversedNextHalfHead != null) {
+            ListNode origNext = cur.next;
+            ListNode origRNHH = reversedNextHalfHead;
+            cur.next = reversedNextHalfHead;
+            reversedNextHalfHead = reversedNextHalfHead.next;
+            origRNHH.next = origNext;
+            cur = origNext;
+        }
+    }
+
     // LC1376
     public int numOfMinutes(int n, int headID, int[] manager, int[] informTime) {
         List<List<Integer>> subordinates = new ArrayList<>(n);
