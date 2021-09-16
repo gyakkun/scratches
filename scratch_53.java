@@ -11,13 +11,95 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.loudAndRich(
-                new int[][]{{1, 0}, {2, 1}, {3, 1}, {3, 7}, {4, 3}, {5, 3}, {6, 3}},
-                new int[]{3, 2, 5, 4, 6, 1, 7, 0}
+        System.out.println(s.sortTransformedArray(new int[]{-4, -2, 2, 4},
+                1,
+                3,
+                5
         ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC360 O(n)
+    public int[] sortTransformedArray(int[] nums, int a, int b, int c) {
+        int n = nums.length;
+        int[] result = new int[n];
+
+        if (a > 0) {
+            double middle = (0d - b) / (2 * a + 0d); // 在这两侧分别递增
+            int right = 0;
+            while (nums[right] <= middle) right++;
+            int left = right - 1;
+            int resultPtr = 0;
+            // 根据和middle比的绝对值进行指针移动
+            while (right < n && left >= 0) {
+                if (Math.abs(middle - nums[left]) < Math.abs(middle - nums[right])) {
+                    result[resultPtr++] = a * nums[left] * nums[left] + b * nums[left] + c;
+                    left--;
+                } else {
+                    result[resultPtr++] = a * nums[right] * nums[right] + b * nums[right] + c;
+                    right++;
+                }
+            }
+
+            while (right < n) {
+                result[resultPtr++] = a * nums[right] * nums[right] + b * nums[right] + c;
+                right++;
+
+            }
+            while (left >= 0) {
+                result[resultPtr++] = a * nums[left] * nums[left] + b * nums[left] + c;
+                left--;
+            }
+            return result;
+        } else if (a < 0) {
+            double middle = (0d - b) / (2 * a + 0d); // 在这两侧分别递增
+            int right = 0;
+            while (nums[right] <= middle) right++;
+            int left = right - 1;
+            int resultPtr = n - 1;
+            // 根据和middle比的绝对值进行指针移动
+            while (right < n && left >= 0) {
+                if (Math.abs(middle - nums[left]) < Math.abs(middle - nums[right])) {
+                    result[resultPtr--] = a * nums[left] * nums[left] + b * nums[left] + c;
+                    left--;
+                } else {
+                    result[resultPtr--] = a * nums[right] * nums[right] + b * nums[right] + c;
+                    right++;
+                }
+            }
+
+            while (right < n) {
+                result[resultPtr--] = a * nums[right] * nums[right] + b * nums[right] + c;
+                right++;
+
+            }
+            while (left >= 0) {
+                result[resultPtr--] = a * nums[left] * nums[left] + b * nums[left] + c;
+                left--;
+            }
+            return result;
+        } else {
+            if (b > 0) {
+                int ptr = 0;
+                while (ptr < n) {
+                    result[ptr] = b * nums[ptr] + c;
+                    ptr++;
+                }
+                return result;
+            } else if (b < 0) {
+                int ptr = n - 1;
+                while (ptr >= 0) {
+                    result[ptr] = b * nums[n - ptr - 1] + c;
+                    ptr--;
+                }
+                return result;
+            } else {
+                Arrays.fill(result, c);
+                return result;
+            }
+        }
     }
 
     // LCS 01 贪心: 一直加速, 直到速度大于等于目标值, 方才进行下载
