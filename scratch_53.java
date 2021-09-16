@@ -17,6 +17,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1007 **
+    public int minDominoRotations(int[] tops, int[] bottoms) {
+        int count = lc1007Check(tops, bottoms, tops[0]);
+        if (count != -1 || tops[0] == bottoms[0]) return count;
+        return lc1007Check(tops, bottoms, bottoms[0]);
+    }
+
+    private int lc1007Check(int[] tops, int[] bottoms, int target) {
+        int topRotate = 0, bottomRotate = 0;
+        for (int i = 0; i < tops.length; i++) {
+            if (tops[i] != target && bottoms[i] != target) return -1;
+            if (tops[i] != target) topRotate++;
+            else if (bottoms[i] != target) bottomRotate++;
+            // 有可能正反两面刚好都是target 此时不用翻转
+        }
+        return Math.min(topRotate, bottomRotate);
+    }
 
     // JZOF II 092 LC926
     public int minFlipsMonoIncr(String s) {
