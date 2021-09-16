@@ -11,10 +11,56 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.numMovesStonesII(new int[]{2, 5, 6, 7, 8}));
+        System.out.println(s.loudAndRich(
+                new int[][]{{1, 0}, {2, 1}, {3, 1}, {3, 7}, {4, 3}, {5, 3}, {6, 3}},
+                new int[]{3, 2, 5, 4, 6, 1, 7, 0}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC851 朴素的拓扑排序不行 偏序不能压扁成全序 WA
+    public int[] loudAndRich(int[][] richer, int[] quiet) {
+        int n = quiet.length;
+        List<List<Integer>> mtx = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        int[] indegree = new int[n];
+        for (int[] r : richer) {
+            mtx.get(r[0]).add(r[1]);
+            indegree[r[1]]++;
+        }
+        Deque<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+        List<Integer> topo = new ArrayList<>(n);
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            topo.add(p);
+            for (int next : mtx.get(p)) {
+                indegree[next]--;
+                if (indegree[next] == 0) {
+                    q.offer(next);
+                }
+            }
+        }
+
+        // topo 是 从富到穷的一个序列
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            int min = Integer.MAX_VALUE, minPerson = -1;
+            for (int j = i; j >= 0; j--) {
+                if (quiet[topo.get(j)] < min) {
+                    minPerson = topo.get(j);
+                    min = quiet[topo.get(j)];
+                }
+            }
+            result[topo.get(i)] = minPerson;
+        }
+        return result;
     }
 
     // JZOF II 026 LC143
