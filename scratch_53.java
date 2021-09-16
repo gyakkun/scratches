@@ -24,17 +24,17 @@ class Scratch {
     public int longestCommonSubsequence(String text1, String text2) {
         int la = text1.length(), lb = text2.length();
         char[] ca = text1.toCharArray(), cb = text2.toCharArray();
-        int[][] dp = new int[la + 1][lb + 1];
+        int[][] dp = new int[2][lb + 1];
         for (int i = 1; i <= la; i++) {
             for (int j = 1; j <= lb; j++) {
                 if (ca[i - 1] == cb[j - 1]) {
-                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                    dp[i % 2][j] = dp[(i - 1) % 2][j - 1] + 1;
                 } else {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                    dp[i % 2][j] = Math.max(dp[(i - 1) % 2][j], dp[i % 2][j - 1]);
                 }
             }
         }
-        return dp[la][lb];
+        return dp[la % 2][lb];
     }
 
     // LC851 利用拓扑排序 并不是求一个偏序转全序的序列 而是根据偏序关系更新答案 **
