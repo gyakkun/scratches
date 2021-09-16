@@ -20,35 +20,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC851 朴素的拓扑排序不行 偏序不能压扁成全序
+    // LC851 利用拓扑排序 并不是求一个偏序转全序的序列 而是根据偏序关系更新答案 **
     public int[] loudAndRich(int[][] richer, int[] quiet) {
         int n = quiet.length;
-        int[] memo = new int[n];
-        Arrays.fill(memo, -1);
         List<List<Integer>> mtx = new ArrayList<>(n);
         for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
-        for (int[] r : richer) {
-            mtx.get(r[1]).add(r[0]);
-        }
+        int[] indegree = new int[n];
         int[] result = new int[n];
-        for (int i = 0; i < n; i++) {
-            result[i] = lc851Helper(i, mtx, quiet, memo);
+        for (int i = 0; i < n; i++) result[i] = i;
+        for (int[] r : richer) {
+            mtx.get(r[0]).add(r[1]);
+            indegree[r[1]]++;
         }
-        return result;
-    }
-
-    private int lc851Helper(int cur, List<List<Integer>> mtx, int[] quiet, int[] memo) {
-        if (memo[cur] != -1) return memo[cur];
-        if (mtx.get(cur).size() == 0) return memo[cur] = cur;
-        int min = quiet[cur], minPerson = cur;
-        for (int next : mtx.get(cur)) {
-            int nextPersonResult = lc851Helper(next, mtx, quiet, memo);
-            if (quiet[nextPersonResult] < min) {
-                min = quiet[nextPersonResult];
-                minPerson = nextPersonResult;
+        Deque<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
             }
         }
-        return memo[cur] = minPerson;
+
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            for (int next : mtx.get(p)) {
+                if (quiet[result[p]] < quiet[result[next]]) {
+                    result[next] = result[p];
+                }
+                indegree[next]--;
+                if (indegree[next] == 0) {
+                    q.offer(next);
+                }
+            }
+        }
+        return result;
     }
 
     // JZOF II 026 LC143
