@@ -17,6 +17,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
+    // JZOF II 092 LC926
+    public int minFlipsMonoIncr(String s) {
+        // 关心每个字符左侧有多少1, 右侧有多少0
+        int n = s.length();
+        char[] ca = s.toCharArray();
+        int[] leftOneCount = new int[n];
+        int totalOneCount;
+        leftOneCount[0] = ca[0] - '0';
+        for (int i = 1; i < n; i++) {
+            leftOneCount[i] = leftOneCount[i - 1] + (ca[i] - '0'); // 其实可以one the fly 计算, 省去数组空间
+        }
+        totalOneCount = leftOneCount[n - 1];
+        int result = Math.min(totalOneCount, n - totalOneCount);
+        for (int i = 0; i < n; i++) {
+            // 左侧(含自身) 有多少个1
+            int leftOne = leftOneCount[i];
+            // 右侧有多少0
+            int rightZero = n - totalOneCount - (i + 1 - leftOne);
+            result = Math.min(result, leftOne + rightZero);
+        }
+        return result;
+    }
+
     // LC1040 ** 双指针
     public int[] numMovesStonesII(int[] stones) {
         int n = stones.length;
