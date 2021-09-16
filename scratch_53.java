@@ -11,18 +11,43 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maximumScore(
-                new int[]{-5, -3, -3, -2, 7, 1},
-                new int[]{-10, -5, 3, 4, 6}
-        ));
+        System.out.println(s.numMovesStonesII(new int[]{2, 5, 6, 7, 8}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1040 TBD
+    // LC1040 ** 双指针
     public int[] numMovesStonesII(int[] stones) {
-        return null;
+        int n = stones.length;
+        Arrays.sort(stones);
+
+        // 最大移动: 考虑整个区间的大小, 以失去起始状态两端较小一侧为代价, 可以将区间内所有位置走遍?
+        // 石子可以移动的位置: 区间大小 - 已占用位置
+        int positionAvail = stones[n - 1] - stones[0] + 1 - n;
+        // 一旦移动一侧的端点, 则靠近这一侧端点的最近的石子的所有位置将变得不可放置, 需要取较小的一侧
+        int penalty = Math.min(stones[n - 1] - stones[n - 2] - 1, stones[1] - stones[0] - 1);
+        int resultMax = positionAvail - penalty;
+
+        // 最少移动: 考虑现有的石子里面有多少是已经连续的
+        // 考虑最终状态, 数轴上一定有一段长度为n的区间被填满
+        // 考虑尺取法, 用一个长度为n的尺子遍历整个区间, 看尺子在哪个位置区间内的点最多, 则该位置外的点即为需要移动的最小次数
+        // 考虑 1 2 3 4 10 这种情况, 即尺子内已经连续, 此时需要将1移动到6, 将10移动到5, 即移动两次, 需要特殊处理
+        // 考虑 1 2 3 4 6, 此时最大移动为1, 但按照上述判定最小移动为2, 所以初始化时将min=max是有必要的
+        int resultMin = resultMax;
+        int right = 0;
+        for (int left = 0; left < n; left++) {
+            while (right + 1 < n && stones[right + 1] - stones[left] + 1 <= n) {
+                right++;
+            }
+            int cost = n - (right - left + 1);
+            if (right - left + 1 == n - 1 && stones[right] - stones[left] + 1 == n - 1) {
+                cost = 2;
+            }
+            resultMin = Math.min(resultMin, cost);
+        }
+
+        return new int[]{resultMin, resultMax};
     }
 
     // LC1770 ** DP
