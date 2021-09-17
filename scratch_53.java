@@ -23,52 +23,49 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1733 用优先队列剪枝 压线通过
-    public int minimumTeachings(int n, int[][] languages, int[][] friendships) {
-        Set<Integer>[] langSet = new Set[languages.length + 1];
-        Map<Integer, Set<Integer>> langUserMap = new HashMap<>();
-        for (int i = 1; i <= languages.length; i++) {
-            langSet[i] = new HashSet<>();
-            for (int j : languages[i - 1]) {
-                langUserMap.putIfAbsent(j, new HashSet<>());
-                langUserMap.get(j).add(i);
-                langSet[i].add(j);
+    // LC1733 ** Solution
+    // 判断两个人是否有共同语言
+    boolean hasCommon(int[][] languages, int i, int j) {
+        int[] lv1 = languages[i - 1];
+        int[] lv2 = languages[j - 1];
+
+        for (int l1 : lv1) {
+            for (int l2 : lv2) {
+                if (l1 == l2) return true;
             }
         }
-        PriorityQueue<Integer> mostPeopleLearn = new PriorityQueue<>(Comparator.comparingInt(o -> -langUserMap.get(o).size()));
-        // 让认识语言最少的pair 优先被处理, 使得shouldTeach 尽早超过min以剪枝
-        Arrays.sort(friendships, Comparator.comparingInt(o -> langSet[o[0]].size() + langSet[o[1]].size()));
-        for (int i : langUserMap.keySet()) mostPeopleLearn.offer(i);
-        boolean[][] canTalk = new boolean[languages.length + 1][languages.length + 1];
-        int min = Integer.MAX_VALUE;
-        while (!mostPeopleLearn.isEmpty()) {
-            int i = mostPeopleLearn.poll();
-            int shouldTeach = 0;
-            boolean[] teached = new boolean[languages.length + 1];
-            for (int[] f : friendships) {
-                int f0 = f[0], f1 = f[1];
-                if (canTalk[f0][f1]) continue;
-                Set<Integer> s0 = new HashSet<>(langSet[f0]), s1 = new HashSet<>(langSet[f1]);
-                s0.retainAll(s1);
-                // 两个人本来就可以交流 跳过
-                if (s0.size() > 0) {
-                    canTalk[f0][f1] = canTalk[f1][f0] = true;
-                    continue;
-                }
-                if (!langSet[f0].contains(i) && !teached[f0]) {
-                    teached[f0] = true;
-                    shouldTeach++;
-                }
-                if (!langSet[f1].contains(i) && !teached[f1]) {
-                    teached[f1] = true;
-                    shouldTeach++;
-                }
-                if (shouldTeach > min) break;
-            }
-            min = Math.min(min, shouldTeach);
-        }
-        return min;
+        return false;
     }
+
+    int minimumTeachings(int n, int[][] languages, int[][] friendships) {
+        Map<Integer, Integer> mostLanguage = new HashMap<>();
+        Map<Integer, Integer> notConnected = new HashMap<>();
+
+        // 记录没有共同语言的好友 有哪些人
+        for (int[] f : friendships) {
+            if (!hasCommon(languages, f[0], f[1])) {
+                notConnected.put(f[0], notConnected.getOrDefault(f[0], 0) + 1);
+                notConnected.put(f[1], notConnected.getOrDefault(f[1], 0) + 1);
+            }
+        }
+        // 统计他们会的语言
+        for (Map.Entry<Integer, Integer> p : notConnected.entrySet()) {
+            for (int lang : languages[p.getKey() - 1]) {
+                mostLanguage.put(lang, mostLanguage.getOrDefault(lang, 0) + 1);
+            }
+        }
+
+        int most = 0;
+        // 找到他们里最通用的语言
+        for (Map.Entry<Integer, Integer> p : mostLanguage.entrySet()) {
+            most = Math.max(most, p.getValue());
+        }
+        int nodes = notConnected.size();
+
+        // 需要再学习该语言的人数 即他们的总人数-会该语言的人数
+        return nodes - most;
+    }
+
 
     // LC450 ** 很漂亮的递归
     public TreeNode deleteNode(TreeNode root, int key) {
