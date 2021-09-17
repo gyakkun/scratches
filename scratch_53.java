@@ -17,12 +17,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC390
-    public int lastRemaining(int n) {
-        return helper(1, n, 1);
+    // LC1641
+    char[] vowel = {'a', 'e', 'i', 'o', 'u'};
+    int result = 0;
+
+    public int countVowelStrings(int n) {
+        helper('\0', n, 0);
+        return result;
     }
 
-    private int helper(int start, int end, int interval) {
+    private void helper(char last, int target, int len) {
+        if (len == target) {
+            result++;
+            return;
+        }
+        for (char c : vowel) {
+            if (len == 0) {
+                helper(c, target, 1);
+            } else {
+                if (c >= last) {
+                    helper(c, target, len + 1);
+                }
+            }
+        }
+    }
+
+    // LC390
+    public int lastRemaining(int n) {
+        return lc390Helper(1, n, 1);
+    }
+
+    private int lc390Helper(int start, int end, int interval) {
         // 有几个数?
         if (start == end) return start;
         int trailingZero = Integer.numberOfTrailingZeros(interval);
@@ -32,16 +57,16 @@ class Scratch {
         }
         if (trailingZero % 2 == 0) {
             if (num % 2 == 1) { // 奇数个数字, 头尾都要删去
-                return helper(start + interval, end - interval, interval * 2);
+                return lc390Helper(start + interval, end - interval, interval * 2);
             }
             // 偶数个数字
-            return helper(start + interval, end, interval * 2);
+            return lc390Helper(start + interval, end, interval * 2);
         } else {
             // 从尾开始
             if (num % 2 == 1) {
-                return helper(start + interval, end - interval, interval * 2);
+                return lc390Helper(start + interval, end - interval, interval * 2);
             }
-            return helper(start, end - interval, interval * 2);
+            return lc390Helper(start, end - interval, interval * 2);
         }
     }
 
