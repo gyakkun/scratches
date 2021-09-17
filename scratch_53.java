@@ -12,15 +12,60 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        Lc1707 lc1707 = new Lc1707();
 //        System.out.println(s.maximizeXor(new int[]{5, 2, 4, 6, 6, 3}, new int[][]{{12, 4}, {8, 1}, {6, 3}}));
-        System.out.println(lc1707.maxGeneticDifference(
-                new int[]{-1, 0, 1, 1},
-                new int[][]{{0, 2}, {3, 2}, {2, 5}}
+        System.out.println(s.minimumTeachings(
+                3,
+                new int[][]{{2}, {1, 3}, {1, 2}, {3}},
+                new int[][]{{1, 4}, {1, 2}, {3, 4}, {2, 3}}
         ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1733 用优先队列剪枝 压线通过
+    public int minimumTeachings(int n, int[][] languages, int[][] friendships) {
+        Set<Integer>[] langSet = new Set[languages.length + 1];
+        Map<Integer, Set<Integer>> langUserMap = new HashMap<>();
+        for (int i = 1; i <= languages.length; i++) {
+            langSet[i] = new HashSet<>();
+            for (int j : languages[i - 1]) {
+                langUserMap.putIfAbsent(j, new HashSet<>());
+                langUserMap.get(j).add(i);
+                langSet[i].add(j);
+            }
+        }
+        PriorityQueue<Integer> mostPeopleLearn = new PriorityQueue<>(Comparator.comparingInt(o -> -langUserMap.get(o).size()));
+        for (int i : langUserMap.keySet()) mostPeopleLearn.offer(i);
+        boolean[][] canTalk = new boolean[languages.length + 1][languages.length + 1];
+        int min = Integer.MAX_VALUE;
+        while(!mostPeopleLearn.isEmpty()){
+            int i = mostPeopleLearn.poll();
+            int shouldTeach = 0;
+            boolean[] teached = new boolean[languages.length + 1];
+            for (int[] f : friendships) {
+                int f0 = f[0], f1 = f[1];
+                if (canTalk[f0][f1]) continue;
+                Set<Integer> s0 = new HashSet<>(langSet[f0]), s1 = new HashSet<>(langSet[f1]);
+                s0.retainAll(s1);
+                // 两个人本来就可以交流 跳过
+                if (s0.size() > 0) {
+                    canTalk[f0][f1] = canTalk[f1][f0] = true;
+                    continue;
+                }
+                if (!langSet[f0].contains(i) && !teached[f0]) {
+                    teached[f0] = true;
+                    shouldTeach++;
+                }
+                if (!langSet[f1].contains(i) && !teached[f1]) {
+                    teached[f1] = true;
+                    shouldTeach++;
+                }
+                if (shouldTeach > min) break;
+            }
+            min = Math.min(min, shouldTeach);
+        }
+        return min;
     }
 
     // LC450 ** 很漂亮的递归
