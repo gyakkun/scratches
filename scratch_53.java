@@ -17,6 +17,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1707 TLE
+    public int[] maximizeXor(int[] nums, int[][] queries) {
+        TreeSet<Integer> ts = new TreeSet<>();
+        int[] result = new int[queries.length];
+        for (int i : nums) ts.add(i);
+        int tsMin = ts.first();
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            if (q[1] < tsMin) result[i] = -1;
+            else {
+                int max = Integer.MIN_VALUE;
+                for (int j : ts.subSet(tsMin, true, q[1], true)) {
+                    max = Math.max(q[0] ^ j, max);
+                }
+                result[i] = max;
+            }
+        }
+        return result;
+    }
+
+    // LC1938
+    public int[] maxGeneticDifference(int[] parents, int[][] queries) {
+        return null;
+    }
+
     // LC1641
     char[] vowel = {'a', 'e', 'i', 'o', 'u'};
     int result = 0;
