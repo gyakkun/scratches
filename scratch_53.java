@@ -17,6 +17,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC36
+    public boolean isValidSudoku(char[][] board) {
+        int[][] col = new int[9][10];
+        int[][] row = new int[9][10];
+        int[][] box = new int[9][10];
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') continue;
+                int num = board[i][j] - '0';
+                row[i][num]++;
+                col[j][num]++;
+                int boxId = (i / 3) * 3 + j / 3;
+                box[boxId][num]++;
+                if (row[i][num] > 1 || col[j][num] > 1 || box[boxId][num] > 1) return false;
+            }
+        }
+        return true;
+    }
+
     // LC839 并查集
     public int numSimilarGroups(String[] strs) {
         DisjointSetUnion<Integer> dsu = new DisjointSetUnion<>();
@@ -562,43 +581,43 @@ class Scratch {
         return true;
     }
 
-// LC935
-class Lc935 {
-    final int[][] keyboard = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {-1, 0, -1}};
-    final int[][] directions = {{-2, -1}, {-1, -2}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {1, 2}, {2, 1}};
-    final int mod = 1000000007;
-    Integer[][][] memo;
+    // LC935
+    class Lc935 {
+        final int[][] keyboard = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {-1, 0, -1}};
+        final int[][] directions = {{-2, -1}, {-1, -2}, {-1, 2}, {-2, 1}, {1, -2}, {2, -1}, {1, 2}, {2, 1}};
+        final int mod = 1000000007;
+        Integer[][][] memo;
 
-    public int knightDialer(int n) {
-        memo = new Integer[4][3][n + 1];
-        long result = 0;
-        for (int row = 0; row < 4; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (keyboard[row][col] != -1) {
-                    result = (result + dfs(row, col, n - 1)) % mod;
+        public int knightDialer(int n) {
+            memo = new Integer[4][3][n + 1];
+            long result = 0;
+            for (int row = 0; row < 4; row++) {
+                for (int col = 0; col < 3; col++) {
+                    if (keyboard[row][col] != -1) {
+                        result = (result + dfs(row, col, n - 1)) % mod;
+                    }
                 }
             }
+            return (int) (result % mod);
         }
-        return (int) (result % mod);
-    }
 
-    private int dfs(int row, int col, int leftSteps) {
-        if (leftSteps == 0) return 1;
-        if (memo[row][col][leftSteps] != null) return memo[row][col][leftSteps];
-        int result = 0;
-        for (int[] dir : directions) {
-            int nr = row + dir[0], nc = col + dir[1];
-            if (check(nr, nc)) {
-                result = (result + dfs(nr, nc, leftSteps - 1)) % mod;
+        private int dfs(int row, int col, int leftSteps) {
+            if (leftSteps == 0) return 1;
+            if (memo[row][col][leftSteps] != null) return memo[row][col][leftSteps];
+            int result = 0;
+            for (int[] dir : directions) {
+                int nr = row + dir[0], nc = col + dir[1];
+                if (check(nr, nc)) {
+                    result = (result + dfs(nr, nc, leftSteps - 1)) % mod;
+                }
             }
+            return memo[row][col][leftSteps] = result;
         }
-        return memo[row][col][leftSteps] = result;
-    }
 
-    private boolean check(int row, int col) {
-        return row >= 0 && row < 4 && col >= 0 && col < 3 && keyboard[row][col] != -1;
+        private boolean check(int row, int col) {
+            return row >= 0 && row < 4 && col >= 0 && col < 3 && keyboard[row][col] != -1;
+        }
     }
-}
 
     // LC163 **
     public List<String> findMissingRanges(int[] nums, int lower, int upper) {
@@ -1164,38 +1183,38 @@ class Lc935 {
     }
 
 
-// LC1415
-class Lc1415 {
-    int kth = 0;
-    int targetTh, len;
-    String result;
-    char[] valid = {'a', 'b', 'c'};
+    // LC1415
+    class Lc1415 {
+        int kth = 0;
+        int targetTh, len;
+        String result;
+        char[] valid = {'a', 'b', 'c'};
 
-    public String getHappyString(int n, int k) {
-        targetTh = k;
-        len = n;
-        backtrack(new StringBuilder());
-        if (result == null) return "";
-        return result;
-    }
-
-    private void backtrack(StringBuilder cur) {
-        if (cur.length() == len) {
-            if (++kth == targetTh) {
-                result = cur.toString();
-            }
-            return;
+        public String getHappyString(int n, int k) {
+            targetTh = k;
+            len = n;
+            backtrack(new StringBuilder());
+            if (result == null) return "";
+            return result;
         }
-        for (char c : valid) {
-            if ((cur.length() > 0 && cur.charAt(cur.length() - 1) != c) || cur.length() == 0) {
-                cur.append(c);
-                backtrack(cur);
-                cur.deleteCharAt(cur.length() - 1);
+
+        private void backtrack(StringBuilder cur) {
+            if (cur.length() == len) {
+                if (++kth == targetTh) {
+                    result = cur.toString();
+                }
+                return;
+            }
+            for (char c : valid) {
+                if ((cur.length() > 0 && cur.charAt(cur.length() - 1) != c) || cur.length() == 0) {
+                    cur.append(c);
+                    backtrack(cur);
+                    cur.deleteCharAt(cur.length() - 1);
+                }
             }
         }
-    }
 
-}
+    }
 
     // LC536
     public TreeNode str2tree(String s) {
