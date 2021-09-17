@@ -17,6 +17,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 050 LC437  **
+    public int pathSumIII(TreeNode root, int targetSum) {
+        if (root == null) return 0;
+        return helper(root, targetSum) + pathSumIII(root.left, targetSum) + pathSumIII(root.right, targetSum);
+    }
+
+    private int helper(TreeNode root, int targetSum) {
+        if (root == null) return 0;
+        targetSum -= root.val;
+        return (targetSum == 0 ? 1 : 0) + helper(root.left, targetSum) + helper(root.right, targetSum);
+    }
+
     // LC36
     public boolean isValidSudoku(char[][] board) {
         int[][] col = new int[9][10];
@@ -2292,7 +2304,7 @@ class MajorityChecker {
         int ctr = 0;
         while (!pq.isEmpty()) {
             idxMap.put(pq.peek(), ctr);
-            reverseIdxMap[ctr]= pq.peek();
+            reverseIdxMap[ctr] = pq.peek();
             ctr++;
             pq.poll();
         }
