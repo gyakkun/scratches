@@ -2275,26 +2275,24 @@ class BIT {
 
 // LC1157
 class MajorityChecker {
-    Map<Integer, Integer> idxMap = new HashMap<>();
-    Map<Integer, Integer> reverseIdxMap = new HashMap<>();
-    TreeSet<Integer>[] bitIdxSet;
-    List<Integer> origArr;
+    int[] reverseIdxMap;
     Map<Integer, Integer> freq = new HashMap<>();
+    TreeSet<Integer>[] bitIdxSet;
 
     public MajorityChecker(int[] arr) {
-        origArr = new ArrayList<>(arr.length);
-        for (int i = 0; i < arr.length; i++) origArr.add(arr[i]);
+        Map<Integer, Integer> idxMap = new HashMap<>();
         // 统计频率
         for (int i : arr) {
             freq.put(i, freq.getOrDefault(i, 0) + 1);
         }
+        reverseIdxMap = new int[freq.size()];
         // 用pq将频率高的放在映射数组前面, 方便后面遍历时候剪枝
         PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -freq.get(o)));
         for (int i : freq.keySet()) pq.offer(i);
         int ctr = 0;
         while (!pq.isEmpty()) {
             idxMap.put(pq.peek(), ctr);
-            reverseIdxMap.put(ctr, pq.peek());
+            reverseIdxMap[ctr]= pq.peek();
             ctr++;
             pq.poll();
         }
@@ -2312,8 +2310,8 @@ class MajorityChecker {
     }
 
     public int query(int left, int right, int threshold) {
-        for (int i = 0; i < bitIdxSet.length; i++) {
-            int val = reverseIdxMap.get(i);
+        for (int i = 0; i < reverseIdxMap.length; i++) {
+            int val = reverseIdxMap[i];
             if (freq.get(val) < threshold) break; // 如果频率高的值的总频率都不及threshold 则后面的频率更低的值更不可能, 直接剪枝
             TreeSet<Integer> ts = bitIdxSet[i];
             // 查询在该区间内的频率
@@ -2322,4 +2320,3 @@ class MajorityChecker {
         return -1;
     }
 }
-
