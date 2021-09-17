@@ -10,31 +10,12 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.out.println(s.numSimilarGroups(new String[]{"kccomwcgcs", "socgcmcwkc", "sgckwcmcoc", "coswcmcgkc", "cowkccmsgc", "cosgmccwkc", "sgmkwcccoc", "coswmccgkc", "kowcccmsgc", "kgcomwcccs"}));
+        Lc1707 lc1707 = new Lc1707();
+//        System.out.println(s.maximizeXor(new int[]{5, 2, 4, 6, 6, 3}, new int[][]{{12, 4}, {8, 1}, {6, 3}}));
+        System.out.println(lc1707.maximizeXor(new int[]{0, 1, 2, 3, 4}, new int[][]{{5, 6}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
-    }
-
-    // LC1707 TLE
-    public int[] maximizeXor(int[] nums, int[][] queries) {
-        TreeSet<Integer> ts = new TreeSet<>();
-        int[] result = new int[queries.length];
-        for (int i : nums) ts.add(i);
-        int tsMin = ts.first();
-        for (int i = 0; i < queries.length; i++) {
-            int[] q = queries[i];
-            if (q[1] < tsMin) result[i] = -1;
-            else {
-                int max = Integer.MIN_VALUE;
-                for (int j : ts.subSet(tsMin, true, q[1], true)) {
-                    max = Math.max(q[0] ^ j, max);
-                }
-                result[i] = max;
-            }
-        }
-        return result;
     }
 
     // LC1938
@@ -2408,5 +2389,71 @@ class MajorityChecker {
             if (ts.subSet(left, true, right, true).size() >= threshold) return val;
         }
         return -1;
+    }
+}
+
+// LC1707 Trie ** 字典树上异或
+class Lc1707 {
+    public int[] maximizeXor(int[] nums, int[][] queries) {
+        Arrays.sort(nums);
+        Map<int[], Integer> idxMap = new HashMap<>();
+        int[] result = new int[queries.length];
+        BTrie trie = new BTrie();
+        for (int i = 0; i < queries.length; i++) idxMap.put(queries[i], i);
+        Arrays.sort(queries, Comparator.comparingInt(o -> o[1]));
+        int numPtr = 0;
+        for (int[] q : queries) {
+            while (numPtr < nums.length && nums[numPtr] <= q[1]) trie.add(nums[numPtr++]);
+            if (numPtr == 0) result[idxMap.get(q)] = -1;
+            else {
+                int[] victim = intToBinArr(q[0]);
+                BTrieNode cur = trie.root;
+                for (int i = 0; i < 32; i++) {
+                    int thisBit = victim[i];
+                    if (cur.children[1 - thisBit] != null) {
+                        victim[i] = 1;
+                        cur = cur.children[1 - thisBit];
+                    } else {
+                        victim[i] = 0;
+                        cur = cur.children[thisBit];
+                    }
+                }
+                int max = 0;
+                for (int i = 0; i < 32; i++) {
+                    max |= victim[i] << (31 - i);
+                }
+                result[idxMap.get(q)] = max;
+            }
+        }
+        return result;
+    }
+
+    private int[] intToBinArr(int num) {
+        int[] result = new int[32];
+        for (int i = 31; i >= 0; i--) {
+            result[31 - i] = (num >> i) & 1;
+        }
+        return result;
+    }
+
+    class BTrie {
+        BTrieNode root = new BTrieNode();
+
+        public void add(int num) {
+            int[] binArr = intToBinArr(num);
+            BTrieNode cur = root;
+            for (int i : binArr) {
+                if (cur.children[i] == null) cur.children[i] = new BTrieNode();
+                cur = cur.children[i];
+            }
+            cur.isEnd = true;
+        }
+
+
+    }
+
+    class BTrieNode {
+        BTrieNode[] children = new BTrieNode[2];
+        boolean isEnd = false;
     }
 }
