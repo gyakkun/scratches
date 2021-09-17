@@ -23,6 +23,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC450 ** 很漂亮的递归
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) return null;
+        if (root.val == key) {
+            if (root.left == null) return root.right;
+            if (root.right == null) return root.left;
+            // 如果既有左子树 又有右子树, 则用右子树中最小的节点代替root
+            TreeNode minNode = findMinNode(root.right);
+            root.val = minNode.val;
+            // 然后删除右子树中这个最小的节点
+            root.right = deleteNode(root.right, minNode.val);
+        } else if (root.val < key) {
+            root.right = deleteNode(root.right, key);
+        } else {
+            root.left = deleteNode(root.left, key);
+        }
+        return root;
+    }
+
+    private TreeNode findMinNode(TreeNode root) {
+        while (root.left != null) {
+            root = root.left;
+        }
+        return root;
+    }
+
+
     // LC776 ** 不太懂
     public TreeNode[] splitBST(TreeNode root, int target) {
         if (root == null) return new TreeNode[2];
@@ -44,21 +71,21 @@ class Scratch {
     int result = 0;
 
     public int countVowelStrings(int n) {
-        helper('\0', n, 0);
+        lc1641Helper('\0', n, 0);
         return result;
     }
 
-    private void helper(char last, int target, int len) {
+    private void lc1641Helper(char last, int target, int len) {
         if (len == target) {
             result++;
             return;
         }
         for (char c : vowel) {
             if (len == 0) {
-                helper(c, target, 1);
+                lc1641Helper(c, target, 1);
             } else {
                 if (c >= last) {
-                    helper(c, target, len + 1);
+                    lc1641Helper(c, target, len + 1);
                 }
             }
         }
