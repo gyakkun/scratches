@@ -2272,3 +2272,45 @@ class BIT {
         return x & (-x);
     }
 }
+
+// LC1157 TLE
+class MajorityChecker {
+    Map<Integer, Integer> idxMap = new HashMap<>();
+    Map<Integer, Integer> reverseIdxMap = new HashMap<>();
+    TreeSet<Integer>[] bitIdxSet;
+    List<Integer> origArr;
+
+    public MajorityChecker(int[] arr) {
+        origArr = new ArrayList<>(arr.length);
+        for (int i = 0; i < arr.length; i++) origArr.add(arr[i]);
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i : arr) ts.add(i);
+        int ctr = 0;
+        for (int i : ts) {
+            idxMap.put(i, ctr);
+            reverseIdxMap.put(ctr, i);
+            ctr++;
+        }
+        bitIdxSet = new TreeSet[idxMap.size()];
+        for (int i = 0; i < bitIdxSet.length; i++) bitIdxSet[i] = new TreeSet<>();
+        for (int i = 0; i < arr.length; i++) {
+            int val = arr[i];
+            int idx = i;
+            int mappedVal = idxMap.get(val);
+            TreeSet<Integer> mappedIdxSet = bitIdxSet[mappedVal];
+            mappedIdxSet.add(idx);
+        }
+    }
+
+    public int query(int left, int right, int threshold) {
+        Set<Integer> appear = new HashSet<>(origArr.subList(left, right + 1));
+        for (int i : appear) {
+            TreeSet<Integer> t = bitIdxSet[idxMap.get(i)];
+            if (t.subSet(left, true, right, true).size() >= threshold) {
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+
