@@ -36,10 +36,12 @@ class Scratch {
             }
         }
         PriorityQueue<Integer> mostPeopleLearn = new PriorityQueue<>(Comparator.comparingInt(o -> -langUserMap.get(o).size()));
+        // 让认识语言最少的pair 优先被处理, 使得shouldTeach 尽早超过min以剪枝
+        Arrays.sort(friendships, Comparator.comparingInt(o -> langSet[o[0]].size() + langSet[o[1]].size()));
         for (int i : langUserMap.keySet()) mostPeopleLearn.offer(i);
         boolean[][] canTalk = new boolean[languages.length + 1][languages.length + 1];
         int min = Integer.MAX_VALUE;
-        while(!mostPeopleLearn.isEmpty()){
+        while (!mostPeopleLearn.isEmpty()) {
             int i = mostPeopleLearn.poll();
             int shouldTeach = 0;
             boolean[] teached = new boolean[languages.length + 1];
