@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
@@ -12,16 +14,15 @@ class Scratch {
         long timing = System.currentTimeMillis();
         Lc1707 lc1707 = new Lc1707();
 //        System.out.println(s.maximizeXor(new int[]{5, 2, 4, 6, 6, 3}, new int[][]{{12, 4}, {8, 1}, {6, 3}}));
-        System.out.println(lc1707.maximizeXor(new int[]{0, 1, 2, 3, 4}, new int[][]{{5, 6}}));
+        System.out.println(lc1707.maxGeneticDifference(
+                new int[]{-1, 0, 1, 1},
+                new int[][]{{0, 2}, {3, 2}, {2, 5}}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1938
-    public int[] maxGeneticDifference(int[] parents, int[][] queries) {
-        return null;
-    }
 
     // LC1641
     char[] vowel = {'a', 'e', 'i', 'o', 'u'};
@@ -2418,12 +2419,69 @@ class Lc1707 {
                         cur = cur.children[thisBit];
                     }
                 }
-                int max = 0;
-                for (int i = 0; i < 32; i++) {
-                    max |= victim[i] << (31 - i);
-                }
+                int max = binArrToInt(victim);
                 result[idxMap.get(q)] = max;
             }
+        }
+        return result;
+    }
+
+
+    // LC1938
+    public int[] maxGeneticDifference(int[] parents, int[][] queries) {
+        Map<Integer, Set<Integer>> children = new HashMap<>();
+        for (int i = 0; i < parents.length; i++) {
+            children.putIfAbsent(parents[i], new HashSet<>());
+            children.get(parents[i]).add(i);
+        }
+        int root = children.get(-1).iterator().next();
+        BTrie trie = new BTrie();
+        int[] result = new int[queries.length];
+        Map<Integer, Set<Pair<Integer, int[]>>> nodeNumQIdxQueryMap = new HashMap<>();
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            nodeNumQIdxQueryMap.putIfAbsent(q[0], new HashSet<>());
+            nodeNumQIdxQueryMap.get(q[0]).add(new Pair<>(i, q));
+        }
+        lc1938Helper(root, trie, result, nodeNumQIdxQueryMap, children);
+        return result;
+    }
+
+    private void lc1938Helper(int root, BTrie trie, int[] result, Map<Integer, Set<Pair<Integer, int[]>>> nodeNumQIdxQueryMap, Map<Integer, Set<Integer>> children) {
+        trie.add(root);
+
+        if (nodeNumQIdxQueryMap.containsKey(root)) {
+            for (Pair<Integer, int[]> pair : nodeNumQIdxQueryMap.get(root)) {
+                int qIdx = pair.getKey();
+                int[] q = pair.getValue();
+                int[] victim = intToBinArr(q[1]);
+                BTrieNode cur = trie.root;
+                for (int i = 0; i < 32; i++) {
+                    int thisBit = victim[i];
+                    if (cur.children[1 - thisBit] != null) {
+                        victim[i] = 1;
+                        cur = cur.children[1 - thisBit];
+                    } else {
+                        victim[i] = 0;
+                        cur = cur.children[thisBit];
+                    }
+                }
+                int max = binArrToInt(victim);
+                result[qIdx] = max;
+            }
+        }
+        if (children.containsKey(root)) {
+            for (int c : children.get(root)) {
+                lc1938Helper(c, trie, result, nodeNumQIdxQueryMap, children);
+            }
+        }
+        trie.delete(root);
+    }
+
+    private int binArrToInt(int[] victim) {
+        int result = 0;
+        for (int i = 0; i < 32; i++) {
+            result |= victim[i] << (31 - i);
         }
         return result;
     }
@@ -2445,15 +2503,40 @@ class Lc1707 {
             for (int i : binArr) {
                 if (cur.children[i] == null) cur.children[i] = new BTrieNode();
                 cur = cur.children[i];
+                cur.path++;
             }
-            cur.isEnd = true;
+            cur.end++;
         }
 
+        public void delete(int num) {
+            if (!search(num)) return;
+            int[] binArr = intToBinArr(num);
+            BTrieNode cur = root;
+            for (int i : binArr) {
+                if (cur.children[i].path-- == 1) {
+                    cur.children[i] = null;
+                    return;
+                }
+                cur = cur.children[i];
+            }
+            cur.end--;
+        }
+
+        public boolean search(int num) {
+            int[] binArr = intToBinArr(num);
+            BTrieNode cur = root;
+            for (int i : binArr) {
+                if (cur.children[i] == null) return false;
+                cur = cur.children[i];
+            }
+            return cur.end > 0;
+        }
 
     }
 
     class BTrieNode {
         BTrieNode[] children = new BTrieNode[2];
-        boolean isEnd = false;
+        int path = 0;
+        int end = 0;
     }
 }
