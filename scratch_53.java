@@ -38,32 +38,36 @@ class Scratch {
     }
 
     int minimumTeachings(int n, int[][] languages, int[][] friendships) {
-        Map<Integer, Integer> mostLanguage = new HashMap<>();
-        Map<Integer, Integer> notConnected = new HashMap<>();
+        int numPeople = languages.length;
+        int[] mostLanguage = new int[n + 1];
+        int[] notConnected = new int[numPeople + 1];
 
         // 记录没有共同语言的好友 有哪些人
         for (int[] f : friendships) {
             if (!hasCommon(languages, f[0], f[1])) {
-                notConnected.put(f[0], notConnected.getOrDefault(f[0], 0) + 1);
-                notConnected.put(f[1], notConnected.getOrDefault(f[1], 0) + 1);
+                notConnected[f[0]]++;
+                notConnected[f[1]]++;
             }
         }
         // 统计他们会的语言
-        for (Map.Entry<Integer, Integer> p : notConnected.entrySet()) {
-            for (int lang : languages[p.getKey() - 1]) {
-                mostLanguage.put(lang, mostLanguage.getOrDefault(lang, 0) + 1);
+        int countNotConnected = 0;
+        for (int i = 1; i <= numPeople; i++) {
+            if (notConnected[i] != 0) {
+                countNotConnected++;
+                for (int lang : languages[i - 1]) {
+                    mostLanguage[lang]++;
+                }
             }
         }
 
         int most = 0;
         // 找到他们里最通用的语言
-        for (Map.Entry<Integer, Integer> p : mostLanguage.entrySet()) {
-            most = Math.max(most, p.getValue());
+        for (int count : mostLanguage) {
+            most = Math.max(most, count);
         }
-        int nodes = notConnected.size();
 
         // 需要再学习该语言的人数 即他们的总人数-会该语言的人数
-        return nodes - most;
+        return countNotConnected - most;
     }
 
 
