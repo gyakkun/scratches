@@ -17,16 +17,44 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC390
+    public int lastRemaining(int n) {
+        return helper(1, n, 1);
+    }
+
+    private int helper(int start, int end, int interval) {
+        // 有几个数?
+        if (start == end) return start;
+        int trailingZero = Integer.numberOfTrailingZeros(interval);
+        int num = ((end - start) / interval) + 1;
+        if (num == 1) { //???
+            return start;
+        }
+        if (trailingZero % 2 == 0) {
+            if (num % 2 == 1) { // 奇数个数字, 头尾都要删去
+                return helper(start + interval, end - interval, interval * 2);
+            }
+            // 偶数个数字
+            return helper(start + interval, end, interval * 2);
+        } else {
+            // 从尾开始
+            if (num % 2 == 1) {
+                return helper(start + interval, end - interval, interval * 2);
+            }
+            return helper(start, end - interval, interval * 2);
+        }
+    }
+
     // JZOF II 050 LC437  **
     public int pathSumIII(TreeNode root, int targetSum) {
         if (root == null) return 0;
-        return helper(root, targetSum) + pathSumIII(root.left, targetSum) + pathSumIII(root.right, targetSum);
+        return lc437Helper(root, targetSum) + pathSumIII(root.left, targetSum) + pathSumIII(root.right, targetSum);
     }
 
-    private int helper(TreeNode root, int targetSum) {
+    private int lc437Helper(TreeNode root, int targetSum) {
         if (root == null) return 0;
         targetSum -= root.val;
-        return (targetSum == 0 ? 1 : 0) + helper(root.left, targetSum) + helper(root.right, targetSum);
+        return (targetSum == 0 ? 1 : 0) + lc437Helper(root.left, targetSum) + lc437Helper(root.right, targetSum);
     }
 
     // LC36
