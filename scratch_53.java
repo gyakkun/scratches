@@ -23,6 +23,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC776 ** 不太懂
+    public TreeNode[] splitBST(TreeNode root, int target) {
+        if (root == null) return new TreeNode[2];
+        TreeNode[] result;
+        if (root.val <= target) {
+            result = splitBST(root.right, target);
+            root.right = result[0];
+            result[0] = root;
+        } else {
+            result = splitBST(root.left, target);
+            root.left = result[1];
+            result[1] = root;
+        }
+        return result;
+    }
 
     // LC1641
     char[] vowel = {'a', 'e', 'i', 'o', 'u'};
