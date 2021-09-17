@@ -2273,24 +2273,32 @@ class BIT {
     }
 }
 
-// LC1157 TLE
+// LC1157
 class MajorityChecker {
     Map<Integer, Integer> idxMap = new HashMap<>();
     Map<Integer, Integer> reverseIdxMap = new HashMap<>();
     TreeSet<Integer>[] bitIdxSet;
     List<Integer> origArr;
+    Map<Integer, Integer> freq = new HashMap<>();
 
     public MajorityChecker(int[] arr) {
         origArr = new ArrayList<>(arr.length);
         for (int i = 0; i < arr.length; i++) origArr.add(arr[i]);
-        TreeSet<Integer> ts = new TreeSet<>();
-        for (int i : arr) ts.add(i);
-        int ctr = 0;
-        for (int i : ts) {
-            idxMap.put(i, ctr);
-            reverseIdxMap.put(ctr, i);
-            ctr++;
+        // 统计频率
+        for (int i : arr) {
+            freq.put(i, freq.getOrDefault(i, 0) + 1);
         }
+        // 用pq将频率高的放在映射数组前面, 方便后面遍历时候剪枝
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -freq.get(o)));
+        for (int i : freq.keySet()) pq.offer(i);
+        int ctr = 0;
+        while (!pq.isEmpty()) {
+            idxMap.put(pq.peek(), ctr);
+            reverseIdxMap.put(ctr, pq.peek());
+            ctr++;
+            pq.poll();
+        }
+        // 将arr的值映射到bitIdxSet的下标(按照频率从高到低排序)
         bitIdxSet = new TreeSet[idxMap.size()];
         for (int i = 0; i < bitIdxSet.length; i++) bitIdxSet[i] = new TreeSet<>();
         for (int i = 0; i < arr.length; i++) {
@@ -2298,17 +2306,18 @@ class MajorityChecker {
             int idx = i;
             int mappedVal = idxMap.get(val);
             TreeSet<Integer> mappedIdxSet = bitIdxSet[mappedVal];
+            // 将出现的下标加入treeSet
             mappedIdxSet.add(idx);
         }
     }
 
     public int query(int left, int right, int threshold) {
-        Set<Integer> appear = new HashSet<>(origArr.subList(left, right + 1));
-        for (int i : appear) {
-            TreeSet<Integer> t = bitIdxSet[idxMap.get(i)];
-            if (t.subSet(left, true, right, true).size() >= threshold) {
-                return i;
-            }
+        for (int i = 0; i < bitIdxSet.length; i++) {
+            int val = reverseIdxMap.get(i);
+            if (freq.get(val) < threshold) break; // 如果频率高的值的总频率都不及threshold 则后面的频率更低的值更不可能, 直接剪枝
+            TreeSet<Integer> ts = bitIdxSet[i];
+            // 查询在该区间内的频率
+            if (ts.subSet(left, true, right, true).size() >= threshold) return val;
         }
         return -1;
     }
