@@ -2508,6 +2508,7 @@ class Lc1707 {
             cur.end++;
         }
 
+        // Trie 删除一个值!
         public void delete(int num) {
             if (!search(num)) return;
             int[] binArr = intToBinArr(num);
