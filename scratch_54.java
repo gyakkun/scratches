@@ -8,10 +8,96 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.domino(3, 3, new int[][]{}));
-        System.out.println(s.freqAlphabets("10#11#12"));
+//        System.out.println(s.boldWords(new String[]{"ab", "bc"}, "aabcd"));
+        System.out.println(s.boldWords(new String[]{"cc", "eae", "eda", "e", "d"}, "eecaedbded"));
+//        System.out.println(s.boldWords(new String[]{"a", "aa", "aaa", "aaaa", "aaaaa", "aaaaaa", "aaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+//                , "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC758 LC616, 616规模更大, 换用二分通过
+    public String boldWords(String[] words, String s) {
+        final int MAX_WORD_LEN = 1000, MIN_WORD_LEN = 1;
+        boolean[] mask = new boolean[s.length()];
+        char[] ca = s.toCharArray();
+        Trie trie = new Trie();
+        for (String w : words) trie.addWord(w);
+        // max word len = 10, min word len = 1
+        int ptr = 0;
+        while (ptr < ca.length) {
+
+            int lo = MIN_WORD_LEN, hi = MAX_WORD_LEN;
+            while (lo < hi) {
+                int mid = lo + (hi - lo + 1) / 2;
+                if (ptr + mid > ca.length) {
+                    hi--;
+                } else {
+                    String victim = s.substring(ptr, ptr + mid);
+                    if (trie.startsWith(victim)) {
+                        lo = mid;
+                    } else {
+                        hi = mid - 1;
+                    }
+                }
+            }
+
+            for (int trueBound = lo; trueBound >= 1; trueBound--) {
+                if (!trie.search(s.substring(ptr, ptr + trueBound))) continue;
+                else {
+                    for (int i = ptr; i < ptr + trueBound; i++) {
+                        mask[i] = true;
+                    }
+                    break;
+                }
+            }
+
+
+//            if (!trie.search(s.substring(ptr, ptr + lo))) {
+//                ptr++;
+//                continue;
+//            }
+
+            ptr++;
+//
+//            for (int len = MIN_WORD_LEN; len <= MAX_WORD_LEN; len++) {
+//                if (ptr + len > ca.length) break;
+//                String victim = s.substring(ptr, ptr + len);
+//                if (!trie.startsWith(victim)) break;
+//                if (trie.search(victim)) {
+//                    for (int i = ptr; i < ptr + len; i++) {
+//                        mask[i] = true;
+//                    }
+//                }
+//            }
+//            ptr++;
+        }
+        StringBuilder result = new StringBuilder();
+        ptr = 0;
+        int boldLen = 0;
+        while (ptr < ca.length) {
+            if (!mask[ptr]) {
+                if (boldLen > 0) {
+                    result.append("<b>");
+                    result.append(s, ptr - boldLen, ptr);
+                    result.append("</b>");
+                    result.append(ca[ptr]);
+                    boldLen = 0;
+                } else {
+                    result.append(ca[ptr]);
+                }
+            } else {
+                boldLen++;
+            }
+            ptr++;
+        }
+        if (boldLen > 0) {
+            result.append("<b>");
+            result.append(s, ptr - boldLen, ptr);
+            result.append("</b>");
+        }
+        return result.toString();
     }
 
     // LC1309
@@ -145,4 +231,56 @@ class TreeNode {
         this.left = left;
         this.right = right;
     }
+}
+
+class Trie {
+    TrieNode root = new TrieNode();
+
+    public void addWord(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) cur.children.put(c, new TrieNode());
+            cur = cur.children.get(c);
+            cur.path++;
+        }
+        cur.end++;
+    }
+
+    public boolean removeWord(String word) {
+        if (!search(word)) return false;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children.get(c).path == 1) {
+                cur.children.remove(c);
+                return true;
+            }
+            cur = cur.children.get(c);
+        }
+        cur.end--;
+        return true;
+    }
+
+    public boolean search(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) return false;
+            cur = cur.children.get(c);
+        }
+        return cur.end > 0;
+    }
+
+    public boolean startsWith(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) return false;
+            cur = cur.children.get(c);
+        }
+        return true;
+    }
+}
+
+class TrieNode {
+    Map<Character, TrieNode> children = new HashMap<>();
+    int end = 0;
+    int path = 0;
 }
