@@ -15,6 +15,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1602
+    public TreeNode findNearestRightNode(TreeNode root, TreeNode u) {
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            for (int i = 0; i < qs; i++) {
+                TreeNode p = q.poll();
+                if (p == u) {
+                    if (i == qs - 1) return null;
+                    return q.poll();
+                }
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+            }
+        }
+        return null;
+    }
+
     // LC1199 Hard 可以二分, 也可以直接优先队列解决, 非常优雅
     public int minBuildTime(int[] blocks, int split) {
         PriorityQueue<Integer> pq = new PriorityQueue<>();
@@ -89,5 +108,24 @@ class Scratch {
 
     private boolean lcp04Check(int row, int col, int n, int m, Set<Integer> brokenSet) {
         return row >= 0 && row < n && col >= 0 && col < m && !brokenSet.contains(row * m + col);
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
