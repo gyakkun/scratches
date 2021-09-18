@@ -8,11 +8,28 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.domino(3, 3, new int[][]{}));
-        System.out.println(s.minBuildTime(new int[]{94961, 39414, 41263, 7809, 41473},
-                90));
+        System.out.println(s.freqAlphabets("10#11#12"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1309
+    public String freqAlphabets(String s) {
+        StringBuilder sb = new StringBuilder();
+        int ptr = 0;
+        char[] ca = s.toCharArray();
+        while (ptr < ca.length) {
+            if (ptr + 2 < ca.length && ca[ptr + 2] == '#') {
+                int idx = (ca[ptr] - '0') * 10 + (ca[ptr + 1] - '0') - 1;
+                sb.append((char) ('a' + idx));
+                ptr += 3;
+            } else {
+                sb.append((char) ('a' + ca[ptr] - '1'));
+                ptr++;
+            }
+        }
+        return sb.toString();
     }
 
     // LC1602
