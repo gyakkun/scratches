@@ -17,17 +17,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC758 LC616, 616规模更大, 换用二分通过
+    // LC758 LC616, 616规模更大, 换用二分通过 ** 有bug的二分过了, 没有bug的二分还是超时, 有bug的二分过不了758
     public String boldWords(String[] words, String s) {
         final int MAX_WORD_LEN = 1000, MIN_WORD_LEN = 1;
         boolean[] mask = new boolean[s.length()];
         char[] ca = s.toCharArray();
         Trie trie = new Trie();
         for (String w : words) trie.addWord(w);
-        // max word len = 10, min word len = 1
         int ptr = 0;
         while (ptr < ca.length) {
-
             int lo = MIN_WORD_LEN, hi = MAX_WORD_LEN;
             while (lo < hi) {
                 int mid = lo + (hi - lo + 1) / 2;
@@ -35,14 +33,13 @@ class Scratch {
                     hi--;
                 } else {
                     String victim = s.substring(ptr, ptr + mid);
-                    if (trie.startsWith(victim)) {
+                    if (trie.search(victim)) {
                         lo = mid;
                     } else {
                         hi = mid - 1;
                     }
                 }
             }
-
             for (int trueBound = lo; trueBound >= 1; trueBound--) {
                 if (!trie.search(s.substring(ptr, ptr + trueBound))) continue;
                 else {
@@ -52,26 +49,7 @@ class Scratch {
                     break;
                 }
             }
-
-
-//            if (!trie.search(s.substring(ptr, ptr + lo))) {
-//                ptr++;
-//                continue;
-//            }
-
             ptr++;
-//
-//            for (int len = MIN_WORD_LEN; len <= MAX_WORD_LEN; len++) {
-//                if (ptr + len > ca.length) break;
-//                String victim = s.substring(ptr, ptr + len);
-//                if (!trie.startsWith(victim)) break;
-//                if (trie.search(victim)) {
-//                    for (int i = ptr; i < ptr + len; i++) {
-//                        mask[i] = true;
-//                    }
-//                }
-//            }
-//            ptr++;
         }
         StringBuilder result = new StringBuilder();
         ptr = 0;
