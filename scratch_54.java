@@ -38,6 +38,7 @@ class Scratch {
                 }
                 // 粘贴
                 if (p[0] + p[1] <= n && !visited[p[0] + p[1]][p[0]]) {
+                    // if (p[0] + p[1] == n) return layer + 1;  //少这步特判会快1ms
                     q.offer(new int[]{p[0] + p[1], p[1]});
                 }
             }
