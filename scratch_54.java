@@ -17,6 +17,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC650 BFS
+    public int minSteps(int n) {
+        boolean[][] visited = new boolean[n * 2][n * 2];
+        Deque<int[]> q = new LinkedList<>();
+        // 当前个数 剪贴板个数
+        q.offer(new int[]{1, 0});
+        int layer = -1;
+        while (!q.isEmpty()) {
+            layer++;
+            int qs = q.size();
+            for (int i = 0; i < qs; i++) {
+                int[] p = q.poll();
+                if (p[0] == n) return layer;
+                if (visited[p[0]][p[1]]) continue;
+                visited[p[0]][p[1]] = true;
+                // 复制
+                if (p[0] <= n && !visited[p[0]][p[0]]) {
+                    q.offer(new int[]{p[0], p[0]});
+                }
+                // 粘贴
+                if (p[0] + p[1] <= n && !visited[p[0] + p[1]][p[0]]) {
+                    q.offer(new int[]{p[0] + p[1], p[1]});
+                }
+            }
+        }
+        return -1;
+    }
+
     // LC758 LC616 就硬匹配 问你气不气
     public String boldWords(String[] words, String s) {
         int n = s.length();
