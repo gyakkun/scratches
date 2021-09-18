@@ -15,45 +15,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1199
+    // LC1199 Hard 可以二分, 也可以直接优先队列解决, 非常优雅
     public int minBuildTime(int[] blocks, int split) {
-        // int lo = Arrays.stream(blocks).max().getAsInt();
-        // int hi = Arrays.stream(blocks).sum() + split * blocks.length;
-        int lo = 0;
-        int hi = (int) 1e9;
-        Arrays.sort(blocks);
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-            if (check(mid, blocks, split)) {
-                hi = mid;
-            } else {
-                lo = mid + 1;
-            }
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int i : blocks) {
+            pq.offer(i);
         }
-        return lo;
-    }
-
-    private boolean check(int totalTime, int[] blocks, int split) {
-        Deque<int[]> q = new LinkedList<>();
-        int ptr = blocks.length - 2;
-        // [诞生时间, 任务耗时]
-        q.offer(new int[]{0, blocks[blocks.length - 1]});
-        while (!q.isEmpty()) {
-            int[] p = q.poll();
-            // 在保证完成自己的工作的前提下尽可能分配多的工人
-            if (totalTime - p[0] < p[1]) return false;
-            int maxWorker = (totalTime - p[0] - p[1]) / split;
-            int workerCtr = 0;
-            while (workerCtr != maxWorker && ptr != -1) {
-                q.offer(new int[]{p[0] + (workerCtr + 1) * split, blocks[ptr--]});
-                workerCtr++;
-            }
+        while (pq.size() > 1) {
+            // 队列里最小的两个任务耗时中的大者+分裂时间, 可视为大者分裂出另一个工人完成小两者中较小的任务后, 再完成自己任务所耗的总时间
+            // 这样较小的任务的时间就被"掩盖"了
+            pq.offer(Math.max(pq.poll(), pq.poll()) + split);
         }
-        return ptr == -1;
+        return pq.poll();
     }
 
 
-    // LCP 04 匈牙利算法 二分图的最大匹配
+    // LCP 04 匈牙利算法 二分图的最大匹配 Hard **
     public int domino(int n, int m, int[][] broken) {
         // 统计
         Set<Integer> brokenSet = new HashSet<>();
