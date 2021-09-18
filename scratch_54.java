@@ -17,42 +17,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC758 LC616, 616规模更大, 换用二分通过 ** 有bug的二分过了, 没有bug的二分还是超时, 有bug的二分过不了758
+    // LC758 LC616 就硬匹配 问你气不气
     public String boldWords(String[] words, String s) {
-        final int MAX_WORD_LEN = 1000, MIN_WORD_LEN = 1;
-        boolean[] mask = new boolean[s.length()];
+        int n = s.length();
         char[] ca = s.toCharArray();
-        Trie trie = new Trie();
-        for (String w : words) trie.addWord(w);
-        int ptr = 0;
-        while (ptr < ca.length) {
-            int lo = MIN_WORD_LEN, hi = MAX_WORD_LEN;
-            while (lo < hi) {
-                int mid = lo + (hi - lo + 1) / 2;
-                if (ptr + mid > ca.length) {
-                    hi--;
-                } else {
-                    String victim = s.substring(ptr, ptr + mid);
-                    if (trie.search(victim)) {
-                        lo = mid;
-                    } else {
-                        hi = mid - 1;
+        boolean[] mask = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            for (String w : words) {
+                int idx = i;
+                while ((idx = s.indexOf(w, idx)) != -1) {
+                    for (int j = 0; j < w.length(); j++) {
+                        mask[idx + j] = true;
                     }
+                    idx += w.length();
                 }
             }
-            for (int trueBound = lo; trueBound >= 1; trueBound--) {
-                if (!trie.search(s.substring(ptr, ptr + trueBound))) continue;
-                else {
-                    for (int i = ptr; i < ptr + trueBound; i++) {
-                        mask[i] = true;
-                    }
-                    break;
-                }
-            }
-            ptr++;
         }
         StringBuilder result = new StringBuilder();
-        ptr = 0;
+        int ptr = 0;
         int boldLen = 0;
         while (ptr < ca.length) {
             if (!mask[ptr]) {
