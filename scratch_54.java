@@ -1,4 +1,6 @@
+import java.math.BigInteger;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -15,6 +17,38 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    public int myAtoi(String s) {
+        char[] ca = s.toCharArray();
+        boolean skipSpace = false;
+        boolean checkSign = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ca.length; i++) {
+            char c = ca[i];
+            if (!skipSpace && c == ' ') continue;
+            skipSpace = true;
+            if (skipSpace && !checkSign) {
+                checkSign = true;
+                if (c != '+' && c != '-' && !Character.isDigit(c)) return 0;
+                if (c == '-') {
+                    sb.append('-');
+                    continue;
+                }
+                if (c == '+') {
+                    continue;
+                }
+            }
+            if (!Character.isDigit(c)) break;
+            sb.append(c);
+        }
+        if (sb.length() == 0) return 0;
+        if (sb.toString().equals("-")) return 0;
+        // 这里可以考虑:1)这里可以考虑和Integer.MAX/MIN .toString() 比较字符串字典序
+        BigInteger b = new BigInteger(sb.toString());
+        if (b.compareTo(new BigInteger("" + Integer.MAX_VALUE)) > 0) return Integer.MAX_VALUE;
+        if (b.compareTo(new BigInteger("" + Integer.MIN_VALUE)) < 0) return Integer.MIN_VALUE;
+        return Integer.parseInt(sb.toString());
     }
 
     // LC650 BFS
