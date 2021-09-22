@@ -15,48 +15,47 @@ class Scratch {
 
     // LC2007
     public int[] findOriginalArray(int[] changed) {
-        // 如果有0, 则一定有2的倍数个0
         List<Integer> result = new ArrayList<>();
-        Map<Integer, Integer> freq = new TreeMap<>(); // 从小往大找, 规避如[16,32,8,64]的测例
+        Map<Integer, Integer> freq = new HashMap<>();
         for (int i : changed) freq.put(i, freq.getOrDefault(i, 0) + 1);
+        // 如果有0, 则一定有2的倍数个0
         if (freq.containsKey(0)) {
             if (freq.get(0) % 2 == 1) return new int[0];
             for (int i = 0; i < freq.get(0) / 2; i++) result.add(0);
             freq.remove(0);
         }
-        // 对于一个key, 如果%2==1, 则只能往两倍找, 找不到就返回空
-        // 如果%2==0, 则同时往/2 *2 找, 找到就将value 减一, 同时往result set 增加key
-        while (!freq.isEmpty()) {
-            int nextKey = freq.keySet().iterator().next();
-            if (nextKey % 2 == 1) {
-                if (!freq.containsKey(nextKey * 2)) return new int[0];
-                result.add(nextKey);
-                freq.put(nextKey, freq.get(nextKey) - 1);
-                if (freq.get(nextKey) == 0) freq.remove(nextKey);
-                freq.put(nextKey * 2, freq.get(nextKey * 2) - 1);
-                if (freq.get(nextKey * 2) == 0) freq.remove(nextKey * 2);
-            } else {
+        Arrays.sort(changed);  // 从小往大找, 规避如[16,32,8,64]的测例
+        for (int i : changed) {
+            if (!freq.containsKey(i) || freq.get(i) == 0) continue;
+            if (i % 2 == 0) {
                 int lack = 0;
-                if (!freq.containsKey(nextKey * 2)) lack++;
-                if (!freq.containsKey(nextKey / 2)) lack++;
+                if (!freq.containsKey(i * 2)) lack++;
+                if (!freq.containsKey(i / 2)) lack++;
                 if (lack == 2) return new int[0];
 
-                if (freq.containsKey(nextKey * 2)) {
-                    result.add(nextKey);
-                    freq.put(nextKey, freq.get(nextKey) - 1);
-                    if (freq.get(nextKey) == 0) freq.remove(nextKey);
-                    freq.put(nextKey * 2, freq.get(nextKey * 2) - 1);
-                    if (freq.get(nextKey * 2) == 0) freq.remove(nextKey * 2);
+                if (freq.containsKey(i * 2)) {
+                    result.add(i);
+                    freq.put(i, freq.get(i) - 1);
+                    if (freq.get(i) == 0) freq.remove(i);
+                    freq.put(i * 2, freq.get(i * 2) - 1);
+                    if (freq.get(i * 2) == 0) freq.remove(i * 2);
                 }
 
-                if (freq.containsKey(nextKey / 2)) {
-                    result.add(nextKey / 2);
-                    freq.put(nextKey / 2, freq.get(nextKey / 2) - 1);
-                    if (freq.get(nextKey / 2) == 0) freq.remove(nextKey / 2);
-                    if (!freq.containsKey(nextKey)) return new int[0];
-                    freq.put(nextKey, freq.get(nextKey) - 1);
-                    if (freq.get(nextKey) == 0) freq.remove(nextKey);
+                if (freq.containsKey(i / 2)) {
+                    result.add(i / 2);
+                    freq.put(i / 2, freq.get(i / 2) - 1);
+                    if (freq.get(i / 2) == 0) freq.remove(i / 2);
+                    if (!freq.containsKey(i)) return new int[0];
+                    freq.put(i, freq.get(i) - 1);
+                    if (freq.get(i) == 0) freq.remove(i);
                 }
+            } else {
+                if (!freq.containsKey(i * 2)) return new int[0];
+                result.add(i);
+                freq.put(i, freq.get(i) - 1);
+                if (freq.get(i) == 0) freq.remove(i);
+                freq.put(i * 2, freq.get(i * 2) - 1);
+                if (freq.get(i * 2) == 0) freq.remove(i * 2);
             }
         }
         return result.stream().mapToInt(Integer::valueOf).toArray();
