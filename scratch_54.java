@@ -7,10 +7,59 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.boldWords(new String[]{"cc", "eae", "eda", "e", "d"}, "eecaedbded"));
+        System.out.println(s.findOriginalArray(new int[]{1, 4, 5, 2, 8, 10, 4, 16, 20}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC2007
+    public int[] findOriginalArray(int[] changed) {
+        // 如果有0, 则一定有2的倍数个0
+        List<Integer> result = new ArrayList<>();
+        Map<Integer, Integer> freq = new TreeMap<>(); // 从小往大找, 规避如[16,32,8,64]的测例
+        for (int i : changed) freq.put(i, freq.getOrDefault(i, 0) + 1);
+        if (freq.containsKey(0)) {
+            if (freq.get(0) % 2 == 1) return new int[0];
+            for (int i = 0; i < freq.get(0) / 2; i++) result.add(0);
+            freq.remove(0);
+        }
+        // 对于一个key, 如果%2==1, 则只能往两倍找, 找不到就返回空
+        // 如果%2==0, 则同时往/2 *2 找, 找到就将value 减一, 同时往result set 增加key
+        while (!freq.isEmpty()) {
+            int nextKey = freq.keySet().iterator().next();
+            if (nextKey % 2 == 1) {
+                if (!freq.containsKey(nextKey * 2)) return new int[0];
+                result.add(nextKey);
+                freq.put(nextKey, freq.get(nextKey) - 1);
+                if (freq.get(nextKey) == 0) freq.remove(nextKey);
+                freq.put(nextKey * 2, freq.get(nextKey * 2) - 1);
+                if (freq.get(nextKey * 2) == 0) freq.remove(nextKey * 2);
+            } else {
+                int lack = 0;
+                if (!freq.containsKey(nextKey * 2)) lack++;
+                if (!freq.containsKey(nextKey / 2)) lack++;
+                if (lack == 2) return new int[0];
+
+                if (freq.containsKey(nextKey * 2)) {
+                    result.add(nextKey);
+                    freq.put(nextKey, freq.get(nextKey) - 1);
+                    if (freq.get(nextKey) == 0) freq.remove(nextKey);
+                    freq.put(nextKey * 2, freq.get(nextKey * 2) - 1);
+                    if (freq.get(nextKey * 2) == 0) freq.remove(nextKey * 2);
+                }
+
+                if (freq.containsKey(nextKey / 2)) {
+                    result.add(nextKey / 2);
+                    freq.put(nextKey / 2, freq.get(nextKey / 2) - 1);
+                    if (freq.get(nextKey / 2) == 0) freq.remove(nextKey / 2);
+                    if (!freq.containsKey(nextKey)) return new int[0];
+                    freq.put(nextKey, freq.get(nextKey) - 1);
+                    if (freq.get(nextKey) == 0) freq.remove(nextKey);
+                }
+            }
+        }
+        return result.stream().mapToInt(Integer::valueOf).toArray();
     }
 
     // LC725
