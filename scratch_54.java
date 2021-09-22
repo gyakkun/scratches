@@ -13,6 +13,50 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1110
+    public List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
+        List<TreeNode> result = new ArrayList<>();
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        Set<Integer> toDelete = new HashSet<>();
+        for (int i : to_delete) toDelete.add(i);
+        Map<TreeNode, TreeNode> parent = new HashMap<>();
+        parent.put(root, root);
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            if (p.left != null) {
+                parent.put(p.left, p);
+                q.offer(p.left);
+            }
+            if (p.right != null) {
+                parent.put(p.right, p);
+                q.offer(p.right);
+            }
+        }
+        q.offer(root);
+        if (!toDelete.contains(root.val)) result.add(root);
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            if (toDelete.contains(p.val)) {
+                if (p != root) {
+                    TreeNode par = parent.get(p);
+                    if (par.left == p) par.left = null;
+                    if (par.right == p) par.right = null;
+                    parent.put(p, null);
+                }
+                if (p.left != null && !toDelete.contains(p.left.val)) result.add(p.left);
+                if (p.right != null && !toDelete.contains(p.right.val)) result.add(p.right);
+            }
+            if (p.left != null) {
+                q.offer(p.left);
+            }
+            if (p.right != null) {
+                q.offer(p.right);
+            }
+        }
+        return result;
+    }
+
     // LC1410
     public String entityParser(String text) {
         StringBuilder sb = new StringBuilder();
