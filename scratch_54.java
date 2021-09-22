@@ -13,6 +13,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1105 ** DP
+    public int minHeightShelves(int[][] books, int shelfWidth) {
+        int n = books.length;
+        int[] dp = new int[n + 1]; // dp[i] 表示剩下i本书没有放的时候的最小高度
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[n] = 0; // 所有书都没有放, 显然高度为0。相当于哨兵
+        for (int i = n - 1; i >= 0; i--) {
+            // 枚举到某一本书, 将这本书摆到新的一层, 并试图将这本书之前的书放到这一层, 以减小总体高度
+            int maxHeight = 0; // 这层的最大高度
+            int leftWidth = shelfWidth; // 这层还可以放下多厚的书
+            // 遍历范围是这本书以及这本书之前的书(已经上架的书)
+            for (int j = i; j < n && leftWidth >= books[j][0]; j++) {
+                maxHeight = Math.max(maxHeight, books[j][1]);
+                dp[i] = Math.min(dp[i], maxHeight + dp[j + 1]); // j+1 就是放第j本书之前的最小高度, 加上当前的最大高度, 取最小值
+                leftWidth -= books[j][0];
+            }
+        }
+        return dp[0];
+    }
+
     // LC2007
     public int[] findOriginalArray(int[] changed) {
         List<Integer> result = new ArrayList<>();
