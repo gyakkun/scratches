@@ -8,13 +8,33 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.constructFromPrePost(
-                new int[]{1, 2, 4, 5, 3, 6, 7},
-                new int[]{4, 5, 2, 6, 7, 3, 1}
-        ));
+        System.out.println(s.maxNonOverlapping(new int[]{-2, 6, 6, 3, 5, 4, 1, 2, 8}, 10));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1546 **
+    public int maxNonOverlapping(int[] nums, int target) {
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+        int result = 0;
+        Map<Integer, Integer> waitFor = new HashMap<>(); // [期待的前缀和, 下标]
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+            if (prefix[i + 1] == target || waitFor.containsKey(prefix[i + 1])) {
+                prefix[i + 1] = 0;
+                waitFor.clear();
+                result++;
+            } else {
+                waitFor.put(prefix[i + 1] + target, i);
+            }
+        }
+        if (!waitFor.isEmpty() && (prefix[n] == target || waitFor.containsKey(prefix[n]))) {
+            // 注意判断target是不是0!
+            if (target != 0) result++;
+        }
+        return result;
     }
 
     // LC889 ** 前序 后续 重建二叉树 不唯一
