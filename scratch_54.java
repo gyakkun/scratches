@@ -17,20 +17,20 @@ class Scratch {
     // LC1546 **
     public int maxNonOverlapping(int[] nums, int target) {
         int n = nums.length;
-        int[] prefix = new int[n + 1];
+        int prefix = 0;
         int result = 0;
-        Map<Integer, Integer> waitFor = new HashMap<>(); // [期待的前缀和, 下标]
+        Set<Integer> waitFor = new HashSet<>(); // 期待的前缀和
         for (int i = 0; i < n; i++) {
-            prefix[i + 1] = prefix[i] + nums[i];
-            if (prefix[i + 1] == target || waitFor.containsKey(prefix[i + 1])) {
-                prefix[i + 1] = 0;
+            prefix = prefix + nums[i];
+            if (prefix == target || waitFor.contains(prefix)) {
+                prefix = 0;
                 waitFor.clear();
                 result++;
             } else {
-                waitFor.put(prefix[i + 1] + target, i);
+                waitFor.add(prefix + target);
             }
         }
-        if (!waitFor.isEmpty() && (prefix[n] == target || waitFor.containsKey(prefix[n]))) {
+        if (!waitFor.isEmpty() && (prefix == target || waitFor.contains(prefix))) {
             // 注意判断target是不是0!
             if (target != 0) result++;
         }
