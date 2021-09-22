@@ -8,10 +8,31 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.solveEquation("x+5-3+x=6+x-2"));
+        System.out.println(s.constructFromPrePost(
+                new int[]{1, 2, 4, 5, 3, 6, 7},
+                new int[]{4, 5, 2, 6, 7, 3, 1}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC889 ** 前序 后续 重建二叉树 不唯一
+    public TreeNode constructFromPrePost(int[] preorder, int[] postorder) {
+        if (preorder.length == 0) return null;
+        TreeNode root = new TreeNode(preorder[0]);
+        if (preorder.length == 1) return root;
+        int len = 0;
+        for (int i = 0; i < postorder.length; i++) {
+            if (postorder[i] == preorder[1]) {
+                len = i + 1; // + 1 方便算len
+                break;
+            }
+        }
+
+        root.left = constructFromPrePost(Arrays.copyOfRange(preorder, 1, 1 + len), Arrays.copyOfRange(postorder, 0, len));
+        root.right = constructFromPrePost(Arrays.copyOfRange(preorder, 1 + len, preorder.length), Arrays.copyOfRange(postorder, len, postorder.length - 1));
+        return root;
     }
 
     // LC640
