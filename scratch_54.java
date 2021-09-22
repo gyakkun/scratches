@@ -18,21 +18,23 @@ class Scratch {
     public int maxNonOverlapping(int[] nums, int target) {
         int n = nums.length;
         int prefix = 0;
+        int idx = 0;
         int result = 0;
-        Set<Integer> waitFor = new HashSet<>(); // 期待的前缀和
-        for (int i = 0; i < n; i++) {
-            prefix = prefix + nums[i];
-            if (prefix == target || waitFor.contains(prefix)) {
-                prefix = 0;
-                waitFor.clear();
-                result++;
-            } else {
-                waitFor.add(prefix + target);
+        while (idx < n) {
+            Set<Integer> prefixSet = new HashSet<>();
+            prefixSet.add(0);
+            prefix = 0;
+            while (idx < n) {
+                prefix = prefix + nums[idx];
+                if (prefixSet.contains(prefix - target)) {
+                    result++;
+                    break;
+                } else {
+                    prefixSet.add(prefix);
+                    idx++;
+                }
             }
-        }
-        if (!waitFor.isEmpty() && (prefix == target || waitFor.contains(prefix))) {
-            // 注意判断target是不是0!
-            if (target != 0) result++;
+            idx++;
         }
         return result;
     }
