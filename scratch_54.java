@@ -8,10 +8,90 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findOriginalArray(new int[]{1, 4, 5, 2, 8, 10, 4, 16, 20}));
+        System.out.println(s.solveEquation("x+5-3+x=6+x-2"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC640
+    public String solveEquation(String equation) {
+        final String INF_RES = "Infinite solutions";
+        final String NO_SOL = "No solution";
+        final String SOL_IS_ZERO = "x=0";
+
+        String[] parts = equation.split("=");
+        // 左侧
+        int leftFactor = 0, leftConst = 0;
+        String leftEq = parts[0];
+        boolean comesDigit = false;
+        int cur = 0, sign = 1;
+        for (char c : leftEq.toCharArray()) {
+            if (c == 'x') {
+                if (cur == 0 && !comesDigit) leftFactor += 1 * sign;
+                else leftFactor += cur * sign;
+                sign = 1;
+                cur = 0;
+                comesDigit = false;
+            } else if (c == '+') {
+                leftConst += cur * sign;
+                cur = 0;
+                sign = 1;
+                comesDigit = false;
+            } else if (c == '-') {
+                leftConst += cur * sign;
+                cur = 0;
+                sign = -1;
+                comesDigit = false;
+            } else if (Character.isDigit(c)) {
+                cur = cur * 10 + (c - '0');
+                comesDigit = true;
+            }
+        }
+        leftConst += cur * sign;
+
+        int rightFactor = 0, rightConst = 0;
+        String rightEq = parts[1];
+        cur = 0;
+        sign = 1;
+        comesDigit = false;
+        for (char c : rightEq.toCharArray()) {
+            if (c == 'x') {
+                if (cur == 0 && !comesDigit) rightFactor += 1 * sign;
+                else rightFactor += cur * sign;
+                sign = 1;
+                cur = 0;
+                comesDigit = false;
+            } else if (c == '+') {
+                rightConst += cur * sign;
+                cur = 0;
+                sign = 1;
+                comesDigit = false;
+            } else if (c == '-') {
+                rightConst += cur * sign;
+                cur = 0;
+                sign = -1;
+                comesDigit = false;
+            } else if (Character.isDigit(c)) {
+                cur = cur * 10 + (c - '0');
+                comesDigit = true;
+            }
+        }
+        rightConst += cur * sign;
+
+        // 无解 / 无限解
+        if (leftFactor == rightFactor) {
+            if (leftConst == rightConst) return INF_RES;
+            else return NO_SOL;
+        }
+        // 解只有一个且为0
+        if (leftConst == rightConst) {
+            if (leftFactor != rightFactor) return SOL_IS_ZERO;
+            else return INF_RES;
+        }
+
+        return "x=" + (rightConst - leftConst) / (leftFactor - rightFactor);
+
     }
 
     // LC1110
