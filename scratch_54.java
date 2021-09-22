@@ -1,5 +1,6 @@
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 
 
 class Scratch {
@@ -16,44 +17,28 @@ class Scratch {
     // LC1110
     public List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
         List<TreeNode> result = new ArrayList<>();
-        Deque<TreeNode> q = new LinkedList<>();
-        q.offer(root);
         Set<Integer> toDelete = new HashSet<>();
         for (int i : to_delete) toDelete.add(i);
-        Map<TreeNode, TreeNode> parent = new HashMap<>();
-        parent.put(root, root);
-        while (!q.isEmpty()) {
-            TreeNode p = q.poll();
-            if (p.left != null) {
-                parent.put(p.left, p);
-                q.offer(p.left);
-            }
-            if (p.right != null) {
-                parent.put(p.right, p);
-                q.offer(p.right);
-            }
-        }
-        q.offer(root);
-        if (!toDelete.contains(root.val)) result.add(root);
-        while (!q.isEmpty()) {
-            TreeNode p = q.poll();
-            if (toDelete.contains(p.val)) {
-                if (p != root) {
-                    TreeNode par = parent.get(p);
-                    if (par.left == p) par.left = null;
-                    if (par.right == p) par.right = null;
-                    parent.put(p, null);
+        Function<TreeNode, TreeNode> dfs = new Function<TreeNode, TreeNode>() {
+            @Override
+            public TreeNode apply(TreeNode root) {
+                if (root == null) return null;
+                root.left = this.apply(root.left);
+                root.right = this.apply(root.right);
+                if (toDelete.contains(root.val)) {
+                    if (root.left != null) {
+                        result.add(root.left);
+                    }
+                    if (root.right != null) {
+                        result.add(root.right);
+                    }
+                    root = null;
                 }
-                if (p.left != null && !toDelete.contains(p.left.val)) result.add(p.left);
-                if (p.right != null && !toDelete.contains(p.right.val)) result.add(p.right);
+                return root;
             }
-            if (p.left != null) {
-                q.offer(p.left);
-            }
-            if (p.right != null) {
-                q.offer(p.right);
-            }
-        }
+        };
+        root = dfs.apply(root);
+        if (root != null) result.add(root);
         return result;
     }
 
