@@ -546,7 +546,7 @@ class Trie {
         if (!search(word)) return false;
         TrieNode cur = root;
         for (char c : word.toCharArray()) {
-            if (cur.children.get(c).path == 1) {
+            if (cur.children.get(c).path-- == 1) {
                 cur.children.remove(c);
                 return true;
             }
