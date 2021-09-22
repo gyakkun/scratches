@@ -13,6 +13,42 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1410
+    public String entityParser(String text) {
+        StringBuilder sb = new StringBuilder();
+        int ptr = 0;
+        while (ptr < text.length()) {
+            if (text.charAt(ptr) != '&') {
+                sb.append(text.charAt(ptr));
+                ptr++;
+                continue;
+            }
+            if (ptr + 6 <= text.length() && text.startsWith("&quot;", ptr)) {
+                sb.append("\"");
+                ptr += 6;
+            } else if (ptr + 6 <= text.length() && text.startsWith("&apos;", ptr)) {
+                sb.append("\'");
+                ptr += 6;
+            } else if (ptr + 5 <= text.length() && text.startsWith("&amp;", ptr)) {
+                sb.append("&");
+                ptr += 5;
+            } else if (ptr + 4 <= text.length() && text.startsWith("&gt;", ptr)) {
+                sb.append(">");
+                ptr += 4;
+            } else if (ptr + 4 <= text.length() && text.startsWith("&lt;", ptr)) {
+                sb.append("<");
+                ptr += 4;
+            } else if (ptr + 7 <= text.length() && text.startsWith("&frasl;", ptr)) {
+                sb.append("/");
+                ptr += 7;
+            } else {
+                sb.append(text.charAt(ptr));
+                ptr++;
+            }
+        }
+        return sb.toString();
+    }
+
     // LC1105 ** DP DFS
     public int minHeightShelves(int[][] books, int shelfWidth) {
         int n = books.length;
