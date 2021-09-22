@@ -21,63 +21,10 @@ class Scratch {
         final String SOL_IS_ZERO = "x=0";
 
         String[] parts = equation.split("=");
-        // 左侧
-        int leftFactor = 0, leftConst = 0;
-        String leftEq = parts[0];
-        boolean comesDigit = false;
-        int cur = 0, sign = 1;
-        for (char c : leftEq.toCharArray()) {
-            if (c == 'x') {
-                if (cur == 0 && !comesDigit) leftFactor += 1 * sign;
-                else leftFactor += cur * sign;
-                sign = 1;
-                cur = 0;
-                comesDigit = false;
-            } else if (c == '+') {
-                leftConst += cur * sign;
-                cur = 0;
-                sign = 1;
-                comesDigit = false;
-            } else if (c == '-') {
-                leftConst += cur * sign;
-                cur = 0;
-                sign = -1;
-                comesDigit = false;
-            } else if (Character.isDigit(c)) {
-                cur = cur * 10 + (c - '0');
-                comesDigit = true;
-            }
-        }
-        leftConst += cur * sign;
+        int[] left = lc640Helper(parts[0]), right = lc640Helper(parts[1]);
 
-        int rightFactor = 0, rightConst = 0;
-        String rightEq = parts[1];
-        cur = 0;
-        sign = 1;
-        comesDigit = false;
-        for (char c : rightEq.toCharArray()) {
-            if (c == 'x') {
-                if (cur == 0 && !comesDigit) rightFactor += 1 * sign;
-                else rightFactor += cur * sign;
-                sign = 1;
-                cur = 0;
-                comesDigit = false;
-            } else if (c == '+') {
-                rightConst += cur * sign;
-                cur = 0;
-                sign = 1;
-                comesDigit = false;
-            } else if (c == '-') {
-                rightConst += cur * sign;
-                cur = 0;
-                sign = -1;
-                comesDigit = false;
-            } else if (Character.isDigit(c)) {
-                cur = cur * 10 + (c - '0');
-                comesDigit = true;
-            }
-        }
-        rightConst += cur * sign;
+        int leftFactor = left[0], leftConst = left[1];
+        int rightFactor = right[0], rightConst = right[1];
 
         // 无解 / 无限解
         if (leftFactor == rightFactor) {
@@ -89,9 +36,38 @@ class Scratch {
             if (leftFactor != rightFactor) return SOL_IS_ZERO;
             else return INF_RES;
         }
-
         return "x=" + (rightConst - leftConst) / (leftFactor - rightFactor);
+    }
 
+    private int[] lc640Helper(String halfEq) {
+        // 左侧
+        int factor = 0, constVal = 0;
+        boolean comesDigit = false;
+        int cur = 0, sign = 1;
+        for (char c : halfEq.toCharArray()) {
+            if (c == 'x') {
+                if (cur == 0 && !comesDigit) factor += 1 * sign;
+                else factor += cur * sign;
+                sign = 1;
+                cur = 0;
+                comesDigit = false;
+            } else if (c == '+') {
+                constVal += cur * sign;
+                cur = 0;
+                sign = 1;
+                comesDigit = false;
+            } else if (c == '-') {
+                constVal += cur * sign;
+                cur = 0;
+                sign = -1;
+                comesDigit = false;
+            } else if (Character.isDigit(c)) {
+                cur = cur * 10 + (c - '0');
+                comesDigit = true;
+            }
+        }
+        constVal += cur * sign;
+        return new int[]{factor, constVal};
     }
 
     // LC1110
