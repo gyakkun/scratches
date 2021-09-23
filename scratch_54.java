@@ -14,7 +14,8 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC768 Hard **  LC769 Medium 单调栈
+    // LC768 Hard **  LC769 Medium 单调栈 非常精妙
+    // https://leetcode-cn.com/problems/max-chunks-to-make-sorted-ii/solution/zui-duo-neng-wan-cheng-pai-xu-de-kuai-ii-deng-jie-/
     public int maxChunksToSorted(int[] arr) {
         Deque<Integer> stack = new LinkedList<>(); // 单调递增栈
         for (int i : arr) {
