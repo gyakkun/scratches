@@ -14,6 +14,67 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC708 ** JZOF II 029
+    class Lc708 {
+        public Node insert(Node head, int insertVal) {
+            if (head == null) {
+                Node n = new Node(insertVal);
+                n.next = n;
+                return n;
+            }
+            if (head.next == head) {
+                Node n = new Node(insertVal);
+                head.next = n;
+                n.next = head;
+                return head;
+            }
+            Node cur = head;
+            while (true) {
+                if (cur.val > cur.next.val) { // cur就是分界点, 就是末尾
+                    if (insertVal >= cur.val || insertVal <= cur.next.val) {
+                        Node n = new Node(insertVal);
+                        Node origNext = cur.next;
+                        cur.next = n;
+                        n.next = origNext;
+                        return head;
+                    }
+                } else if (insertVal >= cur.val && insertVal <= cur.next.val) {
+                    Node n = new Node(insertVal);
+                    Node origNext = cur.next;
+                    cur.next = n;
+                    n.next = origNext;
+                    return head;
+                }
+                cur = cur.next;
+                // 说明已经转了一圈, 还没有收获, 即圈上所有数都是同一个值
+                if (cur.next == head) {
+                    Node n = new Node(insertVal);
+                    Node origNext = cur.next;
+                    cur.next = n;
+                    n.next = origNext;
+                    return head;
+                }
+            }
+        }
+
+        class Node {
+            public int val;
+            public Node next;
+
+            public Node() {
+            }
+
+            public Node(int _val) {
+                val = _val;
+            }
+
+            public Node(int _val, Node _next) {
+                val = _val;
+                next = _next;
+            }
+        }
+    }
+
     // LC548 Hard **
     public boolean splitArray(int[] nums) {
         // 要找到三个点, 去除这三个点的数分成四段, 使得四段的和相等
