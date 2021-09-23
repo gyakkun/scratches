@@ -26,7 +26,7 @@ class Scratch {
             if (firstAppear[flowers[i] + OFFSET] == -1) firstAppear[flowers[i] + OFFSET] = i;
             prefix[i + 1] = prefix[i] + (flowers[i] > 0 ? flowers[i] : 0);
             int firstAppearIdx = firstAppear[flowers[i] + OFFSET];
-            if (firstAppearIdx == -1 || firstAppearIdx == i) continue;
+            if (firstAppearIdx == i) continue;
             int sum = prefix[i + 1] - prefix[firstAppearIdx];
             if (flowers[i] < 0) sum += flowers[i] + flowers[i];
             result = Math.max(result, sum);
