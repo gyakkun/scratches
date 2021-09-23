@@ -19,19 +19,17 @@ class Scratch {
         final int OFFSET = 10001;
         int n = flowers.length;
         int[] prefix = new int[n + 1];
-        int[] negPrefix = new int[n + 1];
         int[] firstAppear = new int[20010];
         Arrays.fill(firstAppear, -1);
         int result = Integer.MIN_VALUE;
         for (int i = 0; i < n; i++) {
             if (firstAppear[flowers[i] + OFFSET] == -1) firstAppear[flowers[i] + OFFSET] = i;
-            prefix[i + 1] = prefix[i] + flowers[i];
-            negPrefix[i + 1] = negPrefix[i] + (flowers[i] > 0 ? 0 : flowers[i]);
+            prefix[i + 1] = prefix[i] + (flowers[i] > 0 ? flowers[i] : 0);
             int firstAppearIdx = firstAppear[flowers[i] + OFFSET];
             if (firstAppearIdx == -1 || firstAppearIdx == i) continue;
-            int judge = prefix[i + 1] - prefix[firstAppearIdx] - (negPrefix[i + 1] - negPrefix[firstAppearIdx]);
-            if (flowers[i] < 0) judge += flowers[i] + flowers[i];
-            result = Math.max(result, judge);
+            int sum = prefix[i + 1] - prefix[firstAppearIdx];
+            if (flowers[i] < 0) sum += flowers[i] + flowers[i];
+            result = Math.max(result, sum);
         }
         return result;
     }
