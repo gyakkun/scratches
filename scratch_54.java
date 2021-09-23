@@ -16,21 +16,21 @@ class Scratch {
 
     // LC1788 Hard
     public int maximumBeauty(int[] flowers) {
+        final int OFFSET = 10001;
         int n = flowers.length;
         int[] prefix = new int[n + 1];
         int[] negPrefix = new int[n + 1];
         int[] negCount = new int[n + 1];
-        Map<Integer, Integer> firstAppear = new HashMap<>();
+        int[] firstAppear = new int[20010];
+        Arrays.fill(firstAppear, -1);
+        int result = Integer.MIN_VALUE;
         for (int i = 0; i < n; i++) {
-            firstAppear.putIfAbsent(flowers[i], i);
+            if (firstAppear[flowers[i] + OFFSET] == -1) firstAppear[flowers[i] + OFFSET] = i;
             prefix[i + 1] = prefix[i] + flowers[i];
             negPrefix[i + 1] = negPrefix[i] + (flowers[i] > 0 ? 0 : flowers[i]);
             negCount[i + 1] = negCount[i] + (flowers[i] < 0 ? 1 : 0);
-        }
-        int result = Integer.MIN_VALUE;
-        for (int i = 0; i < n; i++) {
-            int firstAppearIdx = firstAppear.get(flowers[i]);
-            if (firstAppearIdx == i) continue;
+            int firstAppearIdx = firstAppear[flowers[i] + OFFSET];
+            if (firstAppearIdx == -1 || firstAppearIdx == i) continue;
             int totalNumCount = i - firstAppearIdx + 1;
             int negNumCount = negCount[i + 1] - negCount[firstAppearIdx];
             int rest = totalNumCount - negNumCount;
