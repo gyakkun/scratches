@@ -22,37 +22,29 @@ class Scratch {
                 n.next = n;
                 return n;
             }
-            if (head.next == head) {
+            Function<Node, Node> deal = cur -> {
                 Node n = new Node(insertVal);
-                head.next = n;
-                n.next = head;
+                Node origNext = cur.next;
+                cur.next = n;
+                n.next = origNext;
                 return head;
-            }
+            };
             Node cur = head;
+            if (cur.next == head) {
+                return deal.apply(cur);
+            }
             while (true) {
                 if (cur.val > cur.next.val) { // cur就是分界点, 就是末尾
                     if (insertVal >= cur.val || insertVal <= cur.next.val) {
-                        Node n = new Node(insertVal);
-                        Node origNext = cur.next;
-                        cur.next = n;
-                        n.next = origNext;
-                        return head;
+                        return deal.apply(cur);
                     }
                 } else if (insertVal >= cur.val && insertVal <= cur.next.val) {
-                    Node n = new Node(insertVal);
-                    Node origNext = cur.next;
-                    cur.next = n;
-                    n.next = origNext;
-                    return head;
+                    return deal.apply(cur);
                 }
                 cur = cur.next;
                 // 说明已经转了一圈, 还没有收获, 即圈上所有数都是同一个值
                 if (cur.next == head) {
-                    Node n = new Node(insertVal);
-                    Node origNext = cur.next;
-                    cur.next = n;
-                    n.next = origNext;
-                    return head;
+                    return deal.apply(cur);
                 }
             }
         }
