@@ -463,39 +463,36 @@ class Scratch {
     }
 
     // LC862 ** Hard 单调队列
-    public int shortestSubarray(int[] nums, int lowerBound) {
+    public int shortestSubarray(int[] nums, int lowbound) {
         int n = nums.length;
-        Deque<Integer> dq = new LinkedList<>(); // 存的是prefix的下标, 存储一个单调增的前缀和下标, 队首最小
         int[] prefix = new int[n + 1];
-        for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] + nums[i - 1];
-        int right = 0, result = Integer.MAX_VALUE;
-        while (right <= n) {
-            while (!dq.isEmpty() && prefix[right] <= prefix[dq.peekLast()]) {
-                dq.pollLast();
+        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + nums[i];
+        Deque<Integer> q = new LinkedList<>();
+        int cur = 0, result = Integer.MAX_VALUE;
+        while (cur <= n) {
+            // cur 之前的前缀和都必须比cur小, 否则无法满足prefix[cur] - 队列中的任何下标 >0 (lowbound>=1, 所以前缀和的差需要是一个正数)
+            while (!q.isEmpty() && prefix[cur] <= prefix[q.peekLast()]) q.pollLast();
+            // 一旦队首有前缀和满足 prefix[cur] - prefix[队首] >= k, 则可以更新答案
+            // 又因为队列单调递增, 一旦不满足则可以马上跳出
+            // 又因为性质2, 即一旦队首满足了条件, 不再会对之后的cur产生贡献(因为新的长度肯定比现在更长), 所以满足的队首可以立即出队
+            while (!q.isEmpty() && prefix[cur] - prefix[q.peekFirst()] >= lowbound) {
+                result = Math.min(result, cur - q.pollFirst());
             }
-            while (!dq.isEmpty() && prefix[right] - prefix[dq.peekFirst()] >= lowerBound) {
-                result = Math.min(result, right - dq.pollFirst());
-            }
-            dq.offerLast(right);
-            right++;
+            q.offerLast(cur);
+            cur++;
         }
         return result == Integer.MAX_VALUE ? -1 : result;
 
         // 顺带一提 如果是整个数组都是正数 前一个方法是正确的
-        // int minLeftIdx = -1, minRightIdx = -1, minLen = Integer.MAX_VALUE / 2, curSum = 0;
+        // int  minLen = Integer.MAX_VALUE, curSum = 0;
         // for (int left = 0, right = 0; right < nums.length; right++) {
         //     curSum += nums[right];
-        //     while (curSum > k && curSum - nums[left] >= k) curSum -= nums[left++];
-        //     if (curSum >= k) {
-        //         int len = right - left + 1;
-        //         if (len < minLen) {
-        //             minLen = len;
-        //             minLeftIdx = left;
-        //             minRightIdx = right;
-        //         }
+        //     while (curSum > lowbound && curSum - nums[left] >= lowbound) curSum -= nums[left++];
+        //     if (curSum >= lowbound {
+        //         minLen = Math.min(minLen,right - left + 1);
         //     }
         // }
-        // if(minLeftIdx==-1&&minRightIdx==-1) return -1;
+        // if(minLen == Integer.MAX_VALUE) return -1;
         // return minLen;
     }
 
