@@ -1,5 +1,7 @@
+import java.awt.*;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 
 
@@ -12,6 +14,30 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 04.01
+    public boolean findWhetherExistsPath(int n, int[][] graph, int start, int target) {
+        Map<Integer, Set<Integer>> edge = new HashMap<>();
+        for (int[] e : graph) {
+            edge.putIfAbsent(e[0], new HashSet<>());
+            edge.get(e[0]).add(e[1]);
+        }
+        Deque<Integer> q = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
+        q.offer(start);
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            if (visited.contains(p)) continue;
+            if (p == target) return true;
+            visited.add(p);
+            for (int next : edge.getOrDefault(p, new HashSet<>())) {
+                if (!visited.contains(next)) {
+                    q.offer(next);
+                }
+            }
+        }
+        return false;
     }
 
     // LC440 ** 第k大字典序数
