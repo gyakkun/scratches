@@ -18,7 +18,7 @@ class Scratch {
     public int maximumBeauty(int[] flowers) {
         int n = flowers.length;
         int[] prefix = new int[n + 1];
-        int[] negPrefix = new int[n + 1]; // 用来保证之间的花朵大于等于2
+        int[] negPrefix = new int[n + 1];
         int[] negCount = new int[n + 1];
         Map<Integer, Integer> firstAppear = new HashMap<>();
         for (int i = 0; i < n; i++) {
@@ -31,8 +31,6 @@ class Scratch {
         for (int i = 0; i < n; i++) {
             int firstAppearIdx = firstAppear.get(flowers[i]);
             if (firstAppearIdx == i) continue;
-            result = Math.max(result, 2 * flowers[i]);
-            result = Math.max(result, prefix[i + 1] - prefix[firstAppearIdx]);
             int totalNumCount = i - firstAppearIdx + 1;
             int negNumCount = negCount[i + 1] - negCount[firstAppearIdx];
             int rest = totalNumCount - negNumCount;
