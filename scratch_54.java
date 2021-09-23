@@ -33,16 +33,21 @@ class Scratch {
     public int maximumBeauty(int[] flowers) {
         final int OFFSET = 10001;
         int n = flowers.length;
-        int[] prefix = new int[n + 1];
         int[] firstAppear = new int[20010];
         Arrays.fill(firstAppear, -1);
+        int prefix = 0;
         int result = Integer.MIN_VALUE;
         for (int i = 0; i < n; i++) {
-            if (firstAppear[flowers[i] + OFFSET] == -1) firstAppear[flowers[i] + OFFSET] = i;
-            prefix[i + 1] = prefix[i] + (flowers[i] > 0 ? flowers[i] : 0);
-            int firstAppearIdx = firstAppear[flowers[i] + OFFSET];
-            if (firstAppearIdx == i) continue;
-            int sum = prefix[i + 1] - prefix[firstAppearIdx];
+            boolean appeared = false;
+            if (firstAppear[flowers[i] + OFFSET] == -1) {
+                firstAppear[flowers[i] + OFFSET] = prefix;
+            } else {
+                appeared = true;
+            }
+            prefix = prefix + (flowers[i] > 0 ? flowers[i] : 0);
+            if (!appeared) continue;
+            int firstAppearSum = firstAppear[flowers[i] + OFFSET];
+            int sum = prefix - firstAppearSum;
             if (flowers[i] < 0) sum += flowers[i] + flowers[i];
             result = Math.max(result, sum);
         }
