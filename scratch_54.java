@@ -14,7 +14,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC768 Hard **
+    // LC768 Hard **  LC769 Medium 单调栈
     public int maxChunksToSorted(int[] arr) {
         Deque<Integer> stack = new LinkedList<>(); // 单调递增栈
         for (int i : arr) {
