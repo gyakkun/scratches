@@ -14,6 +14,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC768 Hard **
+    public int maxChunksToSorted(int[] arr) {
+        Deque<Integer> stack = new LinkedList<>(); // 单调递增栈
+        for (int i : arr) {
+            if (!stack.isEmpty() && i < stack.peek()) {
+                int head = stack.pop();
+                while (!stack.isEmpty() && i < stack.peek()) stack.pop();
+                stack.push(head);
+            } else {
+                stack.push(i);
+            }
+        }
+        return stack.size();
+    }
+
     // LC1788 Hard
     public int maximumBeauty(int[] flowers) {
         final int OFFSET = 10001;
