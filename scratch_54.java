@@ -14,6 +14,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC325
+    public int maxSubArrayLen(int[] nums, int k) {
+        int result = 0, n = nums.length, prefix = 0;
+        Map<Integer, Integer> prefixIdxMap = new HashMap<>();
+        prefixIdxMap.put(0, -1);
+        for (int i = 0; i < n; i++) {
+            prefix += nums[i];
+            if (prefixIdxMap.containsKey(prefix - k)) {
+                result = Math.max(result, i - prefixIdxMap.get(prefix - k));
+            }
+            prefixIdxMap.putIfAbsent(prefix, i);
+        }
+        return result;
+    }
+
     // LC768 Hard **  LC769 Medium 单调栈 非常精妙
     // https://leetcode-cn.com/problems/max-chunks-to-make-sorted-ii/solution/zui-duo-neng-wan-cheng-pai-xu-de-kuai-ii-deng-jie-/
     public int maxChunksToSorted(int[] arr) {
