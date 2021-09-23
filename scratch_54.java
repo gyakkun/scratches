@@ -8,10 +8,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maximumBeauty(new int[]{-7, -8, 8, 0, -7}));
+        System.out.println(s.findKthNumber(13, 6));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC440 ** 第k大字典序数
+    public int findKthNumber(int upperBound, int k) {
+        int cur = 1;
+        k--; // 从1开始。 如果从0开始不需要减
+        while (k != 0) {
+            int num = helper(cur, upperBound);
+            if (num <= k) {
+                cur++;
+                k -= num;
+            } else {
+                cur *= 10;
+                k--;
+            }
+        }
+        return cur;
+    }
+
+    private int helper(int prefix, int upperBound) {// inclusive
+        int count = 0;
+        for (long cur = prefix, next = prefix + 1; cur <= upperBound; cur *= 10, next *= 10) {
+            count += Math.min(upperBound + 1, next) - cur;
+        }
+        // 如: 数字位数1位的时候 有多少个以1开头的个数?
+        // a=1, b=2, count += 2-1
+        // 上界为12
+        // a=10 b=20, 10 11 12, count += 12+1-10
+        return count;
     }
 
     // LC708 ** JZOF II 029
