@@ -20,7 +20,6 @@ class Scratch {
         int n = flowers.length;
         int[] prefix = new int[n + 1];
         int[] negPrefix = new int[n + 1];
-        int[] negCount = new int[n + 1];
         int[] firstAppear = new int[20010];
         Arrays.fill(firstAppear, -1);
         int result = Integer.MIN_VALUE;
@@ -28,16 +27,10 @@ class Scratch {
             if (firstAppear[flowers[i] + OFFSET] == -1) firstAppear[flowers[i] + OFFSET] = i;
             prefix[i + 1] = prefix[i] + flowers[i];
             negPrefix[i + 1] = negPrefix[i] + (flowers[i] > 0 ? 0 : flowers[i]);
-            negCount[i + 1] = negCount[i] + (flowers[i] < 0 ? 1 : 0);
             int firstAppearIdx = firstAppear[flowers[i] + OFFSET];
             if (firstAppearIdx == -1 || firstAppearIdx == i) continue;
-            int totalNumCount = i - firstAppearIdx + 1;
-            int negNumCount = negCount[i + 1] - negCount[firstAppearIdx];
-            int rest = totalNumCount - negNumCount;
-            if (flowers[i] < 0) rest += 2;
-            if (rest < 2) continue;
             int judge = prefix[i + 1] - prefix[firstAppearIdx] - (negPrefix[i + 1] - negPrefix[firstAppearIdx]);
-            if (flowers[i] < 0) judge += 2 * flowers[i];
+            if (flowers[i] < 0) judge += flowers[i] + flowers[i];
             result = Math.max(result, judge);
         }
         return result;
