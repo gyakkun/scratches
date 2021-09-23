@@ -32,23 +32,22 @@ class Scratch {
     // LC1788 Hard
     public int maximumBeauty(int[] flowers) {
         final int OFFSET = 10001;
-        int n = flowers.length;
         int[] firstAppear = new int[20010];
         Arrays.fill(firstAppear, -1);
         int prefix = 0;
         int result = Integer.MIN_VALUE;
-        for (int i = 0; i < n; i++) {
+        for (int i : flowers) {
             boolean appeared = false;
-            if (firstAppear[flowers[i] + OFFSET] == -1) {
-                firstAppear[flowers[i] + OFFSET] = prefix;
+            if (firstAppear[i + OFFSET] == -1) {
+                firstAppear[i + OFFSET] = prefix;
             } else {
                 appeared = true;
             }
-            prefix = prefix + (flowers[i] > 0 ? flowers[i] : 0);
+            prefix = prefix + (i > 0 ? i : 0);
             if (!appeared) continue;
-            int firstAppearSum = firstAppear[flowers[i] + OFFSET];
+            int firstAppearSum = firstAppear[i + OFFSET];
             int sum = prefix - firstAppearSum;
-            if (flowers[i] < 0) sum += flowers[i] + flowers[i];
+            if (i < 0) sum += i + i;
             result = Math.max(result, sum);
         }
         return result;
