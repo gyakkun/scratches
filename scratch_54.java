@@ -14,6 +14,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC548 Hard **
+    public boolean splitArray(int[] nums) {
+        // 要找到三个点, 去除这三个点的数分成四段, 使得四段的和相等
+        // 0 1 2 3 4 5 6 i=1 j=3 k = 5, 至少要有7个数
+        // 1 <= 1 <= n-6
+        // 3 <= i+2 <= j <= n-4
+        // 5 <= j+2 <= k <= n-2
+        if (nums.length < 7) return false;
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + nums[i];
+        // 要点: 枚举中间的点, i,j,k 的j
+        for (int j = 3; j <= n - 4; j++) {
+            Set<Integer> set = new HashSet<>();
+            for (int i = 1; i <= j - 2; i++) {
+                if (prefix[i] == prefix[j] - prefix[i + 1]) {
+                    set.add(prefix[i]);
+                }
+            }
+            for (int k = j + 2; k <= n - 2; k++) {
+                int sum = prefix[n] - prefix[k + 1];
+                if (sum == prefix[k] - prefix[j + 1] && set.contains(sum))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+
     // LC325
     public int maxSubArrayLen(int[] nums, int k) {
         int result = 0, n = nums.length, prefix = 0;
