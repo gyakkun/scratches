@@ -8,10 +8,41 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxNonOverlapping(new int[]{-2, 6, 6, 3, 5, 4, 1, 2, 8}, 10));
+        System.out.println(s.maximumBeauty(new int[]{-7, -8, 8, 0, -7}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1788 Hard
+    public int maximumBeauty(int[] flowers) {
+        int n = flowers.length;
+        int[] prefix = new int[n + 1];
+        int[] negPrefix = new int[n + 1]; // 用来保证之间的花朵大于等于2
+        int[] negCount = new int[n + 1];
+        Map<Integer, Integer> firstAppear = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            firstAppear.putIfAbsent(flowers[i], i);
+            prefix[i + 1] = prefix[i] + flowers[i];
+            negPrefix[i + 1] = negPrefix[i] + (flowers[i] > 0 ? 0 : flowers[i]);
+            negCount[i + 1] = negCount[i] + (flowers[i] < 0 ? 1 : 0);
+        }
+        int result = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            int firstAppearIdx = firstAppear.get(flowers[i]);
+            if (firstAppearIdx == i) continue;
+            result = Math.max(result, 2 * flowers[i]);
+            result = Math.max(result, prefix[i + 1] - prefix[firstAppearIdx]);
+            int totalNumCount = i - firstAppearIdx + 1;
+            int negNumCount = negCount[i + 1] - negCount[firstAppearIdx];
+            int rest = totalNumCount - negNumCount;
+            if (flowers[i] < 0) rest += 2;
+            if (rest < 2) continue;
+            int judge = prefix[i + 1] - prefix[firstAppearIdx] - (negPrefix[i + 1] - negPrefix[firstAppearIdx]);
+            if (flowers[i] < 0) judge += 2 * flowers[i];
+            result = Math.max(result, judge);
+        }
+        return result;
     }
 
     // JZOF II 070 二分 LC540
