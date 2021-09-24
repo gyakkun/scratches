@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
@@ -14,6 +13,42 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC430
+    class Lc430 {
+        public Node flatten(Node head) {
+            if (head == null) return null;
+            Deque<Node> dfs = new LinkedList<>(); // for dfs
+            dfs.push(head);
+            Deque<Node> stack = new LinkedList<>(); // for linking
+            while (!dfs.isEmpty()) {
+                Node p = dfs.pop();
+                stack.push(p);
+                if (p.next != null) dfs.push(p.next);
+                if (p.child != null) dfs.push(p.child); // rule: if child is not null, make child next, so last push child (for first pop)
+            }
+            Node next = null;
+            while (!stack.isEmpty()) {
+                Node p = stack.pop();
+                p.child = null; // make the child null or error occur
+                p.next = next;
+                next = p;
+                if (!stack.isEmpty()) {
+                    p.prev = stack.peek();
+                } else {
+                    p.prev = null;
+                }
+            }
+            return head;
+        }
+
+        class Node {
+            public int val;
+            public Node prev;
+            public Node next;
+            public Node child;
+        }
     }
 
     // Interview 04.01
@@ -45,7 +80,7 @@ class Scratch {
         int cur = 1;
         k--; // 从1开始。 如果从0开始不需要减
         while (k != 0) {
-            int num = helper(cur, upperBound);
+            int num = lc440Helper(cur, upperBound);
             if (num <= k) {
                 cur++;
                 k -= num;
@@ -57,7 +92,7 @@ class Scratch {
         return cur;
     }
 
-    private int helper(int prefix, int upperBound) {// inclusive
+    private int lc440Helper(int prefix, int upperBound) {// inclusive
         int count = 0;
         for (long cur = prefix, next = prefix + 1; cur <= upperBound; cur *= 10, next *= 10) {
             count += Math.min(upperBound + 1, next) - cur;
