@@ -26,7 +26,8 @@ class Scratch {
                 Node p = dfs.pop();
                 stack.push(p);
                 if (p.next != null) dfs.push(p.next);
-                if (p.child != null) dfs.push(p.child); // rule: if child is not null, make child next, so last push child (for first pop)
+                if (p.child != null)
+                    dfs.push(p.child); // rule: if child is not null, make child next, so last push child (for first pop)
             }
             Node next = null;
             while (!stack.isEmpty()) {
@@ -833,5 +834,73 @@ class ListNode {
     ListNode(int val, ListNode next) {
         this.val = val;
         this.next = next;
+    }
+}
+
+// Interview 16.25 LRU
+class LRUCache {
+    int cap;
+    Map<Integer, Node> m = new HashMap<>();
+    Map<Node, Integer> reverse = new HashMap<>();
+    Node head;
+    Node tail;
+
+    public LRUCache(int capacity) {
+        this.cap = capacity;
+        head = new Node(-1);
+        tail = new Node(-1);
+        head.next = head.prev = tail;
+        tail.next = tail.prev = head;
+    }
+
+    public int get(int key) {
+        if (!m.containsKey(key)) return -1;
+        int result = m.get(key).val;
+        // 将Node 移到头部
+        Node victim = m.get(key);
+        unlink(victim);
+        Node origHeadNext = head.next;
+        head.next = victim;
+        origHeadNext.prev = victim;
+        victim.next = origHeadNext;
+        victim.prev = head;
+        return result;
+    }
+
+    public void put(int key, int value) {
+        if (m.containsKey(key)) {
+            m.get(key).val = value;
+        } else {
+            if (m.size() == cap) {
+                Node victim = tail.prev;
+                int vKey = reverse.get(victim);
+                unlink(victim);
+                m.remove(vKey);
+                reverse.remove(victim);
+            }
+            Node n = new Node(value);
+            m.put(key, n);
+            reverse.put(n, key);
+        }
+        get(key);
+    }
+
+    // Node 双向链表, 然后用Map来存指针
+    class Node {
+        int val;
+        Node prev;
+        Node next;
+
+        public Node(int val) {
+            this.val = val;
+        }
+    }
+
+    private void unlink(Node n) {
+        Node origPrev = n.prev, origNext = n.next;
+        if (origNext != null) origNext.prev = origPrev;
+        if (origPrev != null) origPrev.next = origNext;
+        n.next = null;
+        n.prev = null;
     }
 }
