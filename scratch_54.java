@@ -18,33 +18,37 @@ class Scratch {
     }
 
     // LC1908
-    Boolean[] memo;
+    BitSet visited;
+    BitSet memo;
     int base;
-    int len;
 
     public boolean nimGame(int[] piles) {
-        len = piles.length;
         base = Arrays.stream(piles).max().getAsInt() + 1;
         int status = calStatus(piles);
-        memo = new Boolean[status + 1];
-        return helper(status);
+        memo = new BitSet(status + 1);
+        visited = new BitSet(status + 1);
+        return helper(piles);
     }
 
-    private boolean helper(int status) {
+    private boolean helper(int[] piles) {
+        int status = calStatus(piles);
         if (status == 0) return false;
-        if (memo[status] != null) return true;
-        int[] stones = getArray(status);
-        for (int i = 0; i < len; i++) {
-            if (stones[i] > 0) {
-                for (int j = 1; j <= stones[i]; j++) {
-                    int nextStatus = status - j * (int) Math.pow(base, len - 1 - i);
-                    if (!helper(nextStatus)) {
-                        return memo[status] = true;
+        if (visited.get(status)) return memo.get(status);
+        visited.set(status);
+        for (int i = 0; i < piles.length; i++) {
+            if (piles[i] > 0) {
+                for (int j = 1; j <= piles[i]; j++) {
+                    piles[i] -= j;
+                    boolean result = helper(piles);
+                    piles[i] += j;
+                    if(!result) {
+                        memo.set(status);
+                        return true;
                     }
                 }
             }
         }
-        return memo[status] = false;
+        return false;
     }
 
     private int calStatus(int[] piles) {
@@ -54,15 +58,6 @@ class Scratch {
             status += i;
         }
         return status;
-    }
-
-    private int[] getArray(int status) {
-        int[] result = new int[len];
-        for (int i = 0; i < len; i++) {
-            result[len - 1 - i] = status % base;
-            status /= base;
-        }
-        return result;
     }
 
 
