@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
@@ -9,28 +11,53 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.nimGame(new int[]{1}));
+        System.out.println(s.stoneGameII(new int[]{2, 7, 9, 4, 4}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1140 TBD
+    int[] prefix;
+
+    public int stoneGameII(int[] piles) {
+        int n = piles.length;
+        prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + piles[i];
+        boolean result = helper(n, 1, 0, 0, 0);
+        return -1;
+    }
+
+    private boolean helper(int n, int m, int ptr, int myGain, int advGain) {
+        if (ptr == n) {
+            return myGain > advGain;
+        }
+        for (int len = 1; len <= 2 * m; len++) {
+            if (len + ptr > n) break;
+            int newMyGain = myGain + prefix[ptr + len] - prefix[ptr];
+            if (!helper(n, Math.max(len, m), ptr + len, advGain, newMyGain)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // LC1025
-    Boolean[] memo = new Boolean[1001];
+    Boolean[] lc1025Memo = new Boolean[1001];
 
     public boolean divisorGame(int n) {
         if (n <= 1) return false;
-        if (memo[n] != null) return memo[n];
+        if (lc1025Memo[n] != null) return lc1025Memo[n];
         int sqrt = (int) Math.sqrt(n);
         for (int i = 2; i <= sqrt; i++) {
             if (n % i == 0) {
                 if (!divisorGame(n - i) || !divisorGame(n - n / i)) {
-                    return memo[n] = true;
+                    return lc1025Memo[n] = true;
                 }
             }
         }
-        if (!divisorGame(n - 1)) return memo[n] = true;
-        return memo[n] = false;
+        if (!divisorGame(n - 1)) return lc1025Memo[n] = true;
+        return lc1025Memo[n] = false;
     }
 
     // LC1686 **
