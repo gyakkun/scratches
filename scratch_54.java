@@ -15,6 +15,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1025
+    Boolean[] memo = new Boolean[1001];
+
+    public boolean divisorGame(int n) {
+        if (n <= 1) return false;
+        if (memo[n] != null) return memo[n];
+        List<Integer> factors = new ArrayList<>();
+        int sqrt = (int) Math.sqrt(n);
+        if (sqrt * sqrt == n) factors.add(sqrt);
+        factors.add(1);
+        for (int i = 2; i < sqrt; i++) {
+            if (n % i == 0) {
+                factors.add(i);
+                factors.add(n / i);
+            }
+        }
+        for (int f : factors) {
+            if (!divisorGame(n - f)) {
+                return memo[n] = true;
+            }
+        }
+        return memo[n] = false;
+    }
+
     // LC1686 **
     public int stoneGameVI(int[] aliceValues, int[] bobValues) {
         int n = aliceValues.length;
