@@ -16,25 +16,19 @@ class Scratch {
     }
 
     // LC1973
-    Map<TreeNode, Integer> memo;
+    int lc1973Result = 0;
 
     public int equalToDescendants(TreeNode root) {
-        memo = new HashMap<>();
-        helper(root);
-        int result = 0;
-        for (Map.Entry<TreeNode, Integer> e : memo.entrySet()) {
-            if (e.getKey().val == e.getValue()) result++;
-        }
-        return result;
+        if (root == null) return 0;
+        lc1973Dfs(root);
+        return lc1973Result;
     }
 
-    private int helper(TreeNode root) {
-        if (memo.containsKey(root)) return memo.get(root);
-        int result = 0;
-        if (root.left != null) result += root.left.val + helper(root.left);
-        if (root.right != null) result += root.right.val + helper(root.right);
-        memo.put(root, result);
-        return result;
+    private int lc1973Dfs(TreeNode root) {
+        if (root == null) return 0;
+        int sum = lc1973Dfs(root.left) + lc1973Dfs(root.right);
+        if (root.val == sum) lc1973Result++;
+        return sum + root.val;
     }
 
     // LC430
