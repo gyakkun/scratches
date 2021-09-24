@@ -21,21 +21,15 @@ class Scratch {
     public boolean divisorGame(int n) {
         if (n <= 1) return false;
         if (memo[n] != null) return memo[n];
-        List<Integer> factors = new ArrayList<>();
         int sqrt = (int) Math.sqrt(n);
-        if (sqrt * sqrt == n) factors.add(sqrt);
-        factors.add(1);
-        for (int i = 2; i < sqrt; i++) {
+        for (int i = 2; i <= sqrt; i++) {
             if (n % i == 0) {
-                factors.add(i);
-                factors.add(n / i);
+                if (!divisorGame(n - i) || !divisorGame(n - n / i)) {
+                    return memo[n] = true;
+                }
             }
         }
-        for (int f : factors) {
-            if (!divisorGame(n - f)) {
-                return memo[n] = true;
-            }
-        }
+        if (!divisorGame(n - 1)) return memo[n] = true;
         return memo[n] = false;
     }
 
