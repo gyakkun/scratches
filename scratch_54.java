@@ -1,3 +1,5 @@
+import javafx.scene.chart.PieChart;
+
 import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
@@ -9,11 +11,60 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findKthNumber(13, 6));
+        System.out.println(s.nimGame(new int[]{1}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1908
+    Boolean[] memo;
+    int base;
+    int len;
+
+    public boolean nimGame(int[] piles) {
+        len = piles.length;
+        base = Arrays.stream(piles).max().getAsInt() + 1;
+        int status = calStatus(piles);
+        memo = new Boolean[status + 1];
+        return helper(status);
+    }
+
+    private boolean helper(int status) {
+        if (status == 0) return false;
+        if (memo[status] != null) return true;
+        int[] stones = getArray(status);
+        for (int i = 0; i < len; i++) {
+            if (stones[i] > 0) {
+                for (int j = 1; j <= stones[i]; j++) {
+                    int nextStatus = status - j * (int) Math.pow(base, len - 1 - i);
+                    if (!helper(nextStatus)) {
+                        return memo[status] = true;
+                    }
+                }
+            }
+        }
+        return memo[status] = false;
+    }
+
+    private int calStatus(int[] piles) {
+        int status = 0;
+        for (int i : piles) {
+            status *= base;
+            status += i;
+        }
+        return status;
+    }
+
+    private int[] getArray(int status) {
+        int[] result = new int[len];
+        for (int i = 0; i < len; i++) {
+            result[len - 1 - i] = status % base;
+            status /= base;
+        }
+        return result;
+    }
+
 
     // LC1973
     int lc1973Result = 0;
@@ -172,6 +223,7 @@ class Scratch {
                 next = _next;
             }
         }
+
     }
 
     // LC548 Hard **
