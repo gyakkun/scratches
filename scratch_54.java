@@ -11,35 +11,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.stoneGameII(new int[]{2, 7, 9, 4, 4}));
+        System.out.println(s.stoneGameII(new int[]{8270, 7145, 575, 5156, 5126, 2905, 8793, 7817, 5532, 5726, 7071, 7730, 5200, 5369, 5763, 7148, 8287, 9449, 7567, 4850, 1385, 2135, 1737, 9511, 8065, 7063, 8023, 7729, 7084, 8407}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1140 TBD
+    // LC1140 TLE
     int[] prefix;
+    Map<Integer, Map<Integer, Map<Integer, Integer>>> memo = new HashMap<>();
 
     public int stoneGameII(int[] piles) {
         int n = piles.length;
         prefix = new int[n + 1];
         for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + piles[i];
-        boolean result = helper(n, 1, 0, 0, 0);
-        return -1;
+        return helper(n, 1, 0, 0, 0);
     }
 
-    private boolean helper(int n, int m, int ptr, int myGain, int advGain) {
+    private int helper(int n, int m, int ptr, int myGain, int advGain) {
         if (ptr == n) {
-            return myGain > advGain;
+            return myGain;
         }
+        memo.putIfAbsent(m, new HashMap<>());
+        memo.get(m).putIfAbsent(ptr, new HashMap<>());
+        if (memo.get(m).get(ptr).containsKey(myGain)) return memo.get(m).get(ptr).get(myGain);
+        int selfMax = 0;
         for (int len = 1; len <= 2 * m; len++) {
             if (len + ptr > n) break;
             int newMyGain = myGain + prefix[ptr + len] - prefix[ptr];
-            if (!helper(n, Math.max(len, m), ptr + len, advGain, newMyGain)) {
-                return true;
-            }
+            int advFinalGain = helper(n, Math.max(len, m), ptr + len, advGain, newMyGain);
+            selfMax = Math.max(prefix[n] - advFinalGain, selfMax); // minmax, 函数返回的是对手能拿到的最大的石子数量, 相反己方想要得到的石子数最多, 则只能选对方石子数最小的石子
         }
-        return false;
+        memo.get(m).get(ptr).put(myGain, selfMax);
+        return selfMax;
     }
 
     // LC1025
