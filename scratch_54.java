@@ -19,21 +19,23 @@ class Scratch {
 
     // LC1140 ** 注意状态定义
     int[] prefix;
-    Integer[][] memo;
+    int[][] memo;
+    BitSet visit;
 
     public int stoneGameII(int[] piles) {
         int n = piles.length;
         prefix = new int[n + 1];
         for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + piles[i];
-        memo = new Integer[n + 1][n + 1];
+        memo = new int[n + 1][n + 1];
+        visit = new BitSet((n + 1) * (n + 1));
         return helper(n, 1, 0);
     }
 
     private int helper(int n, int m, int ptr) { // 返回的是先手能从剩下的石堆中能取到的最多的石子数量
         if (ptr == n) return 0;
-        if (memo[m][ptr] != null) return memo[m][ptr];
+        if (visit.get(m * (n + 1) + ptr)) return memo[m][ptr];
+        visit.set(m * (n + 1) + ptr);
         // 如果取值范围覆盖到了n, 则全部拿走
-        int maxLen = 2 * m;
         if (ptr + 2 * m >= n) return memo[m][ptr] = prefix[n] - prefix[ptr];
         int maxGain = Integer.MIN_VALUE;
         for (int len = 1; len <= 2 * m; len++) {
