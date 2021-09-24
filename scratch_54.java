@@ -17,33 +17,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1140 TLE
+    // LC1140 ** 注意状态定义
     int[] prefix;
-    Map<Integer, Map<Integer, Map<Integer, Integer>>> memo = new HashMap<>();
+    Integer[][] memo;
 
     public int stoneGameII(int[] piles) {
         int n = piles.length;
         prefix = new int[n + 1];
         for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + piles[i];
-        return helper(n, 1, 0, 0, 0);
+        memo = new Integer[n + 1][n + 1];
+        return helper(n, 1, 0);
     }
 
-    private int helper(int n, int m, int ptr, int myGain, int advGain) {
-        if (ptr == n) {
-            return myGain;
-        }
-        memo.putIfAbsent(m, new HashMap<>());
-        memo.get(m).putIfAbsent(ptr, new HashMap<>());
-        if (memo.get(m).get(ptr).containsKey(myGain)) return memo.get(m).get(ptr).get(myGain);
-        int selfMax = 0;
+    private int helper(int n, int m, int ptr) { // 返回的是先手能从剩下的石堆中能取到的最多的石子数量
+        if (ptr == n) return 0;
+        if (memo[m][ptr] != null) return memo[m][ptr];
+        // 如果取值范围覆盖到了n, 则全部拿走
+        int maxLen = 2 * m;
+        if (ptr + 2 * m >= n) return memo[m][ptr] = prefix[n] - prefix[ptr];
+        int maxGain = Integer.MIN_VALUE;
         for (int len = 1; len <= 2 * m; len++) {
-            if (len + ptr > n) break;
-            int newMyGain = myGain + prefix[ptr + len] - prefix[ptr];
-            int advFinalGain = helper(n, Math.max(len, m), ptr + len, advGain, newMyGain);
-            selfMax = Math.max(prefix[n] - advFinalGain, selfMax); // minmax, 函数返回的是对手能拿到的最大的石子数量, 相反己方想要得到的石子数最多, 则只能选对方石子数最小的石子
+            if (ptr + len > n) break;
+            int remain = prefix[n] - prefix[ptr];
+            int myGainThisTime = prefix[len + ptr] - prefix[ptr];
+            int advGain = helper(n, Math.max(len, m), ptr + len);
+            // 现在剩余的所有石子- 己方本轮的所有石子 -  对方将来得到得到的所有石子 = 己方将来得到的所有石子
+            int myGainFuture = remain - myGainThisTime - advGain;
+            maxGain = Math.max(maxGain, myGainFuture + myGainThisTime);
         }
-        memo.get(m).get(ptr).put(myGain, selfMax);
-        return selfMax;
+        return memo[m][ptr] = maxGain;
     }
 
     // LC1025
