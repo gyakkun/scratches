@@ -15,34 +15,53 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1686 **
+    public int stoneGameVI(int[] aliceValues, int[] bobValues) {
+        int n = aliceValues.length;
+        List<int[]> totalValuesAndIdx = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int totalValues = aliceValues[i] + bobValues[i];
+            totalValuesAndIdx.add(new int[]{totalValues, i});
+        }
+        Collections.sort(totalValuesAndIdx, Comparator.comparingInt(o -> -o[0]));
+        int alice = 0, bob = 0;
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) alice += aliceValues[totalValuesAndIdx.get(i)[1]];
+            else bob += bobValues[totalValuesAndIdx.get(i)[1]];
+        }
+        if (alice == bob) return 0;
+        if (alice > bob) return 1;
+        return -1;
+    }
+
     // LC877
-    Boolean[] memo;
+    Boolean[] lc877Memo;
 
     public boolean stoneGame(int[] piles) {
         LinkedList<Integer> pileList = new LinkedList<>();
         for (int i : piles) pileList.add(i);
-        memo = new Boolean[piles.length];
-        return helper(pileList, 0, 0, 0);
+        lc877Memo = new Boolean[piles.length];
+        return lc877Helper(pileList, 0, 0, 0);
     }
 
-    private boolean helper(LinkedList<Integer> pileList, int myGain, int advGain, int status) {
+    private boolean lc877Helper(LinkedList<Integer> pileList, int myGain, int advGain, int status) {
         if (pileList.size() == 0) {
             return myGain > advGain;
         }
-        if (memo[status] != null) return memo[status];
+        if (lc877Memo[status] != null) return lc877Memo[status];
         // 左侧
         int left = pileList.getFirst(), right = pileList.getLast();
         pileList.removeFirst();
-        boolean result = helper(pileList, advGain, myGain + left, status + 1);
+        boolean result = lc877Helper(pileList, advGain, myGain + left, status + 1);
         pileList.addFirst(left);
-        if (!result) return memo[status] = true;
+        if (!result) return lc877Memo[status] = true;
 
         pileList.removeLast();
-        result = helper(pileList, advGain, myGain + right, status);
+        result = lc877Helper(pileList, advGain, myGain + right, status);
         pileList.addLast(right);
-        if (!result) return memo[status] = true;
+        if (!result) return lc877Memo[status] = true;
 
-        return memo[status] = false;
+        return lc877Memo[status] = false;
     }
 
 
