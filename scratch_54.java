@@ -15,6 +15,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1973
+    Map<TreeNode, Integer> memo;
+
+    public int equalToDescendants(TreeNode root) {
+        memo = new HashMap<>();
+        helper(root);
+        int result = 0;
+        for (Map.Entry<TreeNode, Integer> e : memo.entrySet()) {
+            if (e.getKey().val == e.getValue()) result++;
+        }
+        return result;
+    }
+
+    private int helper(TreeNode root) {
+        if (memo.containsKey(root)) return memo.get(root);
+        int result = 0;
+        if (root.left != null) result += root.left.val + helper(root.left);
+        if (root.right != null) result += root.right.val + helper(root.right);
+        memo.put(root, result);
+        return result;
+    }
+
     // LC430
     class Lc430 {
         public Node flatten(Node head) {
