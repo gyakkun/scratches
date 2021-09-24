@@ -1,5 +1,3 @@
-import javafx.scene.chart.PieChart;
-
 import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
@@ -17,32 +15,63 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1908
-    BitSet visited;
-    BitSet memo;
-    int base;
+    // LC877
+    Boolean[] memo;
 
-    public boolean nimGame(int[] piles) {
-        base = Arrays.stream(piles).max().getAsInt() + 1;
-        int status = calStatus(piles);
-        memo = new BitSet(status + 1);
-        visited = new BitSet(status + 1);
-        return helper(piles);
+    public boolean stoneGame(int[] piles) {
+        LinkedList<Integer> pileList = new LinkedList<>();
+        for (int i : piles) pileList.add(i);
+        memo = new Boolean[piles.length];
+        return helper(pileList, 0, 0, 0);
     }
 
-    private boolean helper(int[] piles) {
+    private boolean helper(LinkedList<Integer> pileList, int myGain, int advGain, int status) {
+        if (pileList.size() == 0) {
+            return myGain > advGain;
+        }
+        if (memo[status] != null) return memo[status];
+        // 左侧
+        int left = pileList.getFirst(), right = pileList.getLast();
+        pileList.removeFirst();
+        boolean result = helper(pileList, advGain, myGain + left, status + 1);
+        pileList.addFirst(left);
+        if (!result) return memo[status] = true;
+
+        pileList.removeLast();
+        result = helper(pileList, advGain, myGain + right, status);
+        pileList.addLast(right);
+        if (!result) return memo[status] = true;
+
+        return memo[status] = false;
+    }
+
+
+    // LC1908
+    BitSet lc1908Visited;
+    BitSet lc1908Memo;
+    int lc1908Base;
+
+    public boolean nimGame(int[] piles) {
+        lc1908Base = Arrays.stream(piles).max().getAsInt() + 1;
+        int status = calStatus(piles);
+        lc1908Memo = new BitSet(status + 1);
+        lc1908Visited = new BitSet(status + 1);
+        return lc1908Helper(piles);
+    }
+
+    private boolean lc1908Helper(int[] piles) {
         int status = calStatus(piles);
         if (status == 0) return false;
-        if (visited.get(status)) return memo.get(status);
-        visited.set(status);
+        if (lc1908Visited.get(status)) return lc1908Memo.get(status);
+        lc1908Visited.set(status);
         for (int i = 0; i < piles.length; i++) {
             if (piles[i] > 0) {
                 for (int j = 1; j <= piles[i]; j++) {
                     piles[i] -= j;
-                    boolean result = helper(piles);
+                    boolean lose = lc1908Helper(piles);
                     piles[i] += j;
-                    if(!result) {
-                        memo.set(status);
+                    if (!lose) {
+                        lc1908Memo.set(status);
                         return true;
                     }
                 }
@@ -54,7 +83,7 @@ class Scratch {
     private int calStatus(int[] piles) {
         int status = 0;
         for (int i : piles) {
-            status *= base;
+            status *= lc1908Base;
             status += i;
         }
         return status;
