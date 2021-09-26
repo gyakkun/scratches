@@ -15,52 +15,46 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC834 TBD 做了一半: 有根树根到所有节点的路径和
+    // LC834 TLE, O(n*n)
     int[] result;
     Map<Integer, Set<Integer>> mtx;
+    Set<Integer> visited;
 
     public int[] sumOfDistancesInTree(int n, int[][] edges) {
-        int[] indegree = new int[n];
+        int[] ret = new int[n];
         mtx = new HashMap<>(n);
         for (int i = 0; i < n; i++) mtx.put(i, new HashSet<>());
         for (int[] e : edges) {
             mtx.get(e[0]).add(e[1]);
             mtx.get(e[1]).add(e[0]);
-            indegree[e[1]]++;
         }
-        int root = -1;
-        // 找出一个根, 构造有根树
+        // 人人都可以是root
         for (int i = 0; i < n; i++) {
-            if (indegree[i] == 0) {
-                root = i;
-                break;
-            }
+            result = new int[n];
+            visited = new HashSet<>();
+            helper(i);
+            ret[i] = result[i];
         }
-        Deque<Integer> q = new LinkedList<>();
-        q.offer(root);
-        while (!q.isEmpty()) {
-            int p = q.poll();
-            for (int next : mtx.get(p)) {
-                mtx.get(next).remove(p);
-                if (mtx.get(next).size() > 0) {
-                    q.offer(next);
-                }
-            }
-        }
-        result = new int[n];
-        helper(root);
-        return result;
+        return ret;
     }
 
-    private void helper(int root) {
-        result[root] += mtx.get(root).size();
+    private int helper(int root) {
+        if (visited.contains(root)) return 0;
+        visited.add(root);
+        int ret = 0;
+        Map<Integer, Integer> unvisited = new HashMap<>();
         for (int next : mtx.get(root)) {
-            helper(next);
+            if (!visited.contains(next)) {
+                result[root]++;
+                ret++;
+                unvisited.put(next, helper(next));
+            }
         }
-        for (int next : mtx.get(root)) {
-            result[root] += result[next] + mtx.get(next).size();
-
+        for (int next : unvisited.keySet()) {
+            result[root] += result[next] + unvisited.get(next);
+            ret += unvisited.get(next);
         }
+        return ret;
     }
 
 
