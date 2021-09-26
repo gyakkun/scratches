@@ -17,6 +17,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC634 ** 错位排列个数
+    public int findDerangement(int n) {
+        if (n == 0) return 1; //??
+        if (n == 1) return 0;
+        final int mod = 1000000007;
+        // dp[n] = (n-1) * (dp[n-2] + dp[n-1])
+        long[] dp = new long[3]; // 滚数组
+        dp[0] = 1;
+        dp[1] = 0;
+        for (int i = 2; i <= n; i++) {
+            dp[i % 3] = ((i - 1) * ((dp[(i - 2) % 3] + dp[(i - 1) % 3]))) % mod;
+        }
+        return (int) dp[n % 3];
+    }
+
     // LC1138
     public String alphabetBoardPath(String target) {
         StringBuilder result = new StringBuilder();
