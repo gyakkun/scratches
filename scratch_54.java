@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
@@ -1066,5 +1064,53 @@ class LRUCache {
         if (origPrev != null) origPrev.next = origNext;
         n.next = null;
         n.prev = null;
+    }
+}
+
+// LC1622 ** 乘加合并, 可以用树状数组, 线段树, TBD
+class Fancy {
+    final long mod = 1000000007;
+    List<long[]> op = new ArrayList<>(); // [加,乘]
+    List<Integer> opIdx = new ArrayList<>();
+    List<Integer> val = new ArrayList<>();
+    boolean added = false;
+
+    public Fancy() {
+
+    }
+
+    public void append(int v) {
+        opIdx.add(op.size()); // 这里 op.size() 永远指向当前append值之后的第一个op (利用了size 和 最大下标之间差一的关系)
+        val.add(v);
+        added = true;
+    }
+
+    public void addAll(int inc) {
+        if (added || op.isEmpty()) {
+            op.add(new long[]{inc, 1});
+        } else { // 合并加
+            op.get(op.size() - 1)[0] = (op.get(op.size() - 1)[0] + inc) % mod;
+        }
+        added = false;
+    }
+
+    public void multAll(int m) {
+        if (added || op.isEmpty()) {
+            op.add(new long[]{0, m});
+        } else { // 合并乘和加
+            op.get(op.size() - 1)[0] = (op.get(op.size() - 1)[0] * m) % mod;
+            op.get(op.size() - 1)[1] = (op.get(op.size() - 1)[1] * m) % mod;
+        }
+        added = false;
+    }
+
+    public int getIndex(int idx) {
+        if(idx>= val.size()) return -1;
+        long result = val.get(idx);
+        for (int i = opIdx.get(idx); i < op.size(); i++) { // 从append之后的第一个op开始, 直到最后一个op
+            result = result * op.get(i)[1] % mod;
+            result = result + op.get(i)[0] % mod;
+        }
+        return (int) (result % mod);
     }
 }
