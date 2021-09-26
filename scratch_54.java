@@ -15,18 +15,40 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC979 **
-    int result = 0;
+    // LC968
+    class Lc968 {
+        final int NEED = 0, HAS = 1, NO_NEED = 2;
+        int result = 0;
+        Map<TreeNode, Integer> memo = new HashMap<>();
 
-    public int distributeCoins(TreeNode root) {
-        dfs(root);
-        return result;
+        public int minCameraCover(TreeNode root) {
+            if (dfs(root) == NEED) result++;
+            return result;
+        }
+
+        private int dfs(TreeNode root) {
+            if (root == null) return NO_NEED;
+            int left = dfs(root.left), right = dfs(root.right);
+            if (left == NEED || right == NEED) {
+                result++;
+                return HAS;
+            }
+            return (left == HAS || right == HAS) ? NO_NEED : NEED;
+        }
     }
 
-    private int dfs(TreeNode root) {
+    // LC979 **
+    int lc979Result = 0;
+
+    public int distributeCoins(TreeNode root) {
+        lc979Dfs(root);
+        return lc979Result;
+    }
+
+    private int lc979Dfs(TreeNode root) {
         if (root == null) return 0;
-        int left = dfs(root.left), right = dfs(root.right);
-        result += Math.abs(left) + Math.abs(right);
+        int left = lc979Dfs(root.left), right = lc979Dfs(root.right);
+        lc979Result += Math.abs(left) + Math.abs(right);
         return root.val + left + right - 1;
     }
 
@@ -46,24 +68,24 @@ class Scratch {
             lc834Mtx.get(e[0]).add(e[1]);
             lc834Mtx.get(e[1]).add(e[0]);
         }
-        helper(0, -1);
-        helper2(0, -1);
+        lc834Helper(0, -1);
+        lc834Helper2(0, -1);
         return lc834Result;
     }
 
-    private void helper(int root, int parent) { // 返回的是这个节点下面共有多少个子节点
+    private void lc834Helper(int root, int parent) { // 返回的是这个节点下面共有多少个子节点
         lc834Size[root] = 1;
         lc834Dp[root] = 0;
         for (int child : lc834Mtx.get(root)) {
             if (child != parent) {
-                helper(child, root);
+                lc834Helper(child, root);
                 lc834Dp[root] += lc834Dp[child] + lc834Size[child];
                 lc834Size[root] += lc834Size[child];
             }
         }
     }
 
-    private void helper2(int root, int parent) {
+    private void lc834Helper2(int root, int parent) {
         lc834Result[root] = lc834Dp[root];
         for (int child : lc834Mtx.get(root)) {
             if (child != parent) {
@@ -76,7 +98,7 @@ class Scratch {
                 // 而child则多了 root作为孩子的贡献
                 lc834Dp[child] += lc834Dp[root] + lc834Size[root];
                 lc834Size[child] += lc834Size[root];
-                helper2(child, root);
+                lc834Helper2(child, root);
 
                 lc834Dp[child] = origDpChild;
                 lc834Size[child] = origSizeChild;
