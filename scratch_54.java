@@ -17,6 +17,57 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1138
+    public String alphabetBoardPath(String target) {
+        StringBuilder result = new StringBuilder();
+        String[] boardArr = {"abcde", "fghij", "klmno", "pqrst", "uvwxy", "z"};
+        char[][] boardMtx = new char[6][];
+        for (int i = 0; i < 6; i++) {
+            boardMtx[i] = boardArr[i].toCharArray();
+        }
+        Map<Character, int[]> letterIdxMap = new HashMap<>(26);
+        for (int i = 0; i < boardMtx.length; i++) {
+            for (int j = 0; j < boardMtx[i].length; j++) {
+                letterIdxMap.put(boardMtx[i][j], new int[]{i, j});
+            }
+        }
+        int[] cur = {0, 0};
+        for (char c : target.toCharArray()) {
+            int[] targetIdx = letterIdxMap.get(c);
+            int y = targetIdx[0] - cur[0], x = targetIdx[1] - cur[1];
+            // Z对策
+            if (c == 'z') {
+                // 先横向移动
+                if (x < 0) {
+                    while (x++ != 0) result.append('L');
+                } else {
+                    while (x-- != 0) result.append('R');
+                }
+                // 再纵向移动
+                if (y < 0) {
+                    while (y++ != 0) result.append('U');
+                } else {
+                    while (y-- != 0) result.append('D');
+                }
+            } else {
+                if (y < 0) {
+                    while (y++ != 0) result.append('U');
+                } else {
+                    while (y-- != 0) result.append('D');
+                }
+
+                if (x < 0) {
+                    while (x++ != 0) result.append('L');
+                } else {
+                    while (x-- != 0) result.append('R');
+                }
+            }
+            result.append('!');
+            cur = targetIdx;
+        }
+        return result.toString();
+    }
+
     // JZOF II 004 LC137
     public int singleNumber(int[] nums) {
         int result = 0;
