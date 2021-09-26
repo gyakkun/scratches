@@ -15,6 +15,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1509 思想就是每次修改最大或最小的数 使之变成非最大非最小
+    public int minDifference(int[] nums) {
+        if (nums.length <= 4) return 0;
+        int n = nums.length;
+        Arrays.sort(nums);
+        int pos1 = Math.min(nums[n - 1] - nums[3], nums[n - 4] - nums[0]);
+        int pos2 = Math.min(nums[n - 2] - nums[2], nums[n - 3] - nums[1]);
+        return Math.min(pos1, pos2);
+    }
+
     // LC968
     class Lc968 {
         final int NEED = 0, HAS = 1, NO_NEED = 2;
