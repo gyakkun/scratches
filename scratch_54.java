@@ -15,58 +15,73 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC834 ** O(n) from solution
-    int[] result;
-    Map<Integer, Set<Integer>> mtx;
-    int[] size;
-    int[] dp;
+    // LC979 **
+    int result = 0;
 
-    public int[] sumOfDistancesInTree(int n, int[][] edges) {
-        result = new int[n];
-        dp = new int[n];
-        size = new int[n];
-        mtx = new HashMap<>(n);
-        for (int i = 0; i < n; i++) mtx.put(i, new HashSet<>());
-        for (int[] e : edges) {
-            mtx.get(e[0]).add(e[1]);
-            mtx.get(e[1]).add(e[0]);
-        }
-        helper(0, -1);
-        helper2(0, -1);
+    public int distributeCoins(TreeNode root) {
+        dfs(root);
         return result;
     }
 
+    private int dfs(TreeNode root) {
+        if (root == null) return 0;
+        int left = dfs(root.left), right = dfs(root.right);
+        result += Math.abs(left) + Math.abs(right);
+        return root.val + left + right - 1;
+    }
+
+    // LC834 ** O(n) from solution
+    int[] lc834Result;
+    Map<Integer, Set<Integer>> lc834Mtx;
+    int[] lc834Size;
+    int[] lc834Dp;
+
+    public int[] sumOfDistancesInTree(int n, int[][] edges) {
+        lc834Result = new int[n];
+        lc834Dp = new int[n];
+        lc834Size = new int[n];
+        lc834Mtx = new HashMap<>(n);
+        for (int i = 0; i < n; i++) lc834Mtx.put(i, new HashSet<>());
+        for (int[] e : edges) {
+            lc834Mtx.get(e[0]).add(e[1]);
+            lc834Mtx.get(e[1]).add(e[0]);
+        }
+        helper(0, -1);
+        helper2(0, -1);
+        return lc834Result;
+    }
+
     private void helper(int root, int parent) { // 返回的是这个节点下面共有多少个子节点
-        size[root] = 1;
-        dp[root] = 0;
-        for (int child : mtx.get(root)) {
+        lc834Size[root] = 1;
+        lc834Dp[root] = 0;
+        for (int child : lc834Mtx.get(root)) {
             if (child != parent) {
                 helper(child, root);
-                dp[root] += dp[child] + size[child];
-                size[root] += size[child];
+                lc834Dp[root] += lc834Dp[child] + lc834Size[child];
+                lc834Size[root] += lc834Size[child];
             }
         }
     }
 
     private void helper2(int root, int parent) {
-        result[root] = dp[root];
-        for (int child : mtx.get(root)) {
+        lc834Result[root] = lc834Dp[root];
+        for (int child : lc834Mtx.get(root)) {
             if (child != parent) {
-                int origDpRoot = dp[root], origDpChild = dp[child], origSizeRoot = size[root], origSizeChild = size[child];
+                int origDpRoot = lc834Dp[root], origDpChild = lc834Dp[child], origSizeRoot = lc834Size[root], origSizeChild = lc834Size[child];
 
                 // 换根, 将root 变成 child的孩子, 此时dp[root] 要减去 child的贡献, 即 dp[root] -= (origDpChild + origSizeChild)
                 // size[root] -= origSizeChild
-                dp[root] -= origDpChild + origSizeChild;
-                size[root] -= origSizeChild;
+                lc834Dp[root] -= origDpChild + origSizeChild;
+                lc834Size[root] -= origSizeChild;
                 // 而child则多了 root作为孩子的贡献
-                dp[child] += dp[root] + size[root];
-                size[child] += size[root];
+                lc834Dp[child] += lc834Dp[root] + lc834Size[root];
+                lc834Size[child] += lc834Size[root];
                 helper2(child, root);
 
-                dp[child] = origDpChild;
-                size[child] = origSizeChild;
-                dp[root] = origDpRoot;
-                size[root] = origSizeRoot;
+                lc834Dp[child] = origDpChild;
+                lc834Size[child] = origSizeChild;
+                lc834Dp[root] = origDpRoot;
+                lc834Size[root] = origSizeRoot;
             }
         }
     }
