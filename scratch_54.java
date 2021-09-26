@@ -15,37 +15,61 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 01.06
+    public String compressString(String s) {
+        char[] ca = s.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        char prev = '\0';
+        int ctr = 0;
+        for (char c : ca) {
+            if (c == prev) ctr++;
+            else {
+                if (ctr != 0) {
+                    sb.append(prev);
+                    sb.append(ctr);
+                }
+                ctr = 1;
+                prev = c;
+            }
+        }
+        if (ctr != 0) {
+            sb.append(prev);
+            sb.append(ctr);
+        }
+        return s.length() <= sb.length() ? s : sb.toString();
+    }
+
     // LC1140 ** 注意状态定义
-    int[] prefix;
-    int[][] memo;
-    BitSet visit;
+    int[] lc1140Prefix;
+    int[][] lc1140Memo;
+    BitSet lc1140Visit;
 
     public int stoneGameII(int[] piles) {
         int n = piles.length;
-        prefix = new int[n + 1];
-        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + piles[i];
-        memo = new int[n + 1][n + 1];
-        visit = new BitSet((n + 1) * (n + 1));
-        return helper(n, 1, 0);
+        lc1140Prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) lc1140Prefix[i + 1] = lc1140Prefix[i] + piles[i];
+        lc1140Memo = new int[n + 1][n + 1];
+        lc1140Visit = new BitSet((n + 1) * (n + 1));
+        return lc1140Helper(n, 1, 0);
     }
 
-    private int helper(int n, int m, int ptr) { // 返回的是先手能从剩下的石堆中能取到的最多的石子数量
+    private int lc1140Helper(int n, int m, int ptr) { // 返回的是先手能从剩下的石堆中能取到的最多的石子数量
         if (ptr == n) return 0;
-        if (visit.get(m * (n + 1) + ptr)) return memo[m][ptr];
-        visit.set(m * (n + 1) + ptr);
+        if (lc1140Visit.get(m * (n + 1) + ptr)) return lc1140Memo[m][ptr];
+        lc1140Visit.set(m * (n + 1) + ptr);
         // 如果取值范围覆盖到了n, 则全部拿走
-        if (ptr + 2 * m >= n) return memo[m][ptr] = prefix[n] - prefix[ptr];
+        if (ptr + 2 * m >= n) return lc1140Memo[m][ptr] = lc1140Prefix[n] - lc1140Prefix[ptr];
         int maxGain = Integer.MIN_VALUE;
         for (int len = 1; len <= 2 * m; len++) {
             if (ptr + len > n) break;
-            int remain = prefix[n] - prefix[ptr];
-            int myGainThisTime = prefix[len + ptr] - prefix[ptr];
-            int advGain = helper(n, Math.max(len, m), ptr + len);
+            int remain = lc1140Prefix[n] - lc1140Prefix[ptr];
+            int myGainThisTime = lc1140Prefix[len + ptr] - lc1140Prefix[ptr];
+            int advGain = lc1140Helper(n, Math.max(len, m), ptr + len);
             // 现在剩余的所有石子- 己方本轮的所有石子 -  对方将来得到得到的所有石子 = 己方将来得到的所有石子
             int myGainFuture = remain - myGainThisTime - advGain;
             maxGain = Math.max(maxGain, myGainFuture + myGainThisTime);
         }
-        return memo[m][ptr] = maxGain;
+        return lc1140Memo[m][ptr] = maxGain;
     }
 
     // LC1025
@@ -1105,7 +1129,7 @@ class Fancy {
     }
 
     public int getIndex(int idx) {
-        if(idx>= val.size()) return -1;
+        if (idx >= val.size()) return -1;
         long result = val.get(idx);
         for (int i = opIdx.get(idx); i < op.size(); i++) { // 从append之后的第一个op开始, 直到最后一个op
             result = result * op.get(i)[1] % mod;
