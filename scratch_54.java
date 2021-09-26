@@ -9,11 +9,60 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.stoneGameII(new int[]{8270, 7145, 575, 5156, 5126, 2905, 8793, 7817, 5532, 5726, 7071, 7730, 5200, 5369, 5763, 7148, 8287, 9449, 7567, 4850, 1385, 2135, 1737, 9511, 8065, 7063, 8023, 7729, 7084, 8407}));
+        System.out.println(s.sumOfDistancesInTree(6, new int[][]{{0, 1}, {0, 2}, {2, 3}, {2, 4}, {2, 5}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC834 TBD 做了一半: 有根树根到所有节点的路径和
+    int[] result;
+    Map<Integer, Set<Integer>> mtx;
+
+    public int[] sumOfDistancesInTree(int n, int[][] edges) {
+        int[] indegree = new int[n];
+        mtx = new HashMap<>(n);
+        for (int i = 0; i < n; i++) mtx.put(i, new HashSet<>());
+        for (int[] e : edges) {
+            mtx.get(e[0]).add(e[1]);
+            mtx.get(e[1]).add(e[0]);
+            indegree[e[1]]++;
+        }
+        int root = -1;
+        // 找出一个根, 构造有根树
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                root = i;
+                break;
+            }
+        }
+        Deque<Integer> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            for (int next : mtx.get(p)) {
+                mtx.get(next).remove(p);
+                if (mtx.get(next).size() > 0) {
+                    q.offer(next);
+                }
+            }
+        }
+        result = new int[n];
+        helper(root);
+        return result;
+    }
+
+    private void helper(int root) {
+        result[root] += mtx.get(root).size();
+        for (int next : mtx.get(root)) {
+            helper(next);
+        }
+        for (int next : mtx.get(root)) {
+            result[root] += result[next] + mtx.get(next).size();
+
+        }
+    }
+
 
     // Interview 01.06
     public String compressString(String s) {
