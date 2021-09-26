@@ -9,10 +9,37 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.sumOfDistancesInTree(6, new int[][]{{0, 1}, {0, 2}, {2, 3}, {2, 4}, {2, 5}}));
+        System.out.println(s.replaceWords(
+                new String[]{"a", "aa", "aaa", "aaaa"},
+                "a aa a aaaa aaa aaa aaa aaaaaa bbb baba ababa"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC648 JZOF II 063 **
+    public String replaceWords(String[] dictionary, String sentence) {
+        Trie trie = new Trie();
+        for (String w : dictionary) trie.addWord(w);
+        List<String> result = new ArrayList<>();
+        String[] split = sentence.split("\\s+");
+        for (String w : split) {
+            TrieNode cur = trie.root;
+            StringBuilder appending = new StringBuilder();
+            for (char c : w.toCharArray()) {
+                if (!cur.children.containsKey(c) || cur.end != 0) {
+                    break;
+                }
+                cur = cur.children.get(c);
+                appending.append(c);
+            }
+            if (cur.end != 0) {
+                result.add(appending.toString());
+            } else {
+                result.add(w);
+            }
+        }
+        return String.join(" ", result);
     }
 
     // LC1880
@@ -20,7 +47,7 @@ class Scratch {
         return getStringVal(targetWord) == getStringVal(firstWord) + getStringVal(secondWord);
     }
 
-    private long getStringVal(String w){
+    private long getStringVal(String w) {
         long result = 0;
         for (char c : w.toCharArray()) {
             result = result * 10 + (c - 'a');
