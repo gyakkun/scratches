@@ -15,47 +15,60 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC834 TLE, O(n*n)
+    // LC834 ** O(n) from solution
     int[] result;
     Map<Integer, Set<Integer>> mtx;
-    Set<Integer> visited;
+    int[] size;
+    int[] dp;
 
     public int[] sumOfDistancesInTree(int n, int[][] edges) {
-        int[] ret = new int[n];
+        result = new int[n];
+        dp = new int[n];
+        size = new int[n];
         mtx = new HashMap<>(n);
         for (int i = 0; i < n; i++) mtx.put(i, new HashSet<>());
         for (int[] e : edges) {
             mtx.get(e[0]).add(e[1]);
             mtx.get(e[1]).add(e[0]);
         }
-        // 人人都可以是root
-        for (int i = 0; i < n; i++) {
-            result = new int[n];
-            visited = new HashSet<>();
-            helper(i);
-            ret[i] = result[i];
-        }
-        return ret;
+        helper(0, -1);
+        helper2(0, -1);
+        return result;
     }
 
-    private int helper(int root) { // 返回的是这个节点下面共有多少个子节点
-        if (visited.contains(root)) return 0;
-        visited.add(root);
-        int ret = 0;
-        Map<Integer, Integer> memo = new HashMap<>();
-        for (int next : mtx.get(root)) {
-            if (!visited.contains(next)) {
-                result[root]++; // result 存的是当前root到所有子节点的距离, 因此每发现一个子节点就+1
-                ret++;
-                memo.put(next, helper(next)); // 用一个memo记录下这个子节点的后续子节点个数, 最后累加
+    private void helper(int root, int parent) { // 返回的是这个节点下面共有多少个子节点
+        size[root] = 1;
+        dp[root] = 0;
+        for (int child : mtx.get(root)) {
+            if (child != parent) {
+                helper(child, root);
+                dp[root] += dp[child] + size[child];
+                size[root] += size[child];
             }
         }
-        for (int next : memo.keySet()) {
-            result[root] += result[next] + memo.get(next); // 然后再加上next的后续所有子节点的距离, 再加上这个next的子节点个数
-                                                           // (因为到所有后续节点的路程都要加上当前root到next的路程各一次)
-            ret += memo.get(next);
+    }
+
+    private void helper2(int root, int parent) {
+        result[root] = dp[root];
+        for (int child : mtx.get(root)) {
+            if (child != parent) {
+                int origDpRoot = dp[root], origDpChild = dp[child], origSizeRoot = size[root], origSizeChild = size[child];
+
+                // 换根, 将root 变成 child的孩子, 此时dp[root] 要减去 child的贡献, 即 dp[root] -= (origDpChild + origSizeChild)
+                // size[root] -= origSizeChild
+                dp[root] -= origDpChild + origSizeChild;
+                size[root] -= origSizeChild;
+                // 而child则多了 root作为孩子的贡献
+                dp[child] += dp[root] + size[root];
+                size[child] += size[root];
+                helper2(child, root);
+
+                dp[child] = origDpChild;
+                size[child] = origSizeChild;
+                dp[root] = origDpRoot;
+                size[root] = origSizeRoot;
+            }
         }
-        return ret;
     }
 
 
