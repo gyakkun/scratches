@@ -17,6 +17,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1290
+    public int getDecimalValue(ListNode head) {
+        int result = 0;
+        ListNode cur = head;
+        while (cur != null) {
+            result <<= 1;
+            result += cur.val;
+            cur = cur.next;
+        }
+        return result;
+    }
+
     // LC648 JZOF II 063 **
     public String replaceWords(String[] dictionary, String sentence) {
         Trie trie = new Trie();
