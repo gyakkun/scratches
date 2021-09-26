@@ -38,21 +38,22 @@ class Scratch {
         return ret;
     }
 
-    private int helper(int root) {
+    private int helper(int root) { // 返回的是这个节点下面共有多少个子节点
         if (visited.contains(root)) return 0;
         visited.add(root);
         int ret = 0;
-        Map<Integer, Integer> unvisited = new HashMap<>();
+        Map<Integer, Integer> memo = new HashMap<>();
         for (int next : mtx.get(root)) {
             if (!visited.contains(next)) {
-                result[root]++;
+                result[root]++; // result 存的是当前root到所有子节点的距离, 因此每发现一个子节点就+1
                 ret++;
-                unvisited.put(next, helper(next));
+                memo.put(next, helper(next)); // 用一个memo记录下这个子节点的后续子节点个数, 最后累加
             }
         }
-        for (int next : unvisited.keySet()) {
-            result[root] += result[next] + unvisited.get(next);
-            ret += unvisited.get(next);
+        for (int next : memo.keySet()) {
+            result[root] += result[next] + memo.get(next); // 然后再加上next的后续所有子节点的距离, 再加上这个next的子节点个数
+                                                           // (因为到所有后续节点的路程都要加上当前root到next的路程各一次)
+            ret += memo.get(next);
         }
         return ret;
     }
