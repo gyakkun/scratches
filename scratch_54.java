@@ -1138,3 +1138,21 @@ class Fancy {
         return (int) (result % mod);
     }
 }
+
+// LC359
+class Logger {
+
+    Map<String, Integer> m = new HashMap<>();
+
+    public Logger() {
+
+    }
+
+    public boolean shouldPrintMessage(int timestamp, String message) {
+        if (!m.containsKey(message) || timestamp >= m.get(message)) {
+            m.put(message, timestamp + 10);
+            return true;
+        }
+        return false;
+    }
+}
