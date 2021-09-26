@@ -15,6 +15,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1880
+    public boolean isSumEqual(String firstWord, String secondWord, String targetWord) {
+        return getStringVal(targetWord) == getStringVal(firstWord) + getStringVal(secondWord);
+    }
+
+    private long getStringVal(String w){
+        long result = 0;
+        for (char c : w.toCharArray()) {
+            result = result * 10 + (c - 'a');
+        }
+        return result;
+    }
+
     // LC1509 思想就是每次修改最大或最小的数 使之变成非最大非最小
     public int minDifference(int[] nums) {
         if (nums.length <= 4) return 0;
