@@ -17,6 +17,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 004 LC137
+    public int singleNumber(int[] nums) {
+        int result = 0;
+        for (int i = 0; i < Integer.SIZE; i++) {
+            int total = 0;
+            for (int j : nums) {
+                total += (j >> i) & 1;
+            }
+            if (total % 3 != 0) { // 出现了3次的话 这一位上为1的数目mod3肯定为0
+                result |= (1 << i);
+            }
+        }
+        return result;
+    }
+
     // LC1290
     public int getDecimalValue(ListNode head) {
         int result = 0;
