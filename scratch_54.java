@@ -15,7 +15,120 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1335 Hard
+    // LC273
+    class Lc273 {
+        public String numberToWords(int num) {
+            if (num == 0) return "Zero";
+            int bil = num / 1000000000;
+            int mil = (num / 1000000) % 1000;
+            int tho = (num / 1000) % 1000;
+            int rest = num % 1000;
+            List<String> result = new ArrayList<>();
+            if (bil != 0) result.add(threeDigit(bil) + " Billion");
+            if (mil != 0) result.add(threeDigit(mil) + " Million");
+            if (tho != 0) result.add(threeDigit(tho) + " Thousand");
+            if (rest != 0) result.add(threeDigit(rest));
+            return String.join(" ", result);
+        }
+
+        private String one(int num) {
+            switch (num) {
+                case 1:
+                    return "One";
+                case 2:
+                    return "Two";
+                case 3:
+                    return "Three";
+                case 4:
+                    return "Four";
+                case 5:
+                    return "Five";
+                case 6:
+                    return "Six";
+                case 7:
+                    return "Seven";
+                case 8:
+                    return "Eight";
+                case 9:
+                    return "Nine";
+            }
+            return "";
+        }
+
+        private String belowTwenty(int num) {
+            switch (num) {
+                case 10:
+                    return "Ten";
+                case 11:
+                    return "Eleven";
+                case 12:
+                    return "Twelve";
+                case 13:
+                    return "Thirteen";
+                case 14:
+                    return "Fourteen";
+                case 15:
+                    return "Fifteen";
+                case 16:
+                    return "Sixteen";
+                case 17:
+                    return "Seventeen";
+                case 18:
+                    return "Eighteen";
+                case 19:
+                    return "Nineteen";
+            }
+            return "";
+        }
+
+        private String ten(int num) {
+            switch (num) {
+                case 2:
+                    return "Twenty";
+                case 3:
+                    return "Thirty";
+                case 4:
+                    return "Forty";
+                case 5:
+                    return "Fifty";
+                case 6:
+                    return "Sixty";
+                case 7:
+                    return "Seventy";
+                case 8:
+                    return "Eighty";
+                case 9:
+                    return "Ninety";
+            }
+            return "";
+        }
+
+        private String twoDigit(int num) {
+            if (num == 0) return "";
+            if (num < 10) return one(num);
+            if (num < 20) return belowTwenty(num);
+            int ten = num / 10, one = num % 10;
+            if (one == 0) return ten(ten);
+            return ten(ten) + " " + one(one);
+        }
+
+        private String threeDigit(int num) {
+            if (num == 0) return "";
+            int hundred = num / 100, rest = num % 100;
+            if (hundred != 0 && rest != 0) {
+                return one(hundred) + " Hundred " + twoDigit(rest);
+            }
+            if (hundred == 0 && rest != 0) {
+                return twoDigit(rest);
+            }
+            if (hundred != 0 && rest == 0) {
+                return one(hundred) + " Hundred";
+            }
+            return "";
+        }
+    }
+
+    // LC1335 Hard 可以抽象成: 将一个数组分成k份使这k个子数组的最大值的和最小
     Integer[][] lc1335Memo;
 
     public int minDifficulty(int[] jobDifficulty, int d) {
