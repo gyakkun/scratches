@@ -15,6 +15,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1791 有O(1)的方法
+    public int findCenter(int[][] edges) {
+        int n = edges.length + 1;
+        int[] indegree = new int[n];
+        for (int[] e : edges) {
+            indegree[e[0] - 1]++;
+            indegree[e[1] - 1]++;
+        }
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == n - 1) return i + 1;
+        }
+        return -1;
+    }
+
     // LC1849
     public boolean splitString(String s) {
         return lc1849Helper(Long.MAX_VALUE, 0, s, 0);
