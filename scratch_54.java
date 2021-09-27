@@ -20,30 +20,30 @@ class Scratch {
 
     public int minDifficulty(int[] jobDifficulty, int d) {
         int n = jobDifficulty.length;
-        lc1335Memo = new Integer[d + 1][n + 1];
         if (d > n) return -1;
+        lc1335Memo = new Integer[d + 1][n + 1];
         return lc1335Helper(jobDifficulty, 0, 0, d);
     }
 
-    private int lc1335Helper(int[] jobDifficulty, int curDay, int curJob, int leftDays) {
+    private int lc1335Helper(int[] jobDifficulty, int curDay, int curJob, int daysLeft) {
         if (curJob == jobDifficulty.length) return 0;
         if (lc1335Memo[curDay][curJob] != null) return lc1335Memo[curDay][curJob];
-        if (leftDays == 0) { // 如果只剩0天了, 那肯定要在当天赶DDL把剩下的做完
+        if (daysLeft == 0) { // 如果只剩0天了, 那肯定要在当天赶DDL把剩下的做完
             int max = 0;
             for (int i = curJob; i < jobDifficulty.length; i++) {
                 max = Math.max(max, jobDifficulty[i]);
             }
             return lc1335Memo[curDay][curJob] = max;
         } else {
-            // 保证剩下的每天都有工作可以分配, 找一个当天可以做的工作的下标上界
+            // 保证剩下的每天都有工作可以分配, 找一个当天可以做的工作的数量上界
             int remainJobs = jobDifficulty.length - curJob;
-            int maxJobs = remainJobs - leftDays + 1;
+            int maxJobs = remainJobs - daysLeft + 1;
             // 做前几个工作?
-            int max = jobDifficulty[curJob];
+            int max = 0;
             int result = Integer.MAX_VALUE;
             for (int i = 1; i <= maxJobs; i++) {
                 max = Math.max(max, jobDifficulty[curJob + i - 1]);
-                result = Math.min(result, max + lc1335Helper(jobDifficulty, curDay + 1, curJob + i, leftDays - 1));
+                result = Math.min(result, max + lc1335Helper(jobDifficulty, curDay + 1, curJob + i, daysLeft - 1));
             }
             return lc1335Memo[curDay][curJob] = result;
         }
