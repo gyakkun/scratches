@@ -9,10 +9,35 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.numDecodings("1*1"));
+        System.out.println(s.splitString("1234"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1849
+    public boolean splitString(String s) {
+        return lc1849Helper(Long.MAX_VALUE, 0, s, 0);
+    }
+
+    private boolean lc1849Helper(long prevVal, int curIdx, String s, int parts) {
+        if (curIdx == s.length()) {
+            return parts > 1; // 只有分出超过1part才正确
+        }
+        for (int len = 1; len <= s.length() - curIdx; len++) {
+            String next = s.substring(curIdx, curIdx + len);
+            next = next.replaceAll("^0+(.*)$", "$1"); // 删除前缀零
+            if (next.length() > (s.length() + 1) / 2) break; // 实际长度超过一半 后面就不可能分出比他小的值
+            if (next.length() == 0) next = "0";
+            long val = Long.parseLong(next, 10);
+            if (val >= prevVal) return false;  // 只有比前一个值小才有可能符合, 否则立即剪枝
+            if (parts == 0 || val == prevVal - 1) { // 如果前面没有值 (第一个值), 或者前面有值且当前值使前一个值减一
+                if (lc1849Helper(val, curIdx + len, s, parts + 1)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // LC273
