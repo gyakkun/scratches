@@ -9,10 +9,48 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.splitString("1234"));
+        System.out.println(s.isDecomposable("66666666666677722"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1933
+    public boolean isDecomposable(String s) {
+        int twoCount = 0, threeCount = 0;
+        char prev = '\0';
+        int ctr = 0;
+        for (char c : s.toCharArray()) {
+            if (c == prev) {
+                ctr++;
+            } else {
+                if (ctr != 0) {
+                    if (ctr % 3 != 0 && ctr % 3 != 2) {
+                        return false;
+                    }
+                    if (ctr % 3 == 0) threeCount += ctr / 3;
+                    if (ctr % 3 == 2) {
+                        twoCount++;
+                        threeCount += ctr / 3;
+                        if (twoCount > 1) return false;
+                    }
+                }
+                ctr = 1;
+                prev = c;
+            }
+        }
+        if (ctr != 0) {
+            if (ctr % 3 != 0 && ctr % 3 != 2) {
+                return false;
+            }
+            if (ctr % 3 == 0) threeCount += ctr / 3;
+            if (ctr % 3 == 2) {
+                twoCount++;
+                threeCount += ctr / 3;
+                if (twoCount > 1) return false;
+            }
+        }
+        return twoCount == 1;
     }
 
     // LCP24 **
@@ -1749,7 +1787,7 @@ class MedianFinderMod { // 修改过的mf
     }
 
     public int findMedian() {
-        if(maxPq.size()> minPq.size()) return maxPq.peek();
+        if (maxPq.size() > minPq.size()) return maxPq.peek();
         return minPq.peek();
     }
 }
