@@ -15,13 +15,47 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1335 Hard
+    Integer[][] lc1335Memo;
+
+    public int minDifficulty(int[] jobDifficulty, int d) {
+        int n = jobDifficulty.length;
+        lc1335Memo = new Integer[d + 1][n + 1];
+        if (d > n) return -1;
+        return lc1335Helper(jobDifficulty, 0, 0, d);
+    }
+
+    private int lc1335Helper(int[] jobDifficulty, int curDay, int curJob, int leftDays) {
+        if (curJob == jobDifficulty.length) return 0;
+        if (lc1335Memo[curDay][curJob] != null) return lc1335Memo[curDay][curJob];
+        if (leftDays == 0) { // 如果只剩0天了, 那肯定要在当天赶DDL把剩下的做完
+            int max = 0;
+            for (int i = curJob; i < jobDifficulty.length; i++) {
+                max = Math.max(max, jobDifficulty[i]);
+            }
+            return lc1335Memo[curDay][curJob] = max;
+        } else {
+            // 保证剩下的每天都有工作可以分配, 找一个当天可以做的工作的下标上界
+            int remainJobs = jobDifficulty.length - curJob;
+            int maxJobs = remainJobs - leftDays + 1;
+            // 做前几个工作?
+            int max = jobDifficulty[curJob];
+            int result = Integer.MAX_VALUE;
+            for (int i = 1; i <= maxJobs; i++) {
+                max = Math.max(max, jobDifficulty[curJob + i - 1]);
+                result = Math.min(result, max + lc1335Helper(jobDifficulty, curDay + 1, curJob + i, leftDays - 1));
+            }
+            return lc1335Memo[curDay][curJob] = result;
+        }
+    }
+
     // LC276 ** 打家劫舍?
     public int numWays(int n, int k) {
         int[][] dp = new int[2][2]; //dp[i][0] 表示末尾没有重复颜色, dp[i][1] 表示刷到i最后两个颜色重复的刷法
         dp[1][0] = k;
         dp[1][1] = 0;
         for (int i = 2; i <= n; i++) {
-            dp[i % 2][0] = (k - 1) * (dp[(i - 1) % 2][0] + dp[(i - 1) % 2][1]);
+            dp[i % 2][0] = (k - 1) * (dp[(i - 1) % 2][0] + dp[(i - 1) % 2][1]); // 乘以k-1是因为不能刷和上一个相同的颜色(0表示末尾没有重复颜色)
             dp[i % 2][1] = dp[(i - 1) % 2][0];
         }
         return dp[n % 2][0] + dp[n % 2][1];
