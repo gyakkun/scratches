@@ -15,6 +15,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP24 **
+    public int[] numsGame(int[] nums) {
+        // 对前i个数, 满足nums[0] ~ nums[i-1] 是一个公差为1的等差数列, 对每个数至少要操作多少次? (i>0)
+        // 即 nums[a] +1 = nums[a+1]  <=> nums[a] - a = nums[a+1] - (a+1)
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            nums[i] -= i;
+        }
+        int[] result = new int[n];
+        result[0] = 0;
+        MedianFinderMod mf = new MedianFinderMod();
+        mf.addNum(nums[0]);
+        for (int i = 1; i < n; i++) {
+            mf.addNum(nums[i]);
+
+            int median = mf.findMedian();
+            long r = (mf.minSum - median * mf.minPq.size() + median * mf.maxPq.size() - mf.maxSum);
+            result[i] = (int) (r % 1000000007);
+
+        }
+        return result;
+    }
+
     // LC1791 有O(1)的方法
     public int findCenter(int[][] edges) {
         int n = edges.length + 1;
@@ -1681,5 +1704,52 @@ class Logger {
             return true;
         }
         return false;
+    }
+}
+
+class MedianFinderMod { // 修改过的mf
+    PriorityQueue<Integer> minPq = new PriorityQueue<>(); // 存大的半边
+    PriorityQueue<Integer> maxPq = new PriorityQueue<>(Comparator.reverseOrder()); // 存小的半边, 数量要等于minPq 或 等于 minPq.size()+1
+    long minSum = 0, maxSum = 0;
+
+    /**
+     * initialize your data structure here.
+     */
+    public MedianFinderMod() {
+
+    }
+
+    public void addNum(int num) {
+        if (maxPq.isEmpty()) {
+            maxPq.offer(num);
+            maxSum += num;
+        } else {
+            if (num > maxPq.peek()) {
+                minPq.offer(num);
+                minSum += num;
+            } else {
+                maxPq.offer(num);
+                maxSum += num;
+            }
+        }
+
+        // 调整
+        while (minPq.size() < maxPq.size()) {
+            int victim = maxPq.poll();
+            maxSum -= victim;
+            minPq.offer(victim);
+            minSum += victim;
+        }
+        while (minPq.size() > maxPq.size()) {
+            int victim = minPq.poll();
+            minSum -= victim;
+            maxPq.offer(victim);
+            maxSum += victim;
+        }
+    }
+
+    public int findMedian() {
+        if(maxPq.size()> minPq.size()) return maxPq.peek();
+        return minPq.peek();
     }
 }
