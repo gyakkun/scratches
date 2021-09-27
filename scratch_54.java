@@ -9,13 +9,64 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.replaceWords(
-                new String[]{"a", "aa", "aaa", "aaaa"},
-                "a aa a aaaa aaa aaa aaa aaaaaa bbb baba ababa"));
+        System.out.println(s.numDecodings("1*1"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC639
+    Long[] memo;
+    final long mod = 1000000007;
+
+    public int numDecodings(String s) {
+        int n = s.length();
+        memo = new Long[n + 1];
+        return (int) (helper(s, 0) % mod);
+    }
+
+    private long helper(String s, int idx) {
+        if (idx >= s.length()) return 1;
+        if (s.charAt(idx) == '0') return 0;
+        if (memo[idx] != null) return memo[idx];
+
+        long one = 0;
+        if (Character.isDigit(s.charAt(idx))) {
+            one += helper(s, idx + 1);
+        } else {
+            one += (9 * (long) helper(s, idx + 1)) % mod;
+        }
+
+        long two = 0;
+        // 如果两位都是星号 有15种可能(11~19, 21~26)
+        if (idx + 2 <= s.length()) {
+            if (s.charAt(idx) == '*' && s.charAt(idx + 1) == '*') {
+                two += 15 * helper(s, idx + 2);
+            } else if (s.charAt(idx) == '*' && s.charAt(idx + 1) != '*') {
+                // 如果有这一位是*, 又要考虑两位产生的贡献, 则只能取1或者2 (3~9不产生贡献)
+                // 如果*=1, 则第二位可以取任何值, 产生了一种可能
+                two += helper(s, idx + 2);
+
+                /// 如果*=2, 则第二位只能取0~6之间的值, 否则不会产生任何新的可能
+                if (s.charAt(idx + 1) >= '0' && s.charAt(idx + 1) <= '6') {
+                    two += helper(s, idx + 2);
+                }
+            } else if (s.charAt(idx) != '*' && s.charAt(idx + 1) == '*') {
+                // 同样讨论第一位是1还是2
+                if (s.charAt(idx) == '1') { // 如果第一位是1, 则*可以取1~9, 供9种
+                    two += 9 * helper(s, idx + 2);
+                } else if (s.charAt(idx) == '2') { // 如果第一位是2, *可以取1~6, 共6种
+                    two += 6 * helper(s, idx + 2);
+                }
+            } else { // 如果两位都是数字的情况
+                if (s.substring(idx, idx + 2).compareTo("26") <= 0) {
+                    two += helper(s, idx + 2);
+                }
+            }
+        }
+        return memo[idx] = ((one + two) % mod);
+    }
+
 
     // LC634 ** 错位排列个数
     public int findDerangement(int n) {
