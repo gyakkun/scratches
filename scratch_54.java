@@ -15,9 +15,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC276 ** 打家劫舍?
+    public int numWays(int n, int k) {
+        int[][] dp = new int[2][2]; //dp[i][0] 表示末尾没有重复颜色, dp[i][1] 表示刷到i最后两个颜色重复的刷法
+        dp[1][0] = k;
+        dp[1][1] = 0;
+        for (int i = 2; i <= n; i++) {
+            dp[i % 2][0] = (k - 1) * (dp[(i - 1) % 2][0] + dp[(i - 1) % 2][1]);
+            dp[i % 2][1] = dp[(i - 1) % 2][0];
+        }
+        return dp[n % 2][0] + dp[n % 2][1];
+    }
+
+
     // LC639
-    Long[] memo;
-    final long mod = 1000000007;
+    Long[] lc639Memo;
+    final long lc639Mod = 1000000007;
 
     public int numDecodingsDp(String s) {
         int n = s.length();
@@ -30,7 +43,7 @@ class Scratch {
             if (Character.isDigit(ca[i])) {
                 one += dp[i + 1];
             } else {
-                one += (9 * dp[i + 1]) % mod;
+                one += (9 * dp[i + 1]) % lc639Mod;
             }
 
             long two = 0;
@@ -54,57 +67,57 @@ class Scratch {
                     }
                 }
             }
-            dp[i] = (one + two) % mod;
+            dp[i] = (one + two) % lc639Mod;
         }
-        return (int) (dp[0] % mod);
+        return (int) (dp[0] % lc639Mod);
     }
 
     public int numDecodings(String s) {
         int n = s.length();
-        memo = new Long[n + 1];
-        return (int) (helper(s, 0) % mod);
+        lc639Memo = new Long[n + 1];
+        return (int) (lc639Helper(s, 0) % lc639Mod);
     }
 
-    private long helper(String s, int idx) {
+    private long lc639Helper(String s, int idx) {
         if (idx >= s.length()) return 1;
         if (s.charAt(idx) == '0') return 0;
-        if (memo[idx] != null) return memo[idx];
+        if (lc639Memo[idx] != null) return lc639Memo[idx];
 
         long one = 0;
         if (Character.isDigit(s.charAt(idx))) {
-            one += helper(s, idx + 1);
+            one += lc639Helper(s, idx + 1);
         } else {
-            one += (9 * (long) helper(s, idx + 1)) % mod;
+            one += (9 * (long) lc639Helper(s, idx + 1)) % lc639Mod;
         }
 
         long two = 0;
         // 如果两位都是星号 有15种可能(11~19, 21~26)
         if (idx + 2 <= s.length()) {
             if (s.charAt(idx) == '*' && s.charAt(idx + 1) == '*') {
-                two += 15 * helper(s, idx + 2);
+                two += 15 * lc639Helper(s, idx + 2);
             } else if (s.charAt(idx) == '*' && s.charAt(idx + 1) != '*') {
                 // 如果有这一位是*, 又要考虑两位产生的贡献, 则只能取1或者2 (3~9不产生贡献)
                 // 如果*=1, 则第二位可以取任何值, 产生了一种可能
-                two += helper(s, idx + 2);
+                two += lc639Helper(s, idx + 2);
 
                 /// 如果*=2, 则第二位只能取0~6之间的值, 否则不会产生任何新的可能
                 if (s.charAt(idx + 1) >= '0' && s.charAt(idx + 1) <= '6') {
-                    two += helper(s, idx + 2);
+                    two += lc639Helper(s, idx + 2);
                 }
             } else if (s.charAt(idx) != '*' && s.charAt(idx + 1) == '*') {
                 // 同样讨论第一位是1还是2
                 if (s.charAt(idx) == '1') { // 如果第一位是1, 则*可以取1~9, 供9种
-                    two += 9 * helper(s, idx + 2);
+                    two += 9 * lc639Helper(s, idx + 2);
                 } else if (s.charAt(idx) == '2') { // 如果第一位是2, *可以取1~6, 共6种
-                    two += 6 * helper(s, idx + 2);
+                    two += 6 * lc639Helper(s, idx + 2);
                 }
             } else { // 如果两位都是数字的情况
                 if (s.substring(idx, idx + 2).compareTo("26") <= 0) {
-                    two += helper(s, idx + 2);
+                    two += lc639Helper(s, idx + 2);
                 }
             }
         }
-        return memo[idx] = ((one + two) % mod);
+        return lc639Memo[idx] = ((one + two) % lc639Mod);
     }
 
 
