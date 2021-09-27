@@ -19,6 +19,46 @@ class Scratch {
     Long[] memo;
     final long mod = 1000000007;
 
+    public int numDecodingsDp(String s) {
+        int n = s.length();
+        char[] ca = s.toCharArray();
+        long[] dp = new long[n + 1];
+        dp[n] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            if (ca[i] == '0') continue;
+            long one = 0;
+            if (Character.isDigit(ca[i])) {
+                one += dp[i + 1];
+            } else {
+                one += (9 * dp[i + 1]) % mod;
+            }
+
+            long two = 0;
+            if (i + 2 <= ca.length) {
+                if (ca[i] == '*' && ca[i + 1] == '*') {
+                    two += 15 * dp[i + 2];
+                } else if (ca[i] == '*' && ca[i + 1] != '*') {
+                    two += dp[i + 2];
+                    if (ca[i + 1] >= '0' && ca[i + 1] <= '6') {
+                        two += dp[i + 2];
+                    }
+                } else if (ca[i] != '*' && ca[i + 1] == '*') {
+                    if (ca[i] == '1') {
+                        two += 9 * dp[i + 2];
+                    } else if (ca[i] == '2') {
+                        two += 6 * dp[i + 2];
+                    }
+                } else {
+                    if (s.substring(i, i + 2).compareTo("26") <= 0) {
+                        two += dp[i + 2];
+                    }
+                }
+            }
+            dp[i] = (one + two) % mod;
+        }
+        return (int) (dp[0] % mod);
+    }
+
     public int numDecodings(String s) {
         int n = s.length();
         memo = new Long[n + 1];
