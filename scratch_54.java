@@ -11,7 +11,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.largest1BorderedSquare(new int[][]{{1, 1}, {1, 1}}));
+        System.out.println(s.largest1BorderedSquare(new int[][]{{1, 1, 1}, {1, 0, 1}, {1, 1, 1}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -19,91 +19,35 @@ class Scratch {
 
     // LC1139
     public int largest1BorderedSquare(int[][] grid) {
-        int result = 0, m = grid.length, n = grid[0].length;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 1) {
-                    result = Math.max(result, 1);
+        int maxSideLen = 0, m = grid.length, n = grid[0].length;
+        int[][][] dp = new int[m + 1][n + 1][2]; // dp[i][j][0] 表示左边连续1的个数, [1]表示上面连续1的个数
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (grid[i - 1][j - 1] == 1) {
+                    dp[i][j][0] = 1 + dp[i][j - 1][0];
+                    dp[i][j][1] = 1 + dp[i - 1][j][1];
                 }
-                int up = i, down = m - 1 - i;
-                int left = j, right = n - 1 - j;
-
-                // 作为右下角, 往左上扩张(收缩)
-                {
-                    int maxRadius = Math.min(left, up);
-                    if (maxRadius != 0 && (maxRadius + 1) * (maxRadius + 1) > result) {
-                        for (int r = maxRadius; r >= 1; r--) {
-                            if ((r + 1) * (r + 1) < result) break;
-                            int u = i - r, d = i, le = j - r, ri = j;
-                            boolean legal = check(grid, u, d, le, ri);
-                            if (!legal) continue;
-                            result = Math.max(result, (r + 1) * (r + 1));
-                            break;
-                        }
-                    }
-                }
-
-                // 作为左下角, 往右上扩张(收缩)
-                {
-                    int maxRadius = Math.min(right, up);
-                    if (maxRadius != 0 && (maxRadius + 1) * (maxRadius + 1) > result) {
-                        for (int r = maxRadius; r >= 1; r--) {
-                            if ((r + 1) * (r + 1) < result) break;
-                            int u = i - r, d = i, le = j, ri = j + r;
-                            boolean legal = check(grid, u, d, le, ri);
-                            if (!legal) continue;
-                            result = Math.max(result, (r + 1) * (r + 1));
-                            break;
-                        }
-                    }
-                }
-
-                // 作为右上角, 往左下扩张(收缩)
-                {
-                    int maxRadius = Math.min(left, down);
-                    if (maxRadius != 0 && (maxRadius + 1) * (maxRadius + 1) > result) {
-                        for (int r = maxRadius; r >= 1; r--) {
-                            if ((r + 1) * (r + 1) < result) break;
-                            int u = i, d = i + r, le = j - r, ri = j;
-                            boolean legal = check(grid, u, d, le, ri);
-                            if (!legal) continue;
-                            result = Math.max(result, (r + 1) * (r + 1));
-                            break;
-                        }
-                    }
-                }
-
-                // 作为左上角, 往右下扩张(收缩)
-                {
-                    int maxRadius = Math.min(right, down);
-                    if (maxRadius != 0 && (maxRadius + 1) * (maxRadius + 1) > result) {
-                        for (int r = maxRadius; r >= 1; r--) {
-                            if ((r + 1) * (r + 1) < result) break;
-                            int u = i, d = i + r, le = j, ri = j + r;
-                            boolean legal = check(grid, u, d, le, ri);
-                            if (!legal) continue;
-                            result = Math.max(result, (r + 1) * (r + 1));
-                            break;
-                        }
-                    }
-                }
-
             }
         }
-        return result;
-    }
 
-    private boolean check(int[][] grid, int up, int down, int left, int right) {
-        for (int i = up; i <= down; i++) {
-            if (grid[i][left] != 1) return false;
-            if (grid[i][right] != 1) return false;
-        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) continue;
+                // 以[i,j] 为右下角
+                int limit = Math.min(dp[i + 1][j + 1][0], dp[i + 1][j + 1][1]);
+                if (limit <= maxSideLen) continue;
 
-        for (int i = left; i <= right; i++) {
-            if (grid[up][i] != 1) return false;
-            if (grid[down][i] != 1) return false;
+                for (int sideLen = limit; sideLen >= 0; sideLen--) {
+                    if (sideLen <= maxSideLen) break;
+                    int upMost = i - sideLen + 1, leftMost = j - sideLen + 1;
+                    if (dp[upMost + 1][j + 1][0] >= sideLen && dp[i + 1][leftMost + 1][1] >= sideLen) {
+                        maxSideLen = Math.max(maxSideLen, sideLen);
+                        break;
+                    }
+                }
+            }
         }
-        return true;
+        return maxSideLen * maxSideLen;
     }
 
     // LC1903
