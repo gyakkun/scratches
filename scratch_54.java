@@ -15,25 +15,46 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC661
+    public int[][] imageSmoother(int[][] img) {
+        int[][] result = new int[img.length][img[0].length];
+        for (int i = 0; i < img.length; i++) {
+            for (int j = 0; j < img[0].length; j++) {
+                int sum = 0;
+                int ctr = 0;
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        if (i + x >= 0 && i + x < img.length && j + y >= 0 && j + y < img[0].length) {
+                            sum += img[i + x][j + y];
+                            ctr++;
+                        }
+                    }
+                }
+                result[i][j] = sum / ctr;
+            }
+        }
+        return result;
+    }
+
     // LC1872 STONE GAME VIII **
-    Integer[] memo;
+    Integer[] lc1872Memo;
 
     public int stoneGameVIII(int[] stones) {
         int n = stones.length;
         int[] prefix = new int[n + 1];
-        memo = new Integer[n + 3];
+        lc1872Memo = new Integer[n + 3];
         for (int i = 0; i < n; i++) {
             prefix[i + 1] = prefix[i] + stones[i];
         }
-        return helper(prefix, 1);
+        return lc1872Helper(prefix, 1);
     }
 
-    private int helper(int[] prefix, int idx) {
+    private int lc1872Helper(int[] prefix, int idx) {
         if (idx >= prefix.length - 2) {
             return prefix[prefix.length - 1];
         }
-        if (memo[idx] != null) return memo[idx];
-        return memo[idx] = Math.max(helper(prefix, idx + 1), prefix[idx + 1] - helper(prefix, idx + 1));
+        if (lc1872Memo[idx] != null) return lc1872Memo[idx];
+        return lc1872Memo[idx] = Math.max(lc1872Helper(prefix, idx + 1), prefix[idx + 1] - lc1872Helper(prefix, idx + 1));
     }
 
 
