@@ -15,6 +15,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 04.06 **
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) { // BST!!
+        TreeNode pre = null;
+        while (root.val != p.val) { // 先找到p, 并记录前驱
+            if (root.val < p.val) {
+                root = root.right;
+            } else {
+                pre = root; // 只有当左拐的时候, 前驱才会出现在中序遍历的下一个位置, 所以这时候更新前驱
+                root = root.left;
+            }
+        }
+        if (root.right == null) return pre;
+        root = root.right;
+        while (root.left != null) root = root.left;
+        return root;
+    }
+
+
     // LC363 二维前缀和
     public int maxSumSubmatrix(int[][] matrix, int k) {
         int m = matrix.length, n = matrix[0].length;
@@ -31,7 +49,7 @@ class Scratch {
                 for (int o = 0; o < i; o++) {
                     for (int p = 0; p < j; p++) {
                         int area = prefix[i][j] - prefix[o][j] - prefix[i][p] + prefix[o][p];
-                        if(area<=k){
+                        if (area <= k) {
                             result = Math.max(result, area);
                         }
                     }
@@ -42,27 +60,27 @@ class Scratch {
     }
 
     // LC568
-    Integer[][] memo;
+    Integer[][] lc568Memo;
 
     public int maxVacationDays(int[][] flights, int[][] days) { // N*N, N*K
-        memo = new Integer[days[0].length + 1][flights.length + 1];
-        return helper(0, 0, flights, days);
+        lc568Memo = new Integer[days[0].length + 1][flights.length + 1];
+        return lc568Helper(0, 0, flights, days);
     }
 
-    private int helper(int kth, int curCity, int[][] flights, int[][] days) {
+    private int lc568Helper(int kth, int curCity, int[][] flights, int[][] days) {
         // 假设每次进入函数都是周一
         if (kth == days[0].length) return 0; // 如果到了最后一周 不能休息 直接返回0
-        if (memo[kth][curCity] != null) return memo[kth][curCity];
+        if (lc568Memo[kth][curCity] != null) return lc568Memo[kth][curCity];
         // 如果不飞
-        int result = days[curCity][kth] + helper(kth + 1, curCity, flights, days);
+        int result = days[curCity][kth] + lc568Helper(kth + 1, curCity, flights, days);
         // 看能飞到哪里去
         for (int targetCity = 0; targetCity < flights.length; targetCity++) {
             if (flights[curCity][targetCity] == 1) {
                 // 当天飞走, 则必须要在目标机场度过这一周, 将这一周的休息时间计入贡献
-                result = Math.max(result, days[targetCity][kth] + helper(kth + 1, targetCity, flights, days));
+                result = Math.max(result, days[targetCity][kth] + lc568Helper(kth + 1, targetCity, flights, days));
             }
         }
-        return memo[kth][curCity] = result;
+        return lc568Memo[kth][curCity] = result;
     }
 
     // LC661
