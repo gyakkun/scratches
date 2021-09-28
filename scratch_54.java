@@ -15,6 +15,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC363 二维前缀和
+    public int maxSumSubmatrix(int[][] matrix, int k) {
+        int m = matrix.length, n = matrix[0].length;
+        int result = Integer.MIN_VALUE;
+        int[][] prefix = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                prefix[i][j] = prefix[i - 1][j] + prefix[i][j - 1] - prefix[i - 1][j - 1] + matrix[i - 1][j - 1];
+            }
+        }
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int o = 0; o < i; o++) {
+                    for (int p = 0; p < j; p++) {
+                        int area = prefix[i][j] - prefix[o][j] - prefix[i][p] + prefix[o][p];
+                        if(area<=k){
+                            result = Math.max(result, area);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     // LC568
     Integer[][] memo;
 
