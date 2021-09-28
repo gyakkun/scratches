@@ -11,10 +11,38 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.stoneGameVIII(new int[]{-1, 2, -3, 4, -5}));
+        System.out.println(s.minmaxGasDist(new int[]{10, 19, 25, 27, 56, 63, 70, 87, 96, 97}, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC774 ** 非常好
+    public double minmaxGasDist(int[] stations, int k) {
+        int n = stations.length;
+        int maxInt = Integer.MIN_VALUE;
+        for (int i = 1; i < n; i++) {
+            int d = stations[i] - stations[i - 1];
+            maxInt = Math.max(maxInt, d);
+        }
+        double lo = 0, hi = maxInt;
+        while (Math.abs(hi - lo) >= 1e-6) {
+            double mid = (hi + lo) / 2;
+            if (check(mid, k, stations)) {
+                hi = mid;
+            } else {
+                lo = mid;
+            }
+        }
+        return lo;
+    }
+
+    private boolean check(double maxDist, int k, int[] stations) {
+        int require = 0;
+        for (int i = 1; i < stations.length; i++) {
+            require += (int) ((stations[i] - stations[i - 1] + 0d) / maxDist);
+        }
+        return require <= k;
     }
 
     // LC1995
