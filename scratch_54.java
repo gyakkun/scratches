@@ -11,10 +11,19 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minmaxGasDist(new int[]{10, 19, 25, 27, 56, 63, 70, 87, 96, 97}, 3));
+        System.out.println(s.largestOddNumber("35427"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1903
+    public String largestOddNumber(String num) {
+        int n = num.length();
+        for (int i = n - 1; i >= 0; i--) {
+            if ((num.charAt(i) - '0') % 2 == 1) return num.substring(0, i + 1);
+        }
+        return "";
     }
 
     // LC774 ** 非常好
