@@ -11,10 +11,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.largest1BorderedSquare(new int[][]{{1, 1, 1}, {1, 0, 1}, {1, 1, 1}}));
+        System.out.println(s.getMaxMatrix(new int[][]{{9, -8, 1, 3, -2}, {-3, 7, 6, -2, 4}, {6, -4, -4, 8, -7}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 17.24 TLE
+    public int[] getMaxMatrix(int[][] matrix) {
+        int m = matrix.length, n = matrix[0].length;
+        int[][] prefix = new int[m + 1][n + 1];
+        int max = Integer.MIN_VALUE;
+        int[] result = new int[]{-1, -1, -1, -1};
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                prefix[i][j] = prefix[i - 1][j] + prefix[i][j - 1] - prefix[i - 1][j - 1] + matrix[i - 1][j - 1];
+            }
+        }
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int o = 0; o < i; o++) {
+                    for (int p = 0; p < j; p++) {
+                        int area = prefix[i][j] - prefix[o][j] - prefix[i][p] + prefix[o][p];
+                        if (area > max) {
+                            max = area;
+                            result = new int[]{o, p, i - 1, j - 1};
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     // LC1139
