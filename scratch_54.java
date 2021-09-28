@@ -17,11 +17,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // Interview 17.24 TLE
+    // Interview 17.24 ** 最大子序和 二维版 O(n^3)
     public int[] getMaxMatrix(int[][] matrix) {
         int m = matrix.length, n = matrix[0].length;
         int[][] prefix = new int[m + 1][n + 1];
-        int max = Integer.MIN_VALUE;
+        int globalMax = Integer.MIN_VALUE / 2;
         int[] result = new int[]{-1, -1, -1, -1};
 
         for (int i = 1; i <= m; i++) {
@@ -30,16 +30,31 @@ class Scratch {
             }
         }
 
-        for (int i = 1; i <= m; i++) {
-            for (int j = 1; j <= n; j++) {
-                for (int o = 0; o < i; o++) {
-                    for (int p = 0; p < j; p++) {
-                        int area = prefix[i][j] - prefix[o][j] - prefix[i][p] + prefix[o][p];
-                        if (area > max) {
-                            max = area;
-                            result = new int[]{o, p, i - 1, j - 1};
+        for (int top = 0; top < m; top++) { // 枚举上下边界
+            for (int bottom = top; bottom < m; bottom++) {
+                int localMax = Integer.MIN_VALUE / 2, left = -1, right = -1;
+                int[] dp = new int[n + 1];
+                int[] startColumn = new int[n + 1];
+                Arrays.fill(startColumn, -1);
+                Arrays.fill(dp, Integer.MIN_VALUE / 2);
+                // 最大子序和
+                for (int col = 0; col < n; col++) {
+                    // 这一列的和
+                    int thisColumn = prefix[bottom + 1][col + 1] - prefix[top][col + 1] - prefix[bottom + 1][col] + prefix[top][col];
+                    dp[col + 1] = Math.max(dp[col] + thisColumn, thisColumn); // 暂不考虑溢出
+                    if (dp[col + 1] == thisColumn) {
+                        startColumn[col + 1] = col;
+                    } else {
+                        startColumn[col + 1] = startColumn[col];
+                    }
+                    if (dp[col + 1] > localMax) {
+                        localMax = dp[col + 1];
+                        if (localMax > globalMax) {
+                            globalMax = localMax;
+                            result = new int[]{top, startColumn[col + 1], bottom, col};
                         }
                     }
+
                 }
             }
         }
