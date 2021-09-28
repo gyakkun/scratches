@@ -15,6 +15,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC568
+    Integer[][] memo;
+
+    public int maxVacationDays(int[][] flights, int[][] days) { // N*N, N*K
+        memo = new Integer[days[0].length + 1][flights.length + 1];
+        return helper(0, 0, flights, days);
+    }
+
+    private int helper(int kth, int curCity, int[][] flights, int[][] days) {
+        // 假设每次进入函数都是周一
+        if (kth == days[0].length) return 0; // 如果到了最后一周 不能休息 直接返回0
+        if (memo[kth][curCity] != null) return memo[kth][curCity];
+        // 如果不飞
+        int result = days[curCity][kth] + helper(kth + 1, curCity, flights, days);
+        // 看能飞到哪里去
+        for (int targetCity = 0; targetCity < flights.length; targetCity++) {
+            if (flights[curCity][targetCity] == 1) {
+                // 当天飞走, 则必须要在目标机场度过这一周, 将这一周的休息时间计入贡献
+                result = Math.max(result, days[targetCity][kth] + helper(kth + 1, targetCity, flights, days));
+            }
+        }
+        return memo[kth][curCity] = result;
+    }
+
     // LC661
     public int[][] imageSmoother(int[][] img) {
         int[][] result = new int[img.length][img[0].length];
@@ -50,7 +74,7 @@ class Scratch {
     }
 
     private int lc1872Helper(int[] prefix, int idx) {
-        if (idx >= prefix.length - 2) {
+        if (idx >= prefix.length - 2) { // 如果一个选手直接取了所有石子, 则结果(两者之差)显然是所有石子的价值之和
             return prefix[prefix.length - 1];
         }
         if (lc1872Memo[idx] != null) return lc1872Memo[idx];
