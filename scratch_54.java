@@ -17,8 +17,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // Interview 04.06 **
+    // JZOF II 021 LC19
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if (n <= 0) return head;
+        ListNode fast = head, dummy = new ListNode();
+        dummy.next = head;
+        int ctr = 0;
+        while (ctr != n) {
+            fast = fast.next;
+            ctr++;
+        }
+        ListNode slow = head, pre = dummy;
+        while (fast != null) {
+            fast = fast.next;
+            pre = slow;
+            slow = slow.next;
+        }
+        pre.next = slow.next;
 
+        return dummy.next;
+    }
+
+
+    // Interview 04.06 **
     public TreeNode inorderSuccessorTraverse(TreeNode root, TreeNode p) {
         Deque<TreeNode> q = new LinkedList<>();
         boolean find = false;
