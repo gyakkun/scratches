@@ -20,12 +20,13 @@ class Scratch {
     // LC1139
     public int largest1BorderedSquare(int[][] grid) {
         int maxSideLen = 0, m = grid.length, n = grid[0].length;
-        int[][][] dp = new int[m + 1][n + 1][2]; // dp[i][j][0] 表示左边连续1的个数, [1]表示上面连续1的个数
+        int[][] upOnes = new int[m + 1][n + 1];
+        int[][] leftOnes = new int[m + 1][n + 1];
         for (int i = 1; i <= m; i++) {
             for (int j = 1; j <= n; j++) {
                 if (grid[i - 1][j - 1] == 1) {
-                    dp[i][j][0] = 1 + dp[i][j - 1][0];
-                    dp[i][j][1] = 1 + dp[i - 1][j][1];
+                    upOnes[i][j] = 1 + upOnes[i - 1][j];
+                    leftOnes[i][j] = 1 + leftOnes[i][j - 1];
                 }
             }
         }
@@ -34,13 +35,13 @@ class Scratch {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 0) continue;
                 // 以[i,j] 为右下角
-                int limit = Math.min(dp[i + 1][j + 1][0], dp[i + 1][j + 1][1]);
+                int limit = Math.min(leftOnes[i + 1][j + 1], upOnes[i + 1][j + 1]);
                 if (limit <= maxSideLen) continue;
 
                 for (int sideLen = limit; sideLen >= 0; sideLen--) {
                     if (sideLen <= maxSideLen) break;
                     int upMost = i - sideLen + 1, leftMost = j - sideLen + 1;
-                    if (dp[upMost + 1][j + 1][0] >= sideLen && dp[i + 1][leftMost + 1][1] >= sideLen) {
+                    if (leftOnes[upMost + 1][j + 1] >= sideLen && upOnes[i + 1][leftMost + 1] >= sideLen) {
                         maxSideLen = Math.max(maxSideLen, sideLen);
                         break;
                     }
