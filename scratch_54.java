@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
@@ -1935,5 +1937,56 @@ class MedianFinderMod { // 修改过的mf
     public int findMedian() {
         if (maxPq.size() > minPq.size()) return maxPq.peek();
         return minPq.peek();
+    }
+}
+
+
+// LC489 **
+class Lc489 {
+
+    Set<Pair<Integer, Integer>> visited = new HashSet<>();
+    int[][] direction = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // 务必保证方向的顺序是顺时针方向 (左上右下)
+    Robot r;
+
+    public void cleanRoom(Robot robot) {
+        this.r = robot;
+        backtrack(0, 0, 0);
+    }
+
+    private void goBack() {
+        r.turnRight();
+        r.turnRight();
+        r.move();
+        r.turnRight();
+        r.turnRight();
+    }
+
+    private void backtrack(int row, int col, int dirIdx) {
+        visited.add(new Pair<>(row, col));
+        r.clean();
+        for (int i = 0; i < 4; i++) {
+            int nd = (dirIdx + 1) % 4;
+            int nr = row + direction[nd][0], nc = col + direction[nd][1];
+            if (!visited.contains(new Pair<>(nr, nc)) && r.move()) {
+                backtrack(nr, nc, nd);
+                goBack();
+            }
+            r.turnRight(); // 顺时针转圈
+        }
+    }
+
+    interface Robot {
+        // Returns true if the cell in front is open and robot moves into the cell.
+        // Returns false if the cell in front is blocked and robot stays in the current cell.
+        public boolean move();
+
+        // Robot will stay in the same cell after calling turnLeft/turnRight.
+        // Each turn will be 90 degrees.
+        public void turnLeft();
+
+        public void turnRight();
+
+        // Clean the current cell.
+        public void clean();
     }
 }
