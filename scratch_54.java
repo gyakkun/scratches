@@ -11,10 +11,99 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.largestOddNumber("35427"));
+        System.out.println(s.largest1BorderedSquare(new int[][]{{1, 1}, {1, 1}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1139
+    public int largest1BorderedSquare(int[][] grid) {
+        int result = 0, m = grid.length, n = grid[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    result = Math.max(result, 1);
+                }
+                int up = i, down = m - 1 - i;
+                int left = j, right = n - 1 - j;
+
+                // 作为右下角, 往左上扩张(收缩)
+                {
+                    int maxRadius = Math.min(left, up);
+                    if (maxRadius != 0 && (maxRadius + 1) * (maxRadius + 1) > result) {
+                        for (int r = maxRadius; r >= 1; r--) {
+                            if ((r + 1) * (r + 1) < result) break;
+                            int u = i - r, d = i, le = j - r, ri = j;
+                            boolean legal = check(grid, u, d, le, ri);
+                            if (!legal) continue;
+                            result = Math.max(result, (r + 1) * (r + 1));
+                            break;
+                        }
+                    }
+                }
+
+                // 作为左下角, 往右上扩张(收缩)
+                {
+                    int maxRadius = Math.min(right, up);
+                    if (maxRadius != 0 && (maxRadius + 1) * (maxRadius + 1) > result) {
+                        for (int r = maxRadius; r >= 1; r--) {
+                            if ((r + 1) * (r + 1) < result) break;
+                            int u = i - r, d = i, le = j, ri = j + r;
+                            boolean legal = check(grid, u, d, le, ri);
+                            if (!legal) continue;
+                            result = Math.max(result, (r + 1) * (r + 1));
+                            break;
+                        }
+                    }
+                }
+
+                // 作为右上角, 往左下扩张(收缩)
+                {
+                    int maxRadius = Math.min(left, down);
+                    if (maxRadius != 0 && (maxRadius + 1) * (maxRadius + 1) > result) {
+                        for (int r = maxRadius; r >= 1; r--) {
+                            if ((r + 1) * (r + 1) < result) break;
+                            int u = i, d = i + r, le = j - r, ri = j;
+                            boolean legal = check(grid, u, d, le, ri);
+                            if (!legal) continue;
+                            result = Math.max(result, (r + 1) * (r + 1));
+                            break;
+                        }
+                    }
+                }
+
+                // 作为左上角, 往右下扩张(收缩)
+                {
+                    int maxRadius = Math.min(right, down);
+                    if (maxRadius != 0 && (maxRadius + 1) * (maxRadius + 1) > result) {
+                        for (int r = maxRadius; r >= 1; r--) {
+                            if ((r + 1) * (r + 1) < result) break;
+                            int u = i, d = i + r, le = j, ri = j + r;
+                            boolean legal = check(grid, u, d, le, ri);
+                            if (!legal) continue;
+                            result = Math.max(result, (r + 1) * (r + 1));
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+        return result;
+    }
+
+    private boolean check(int[][] grid, int up, int down, int left, int right) {
+        for (int i = up; i <= down; i++) {
+            if (grid[i][left] != 1) return false;
+            if (grid[i][right] != 1) return false;
+        }
+
+        for (int i = left; i <= right; i++) {
+            if (grid[up][i] != 1) return false;
+            if (grid[down][i] != 1) return false;
+        }
+        return true;
     }
 
     // LC1903
@@ -37,7 +126,7 @@ class Scratch {
         double lo = 0, hi = maxInt;
         while (Math.abs(hi - lo) >= 1e-6) {
             double mid = (hi + lo) / 2;
-            if (check(mid, k, stations)) {
+            if (lc774Check(mid, k, stations)) {
                 hi = mid;
             } else {
                 lo = mid;
@@ -46,7 +135,7 @@ class Scratch {
         return lo;
     }
 
-    private boolean check(double maxDist, int k, int[] stations) {
+    private boolean lc774Check(double maxDist, int k, int[] stations) {
         int require = 0;
         for (int i = 1; i < stations.length; i++) {
             require += (int) ((stations[i] - stations[i - 1] + 0d) / maxDist);
