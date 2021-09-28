@@ -15,6 +15,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC437
+    public int pathSum(TreeNode root, int targetSum) {
+        Map<Integer, Integer> prefix = new HashMap<>();
+        prefix.put(0, 1);
+        return helper(root, 0, targetSum, prefix);
+    }
+
+    private int helper(TreeNode root, int cur, int target, Map<Integer, Integer> prefix) {
+        if (root == null) return 0;
+        cur += root.val;
+        int result = prefix.getOrDefault(cur - target, 0);
+        prefix.put(cur, prefix.getOrDefault(cur, 0) + 1);
+        result += helper(root.left, cur, target, prefix);
+        result += helper(root.right, cur, target, prefix);
+        prefix.put(cur, prefix.get(cur) - 1);
+        return result;
+    }
+
     // LC1933
     public boolean isDecomposable(String s) {
         int twoCount = 0, threeCount = 0;
