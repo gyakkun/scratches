@@ -16,6 +16,23 @@ class Scratch {
     }
 
     // Interview 04.06 **
+
+    public TreeNode inorderSuccessorTraverse(TreeNode root, TreeNode p) {
+        Deque<TreeNode> q = new LinkedList<>();
+        boolean find = false;
+        while (root != null || !q.isEmpty()) {
+            while (root != null) {
+                q.push(root);
+                root = root.left;
+            }
+            root = q.pop();
+            if (find) return root;
+            if (root == p) find = true;
+            root = root.right;
+        }
+        return null;
+    }
+
     public TreeNode inorderSuccessor(TreeNode root, TreeNode p) { // BST!!
         TreeNode pre = null;
         while (root.val != p.val) { // 先找到p, 并记录前驱
