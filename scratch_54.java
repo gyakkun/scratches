@@ -13,13 +13,15 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.minFallingPathSumDp(new int[][]{{-2, -18, 31, -10, -71, 82, 47, 56, -14, 42}, {-95, 3, 65, -7, 64, 75, -51, 97, -66, -28}, {36, 3, -62, 38, 15, 51, -58, -90, -23, -63}, {58, -26, -42, -66, 21, 99, -94, -95, -90, 89}, {83, -66, -42, -45, 43, 85, 51, -86, 65, -39}, {56, 9, 9, 95, -56, -77, -2, 20, 78, 17}, {78, -13, -55, 55, -7, 43, -98, -89, 38, 90}, {32, 44, -47, 81, -1, -55, -5, 16, -81, 17}, {-87, 82, 2, 86, -88, -58, -91, -79, 44, -9}, {-96, -14, -52, -8, 12, 38, 84, 77, -51, 52}}));
-        System.out.println(s.minFallingPathSumDp(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}));
+        System.out.println(s.minimalSteps(new String[]{"S#O", "M.T", "M.."}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
     // LCP13 TSP TBD
+    int start = -1, end = -1;
+
     public int minimalSteps(String[] maze) {
         // S - start , T - target, O - stones, M - mechanism, # - wall, . - road
         //
@@ -32,9 +34,8 @@ class Scratch {
         }
         int m = grid.length, n = grid[0].length;
         Set<Integer> mSet = new HashSet<>(), oSet = new HashSet<>(), wSet = new HashSet<>();
-        int start = -1, end = -1;
         extractElements(grid, m, n, mSet, oSet, wSet);
-        Set<Integer> pointSet = new HashSet<>(m);
+        Set<Integer> pointSet = new HashSet<>(mSet);
         pointSet.add(start);
         pointSet.add(end);
 
@@ -45,13 +46,21 @@ class Scratch {
         int pointLen = pointSet.size();
         int[] pointsArr = new int[pointLen];
         Iterator<Integer> it = pointSet.iterator();
+        int endIdxInPointsArr = -1;
         for (int i = 0; i < pointLen; i++) {
             pointsArr[i] = it.next();
+            if(pointsArr[i]==end){
+                endIdxInPointsArr = i;
+            }
         }
         int fullMask = (1 << pointLen) - 1;
         int[][] dp = new int[fullMask + 1][pointLen];
         for (int i = 0; i <= fullMask; i++) {
             Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        for (int i = 0; i < pointLen; i++) { // 初始化DP
+            int mask = (1 << i);
+            dp[mask][i] = 0; // 自己到自己的距离肯定是0
         }
         for (int mask = 0; mask <= fullMask; mask++) {
             // 看看已经选了哪几个点
@@ -59,12 +68,27 @@ class Scratch {
                 if (((mask >> selected) & 1) == 1) {
                     int parentMask = mask ^ (1 << selected);
                     if (parentMask == 0) continue;
-
+                    for (int prevEnd = 0; prevEnd < pointLen; prevEnd++) {
+                        if (((parentMask >> prevEnd) & 1) == 1) {
+                            if (minLenToStoneCache.get(pointsArr[selected]).get(pointsArr[prevEnd]) == -1) continue;
+                            int len = dp[parentMask][prevEnd] + minLenToStoneCache.get(pointsArr[selected]).get(pointsArr[prevEnd]); // 找到当前点与之前点到石头的最短距离
+                            dp[mask][selected] = Math.min(dp[mask][selected], len);
+                        }
+                    }
                 }
             }
         }
+        int minLen = Integer.MAX_VALUE / 2;
+        // 直接取dp[fullMask][end 在 pointsArr的下标] ?
+        minLen = dp[fullMask][endIdxInPointsArr];
+//        for (int i = 0; i < pointLen; i++) {
+//            minLen = Math.min(minLen, dp[fullMask][i]);
+//        }
+        if (minLen == Integer.MAX_VALUE / 2) {
+            return -1;
+        }
 
-
+        return minLen;
     }
 
     private void getPointToPointMinLen(int[][] directions, int m, int n, Set<Integer> oSet, Set<Integer> wSet, Set<Integer> pointSet, Map<Integer, Map<Integer, Integer>> minLenToStoneCache, Map<Integer, Map<Integer, Integer>> minLenToStoneStoneIdxCache) {
@@ -142,8 +166,6 @@ class Scratch {
     }
 
     private void extractElements(char[][] grid, int m, int n, Set<Integer> mSet, Set<Integer> oSet, Set<Integer> wSet) {
-        int start;
-        int end;
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 int idx = i * n + j;
