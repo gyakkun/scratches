@@ -11,10 +11,26 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.getMaxMatrix(new int[][]{{9, -8, 1, 3, -2}, {-3, 7, 6, -2, 4}, {6, -4, -4, 8, -7}}));
+        System.out.println(s.findMinMoves(new int[]{4, 0, 0, 4}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC517 Hard **
+    public int findMinMoves(int[] machines) {
+        int n = machines.length, sum = 0, result = 0;
+        for (int i : machines) sum += i;
+        if (sum % n != 0) return -1;
+        // 选定一个范围, 这个范围内的数组的数相邻之间可以互相+1 -1
+        int avg = sum / n;
+        sum = 0;
+        for (int i : machines) {
+            i -= avg;
+            sum += i;
+            result = Math.max(result, Math.max(Math.abs(sum), i));
+        }
+        return result;
     }
 
     // Interview 17.24 ** 最大子序和 二维版 O(n^3)
