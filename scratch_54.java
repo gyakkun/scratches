@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 
 import java.math.BigInteger;
+import java.text.CollationElementIterator;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;
@@ -21,36 +22,42 @@ class Scratch {
     // LC943 Hard Revenge!
     public String shortestSuperstring(String[] words) {
         int n = words.length;
-        int[][] parent = new int[1 << n][n];
-        int[][] dp = new int[1 << n][n];
-        int[][] overlaps = new int[n][n];
+        int fullMask = (1 << n) - 1;
+        int[][] dp = new int[fullMask + 1][n];
+        int[][] parent = new int[fullMask + 1][n]; // 记录转移到dp[mask][i] 的上一个词的下标
+        int[][] overlapCache = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i != j) {
-                    int limit = Math.min(words[i].length(), words[j].length());
-                    for (int k = limit; k >= 0; k--) {
+                    int maxLen = Math.min(words[i].length(), words[j].length());
+                    for (int k = maxLen; k >= 0; k--) {
+                        // j 接在 i 跟后, 最多能重叠多少个
                         if (words[i].endsWith(words[j].substring(0, k))) {
-                            overlaps[i][j] = k;
+                            overlapCache[i][j] = k;
                             break;
                         }
                     }
                 }
             }
         }
-        // dp[mask][j] 表示选了mask里面的词, j排最后一个时, 最大重叠的长度
-        // dp(mask ^ (1 << j), j) = max{overlap(A[i], A[j]) + dp(mask, i)}
-        for (int mask = 0; mask < (1 << n); mask++) {
-            Arrays.fill(parent[mask], -1); // 设置一个负值表示未初始化
-            for (int bit = 0; bit < n; bit++) {
-                if (((mask >> bit) & 1) == 1) { // 如果下标为bit的词已经被选中
-                    int parentMask = mask ^ (1 << bit); // 这个mask是从哪个转移过来的? (parent的mask)
-                    if (parentMask == 0) continue; // 如果只有一个词被选中, parentMask为0, 不考虑一个词的情况, 直接跳过
-                    for (int i = 0; i < n; i++) {
-                        if (((parentMask >> i) & 1) == 1) { // 看看之前都选了什么词, 如果这个词是mask在选bit之前选过的
-                            int val = dp[parentMask][i] + overlaps[i][bit];
-                            if (val > dp[mask][bit]) { // 如果重合的部分更大(将来的最短串更短)
-                                parent[mask][bit] = i; // 说明当前mask组在选bit之前应该选i
-                                dp[mask][bit] = val; // 更显当前mask组合 在最后一个词选bit的情况下 的 重合最大值
+
+        // dp[mask][j] 表示 在选了 mask 里面的单词, 以j为最后一个单词时候, 重叠部分的最大长度
+
+        for (int mask = 1; mask <= fullMask; mask++) {
+            Arrays.fill(parent[mask], -1);
+            for (int selected = 0; selected < n; selected++) {
+                if (((mask >> selected) & 1) == 1) {
+                    // 他从哪个选项而来?
+                    int parentMask = mask ^ (1 << selected);
+                    if (parentMask == 0) continue; // 不可能由空的而来 直接跳过
+                    // 在上一个选项中, 可以以哪个为结尾? 遍历上一个选项中mask的所有可能
+                    for (int prevEnd = 0; prevEnd < n; prevEnd++) {
+                        if (((parentMask >> prevEnd) & 1) == 1) {
+                            // 如果是以prevEnd 结尾转移过来
+                            int overlap = overlapCache[prevEnd][selected] + dp[parentMask][prevEnd];
+                            if (overlap > dp[mask][selected]) {
+                                parent[mask][selected] = prevEnd;
+                                dp[mask][selected] = overlap;
                             }
                         }
                     }
@@ -58,35 +65,33 @@ class Scratch {
             }
         }
 
-        // 找大重合长度的最后一个词的下标
-        List<Integer> perm = new ArrayList<>(n); // 先逆序添加所有在最短串中出现的词
-        boolean[] visited = new boolean[n]; // 有可能出现有许多word没有任何重叠, 导致这些下标不会出现在任何parent[mask][next]里面
-                                            // 这些word只要随意地放在结果的最前面/最后面即可
-        int lastEleIdx = 0, finalMask = (1 << n) - 1;
+        int maxOverlap = Integer.MIN_VALUE, lastEleIdx = -1;
         for (int i = 0; i < n; i++) {
-            if (dp[finalMask][i] > dp[finalMask][lastEleIdx]) {
+            if (dp[fullMask][i] > maxOverlap) {
+                maxOverlap = dp[fullMask][i];
                 lastEleIdx = i;
             }
         }
-        int curEleIdx = lastEleIdx, curMask = finalMask;
-        while (curEleIdx != -1) { // curEle 都是从parent中找, parent被置为-1的即为没有从这个mask有更大重叠的word, 直接跳出
+
+        List<Integer> perm = new ArrayList<>(); // 开始遍历parent
+        int curEleIdx = lastEleIdx, curMask = fullMask;
+        boolean[] visited = new boolean[n];
+        while (curEleIdx != -1) {
             perm.add(curEleIdx);
             visited[curEleIdx] = true;
-            int prevEleIdx = parent[curMask][curEleIdx]; // 从哪个来的
-            // 然后将curMask去除当前下标元素
-            curMask ^= 1 << curEleIdx;
-            curEleIdx = prevEleIdx;
+            int nextEleIdx = parent[curMask][curEleIdx];
+            curMask ^= (1 << curEleIdx); // 去除掉mask当前的词
+            curEleIdx = nextEleIdx;
         }
-        Collections.reverse(perm); // 逆序添加
-
+        Collections.reverse(perm);
         StringBuilder sb = new StringBuilder();
         sb.append(words[perm.get(0)]);
-        for (int i = 1; i < n; i++) {
-            sb.append(words[perm.get(i)].substring(overlaps[perm.get(i - 1)][perm.get(i)])); // 注意是将重叠的部分sub去
+        for (int i = 1; i < perm.size(); i++) {
+            sb.append(words[perm.get(i)].substring(overlapCache[perm.get(i - 1)][perm.get(i)]));
         }
         for (int i = 0; i < n; i++) {
             if (!visited[i]) {
-                sb.append(words[i]); // 添加没有任何重叠的词
+                sb.append(words[i]);
             }
         }
         return sb.toString();
