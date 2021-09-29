@@ -11,13 +11,41 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minFallingPathSum(new int[][]{{-2, -18, 31, -10, -71, 82, 47, 56, -14, 42}, {-95, 3, 65, -7, 64, 75, -51, 97, -66, -28}, {36, 3, -62, 38, 15, 51, -58, -90, -23, -63}, {58, -26, -42, -66, 21, 99, -94, -95, -90, 89}, {83, -66, -42, -45, 43, 85, 51, -86, 65, -39}, {56, 9, 9, 95, -56, -77, -2, 20, 78, 17}, {78, -13, -55, 55, -7, 43, -98, -89, 38, 90}, {32, 44, -47, 81, -1, -55, -5, 16, -81, 17}, {-87, 82, 2, 86, -88, -58, -91, -79, 44, -9}, {-96, -14, -52, -8, 12, 38, 84, 77, -51, 52}}));
+//        System.out.println(s.minFallingPathSumDp(new int[][]{{-2, -18, 31, -10, -71, 82, 47, 56, -14, 42}, {-95, 3, 65, -7, 64, 75, -51, 97, -66, -28}, {36, 3, -62, 38, 15, 51, -58, -90, -23, -63}, {58, -26, -42, -66, 21, 99, -94, -95, -90, 89}, {83, -66, -42, -45, 43, 85, 51, -86, 65, -39}, {56, 9, 9, 95, -56, -77, -2, 20, 78, 17}, {78, -13, -55, 55, -7, 43, -98, -89, 38, 90}, {32, 44, -47, 81, -1, -55, -5, 16, -81, 17}, {-87, 82, 2, 86, -88, -58, -91, -79, 44, -9}, {-96, -14, -52, -8, 12, 38, 84, 77, -51, 52}}));
+        System.out.println(s.minFallingPathSumDp(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
     // LC1289
+    public int minFallingPathSumDp(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[][] dp = new int[2][n];
+        for (int i = 0; i < 2; i++) Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        for (int i = 0; i < n; i++) {
+            dp[(m - 1) % 2][i] = grid[m - 1][i]; // 递归终止条件
+        }
+
+        for (int row = m - 2; row >= 0; row--) {
+            for (int col = 0; col < n; col++) {
+                for (int down = 0; down < n; down++) {
+                    if (down != col) {
+                        dp[row % 2][col] = Math.min(dp[row % 2][col], grid[row][col] + dp[(row + 1) % 2][down]);
+                    }
+                }
+            }
+            if (row >= 1) { // 保留最顶上两行的结果, 其余时候都要将下一行用最大值填充
+                Arrays.fill(dp[(row - 1) % 2], Integer.MAX_VALUE / 2);
+            }
+        }
+        int result = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < n; i++) {
+            result = Math.min(result, dp[0][i]);
+        }
+        return result;
+    }
+
     Integer[][] lc1289Memo;
 
     public int minFallingPathSum(int[][] grid) {
