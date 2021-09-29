@@ -10,11 +10,34 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
+        TreeNode one = new TreeNode(1), zero = new TreeNode(0);
+        one.right = zero;
 
-        System.out.println(s.findMinMoves(new int[]{4, 0, 0, 4}));
+        System.out.println(s.sumRootToLeaf(one));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1022
+    int lc1022Result = 0;
+
+    public int sumRootToLeaf(TreeNode root) {
+        lc1022Helper(root, 0);
+        return lc1022Result;
+    }
+
+    private void lc1022Helper(TreeNode root, int val) {
+        val = (val << 1) + root.val;
+        if (root.left == null && root.right == null) {
+            lc1022Result += val;
+        }
+        if (root.left != null) {
+            lc1022Helper(root.left, val);
+        }
+        if (root.right != null) {
+            lc1022Helper(root.right, val);
+        }
     }
 
     // LC517 Hard **
