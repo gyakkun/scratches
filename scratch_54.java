@@ -19,6 +19,46 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1886
+    public boolean findRotation(int[][] mat, int[][] target) {
+        int n = mat.length;
+        // 原地旋转90°算法, 做4次(最后一次起始和起始相同, 不管了)
+        for (int dummy = 0; dummy < 4; dummy++) {
+            // 先沿着竖着的轴线对折
+            for (int row = 0; row < n; row++) {
+                for (int col = 0; col < n / 2; col++) {
+                    if (mat[row][col] != mat[row][n - 1 - col]) {
+                        mat[row][col] ^= mat[row][n - 1 - col];
+                        mat[row][n - 1 - col] ^= mat[row][col];
+                        mat[row][col] ^= mat[row][n - 1 - col];
+                    }
+                }
+            }
+            // 然后沿着左上-右下的对角线对折 (逆时针, 不影响)
+            for (int row = 0; row < n; row++) {
+                for (int col = 0; col < row; col++) {
+                    if (mat[row][col] != mat[col][row]) {
+                        mat[row][col] ^= mat[col][row];
+                        mat[col][row] ^= mat[row][col];
+                        mat[row][col] ^= mat[col][row];
+                    }
+                }
+            }
+            // 然后校验
+            boolean legal = true;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (mat[i][j] != target[i][j]) {
+                        legal = false;
+                    }
+                    if (!legal) break;
+                }
+            }
+            if(legal) return true;
+        }
+        return false;
+    }
+
     // LC943 Hard Revenge! 状压DP
     public String shortestSuperstring(String[] words) {
         int n = words.length;
@@ -91,7 +131,7 @@ class Scratch {
             sb.append(words[perm.get(i)].substring(overlapCache[perm.get(i - 1)][perm.get(i)]));
         }
         for (int i = 0; i < n; i++) {
-            if(!visited[i]){
+            if (!visited[i]) {
                 sb.append(words[i]);
             }
         }
