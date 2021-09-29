@@ -19,17 +19,13 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC943 Hard Revenge! TLE DFS 解法
-    int[][] overlapCache;
-    List<Integer> order;
-    List<Integer> bestOrder;
-    int minLen = Integer.MAX_VALUE;
-
+    // LC943 Hard Revenge! 状压DP
     public String shortestSuperstring(String[] words) {
         int n = words.length;
-        overlapCache = new int[n][n];
-        order = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) order.add(-1);
+        int fullMask = (1 << n) - 1;
+        int[][] dp = new int[fullMask + 1][n];
+        int[][] parent = new int[fullMask + 1][n]; // 记录转移到dp[mask][i] 的上一个词的下标
+        int[][] overlapCache = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i != j) {
@@ -44,34 +40,62 @@ class Scratch {
                 }
             }
         }
-        helper(words, 0, 0, 0);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(bestOrder.get(0));
-        for (int i = 1; i < n; i++) {
-            sb.append(words[bestOrder.get(i)].substring(overlapCache[bestOrder.get(i - 1)][bestOrder.get(i)]));
-        }
-        return sb.toString();
-    }
+        // dp[mask][j] 表示 在选了 mask 里面的单词, 以j为最后一个单词时候, 重叠部分的最大长度
 
-    private void helper(String[] words, int curIdxInOrder, int curLen, int mask) {
-        if (curLen >= minLen) return;
-        if (curIdxInOrder == words.length) {
-            minLen = curLen;
-            bestOrder = new ArrayList<>(order);
-            return;
-        }
-        for (int i = 0; i < words.length; i++) {
-            if (((mask >> i) & 1) == 0) { // 这个词未被使用过
+        for (int mask = 1; mask <= fullMask; mask++) {
+            Arrays.fill(parent[mask], -1);
+            for (int selected = 0; selected < n; selected++) {
+                if (((mask >> selected) & 1) == 1) {
+                    // 他从哪个选项而来?
+                    int parentMask = mask ^ (1 << selected);
+                    if (parentMask == 0) continue; // 不可能由空的而来 直接跳过
 
-                order.set(curIdxInOrder, i);
-                int nextLen = curLen + words[i].length();
-                if (curIdxInOrder != 0) {
-                    nextLen -= overlapCache[order.get(curIdxInOrder - 1)][i];
+                    // 在上一个选项中, 可以以哪个为结尾? 遍历上一个选项中mask的所有可能
+                    for (int prevEnd = 0; prevEnd < n; prevEnd++) {
+                        if (((parentMask >> prevEnd) & 1) == 1) {
+                            // 如果是以prevEnd 结尾转移过来
+                            int overlap = overlapCache[prevEnd][selected] + dp[parentMask][prevEnd];
+                            if (overlap > dp[mask][selected]) {
+                                parent[mask][selected] = prevEnd;
+                                dp[mask][selected] = overlap;
+                            }
+                        }
+                    }
                 }
-                helper(words, curIdxInOrder + 1, nextLen, mask | (1 << i));
             }
         }
+
+        int maxOverlap = Integer.MIN_VALUE, lastEleIdx = -1;
+        for (int i = 0; i < n; i++) {
+            if (dp[fullMask][i] > maxOverlap) {
+                maxOverlap = dp[fullMask][i];
+                lastEleIdx = i;
+            }
+        }
+
+        List<Integer> perm = new ArrayList<>(); // 开始遍历parent
+        int curEleIdx = lastEleIdx, curMask = fullMask;
+        boolean[] visited = new boolean[n];
+        while (curEleIdx != -1) {
+            perm.add(curEleIdx);
+            visited[curEleIdx] = true;
+            int nextEleIdx = parent[curMask][curEleIdx];
+            curMask ^= (1 << curEleIdx); // 去除掉mask当前的词
+            curEleIdx = nextEleIdx;
+        }
+        Collections.reverse(perm);
+        StringBuilder sb = new StringBuilder();
+        sb.append(words[perm.get(0)]);
+        for (int i = 1; i < perm.size(); i++) {
+            sb.append(words[perm.get(i)].substring(overlapCache[perm.get(i - 1)][perm.get(i)]));
+        }
+        for (int i = 0; i < n; i++) {
+            if(!visited[i]){
+                sb.append(words[i]);
+            }
+        }
+        return sb.toString();
     }
 
 
