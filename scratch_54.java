@@ -10,13 +10,37 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        TreeNode one = new TreeNode(1), zero = new TreeNode(0);
-        one.right = zero;
 
-        System.out.println(s.sumRootToLeaf(one));
+        System.out.println(s.minFallingPathSum(new int[][]{{-2, -18, 31, -10, -71, 82, 47, 56, -14, 42}, {-95, 3, 65, -7, 64, 75, -51, 97, -66, -28}, {36, 3, -62, 38, 15, 51, -58, -90, -23, -63}, {58, -26, -42, -66, 21, 99, -94, -95, -90, 89}, {83, -66, -42, -45, 43, 85, 51, -86, 65, -39}, {56, 9, 9, 95, -56, -77, -2, 20, 78, 17}, {78, -13, -55, 55, -7, 43, -98, -89, 38, 90}, {32, 44, -47, 81, -1, -55, -5, 16, -81, 17}, {-87, 82, 2, 86, -88, -58, -91, -79, 44, -9}, {-96, -14, -52, -8, 12, 38, 84, 77, -51, 52}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1289
+    Integer[][] lc1289Memo;
+
+    public int minFallingPathSum(int[][] grid) {
+        int col = grid[0].length, row = grid.length;
+        int result = Integer.MAX_VALUE;
+        lc1289Memo = new Integer[row + 1][col + 1];
+        for (int i = 0; i < col; i++) {
+            result = Math.min(result, lc1289Helper(i, 0, grid));
+        }
+        return result;
+    }
+
+    private int lc1289Helper(int curCol, int curRow, int[][] grid) {
+        int curVal = grid[curRow][curCol];
+        if (curRow == grid.length - 1) return curVal;
+        if (lc1289Memo[curRow][curCol] != null) return lc1289Memo[curRow][curCol];
+        int result = Integer.MAX_VALUE;
+        for (int i = 0; i < grid[0].length; i++) {
+            if (i != curCol) {
+                result = Math.min(result, curVal + lc1289Helper(i, curRow + 1, grid));
+            }
+        }
+        return lc1289Memo[curRow][curCol] = result;
     }
 
     // LC1022
