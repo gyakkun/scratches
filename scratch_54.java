@@ -19,6 +19,155 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP13 TSP TBD
+    public int minimalSteps(String[] maze) {
+        // S - start , T - target, O - stones, M - mechanism, # - wall, . - road
+        //
+        // 图中的必经点: 起点、终点、机关, 点的个数不超过18个(1+1+16), 可以DP
+        // 两点之间的代价为两点之间到最近一个石堆的路程之和, 石堆有40个, 考虑逐一双向BFS比较以获得最短路径
+        char[][] grid = new char[maze.length][];
+        int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (int i = 0; i < grid.length; i++) {
+            grid[i] = maze[i].toCharArray();
+        }
+        int m = grid.length, n = grid[0].length;
+        Set<Integer> mSet = new HashSet<>(), oSet = new HashSet<>(), wSet = new HashSet<>();
+        int start = -1, end = -1;
+        extractElements(grid, m, n, mSet, oSet, wSet);
+        Set<Integer> pointSet = new HashSet<>(m);
+        pointSet.add(start);
+        pointSet.add(end);
+
+        // 双向BFS 处理点之间的最近距离
+        Map<Integer, Map<Integer, Integer>> minLenToStoneCache = new HashMap<>(); // [i,j] 到 [i,j]最近的石堆的距离
+        Map<Integer, Map<Integer, Integer>> minLenToStoneStoneIdxCache = new HashMap<>(); // [i,j] 到[i,j]最近的石堆
+        getPointToPointMinLen(directions, m, n, oSet, wSet, pointSet, minLenToStoneCache, minLenToStoneStoneIdxCache);
+        int pointLen = pointSet.size();
+        int[] pointsArr = new int[pointLen];
+        Iterator<Integer> it = pointSet.iterator();
+        for (int i = 0; i < pointLen; i++) {
+            pointsArr[i] = it.next();
+        }
+        int fullMask = (1 << pointLen) - 1;
+        int[][] dp = new int[fullMask + 1][pointLen];
+        for (int i = 0; i <= fullMask; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        for (int mask = 0; mask <= fullMask; mask++) {
+            // 看看已经选了哪几个点
+            for (int selected = 0; selected < pointLen; selected++) {
+                if (((mask >> selected) & 1) == 1) {
+                    int parentMask = mask ^ (1 << selected);
+                    if (parentMask == 0) continue;
+
+                }
+            }
+        }
+
+
+    }
+
+    private void getPointToPointMinLen(int[][] directions, int m, int n, Set<Integer> oSet, Set<Integer> wSet, Set<Integer> pointSet, Map<Integer, Map<Integer, Integer>> minLenToStoneCache, Map<Integer, Map<Integer, Integer>> minLenToStoneStoneIdxCache) {
+        for (int i : pointSet) {
+            for (int j : pointSet) {
+                if (i != j) {
+                    if (minLenToStoneCache.containsKey(i) && minLenToStoneCache.get(i).containsKey(j)) continue;
+                    minLenToStoneCache.putIfAbsent(i, new HashMap<>());
+                    minLenToStoneCache.putIfAbsent(j, new HashMap<>());
+                    minLenToStoneStoneIdxCache.putIfAbsent(i, new HashMap<>());
+                    minLenToStoneStoneIdxCache.putIfAbsent(j, new HashMap<>());
+                    int minToStoneLen = Integer.MAX_VALUE, minStoneIdx = -1;
+                    // 选一个石堆
+                    for (int stone : oSet) {
+                        int fromI = minLenToTarget(i, stone, m, n, directions, wSet);
+                        int fromJ = minLenToTarget(j, stone, m, n, directions, wSet);
+                        if (fromI == -1 || fromJ == -1) continue;// 选另一个石头
+                        int lenToThisStone = fromI + fromJ;
+                        if (lenToThisStone < minToStoneLen) {
+                            minToStoneLen = lenToThisStone;
+                            minStoneIdx = stone;
+                        }
+                    }
+                    if (minStoneIdx == -1) {
+                        minToStoneLen = -1;
+                    }
+                    minLenToStoneCache.get(i).put(j, minToStoneLen);
+                    minLenToStoneCache.get(j).put(i, minToStoneLen);
+                    minLenToStoneStoneIdxCache.get(i).put(j, minStoneIdx);
+                    minLenToStoneStoneIdxCache.get(j).put(i, minStoneIdx);
+                }
+            }
+        }
+    }
+
+    private int minLenToTarget(int from, int target, int m, int n, int[][] directions, Set<Integer> wSet) {
+        Deque<Integer> q = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
+        q.add(from);
+        int layer = 0;
+
+        while (!q.isEmpty()) {
+            layer++;
+            int qs = q.size();
+            for (int k = 0; k < qs; k++) {
+                int p = q.poll();
+                if (visited.contains(p)) continue;
+                visited.add(p);
+                int[] idxArr = idxConvert(p, m, n);
+                int r = idxArr[0], c = idxArr[1];
+                for (int[] d : directions) {
+                    int nr = r + d[0], nc = c + d[1];
+                    int nIdx = nr * n + nc;
+                    if (!visited.contains(nIdx) && checkLegal(nr, nc, m, n, wSet)) {
+                        if (nIdx == target) return layer;
+                        q.offer(nIdx);
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    private int[] idxConvert(int idx, int m, int n) {
+        return new int[]{idx / n, idx % n};
+    }
+
+    private int idxConvert(int[] idx, int m, int n) {
+        return idx[0] * n + idx[1];
+    }
+
+    private boolean checkLegal(int row, int col, int m, int n, Set<Integer> wSet) {
+        int idx = row * n + col;
+        return row >= 0 && row < m && col >= 0 && col < n && !wSet.contains(idx);
+    }
+
+    private void extractElements(char[][] grid, int m, int n, Set<Integer> mSet, Set<Integer> oSet, Set<Integer> wSet) {
+        int start;
+        int end;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int idx = i * n + j;
+                switch (grid[i][j]) {
+                    case '#':
+                        wSet.add(idx);
+                        break;
+                    case 'S':
+                        start = idx;
+                        break;
+                    case 'T':
+                        end = idx;
+                        break;
+                    case 'O':
+                        oSet.add(idx);
+                        break;
+                    case 'M':
+                        mSet.add(idx);
+                        break;
+                }
+            }
+        }
+    }
+
     // LC1886
     public boolean findRotation(int[][] mat, int[][] target) {
         int n = mat.length;
@@ -50,16 +199,16 @@ class Scratch {
                 for (int j = 0; j < n; j++) {
                     if (mat[i][j] != target[i][j]) {
                         legal = false;
+                        break;
                     }
-                    if (!legal) break;
                 }
             }
-            if(legal) return true;
+            if (legal) return true;
         }
         return false;
     }
 
-    // LC943 Hard Revenge! 状压DP
+    // LC943 Hard Revenge! 状压DP TSP
     public String shortestSuperstring(String[] words) {
         int n = words.length;
         int fullMask = (1 << n) - 1;
