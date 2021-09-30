@@ -2348,7 +2348,8 @@ class Trie {
     }
 
     public boolean removeWord(String word) {
-        if (!search(word)) return false;
+        TrieNode target = getNode(word);
+        if (target == null) return false;
         TrieNode cur = root;
         for (char c : word.toCharArray()) {
             if (cur.children.get(c).path-- == 1) {
@@ -2362,21 +2363,12 @@ class Trie {
     }
 
     public boolean search(String word) {
-        TrieNode cur = root;
-        for (char c : word.toCharArray()) {
-            if (!cur.children.containsKey(c)) return false;
-            cur = cur.children.get(c);
-        }
-        return cur.end > 0;
+        TrieNode target = getNode(word);
+        return target.end > 0;
     }
 
     public boolean startsWith(String word) {
-        TrieNode cur = root;
-        for (char c : word.toCharArray()) {
-            if (!cur.children.containsKey(c)) return false;
-            cur = cur.children.get(c);
-        }
-        return true;
+        return getNode(word) != null;
     }
 
     public void insert(String word) {
@@ -2384,28 +2376,28 @@ class Trie {
     }
 
     public int countWordsStartingWith(String prefix) {
-        if(!startsWith(prefix)) return 0;
-        TrieNode cur = root;
-        for (char c : prefix.toCharArray()) {
-            if (!cur.children.containsKey(c)) break;
-            cur = cur.children.get(c);
-        }
-        return cur.path;
+        TrieNode target = getNode(prefix);
+        if (target == null) return 0;
+        return target.path;
     }
 
     public int countWordsEqualTo(String word) {
-        if(!search(word)) return 0;
-        int result = 0;
-        TrieNode cur = root;
-        for (char c : word.toCharArray()) {
-            if (!cur.children.containsKey(c)) return 0;
-            cur = cur.children.get(c);
-        }
-        return cur.end;
+        TrieNode target = getNode(word);
+        if (target == null) return 0;
+        return target.end;
     }
 
     public void erase(String word) {
         removeWord(word);
+    }
+
+    private TrieNode getNode(String prefix) {
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (!cur.children.containsKey(c)) return null;
+            cur = cur.children.get(c);
+        }
+        return cur;
     }
 }
 
