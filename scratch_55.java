@@ -14,6 +14,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 055
+    class BSTIterator {
+        Deque<TreeNode> stack = new LinkedList<>();
+        TreeNode cur;
+
+        public BSTIterator(TreeNode root) {
+            cur = root;
+        }
+
+        public int next() { // 先序遍历
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop();
+            int result = cur.val;
+            cur = cur.right;
+            return result;
+        }
+
+        public boolean hasNext() {
+            return cur != null || !stack.isEmpty();
+        }
+    }
+
     // JZOF 26
     public boolean isSubStructure(TreeNode a, TreeNode b) {
         // 空树不是任何树的子结构
