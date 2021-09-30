@@ -17,7 +17,7 @@ class Scratch {
     // LC1066
     public int assignBikes(int[][] workers, int[][] bikes) {
         int nw = workers.length, nb = bikes.length;
-        // dp[mask][mask][i][j]
+        // dp[mask][mask]
         int[][] dp = new int[1 << nw][1 << nb];
 
         for (int mw = 0; mw < 1 << nw; mw++) {
