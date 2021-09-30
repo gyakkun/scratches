@@ -28,17 +28,14 @@ class Scratch {
         TreeSet<int[]> ts = new TreeSet<>(Comparator.comparingInt(o -> o[0]));
         for (int[] i : intvs) ts.add(i);
         int result = Integer.MAX_VALUE;
-        for (int[] i : intvs) { // 从i开始
+        loop: for (int[] i : intvs) { // 从i开始
             if (i[0] > 0) break;
             List<int[]> accepted = new ArrayList<>();
             accepted.add(i);
             while (accepted.get(accepted.size() - 1)[1] < n) {
                 int[] last = accepted.get(accepted.size() - 1);
                 NavigableSet<int[]> intersect = ts.subSet(new int[]{last[0], 0}, false, new int[]{last[1], 0}, true);
-                if (intersect.isEmpty()) {
-                    if (result == Integer.MAX_VALUE) return -1;
-                    break;
-                }
+                if (intersect.isEmpty()) break loop;
                 int[] candidate = null;
                 int rightMost = last[1];
                 for (int[] j : intersect) {
@@ -47,13 +44,12 @@ class Scratch {
                         rightMost = j[1];
                     }
                 }
-                if (candidate != null) accepted.add(candidate);
-                else break;
+                if (candidate == null) break;
+                accepted.add(candidate);
             }
-            if (accepted.get(accepted.size() - 1)[1] >= n) {
-                result = Math.min(result, accepted.size());
-                if (result == 1) return 1;
-            }
+            if (accepted.get(accepted.size() - 1)[1] < n) break;
+            result = Math.min(result, accepted.size());
+            if (result == 1) return 1;
         }
         return result == Integer.MAX_VALUE ? -1 : result;
     }
