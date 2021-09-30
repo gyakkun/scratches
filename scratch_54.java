@@ -12,44 +12,64 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        TreeNode one = new TreeNode(1);
+        TreeNode two = new TreeNode(2);
+        one.right = two;
+
+        System.out.println(s.flipMatchVoyage(one, new int[]{1, 2}));
+
         System.out.println(s.computeArea(-3, 0, 3, 4, 0, -1, 9, 2));
-        System.out.println(s.computeArea(-2284, -1386, -2279, -1380, -2284, -1384, -2273, -1375));
+
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
     // LC971
+    List<Integer> result;
+    int idx = -1;
+    int[] voy;
+    boolean flag = true;
+
     public List<Integer> flipMatchVoyage(TreeNode root, int[] voyage) {
-        List<Integer> result = new ArrayList<>();
-        if (root.val != voyage[0]) return Arrays.asList(-1);
-        Deque<TreeNode> stack = new LinkedList<>();
-        stack.push(root);
-        int idx = -1;
-        while (!stack.isEmpty()) {
-            idx++;
-            TreeNode pop = stack.pop();
-            if (pop.val != voyage[idx]) return Arrays.asList(-1);
-            if (pop.left == null && pop.right != null) {
-                if (pop.right.val != voyage[idx + 1]) return Arrays.asList(-1);
-                pop.left = pop.right;
-                pop.right = null;
-            } else if (pop.left != null && pop.right == null) {
-                if (pop.left.val != voyage[idx + 1]) return Arrays.asList(-1);
-            } else if (pop.left != null && pop.right != null) { // 左右都非空
-                if (pop.left.val != voyage[idx + 1]) {
-                    if (pop.right.val != voyage[idx + 1]) return Arrays.asList(-1);
-                    // 否则交换
-                    result.add(pop.val);
-                    TreeNode origRight = pop.right;
-                    pop.right = pop.left;
-                    pop.left = origRight;
-                }
-            }
-            if (pop.right != null) stack.push(pop.right);
-            if (pop.left != null) stack.push(pop.left);
-        }
+        result = new ArrayList<>();
+        voy = voyage;
+        helper(root);
+        if (!flag) return Arrays.asList(-1);
         return result;
+    }
+
+    private void helper(TreeNode root) {
+        if (root == null) return;
+        idx++;
+        if (voy[idx] != root.val) {
+            flag = false;
+            return;
+        }
+        if (root.left != null && root.right != null) {
+            if (root.left.val != voy[idx + 1]) {
+                if (root.right.val != voy[idx + 1]) {
+                    flag = false;
+                    return;
+                }
+                result.add(root.val);
+                TreeNode tmp = root.left;
+                root.left = root.right;
+                root.right = tmp;
+            }
+        } else if (root.left != null && root.right == null) {
+            if (root.left.val != voy[idx + 1]) {
+                flag = false;
+                return;
+            }
+        } else if (root.left == null && root.right != null) {
+            if (root.right.val != voy[idx + 1]) {
+                flag = false;
+                return;
+            }
+        }
+        helper(root.left);
+        helper(root.right);
     }
 
     // LC223
