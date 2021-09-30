@@ -14,6 +14,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1066 TBD WA
+    public int assignBikes(int[][] workers, int[][] bikes) {
+        int nw = workers.length, nb = bikes.length;
+        // dp[mask][mask][i][j]
+        int[][] dp = new int[1 << nw][1 << nb];
+
+        for (int mw = 0; mw < 1 << nw; mw++) {
+            Arrays.fill(dp[mw], Integer.MAX_VALUE / 2);
+        }
+        dp[0][0] = 0;
+
+        for (int mw = 1; mw < 1 << nw; mw++) {
+            for (int mb = 1; mb < 1 << nb; mb++) {
+                if (Integer.bitCount(mw) != Integer.bitCount(mb)) continue;
+                for (int w = 0; w < nw; w++) {
+                    if (((mw >> w) & 1) == 1) {
+                        int parentWorkerMask = mw ^ (1 << w);
+                        for (int b = 0; b < nb; b++) {
+                            if (((mb >> b) & 1) == 1) {
+                                int parentBikeMask = mb ^ (1 << b);
+                                int distance = Math.abs(workers[w][0] - bikes[b][0]) + Math.abs(workers[w][1] - bikes[b][1]);
+                                dp[mw][mb] = Math.min(dp[mw][mb], dp[parentWorkerMask][parentBikeMask] + distance);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[(1 << nw) - 1][(1 << nb) - 1];
+
+    }
+
     // JZOF II 055
     class BSTIterator {
         Deque<TreeNode> stack = new LinkedList<>();
