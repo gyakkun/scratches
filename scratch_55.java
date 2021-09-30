@@ -14,9 +14,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 26 WA TBD
+    public boolean isSubStructure(TreeNode A, TreeNode B) {
+        if (A == null && B == null) return true;
+        if (A == null || B == null) return false;
+        if (A.val == B.val) {
+            if (isSubStructure(A.left, B.left) && isSubStructure(A.right, B.right)) return true;
+        }
+        return isSubStructure(A.left, B) || isSubStructure(A.right, B);
+    }
+
     // LC1024 DP
     public int videoStitching(int[][] clips, int time) {
-        int[] dp = new int[time + 1];
+        int[] dp = new int[time + 1]; // 表示当前下标能覆盖到的最远距离
         Arrays.fill(dp, Integer.MAX_VALUE / 2);
         dp[0] = 0;
         for (int i = 1; i <= time; i++) {
@@ -99,5 +109,15 @@ class Scratch {
             if (result == 1) return 1;
         }
         return result == Integer.MAX_VALUE ? -1 : result;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(int x) {
+        val = x;
     }
 }
