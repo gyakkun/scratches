@@ -14,14 +14,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // JZOF 26 WA TBD
-    public boolean isSubStructure(TreeNode A, TreeNode B) {
-        if (A == null && B == null) return true;
-        if (A == null || B == null) return false;
-        if (A.val == B.val) {
-            if (isSubStructure(A.left, B.left) && isSubStructure(A.right, B.right)) return true;
-        }
-        return isSubStructure(A.left, B) || isSubStructure(A.right, B);
+    // JZOF 26
+    public boolean isSubStructure(TreeNode a, TreeNode b) {
+        // 空树不是任何树的子结构
+        if (a == null || b == null) return false;
+        return helper(a, b) || isSubStructure(a.left, b) || isSubStructure(a.right, b);
+    }
+
+    private boolean helper(TreeNode a, TreeNode b) {
+        if (a == null && b == null) return true;
+        if (a == null) return false;
+        if (b == null) return true;
+        if (a.val != b.val) return false;
+        return helper(a.left, b.left) && helper(a.right, b.right);
     }
 
     // LC1024 DP
