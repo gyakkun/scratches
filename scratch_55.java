@@ -14,39 +14,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1024 抄LC1326作业
+    // LC1024 DP
     public int videoStitching(int[][] clips, int time) {
-        // 最小覆盖 [0,TIME] 的clip数
-        TreeMap<Integer, Integer> tm = new TreeMap<>();
-        for (int[] c : clips) {
-            tm.put(c[0], Math.min(time, Math.max(c[1], tm.getOrDefault(c[0], Integer.MIN_VALUE))));
-        }
-        int result = Integer.MAX_VALUE;
-        loop:
-        for (Map.Entry<Integer, Integer> i : tm.entrySet()) { // 从i开始
-            if (i.getKey() > 0) break;
-            LinkedList<Map.Entry<Integer, Integer>> candidateQueue = new LinkedList<>();
-            candidateQueue.add(i);
-            while (candidateQueue.getLast().getValue() < time) {
-                Map.Entry<Integer, Integer> last = candidateQueue.getLast();
-                NavigableMap<Integer, Integer> intersect = tm.subMap(last.getKey(), false, last.getValue(), true);
-                if (intersect.isEmpty()) break loop;
-                Map.Entry<Integer, Integer> candidate = null;
-                int rightMost = last.getValue();
-                for (Map.Entry<Integer, Integer> j : intersect.entrySet()) {
-                    if (j.getValue() > rightMost) {
-                        candidate = j;
-                        rightMost = j.getValue();
-                    }
+        int[] dp = new int[time + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        for (int i = 1; i <= time; i++) {
+            for (int[] c : clips) {
+                if (c[0] < i && i <= c[1]) { // 如果i在该片段的覆盖范围内 (注意点还是线)
+                    dp[i] = Math.min(dp[i], 1 + dp[c[0]]);
                 }
-                if (candidate == null) break;
-                candidateQueue.add(candidate);
             }
-            if (candidateQueue.getLast().getValue() < time) break;
-            result = Math.min(result, candidateQueue.size());
-            if (result == 1) return 1;
         }
-        return result == Integer.MAX_VALUE ? -1 : result;
+        return dp[time] == Integer.MAX_VALUE / 2 ? -1 : dp[time];
     }
 
 
