@@ -2378,6 +2378,35 @@ class Trie {
         }
         return true;
     }
+
+    public void insert(String word) {
+        addWord(word);
+    }
+
+    public int countWordsStartingWith(String prefix) {
+        if(!startsWith(prefix)) return 0;
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (!cur.children.containsKey(c)) break;
+            cur = cur.children.get(c);
+        }
+        return cur.path;
+    }
+
+    public int countWordsEqualTo(String word) {
+        if(!search(word)) return 0;
+        int result = 0;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) return 0;
+            cur = cur.children.get(c);
+        }
+        return cur.end;
+    }
+
+    public void erase(String word) {
+        removeWord(word);
+    }
 }
 
 class TrieNode {
