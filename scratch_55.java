@@ -19,14 +19,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC45
+    Integer[] memo;
+
+    public int jump(int[] nums) {
+        memo = new Integer[nums.length + 1];
+        return helper(0, nums);
+    }
+
+    private int helper(int curIdx, int[] nums) {
+        if (curIdx >= nums.length - 1) return 0;
+        if (memo[curIdx] != null) return memo[curIdx];
+        int min = Integer.MAX_VALUE / 2; // 防溢出
+        for (int i = 1; i <= nums[curIdx]; i++) {
+            min = Math.min(min, 1 + helper(curIdx + i, nums));
+        }
+        return memo[curIdx] = min;
+    }
+
     // LC1326
     public int minTapsGreedy(int n, int[] ranges) {
-        int[] land = new int[n];
+        int[] land = new int[n]; // 表示覆盖范围内最远覆盖到的土地下标
         for (int i = 0; i < n; i++) {
             int l = Math.max(i - ranges[i], 0);
             int r = Math.min(i + ranges[i], n);
             for (int j = l; j < r; j++) { // 最多两百次, 视作常数
-                land[j] = Math.max(land[j], r);
+                land[j] = Math.max(land[j], r); // 更新范围内最远覆盖到的土地下标
             }
         }
         int ctr = 0, cur = 0;
