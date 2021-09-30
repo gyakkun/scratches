@@ -12,7 +12,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.out.println(s.computeArea(-3, 0, 3, 4, 0, -1, 9, 2));
+        System.out.println(s.computeArea(-3, 0, 3, 4, 0, -1, 9, 2));
         System.out.println(s.computeArea(-2284, -1386, -2279, -1380, -2284, -1384, -2273, -1375));
 
         timing = System.currentTimeMillis() - timing;
@@ -31,33 +31,30 @@ class Scratch {
         };
         Arrays.sort(events, Comparator.comparingInt(o -> o[0]));
         // 活动中的与X轴平行的线: activeXs : [ [起始x, 结束x] , 个数 ]
-        TreeMap<String, Integer> activeXs = new TreeMap<>(new Comparator<String>() {
+        TreeMap<Pair<Integer, Integer>, Integer> activeXs = new TreeMap<>(new Comparator<Pair<Integer, Integer>>() {
             @Override
-            public int compare(String o1, String o2) {
-                String[] s1 = o1.split(","), s2 = o2.split(",");
-                int o1Key = Integer.parseInt(s1[0]), o1Value = Integer.parseInt(s1[1]);
-                int o2Key = Integer.parseInt(s2[0]), o2Value = Integer.parseInt(s2[1]);
-                return o1Key != o2Key ? o1Key - o2Key : o1Value - o2Value;
+            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+                return !o1.getKey().equals(o2.getKey()) ? o1.getKey() - o2.getKey() : o1.getValue() - o2.getValue();
             }
         });
-        activeXs.put("" + events[0][2] + "," + events[0][3], 1); // 防止哈希碰撞
-        long project = 0, curY = events[0][0];
+        activeXs.put(new Pair<>(events[0][2], events[0][3]), 1);
+        int project = 0, curY = events[0][0];
 
         for (int i = 1; i < 4; i++) {
-            long height = events[i][0] - curY; // 必然是正数
-            long length = 0;
-            long cur = Integer.MIN_VALUE; // 遍历当前所有活动中的X线, 取全长
-            for (String o1 : activeXs.keySet()) { // 从左到右的X坐标们
-                String[] s1 = o1.split(",");
-                int o1Key = Integer.parseInt(s1[0]), o1Value = Integer.parseInt(s1[1]);
-                cur = Math.max(cur, o1Key);
-                length += Math.max(0, o1Value - cur);
-                cur = Math.max(cur, o1Value);
+            int height = events[i][0] - curY; // 必然是正数
+            int length = 0;
+            int cur = Integer.MIN_VALUE; // 遍历当前所有活动中的X线, 取全长
+            for (Pair<Integer, Integer> xPair : activeXs.keySet()) { // 从左到右的X坐标们
+                cur = Math.max(cur, xPair.getKey());
+                length += Math.max(0, xPair.getValue() - cur);
+                cur = Math.max(cur, xPair.getValue());
             }
             project += height * length;
-            String thisX = "" + events[i][2] + "," + events[i][3];
+            Pair<Integer, Integer> thisX = new Pair<>(events[i][2], events[i][3]);
             if (events[i][1] == OPEN) {
-                activeXs.put(thisX, activeXs.getOrDefault(thisX, 0) + 1);
+                int val = 0;
+                if (activeXs.get(thisX) != null) val = activeXs.get(thisX);
+                activeXs.put(thisX, val + 1);
             } else {
                 activeXs.put(thisX, activeXs.get(thisX) - 1);
                 if (activeXs.get(thisX) == 0) {
@@ -66,7 +63,7 @@ class Scratch {
             }
             curY = events[i][0]; // 更新Y坐标
         }
-        return (int) project;
+        return project;
     }
 
     // LCP13 TSP
