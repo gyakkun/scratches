@@ -7,11 +7,58 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.minTapsGreedy(8, new int[]{4, 0, 0, 0, 4, 0, 0, 0, 4}));
+        System.out.println(s.assignBikesI(new int[][]{{0, 0}, {2, 1}}, new int[][]{{1, 2}, {3, 3}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1057
+    public int[] assignBikesI(int[][] workers, int[][] bikes) {
+        int nw = workers.length, nb = bikes.length;
+        int[][] distance = new int[nw][nb];
+        int[] result = new int[nw];
+        boolean[] visitedBike = new boolean[nb];
+        boolean[] visitedWorker = new boolean[nb];
+        TreeSet<int[]> ts = new TreeSet<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (distance[o1[0]][o1[1]] == distance[o2[0]][o2[1]]) {
+                    if (o1[0] == o2[0]) {
+                        return o1[1] - o2[1];
+                    }
+                    return o1[0] - o2[0];
+                }
+                return distance[o1[0]][o1[1]] - distance[o2[0]][o2[1]];
+            }
+        });
+        for (int i = 0; i < nw; i++) {
+            for (int j = 0; j < nb; j++) {
+                distance[i][j] = Math.abs(workers[i][0] - bikes[j][0]) + Math.abs(workers[i][1] - bikes[j][1]);
+            }
+        }
+        for (int i = 0; i < nw; i++) {
+            for (int j = 0; j < nb; j++) {
+                ts.add(new int[]{i, j});
+            }
+        }
+        Iterator<int[]> it = ts.iterator();
+        while (it.hasNext()) {
+            int[] next = it.next();
+            if (visitedBike[next[1]]) {
+                it.remove();
+                continue;
+            }
+            if (visitedWorker[next[0]]) {
+                it.remove();
+                continue;
+            }
+            result[next[0]] = next[1];
+            visitedWorker[next[0]] = true;
+            visitedBike[next[1]] = true;
+        }
+        return result;
     }
 
     // LC1066
