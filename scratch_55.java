@@ -11,7 +11,8 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minTaps(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
+//        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
+        System.out.println(s.minTapsGreedy(8, new int[]{4, 0, 0, 0, 4, 0, 0, 0, 4}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -19,6 +20,24 @@ class Scratch {
     }
 
     // LC1326
+    public int minTapsGreedy(int n, int[] ranges) {
+        int[] land = new int[n];
+        for (int i = 0; i < n; i++) {
+            int l = Math.max(i - ranges[i], 0);
+            int r = Math.min(i + ranges[i], n);
+            for (int j = l; j < r; j++) { // 最多两百次, 视作常数
+                land[j] = Math.max(land[j], r);
+            }
+        }
+        int ctr = 0, cur = 0;
+        while (cur < n) {
+            if (land[cur] == 0) return -1; // 如果有土地未被覆盖到
+            cur = land[cur];
+            ctr++;
+        }
+        return ctr;
+    }
+
     public int minTaps(int n, int[] ranges) {
         TreeMap<Integer, Integer> tm = new TreeMap<>();
         for (int i = 0; i <= n; i++) {
