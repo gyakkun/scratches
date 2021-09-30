@@ -19,6 +19,39 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC971
+    public List<Integer> flipMatchVoyage(TreeNode root, int[] voyage) {
+        List<Integer> result = new ArrayList<>();
+        if (root.val != voyage[0]) return Arrays.asList(-1);
+        Deque<TreeNode> stack = new LinkedList<>();
+        stack.push(root);
+        int idx = -1;
+        while (!stack.isEmpty()) {
+            idx++;
+            TreeNode pop = stack.pop();
+            if (pop.val != voyage[idx]) return Arrays.asList(-1);
+            if (pop.left == null && pop.right != null) {
+                if (pop.right.val != voyage[idx + 1]) return Arrays.asList(-1);
+                pop.left = pop.right;
+                pop.right = null;
+            } else if (pop.left != null && pop.right == null) {
+                if (pop.left.val != voyage[idx + 1]) return Arrays.asList(-1);
+            } else if (pop.left != null && pop.right != null) { // 左右都非空
+                if (pop.left.val != voyage[idx + 1]) {
+                    if (pop.right.val != voyage[idx + 1]) return Arrays.asList(-1);
+                    // 否则交换
+                    result.add(pop.val);
+                    TreeNode origRight = pop.right;
+                    pop.right = pop.left;
+                    pop.left = origRight;
+                }
+            }
+            if (pop.right != null) stack.push(pop.right);
+            if (pop.left != null) stack.push(pop.left);
+        }
+        return result;
+    }
+
     // LC223
     public int computeArea(int ax1, int ay1, int ax2, int ay2, int bx1, int by1, int bx2, int by2) {
         // 扫描线求投影面积, 用总面积间去投影面积等于重叠部分面积
