@@ -22,10 +22,8 @@ class Scratch {
     }
 
     private boolean helper(TreeNode a, TreeNode b) {
-        if (a == null && b == null) return true;
-        if (a == null) return false;
         if (b == null) return true;
-        if (a.val != b.val) return false;
+        if (a == null || a.val != b.val) return false;
         return helper(a.left, b.left) && helper(a.right, b.right);
     }
 
