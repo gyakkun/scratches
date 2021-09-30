@@ -41,7 +41,8 @@ class Scratch {
     public int minTaps(int n, int[] ranges) {
         TreeMap<Integer, Integer> tm = new TreeMap<>();
         for (int i = 0; i <= n; i++) {
-            tm.put(i - ranges[i], Math.max(tm.getOrDefault(i - ranges[i], Integer.MIN_VALUE), i + ranges[i]));
+            if (ranges[i] == 0) continue;
+            tm.put(Math.max(i - ranges[i], 0), Math.min(Math.max(tm.getOrDefault(i - ranges[i], Integer.MIN_VALUE), i + ranges[i]), n));
         }
         int result = Integer.MAX_VALUE;
         loop:
