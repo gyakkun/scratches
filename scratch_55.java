@@ -1,9 +1,4 @@
-import javafx.util.Pair;
-
-import java.math.BigInteger;
 import java.util.*;
-import java.util.List;
-import java.util.function.Function;
 
 class Scratch {
     public static void main(String[] args) {
@@ -19,22 +14,58 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC45
-    Integer[] memo;
-
-    public int jump(int[] nums) {
-        memo = new Integer[nums.length + 1];
-        return helper(0, nums);
+    // LC1024 抄LC1326作业
+    public int videoStitching(int[][] clips, int time) {
+        // 最小覆盖 [0,TIME] 的clip数
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        for (int[] c : clips) {
+            tm.put(c[0], Math.min(time, Math.max(c[1], tm.getOrDefault(c[0], Integer.MIN_VALUE))));
+        }
+        int result = Integer.MAX_VALUE;
+        loop:
+        for (Map.Entry<Integer, Integer> i : tm.entrySet()) { // 从i开始
+            if (i.getKey() > 0) break;
+            LinkedList<Map.Entry<Integer, Integer>> candidateQueue = new LinkedList<>();
+            candidateQueue.add(i);
+            while (candidateQueue.getLast().getValue() < time) {
+                Map.Entry<Integer, Integer> last = candidateQueue.getLast();
+                NavigableMap<Integer, Integer> intersect = tm.subMap(last.getKey(), false, last.getValue(), true);
+                if (intersect.isEmpty()) break loop;
+                Map.Entry<Integer, Integer> candidate = null;
+                int rightMost = last.getValue();
+                for (Map.Entry<Integer, Integer> j : intersect.entrySet()) {
+                    if (j.getValue() > rightMost) {
+                        candidate = j;
+                        rightMost = j.getValue();
+                    }
+                }
+                if (candidate == null) break;
+                candidateQueue.add(candidate);
+            }
+            if (candidateQueue.getLast().getValue() < time) break;
+            result = Math.min(result, candidateQueue.size());
+            if (result == 1) return 1;
+        }
+        return result == Integer.MAX_VALUE ? -1 : result;
     }
 
-    private int helper(int curIdx, int[] nums) {
+
+    // LC45
+    Integer[] lc45Memo;
+
+    public int jump(int[] nums) {
+        lc45Memo = new Integer[nums.length + 1];
+        return lc45Helper(0, nums);
+    }
+
+    private int lc45Helper(int curIdx, int[] nums) {
         if (curIdx >= nums.length - 1) return 0;
-        if (memo[curIdx] != null) return memo[curIdx];
+        if (lc45Memo[curIdx] != null) return lc45Memo[curIdx];
         int min = Integer.MAX_VALUE / 2; // 防溢出
         for (int i = 1; i <= nums[curIdx]; i++) {
-            min = Math.min(min, 1 + helper(curIdx + i, nums));
+            min = Math.min(min, 1 + lc45Helper(curIdx + i, nums));
         }
-        return memo[curIdx] = min;
+        return lc45Memo[curIdx] = min;
     }
 
     // LC1326
