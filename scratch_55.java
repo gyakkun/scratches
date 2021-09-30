@@ -14,7 +14,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1066 TBD WA
+    // LC1066
     public int assignBikes(int[][] workers, int[][] bikes) {
         int nw = workers.length, nb = bikes.length;
         // dp[mask][mask][i][j]
@@ -27,7 +27,7 @@ class Scratch {
 
         for (int mw = 1; mw < 1 << nw; mw++) {
             for (int mb = 1; mb < 1 << nb; mb++) {
-                if (Integer.bitCount(mw) != Integer.bitCount(mb)) continue;
+                if (Integer.bitCount(mw) > Integer.bitCount(mb)) continue;
                 for (int w = 0; w < nw; w++) {
                     if (((mw >> w) & 1) == 1) {
                         int parentWorkerMask = mw ^ (1 << w);
@@ -42,8 +42,11 @@ class Scratch {
                 }
             }
         }
-        return dp[(1 << nw) - 1][(1 << nb) - 1];
-
+        int min = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < 1 << nb; i++) {
+            min = Math.min(min, dp[(1 << nw) - 1][i]);
+        }
+        return min;
     }
 
     // JZOF II 055
