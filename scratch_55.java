@@ -1,3 +1,4 @@
+import java.time.OffsetDateTime;
 import java.util.*;
 
 class Scratch {
@@ -12,6 +13,21 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC405
+    public String toHex(int num) {
+        if (num == 0) return "0";
+        char[] hex = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        StringBuilder result = new StringBuilder();
+        // int -> 4byte ,1byte = 8bit = 2*4bit
+        for (int i = 1; i <= 8; i++) {
+            int offset = i * 4;
+            int this4bit = (num >> (32 - offset)) & 0x0f;
+            if (result.length() == 0 && this4bit == 0) continue;
+            result.append(hex[this4bit]);
+        }
+        return result.toString();
     }
 
     // LC1057
