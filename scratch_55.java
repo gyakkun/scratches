@@ -15,8 +15,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC77
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> result = new ArrayList<>();
+        for (int mask = 0; mask < (1 << n); mask++) {
+            if (Integer.bitCount(mask) == k) {
+                result.add(getCombine(mask));
+            }
+        }
+        return result;
+    }
+
+    private List<Integer> getCombine(int mask) {
+        List<Integer> result = new ArrayList<>(Integer.bitCount(mask));
+        for (int i = 0; i < Integer.SIZE; i++) {
+            if (((mask >> i) & 1) == 1) {
+                result.add(i + 1);
+            }
+        }
+        return result;
+    }
+
     // LC40 给的数字有重复 选择不可重复 可选个数100 无法位运算枚举 哈希超时
-    List<List<Integer>> result;
+    List<List<Integer>> lc40Result;
 
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         Arrays.sort(candidates);
@@ -29,28 +50,28 @@ class Scratch {
                 freq.get(fs - 1)[1]++;
             }
         }
-        result = new ArrayList<>();
+        lc40Result = new ArrayList<>();
         // curIdx 是在freq种的idx
-        helper(candidates, 0, new ArrayList<>(), target, freq);
-        return result;
+        lc40Helper(candidates, 0, new ArrayList<>(), target, freq);
+        return lc40Result;
     }
 
-    private void helper(int[] candidates, int curIdx, List<Integer> selected, int remain, List<int[]> freq) {
+    private void lc40Helper(int[] candidates, int curIdx, List<Integer> selected, int remain, List<int[]> freq) {
         if (remain == 0) {
-            result.add(new ArrayList<>(selected));
+            lc40Result.add(new ArrayList<>(selected));
             return;
         }
         if (curIdx == freq.size() || remain < freq.get(curIdx)[0]) return;
         int mostSelect = Math.min(freq.get(curIdx)[1], remain / freq.get(curIdx)[0]);
         for (int i = 1; i <= mostSelect; i++) {
             selected.add(freq.get(curIdx)[0]);
-            helper(candidates, curIdx + 1, selected, remain - i * freq.get(curIdx)[0], freq);
+            lc40Helper(candidates, curIdx + 1, selected, remain - i * freq.get(curIdx)[0], freq);
         }
         for (int i = 1; i <= mostSelect; i++) {
             selected.remove(selected.size() - 1);
         }
         // 不选
-        helper(candidates, curIdx + 1, selected, remain, freq);
+        lc40Helper(candidates, curIdx + 1, selected, remain, freq);
     }
 
 
@@ -230,13 +251,13 @@ class Scratch {
     public boolean isSubStructure(TreeNode a, TreeNode b) {
         // 空树不是任何树的子结构
         if (a == null || b == null) return false;
-        return helper(a, b) || isSubStructure(a.left, b) || isSubStructure(a.right, b);
+        return lc40Helper(a, b) || isSubStructure(a.left, b) || isSubStructure(a.right, b);
     }
 
-    private boolean helper(TreeNode a, TreeNode b) {
+    private boolean lc40Helper(TreeNode a, TreeNode b) {
         if (b == null) return true;
         if (a == null || a.val != b.val) return false;
-        return helper(a.left, b.left) && helper(a.right, b.right);
+        return lc40Helper(a.left, b.left) && lc40Helper(a.right, b.right);
     }
 
     // LC1024 DP
