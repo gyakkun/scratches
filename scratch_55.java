@@ -8,11 +8,36 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.assignBikesI(new int[][]{{0, 0}, {2, 1}}, new int[][]{{1, 2}, {3, 3}}));
+        System.out.println(s.fractionToDecimal(-1, -2147483648));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC166
+    public String fractionToDecimal(int numerator, int denominator) {
+        if (numerator == 0) return "0";
+        long num = Math.abs(numerator), den = Math.abs(0l+denominator);
+        String left = String.valueOf(num / den);
+        if ((0l + numerator) * (0l + denominator) < 0l) left = "-" + left;
+        long remainder = num % den;
+        if (remainder == 0l) return left;
+        left += ".";
+        Map<Long, Integer> map = new HashMap<>();
+        StringBuilder sb = new StringBuilder(left);
+        while (remainder != 0) {
+            if (map.containsKey(remainder)) {
+                sb.insert(map.get(remainder), "(");
+                sb.append(")");
+                break;
+            }
+            map.put(remainder, sb.length());
+            remainder *= 10;
+            sb.append(remainder / den);
+            remainder %= den;
+        }
+        return sb.toString();
     }
 
     // LC405

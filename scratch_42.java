@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -883,6 +884,9 @@ class Scratch {
             arraySwap(nums, left, right);
         }
         arrayReverse(nums, right + 1, nums.length - 1);
+        Arrays.sort(nums);
+        List<List<Integer>> result = new ArrayList<>();
+        result.add(Arrays.stream(nums).boxed().collect(Collectors.toList()));
     }
 
     private void arraySwap(int[] arr, int i, int j) {
