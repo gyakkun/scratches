@@ -1,4 +1,3 @@
-import java.time.OffsetDateTime;
 import java.util.*;
 
 class Scratch {
@@ -8,17 +7,21 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.fractionToDecimal(-1, -2147483648));
+        System.out.println(s.combinationSum2(new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                30));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC39 可重复
+    // LC40 给的数字有重复 选择不可重复 可选个数100 无法位运算枚举 哈希超时
     List<List<Integer>> result;
+    Set<Integer> hash53, hash59;
 
-    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        hash53 = new HashSet<>();
+        hash59 = new HashSet<>();
         Arrays.sort(candidates);
         result = new ArrayList<>();
         helper(candidates, 0, new ArrayList<>(), target);
@@ -27,14 +30,54 @@ class Scratch {
 
     private void helper(int[] candidates, int curIdx, List<Integer> selected, int remain) {
         if (remain == 0) {
-            result.add(new ArrayList<>(selected));
+            int h53 = hash(selected, 53), h59 = hash(selected, 59);
+            if (!hash53.contains(h53) || !hash59.contains(h59)) {
+                hash53.add(h53);
+                hash59.add(h59);
+                result.add(new ArrayList<>(selected));
+            }
+            return;
+        }
+        for (int i = curIdx; i < candidates.length; i++) {
+            int c = candidates[i];
+            if (c > remain) break;
+            if (c <= remain) {
+                selected.add(c);
+                helper(candidates, i + 1, selected, remain - c);
+                selected.remove(selected.size() - 1);
+            }
+        }
+    }
+
+    private int hash(List<Integer> selected, int prime) {
+        long result = 0, accu = 1, mod = 1000000007;
+        for (int i = 0; i < selected.size(); i++) {
+            result = (result + accu * selected.get(i)) % mod;
+            accu = (accu * prime) % mod;
+        }
+        return (int) (result);
+    }
+
+    // LC39 可重复
+    List<List<Integer>> lc39Result;
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        lc39Result = new ArrayList<>();
+        lc39Helper(candidates, 0, new ArrayList<>(), target);
+        return lc39Result;
+    }
+
+    private void lc39Helper(int[] candidates, int curIdx, List<Integer> selected, int remain) {
+        if (remain == 0) {
+            lc39Result.add(new ArrayList<>(selected));
             return;
         }
         for (int i = curIdx; i < candidates.length; i++) {
             int c = candidates[i];
             if (c <= remain) {
                 selected.add(c);
-                helper(candidates, i, selected, remain - c);
+                lc39Helper(candidates, i, selected, remain - c);
                 selected.remove(selected.size() - 1);
             }
         }
