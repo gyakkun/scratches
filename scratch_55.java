@@ -15,10 +15,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC39 可重复
+    List<List<Integer>> result;
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        result = new ArrayList<>();
+        helper(candidates, 0, new ArrayList<>(), target);
+        return result;
+    }
+
+    private void helper(int[] candidates, int curIdx, List<Integer> selected, int remain) {
+        if (remain == 0) {
+            result.add(new ArrayList<>(selected));
+            return;
+        }
+        for (int i = curIdx; i < candidates.length; i++) {
+            int c = candidates[i];
+            if (c <= remain) {
+                selected.add(c);
+                helper(candidates, i, selected, remain - c);
+                selected.remove(selected.size() - 1);
+            }
+        }
+    }
+
     // LC166
     public String fractionToDecimal(int numerator, int denominator) {
         if (numerator == 0) return "0";
-        long num = Math.abs(numerator), den = Math.abs(0l+denominator);
+        long num = Math.abs(numerator), den = Math.abs(0l + denominator);
         String left = String.valueOf(num / den);
         if ((0l + numerator) * (0l + denominator) < 0l) left = "-" + left;
         long remainder = num % den;
