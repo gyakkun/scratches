@@ -15,6 +15,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC174
+    Integer[][] lc174Memo;
+
+    public int calculateMinimumHP(int[][] dungeon) {
+        lc174Memo = new Integer[dungeon.length + 1][dungeon[0].length + 1];
+        return lc174Helper(0, 0, dungeon) + 1;
+    }
+
+    private int lc174Helper(int row, int col, int[][] dungeon) { // 到r,c的时候至少要有多少血
+        if (lc174Memo[row][col] != null) return lc174Memo[row][col];
+        if (row == dungeon.length - 1 && col == dungeon[0].length - 1) {
+            if (dungeon[row][col] >= 0) return lc174Memo[row][col] = 0;
+            return lc174Memo[row][col] = -dungeon[row][col];
+        }
+        int down = Integer.MAX_VALUE / 2, right = Integer.MAX_VALUE / 2;
+        if (row + 1 < dungeon.length) {
+            down = lc174Helper(row + 1, col, dungeon) - dungeon[row][col];
+        }
+        if (col + 1 < dungeon[0].length) {
+            right = lc174Helper(row, col + 1, dungeon) - dungeon[row][col];
+        }
+        int min = Math.min(down, right);
+        if (min < 0) {
+            return lc174Memo[row][col] = 0;
+        }
+        return lc174Memo[row][col] = min;
+    }
+
     // LC77
     public List<List<Integer>> combine(int n, int k) {
         List<List<Integer>> result = new ArrayList<>();
