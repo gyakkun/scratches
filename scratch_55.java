@@ -17,46 +17,42 @@ class Scratch {
 
     // LC40 给的数字有重复 选择不可重复 可选个数100 无法位运算枚举 哈希超时
     List<List<Integer>> result;
-    Set<Integer> hash53, hash59;
 
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
-        hash53 = new HashSet<>();
-        hash59 = new HashSet<>();
         Arrays.sort(candidates);
+        List<int[]> freq = new ArrayList<>();
+        for (int i = 0; i < candidates.length; i++) {
+            int fs = freq.size();
+            if (fs == 0 || candidates[i] != freq.get(fs - 1)[0]) {
+                freq.add(new int[]{candidates[i], 1});
+            } else {
+                freq.get(fs - 1)[1]++;
+            }
+        }
         result = new ArrayList<>();
-        helper(candidates, 0, new ArrayList<>(), target);
+        // curIdx 是在freq种的idx
+        helper(candidates, 0, new ArrayList<>(), target, freq);
         return result;
     }
 
-    private void helper(int[] candidates, int curIdx, List<Integer> selected, int remain) {
+    private void helper(int[] candidates, int curIdx, List<Integer> selected, int remain, List<int[]> freq) {
         if (remain == 0) {
-            int h53 = hash(selected, 53), h59 = hash(selected, 59);
-            if (!hash53.contains(h53) || !hash59.contains(h59)) {
-                hash53.add(h53);
-                hash59.add(h59);
-                result.add(new ArrayList<>(selected));
-            }
+            result.add(new ArrayList<>(selected));
             return;
         }
-        for (int i = curIdx; i < candidates.length; i++) {
-            int c = candidates[i];
-            if (c > remain) break;
-            if (c <= remain) {
-                selected.add(c);
-                helper(candidates, i + 1, selected, remain - c);
-                selected.remove(selected.size() - 1);
-            }
+        if (curIdx == freq.size() || remain < freq.get(curIdx)[0]) return;
+        int mostSelect = Math.min(freq.get(curIdx)[1], remain / freq.get(curIdx)[0]);
+        for (int i = 1; i <= mostSelect; i++) {
+            selected.add(freq.get(curIdx)[0]);
+            helper(candidates, curIdx + 1, selected, remain - i * freq.get(curIdx)[0], freq);
         }
+        for (int i = 1; i <= mostSelect; i++) {
+            selected.remove(selected.size() - 1);
+        }
+        // 不选
+        helper(candidates, curIdx + 1, selected, remain, freq);
     }
 
-    private int hash(List<Integer> selected, int prime) {
-        long result = 0, accu = 1, mod = 1000000007;
-        for (int i = 0; i < selected.size(); i++) {
-            result = (result + accu * selected.get(i)) % mod;
-            accu = (accu * prime) % mod;
-        }
-        return (int) (result);
-    }
 
     // LC39 可重复
     List<List<Integer>> lc39Result;
