@@ -14,6 +14,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC253
+    public int minMeetingRooms(int[][] intervals) {
+        final int OPEN = 0, CLOSE = 1;
+        List<int[]> events = new ArrayList<>();
+        for (int[] i : intervals) {
+            events.add(new int[]{i[0], OPEN});
+            events.add(new int[]{i[1], CLOSE});
+        }
+        Collections.sort(events, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] == o2[0] ? o2[1] - o1[1] : o1[0] - o2[0];
+            }
+        });
+        int max = 0, active = 0;
+        for (int[] e : events) {
+            if (e[1] == OPEN) {
+                active++;
+                max = Math.max(active, max);
+            } else {
+                active--;
+            }
+        }
+        return max;
+    }
+
     // LC1448
     int lc1448Result = 0;
 
