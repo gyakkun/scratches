@@ -7,12 +7,38 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.combinationSum2(new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                30));
+        System.out.println(s.licenseKeyFormatting("5F3Z-2e-9-w", 4));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC482
+    public String licenseKeyFormatting(String s, int k) {
+        LinkedList<Character> q = new LinkedList<>();
+        for (char c : s.toCharArray()) {
+            if (c == '-') continue;
+            if (Character.isLowerCase(c)) c = Character.toUpperCase(c);
+            q.offer(c);
+        }
+        StringBuilder sb = new StringBuilder(((q.size() / k) + 1) * (k + 1));
+        int remain = q.size() % k;
+        int parts = q.size() / k;
+        if (q.size() % k != 0) {
+            for (int i = 0; i < remain; i++) {
+                sb.append(q.pollFirst());
+            }
+            if (parts != 0) sb.append('-');
+        }
+        parts = q.size() / k;
+        for (int i = 0; i < parts; i++) {
+            for (int j = 0; j < k; j++) {
+                sb.append(q.pollFirst());
+            }
+            if (i != parts - 1) sb.append('-');
+        }
+        return sb.toString();
     }
 
     // LC174
