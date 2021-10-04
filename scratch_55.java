@@ -14,6 +14,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1448
+    int lc1448Result = 0;
+
+    public int goodNodes(TreeNode root) {
+        lc1448Helper(root, Integer.MIN_VALUE);
+        return lc1448Result;
+    }
+
+    private void lc1448Helper(TreeNode root, int curMax) {
+        if (root == null) return;
+        if (root.val >= curMax) lc1448Result++;
+        lc1448Helper(root.left, Math.max(root.val, curMax));
+        lc1448Helper(root.right, Math.max(root.val, curMax));
+    }
+
     // LC482
     public String licenseKeyFormatting(String s, int k) {
         LinkedList<Character> q = new LinkedList<>();
