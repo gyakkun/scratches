@@ -14,6 +14,58 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC445
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode h1 = reverseList(l1), h2 = reverseList(l2);
+        ListNode p1 = h1, p2 = h2;
+        int carry = 0;
+        ListNode dummy = new ListNode(-1);
+        ListNode cur = dummy;
+        while (p1 != null && p2 != null) {
+            int next = carry + p1.val + p2.val;
+            carry = next / 10;
+            ListNode nextNode = new ListNode(next % 10);
+            cur.next = nextNode;
+            cur = cur.next;
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+        while (p1 != null) {
+            int next = carry + p1.val;
+            carry = next / 10;
+            ListNode nextNode = new ListNode(next % 10);
+            cur.next = nextNode;
+            cur = cur.next;
+            p1 = p1.next;
+        }
+        while (p2 != null) {
+            int next = carry + p2.val;
+            carry = next / 10;
+            ListNode nextNode = new ListNode(next % 10);
+            cur.next = nextNode;
+            cur = cur.next;
+            p2 = p2.next;
+        }
+        if (carry != 0) {
+            cur.next = new ListNode(carry);
+            cur = cur.next;
+        }
+        return reverseList(dummy.next);
+    }
+
+    private ListNode reverseList(ListNode head) {
+        if (head == null) return null;
+        ListNode cur = head, prev = null;
+        while (cur != null) {
+            ListNode origNext = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = origNext;
+        }
+        return prev;
+    }
+
+
     // LC253
     public int minMeetingRooms(int[][] intervals) {
         final int OPEN = 0, CLOSE = 1;
@@ -450,5 +502,22 @@ class TreeNode {
 
     TreeNode(int x) {
         val = x;
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
