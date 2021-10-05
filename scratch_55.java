@@ -7,11 +7,37 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.licenseKeyFormatting("5F3Z-2e-9-w", 4));
+        System.out.println(s.isMatch("", "******"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC44 **
+    Boolean[][] lc44Memo;
+
+    public boolean isMatch(String s, String p) {
+        lc44Memo = new Boolean[s.length() + 1][p.length() + 1];
+        return lc44Helper(s.toCharArray(), p.toCharArray(), s.length(), p.length());
+    }
+
+    private boolean lc44Helper(char[] sa, char[] pa, int sIdx, int pIdx) {
+        if (sIdx == 0 && pIdx == 0) return true;
+        if (sIdx != 0 && pIdx == 0) return false;
+        if (lc44Memo[sIdx][pIdx] != null) return lc44Memo[sIdx][pIdx];
+        if (sIdx == 0 && pIdx != 0) {
+            for (int i = pIdx; i >= 1; i--) {
+                if (pa[i - 1] != '*') return lc44Memo[sIdx][pIdx] = false;
+            }
+            return lc44Memo[sIdx][pIdx] = true;
+        }
+        if (pa[pIdx - 1] == '?' || pa[pIdx - 1] == sa[sIdx - 1])
+            return lc44Memo[sIdx][pIdx] = lc44Helper(sa, pa, sIdx - 1, pIdx - 1);
+        if (pa[pIdx - 1] == '*') {
+            return lc44Memo[sIdx][pIdx] = lc44Helper(sa, pa, sIdx, pIdx - 1) || lc44Helper(sa, pa, sIdx - 1, pIdx);
+        }
+        return lc44Memo[sIdx][pIdx] = false;
     }
 
     // LC445
