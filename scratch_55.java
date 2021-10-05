@@ -14,6 +14,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC10
+    Boolean[][] lc10Memo;
+
+    public boolean isMatchLc10(String s, String p) {
+        lc10Memo = new Boolean[s.length() + 1][p.length() + 1];
+
+        return lc10Helper(s.toCharArray(), p.toCharArray(), 0, 0);
+    }
+
+    private boolean lc10Helper(char[] sa, char[] pa, int sIdx, int pIdx) {
+        if (pIdx >= pa.length) return sIdx >= sa.length;
+        if (lc10Memo[sIdx][pIdx] != null) return lc10Memo[sIdx][pIdx];
+        // 单匹配
+        boolean singleMatch = sIdx < sa.length && (sa[sIdx] == pa[pIdx] || pa[pIdx] == '.');
+
+        // 多个匹配
+        if (pIdx < pa.length - 1 && pa[pIdx + 1] == '*') {
+            // 匹配0次 || 匹配多次
+            return lc10Memo[sIdx][pIdx] = lc10Helper(sa, pa, sIdx, pIdx + 2) || (singleMatch && lc10Helper(sa, pa, sIdx + 1, pIdx));
+        }
+        return lc10Memo[sIdx][pIdx] = singleMatch && lc10Helper(sa, pa, sIdx + 1, pIdx + 1);
+    }
+
     // LC44 **
     Boolean[][] lc44Memo;
 
