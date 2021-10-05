@@ -38,30 +38,66 @@ class Scratch {
     }
 
     // LC44 **
-    Boolean[][] lc44Memo;
+    class Lc44Memo2 {
+        // LC44
+        Boolean[][] memo;
 
-    public boolean isMatch(String s, String p) {
-        lc44Memo = new Boolean[s.length() + 1][p.length() + 1];
-        return lc44Helper(s.toCharArray(), p.toCharArray(), s.length(), p.length());
-    }
+        public boolean isMatch(String s, String p) {
+            memo = new Boolean[s.length() + 1][p.length() + 1];
+            return helper(s.toCharArray(), p.toCharArray(), 0, 0);
+        }
 
-    private boolean lc44Helper(char[] sa, char[] pa, int sIdx, int pIdx) {
-        if (sIdx == 0 && pIdx == 0) return true;
-        if (sIdx != 0 && pIdx == 0) return false;
-        if (lc44Memo[sIdx][pIdx] != null) return lc44Memo[sIdx][pIdx];
-        if (sIdx == 0 && pIdx != 0) {
-            for (int i = pIdx; i >= 1; i--) {
-                if (pa[i - 1] != '*') return lc44Memo[sIdx][pIdx] = false;
+        private boolean helper(char[] sa, char[] pa, int sIdx, int pIdx) {
+            if (pIdx >= pa.length) return sIdx >= sa.length;
+            if (memo[sIdx][pIdx] != null) return memo[sIdx][pIdx];
+            if (sIdx >= sa.length) {
+                for (int i = pIdx; i < pa.length; i++) {
+                    if (pa[i] != '*') return memo[sIdx][pIdx] = false;
+                }
+                return memo[sIdx][pIdx] = true;
             }
-            return lc44Memo[sIdx][pIdx] = true;
+            if (pa[pIdx] == '?') {
+                return memo[sIdx][pIdx] = helper(sa, pa, sIdx + 1, pIdx + 1);
+            }
+            if (pa[pIdx] == '*') {
+                for (int i = sIdx; i <= sa.length; i++) {
+                    if (helper(sa, pa, i, pIdx + 1)) {
+                        return memo[sIdx][pIdx] = true;
+                    }
+                }
+            }
+            return memo[sIdx][pIdx] = sa[sIdx] == pa[pIdx] && helper(sa, pa, sIdx + 1, pIdx + 1);
         }
-        if (pa[pIdx - 1] == '?' || pa[pIdx - 1] == sa[sIdx - 1])
-            return lc44Memo[sIdx][pIdx] = lc44Helper(sa, pa, sIdx - 1, pIdx - 1);
-        if (pa[pIdx - 1] == '*') {
-            return lc44Memo[sIdx][pIdx] = lc44Helper(sa, pa, sIdx, pIdx - 1) || lc44Helper(sa, pa, sIdx - 1, pIdx);
-        }
-        return lc44Memo[sIdx][pIdx] = false;
     }
+
+
+    class Lc44Memo1 {
+        Boolean[][] lc44Memo;
+
+        public boolean isMatch(String s, String p) {
+            lc44Memo = new Boolean[s.length() + 1][p.length() + 1];
+            return lc44Helper(s.toCharArray(), p.toCharArray(), s.length(), p.length());
+        }
+
+        private boolean lc44Helper(char[] sa, char[] pa, int sIdx, int pIdx) {
+            if (sIdx == 0 && pIdx == 0) return true;
+            if (sIdx != 0 && pIdx == 0) return false;
+            if (lc44Memo[sIdx][pIdx] != null) return lc44Memo[sIdx][pIdx];
+            if (sIdx == 0 && pIdx != 0) {
+                for (int i = pIdx; i >= 1; i--) {
+                    if (pa[i - 1] != '*') return lc44Memo[sIdx][pIdx] = false;
+                }
+                return lc44Memo[sIdx][pIdx] = true;
+            }
+            if (pa[pIdx - 1] == '?' || pa[pIdx - 1] == sa[sIdx - 1])
+                return lc44Memo[sIdx][pIdx] = lc44Helper(sa, pa, sIdx - 1, pIdx - 1);
+            if (pa[pIdx - 1] == '*') {
+                return lc44Memo[sIdx][pIdx] = lc44Helper(sa, pa, sIdx, pIdx - 1) || lc44Helper(sa, pa, sIdx - 1, pIdx);
+            }
+            return lc44Memo[sIdx][pIdx] = false;
+        }
+    }
+
 
     // LC445
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
