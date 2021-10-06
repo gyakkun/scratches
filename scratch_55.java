@@ -7,11 +7,69 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.isMatch("", "******"));
+        System.out.println(s.thirdMax(new int[]{3, 2, 1}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC414
+    public int thirdMax(int[] nums) {
+        int count = 0;
+        long[] max = new long[3];
+        Arrays.fill(max, Long.MIN_VALUE);
+        for (int i : nums) {
+            if (count == 0) {
+                max[count++] = i;
+            } else if (count == 1) {
+                if (max[0] == i) continue;
+                if (max[0] < i) {
+                    max[1] = max[0];
+                    max[0] = i;
+                    count++;
+                } else {
+                    max[1] = i;
+                    count++;
+                    continue;
+                }
+            } else if (count == 2) {
+                if (max[0] == i || max[1] == i) continue;
+                if (max[0] < i) {
+                    max[2] = max[1];
+                    max[1] = max[0];
+                    max[0] = i;
+                    count++;
+                    continue;
+                } else if (max[1] < i) {
+                    max[2] = max[1];
+                    max[1] = i;
+                    count++;
+                    continue;
+                } else {
+                    max[2] = i;
+                    count++;
+                    continue;
+                }
+            } else {
+                if (max[0] == i || max[1] == i || max[2] == i) continue;
+                if (max[0] < i) {
+                    max[2] = max[1];
+                    max[1] = max[0];
+                    max[0] = i;
+                    continue;
+                } else if (max[1] < i) {
+                    max[2] = max[1];
+                    max[1] = i;
+                    continue;
+                } else if (max[2] < i) {
+                    max[2] = i;
+                    continue;
+                }
+            }
+        }
+        if (count == 3) return (int) max[2];
+        return (int) max[0];
     }
 
     // LC10
