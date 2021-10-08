@@ -937,3 +937,36 @@ class Lc1628 {
         // define your fields here
     }
 }
+
+// JZOF II 064 LC676
+class MagicDictionary {
+    Map<Integer, List<String>> map = new HashMap<>();
+
+    /**
+     * Initialize your data structure here.
+     */
+    public MagicDictionary() {
+
+    }
+
+    public void buildDict(String[] dictionary) {
+        for (String word : dictionary) {
+            map.putIfAbsent(word.length(), new ArrayList<>());
+            map.get(word.length()).add(word);
+        }
+    }
+
+    public boolean search(String searchWord) {
+        int len = searchWord.length();
+        if (!map.containsKey(len)) return false;
+        for (String word : map.get(len)) {
+            int count = 0;
+            for (int i = 0; i < len; i++) {
+                if (searchWord.charAt(i) != word.charAt(i)) count++;
+                if (count > 1) continue;
+            }
+            if (count == 1) return true;
+        }
+        return false;
+    }
+}
