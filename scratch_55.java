@@ -7,11 +7,40 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.reconstructMatrix(5, 5, new int[]{2, 1, 2, 0, 1, 0, 1, 2, 0, 1}));
+        System.out.println(s.canReach(new int[]{0, 3, 0, 6, 3, 3, 4}, 6));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1306
+    public boolean canReach(int[] arr, int start) {
+        if (arr[start] == 0) return true;
+        int len = arr.length;
+        boolean[] visited = new boolean[len];
+        Deque<Integer> q = new LinkedList<>();
+        q.offer(start);
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            if (visited[p]) continue;
+            visited[p] = true;
+            int forward = p + arr[p];
+            int backward = p - arr[p];
+            if (forward < len && !visited[forward]) {
+                if (arr[forward] == 0) return true;
+                q.offer(forward);
+            }
+            if (backward >= 0 && !visited[backward]) {
+                if (arr[backward] == 0) return true;
+                q.offer(backward);
+            }
+        }
+        // 实际上是BFS过程中不判断, 最后循环判断耗时更短
+        // for (int i = 0; i < len; i++) {
+        //     if (arr[i] == 0 && visited[i]) return true;
+        // }
+        return false;
     }
 
     // LC1253
