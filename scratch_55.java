@@ -762,3 +762,92 @@ class BrowserHistory {
         return history.get(ptr);
     }
 }
+
+// LC1628
+
+class Lc1628 {
+    class TreeBuilder {
+        Node buildTree(String[] postfix) {
+            Deque<Node> stack = new LinkedList<>();
+            for (String op : postfix) {
+                NodeType type;
+                NodeImpl cur;
+                switch (op) {
+                    case "+":
+                        type = NodeType.ADD;
+                        break;
+                    case "-":
+                        type = NodeType.SUBTRACT;
+                        break;
+                    case "*":
+                        type = NodeType.MULTIPLY;
+                        break;
+                    case "/":
+                        type = NodeType.DIVIDE;
+                        break;
+                    default:
+                        type = NodeType.NUMBER;
+                }
+                if (type == NodeType.NUMBER) {
+                    cur = new NodeImpl(NodeType.NUMBER, Integer.parseInt(op));
+                } else {
+                    cur = new NodeImpl(type);
+                    cur.right = stack.pop();
+                    cur.left = stack.pop();
+                }
+                stack.push(cur);
+            }
+            return stack.pop();
+        }
+    }
+
+
+    enum NodeType {
+        NUMBER,
+        ADD,
+        SUBTRACT,
+        DIVIDE,
+        MULTIPLY
+    }
+
+    class NodeImpl extends Node {
+        final NodeType type;
+        final int val;
+        Node left;
+        Node right;
+
+        public NodeImpl(NodeType type, int val) {
+            this.type = type;
+            this.val = val;
+        }
+
+        public NodeImpl(NodeType type) {
+            this.type = type;
+            this.val = 0;
+        }
+
+        @Override
+        public int evaluate() {
+            switch (type) {
+                case NUMBER:
+                    return val;
+                case ADD:
+                    return left.evaluate() + right.evaluate();
+                case SUBTRACT:
+                    return left.evaluate() - right.evaluate();
+                case DIVIDE:
+                    return left.evaluate() / right.evaluate();
+                case MULTIPLY:
+                    return left.evaluate() * right.evaluate();
+                default:
+                    throw new AssertionError();
+            }
+        }
+    }
+
+
+    abstract class Node {
+        public abstract int evaluate();
+        // define your fields here
+    }
+}
