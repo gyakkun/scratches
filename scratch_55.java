@@ -9,44 +9,42 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.frogPosition(
-                7,
-                new int[][]{{2, 1}, {3, 1}, {4, 2}, {5, 1}, {6, 4}, {7, 3}},
-                5,
-                5
-        ));
+        System.out.println(s.minSkips(new int[]{7, 3, 5, 2, 351, 23, 5, 61, 23, 3, 5, 36, 5},100,10));
+//        System.out.println(s.minSkips(new int[]{1, 3, 2}, 4, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1883 TLE
-    Map<Integer, Map<Double, Integer>> memo;
+    // LC1883 TBD
+    Long[][] memo;
 
     public int minSkips(int[] dist, int speed, int hoursBefore) {
-        memo = new HashMap<>();
-        int result = helper(0, 0d, dist, speed, hoursBefore);
-        if (result >= Integer.MAX_VALUE / 2) return -1;
-        return result;
+        int n = dist.length;
+        memo = new Long[n + 1][n + 1];
+//        for (int i = 0; i < n; i++) {
+//            dist[i] *= speed;
+//        }
+        for (int i = 0; i <= n; i++) {
+            if (helper(n, i, dist, speed) <= (hoursBefore + 0l) * (speed + 0l)) return i;
+        }
+        return -1;
     }
 
-    private int helper(int curGap, double timing, int[] dist, int speed, int hoursBefore) {
-        if (curGap >= dist.length) {
-            if (timing <= hoursBefore) return 0;
-            return Integer.MAX_VALUE / 2;
+    private long helper(int numRoad, int countSkip, int[] dist, long speed) { // 返回的是耗时
+        if (numRoad == 0) {
+            return 0;
         }
-        if (memo.containsKey(curGap) && memo.containsKey(timing)) return memo.get(curGap).get(timing);
-        memo.putIfAbsent(curGap, new HashMap<>());
-        // 不跳过
-        double nextStart = Math.ceil(timing);
-        double drivingTime = (dist[curGap] + 0d) / (speed + 0d);
-        int unskip = helper(curGap + 1, nextStart + drivingTime, dist, speed, hoursBefore);
-        // 跳过
-        int skip = 1 + helper(curGap + 1, timing + drivingTime, dist, speed, hoursBefore);
-        int result = Math.min(unskip, skip);
-        memo.get(curGap).put(timing, result);
-        return result;
+        if (memo[numRoad][countSkip] != null) return memo[numRoad][countSkip];
+        long result = Long.MAX_VALUE / 2;
+        if (numRoad != countSkip) {
+            result = Math.min(result, (((helper(numRoad - 1, countSkip, dist, speed) + dist[numRoad - 1] / speed) / speed) + 1) * speed);
+        }
+        if (countSkip != 0) {
+            result = Math.min(result, (helper(numRoad - 1, countSkip - 1, dist, speed) + dist[numRoad - 1]));
+        }
+        return memo[numRoad][countSkip] = result;
     }
 
     // LC1652
