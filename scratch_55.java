@@ -43,6 +43,62 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1706
+    public int[] findBall(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[] result = new int[grid[0].length];
+        Arrays.fill(result, -1);
+        // 1:左上-右下 -1:右上-左下
+        // 在一个格子中的位置: 上-0 下-1
+        // (#,#) 表示(格子状态,上下状态)
+        //  1,0: 看右边: 如果右边是1, 通行, 变为(1,1); 如果右边是-1或碰壁, 卡死
+        //  1,1: 看下边: 如果下边是1, 通行, 变为(1,0); 如果下边是-1, 变为(-1,0); 如果当前行为最后一行, 返回列号
+        // -1,0: 看左边: 如果左边是-1, 通行, 变为(-1,1); 如果左边是1或者碰壁, 卡死
+        // -1,1: 看下边: 如果下边是1, 通行, 变为(1,0); 如果下边是-1, 通行, 变为(-1,0); 如果当前行为最后一行, 返回列号
+        loop:
+        for (int i = 0; i < n; i++) {
+            int col = i, row = 0;
+            int upDown = 0;
+            int gridStatus = grid[0][i];
+            while (row < m) {
+                if (gridStatus == 1) {
+                    if (upDown == 0) { // look right
+                        if (col + 1 >= n) continue loop;
+                        if (grid[row][col + 1] == -1) continue loop;
+                        col = col + 1;
+                        upDown = 1;
+                    } else if (upDown == 1) { // look down
+                        if (row == m - 1) {
+                            result[i] = col;
+                            break;
+                        } else {
+                            gridStatus = grid[row + 1][col];
+                            row++;
+                            upDown = 0;
+                        }
+                    }
+                } else if (gridStatus == -1) {
+                    if (upDown == 0) { // look left
+                        if (col - 1 < 0) continue loop;
+                        if (grid[row][col - 1] == 1) continue loop;
+                        col = col - 1;
+                        upDown = 1;
+                    } else if (upDown == 1) { // look down
+                        if (row == m - 1) {
+                            result[i] = col;
+                            break;
+                        } else {
+                            gridStatus = grid[row + 1][col];
+                            row++;
+                            upDown = 0;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     // LC988
     StringBuilder lc988Sb;
     String lc988Result;
