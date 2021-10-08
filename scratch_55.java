@@ -43,6 +43,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC988
+    StringBuilder sb;
+    TreeSet<String> ts;
+
+    public String smallestFromLeaf(TreeNode root) {
+        sb = new StringBuilder();
+        ts = new TreeSet<>();
+        helper(root);
+        return ts.first();
+    }
+
+    private void helper(TreeNode root) {
+        sb.append((char) ('a' + root.val));
+        if (root.left == null && root.right == null) {
+            String result = new StringBuilder(sb).reverse().toString();
+            ts.add(result);
+            sb.deleteCharAt(sb.length() - 1);
+            return;
+        }
+        if (root.left != null) {
+            helper(root.left);
+        }
+        if (root.right != null) {
+            helper(root.right);
+        }
+        sb.deleteCharAt(sb.length() - 1);
+    }
+
     // LC187
     public List<String> findRepeatedDnaSequences(String s) {
         if (s.length() < 10) return new ArrayList<>();
