@@ -21,6 +21,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1883 TLE
+    Map<Integer, Map<Double, Integer>> memo;
+
+    public int minSkips(int[] dist, int speed, int hoursBefore) {
+        memo = new HashMap<>();
+        int result = helper(0, 0d, dist, speed, hoursBefore);
+        if (result >= Integer.MAX_VALUE / 2) return -1;
+        return result;
+    }
+
+    private int helper(int curGap, double timing, int[] dist, int speed, int hoursBefore) {
+        if (curGap >= dist.length) {
+            if (timing <= hoursBefore) return 0;
+            return Integer.MAX_VALUE / 2;
+        }
+        if (memo.containsKey(curGap) && memo.containsKey(timing)) return memo.get(curGap).get(timing);
+        memo.putIfAbsent(curGap, new HashMap<>());
+        // 不跳过
+        double nextStart = Math.ceil(timing);
+        double drivingTime = (dist[curGap] + 0d) / (speed + 0d);
+        int unskip = helper(curGap + 1, nextStart + drivingTime, dist, speed, hoursBefore);
+        // 跳过
+        int skip = 1 + helper(curGap + 1, timing + drivingTime, dist, speed, hoursBefore);
+        int result = Math.min(unskip, skip);
+        memo.get(curGap).put(timing, result);
+        return result;
+    }
+
     // LC1652
     public int[] decrypt(int[] code, int k) {
         if (k == 0) return new int[code.length];
