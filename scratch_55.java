@@ -9,7 +9,7 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.minSkips(new int[]{7, 3, 5, 2, 351, 23, 5, 61, 23, 3, 5, 36, 5},100,10));
+        System.out.println(s.minSkips(new int[]{7, 3, 5, 2, 351, 23, 5, 61, 23, 3, 5, 36, 5}, 100, 10));
 //        System.out.println(s.minSkips(new int[]{1, 3, 2}, 4, 2));
 
 
@@ -17,34 +17,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1883 TBD
+    // LC1883 Hard ** 精度问题 转换为整数运算
     Long[][] memo;
 
     public int minSkips(int[] dist, int speed, int hoursBefore) {
         int n = dist.length;
         memo = new Long[n + 1][n + 1];
-//        for (int i = 0; i < n; i++) {
-//            dist[i] *= speed;
-//        }
         for (int i = 0; i <= n; i++) {
             if (helper(n, i, dist, speed) <= (hoursBefore + 0l) * (speed + 0l)) return i;
         }
         return -1;
     }
 
-    private long helper(int numRoad, int countSkip, int[] dist, long speed) { // 返回的是耗时
-        if (numRoad == 0) {
+    private long helper(int roadsRemain, int countSkip, int[] dist, long speed) { // 返回的是耗时
+        if (roadsRemain == 0) {
             return 0;
         }
-        if (memo[numRoad][countSkip] != null) return memo[numRoad][countSkip];
+        if (memo[roadsRemain][countSkip] != null) return memo[roadsRemain][countSkip];
         long result = Long.MAX_VALUE / 2;
-        if (numRoad != countSkip) {
-            result = Math.min(result, (((helper(numRoad - 1, countSkip, dist, speed) + dist[numRoad - 1] / speed) / speed) + 1) * speed);
+        if (roadsRemain > countSkip) { // 间隔和道路数量一一对应, 不应该出现间隔数量比道路多/一样多的情况
+            result = Math.min(result, ((helper(roadsRemain - 1, countSkip, dist, speed) + dist[roadsRemain - 1] - 1) / speed + 1) * speed);
         }
         if (countSkip != 0) {
-            result = Math.min(result, (helper(numRoad - 1, countSkip - 1, dist, speed) + dist[numRoad - 1]));
+            result = Math.min(result, helper(roadsRemain - 1, countSkip - 1, dist, speed) + dist[roadsRemain - 1]);
         }
-        return memo[numRoad][countSkip] = result;
+        return memo[roadsRemain][countSkip] = result;
     }
 
     // LC1652
