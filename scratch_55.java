@@ -4,6 +4,35 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
+        BrowserHistory bh = new BrowserHistory("jrbilt.com");
+        bh.visit("uiza.com");
+        bh.forward(3);
+        bh.forward(3);
+        bh.visit("fveyl.com");
+        bh.visit("hyhqfqf.com");
+        bh.back(3);
+        bh.visit("cccs.com");
+        bh.visit("bivz.com");
+        bh.forward(6);
+        bh.back(1);
+        bh.visit("cmbw.com");
+        bh.visit("iywwwfn.com");
+        bh.visit("sktbhdx.com");
+        bh.forward(8);
+        bh.forward(10);
+        bh.visit("bskj.com");
+        bh.visit("thw.com");
+        bh.back(6);
+        bh.visit("hgesj.com");
+        bh.forward(6);
+        bh.visit("ctb.com");
+        bh.visit("fllnc.com");
+        bh.visit("fs.com");
+        bh.back(7);
+
+        System.out.println(bh.back(1));
+        System.out.println(bh.back(1));
+        System.out.println(bh.forward(1));
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
@@ -690,5 +719,46 @@ class ListNode {
     ListNode(int val, ListNode next) {
         this.val = val;
         this.next = next;
+    }
+}
+
+// LC1472
+class BrowserHistory {
+    LinkedList<String> history;
+    int ptr = -1;
+
+    public BrowserHistory(String homepage) {
+        history = new LinkedList<>();
+        history.add(homepage);
+        ptr++;
+    }
+
+    public void visit(String url) {
+        if (ptr != history.size() - 1) {
+            int times = history.size() - 1 - ptr;
+            for (int i = 0; i < times; i++) {
+                history.removeLast();
+            }
+        }
+        history.add(url);
+        ptr = history.size() - 1;
+    }
+
+    public String back(int steps) {
+        if (ptr - steps < 0) {
+            ptr = 0;
+            return history.getFirst();
+        }
+        ptr -= steps;
+        return history.get(ptr);
+    }
+
+    public String forward(int steps) {
+        if (ptr + steps >= history.size()) {
+            ptr = history.size() - 1;
+            return history.getLast();
+        }
+        ptr += steps;
+        return history.get(ptr);
     }
 }
