@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -7,11 +9,59 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.canReach(new int[]{0, 3, 0, 6, 3, 3, 4}, 6));
+        System.out.println(s.frogPosition(
+                7,
+                new int[][]{{2, 1}, {3, 1}, {4, 2}, {5, 1}, {6, 4}, {7, 3}},
+                5,
+                5
+        ));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1377
+    public double frogPosition(int n, int[][] edges, int t, int target) {
+        List<List<Integer>> mtx = new ArrayList<>();
+        Deque<Integer> q = new LinkedList<>();
+        double[] possibility = new double[n + 1];
+        boolean[] visited = new boolean[n + 1];
+        for (int i = 0; i <= n; i++) {
+            mtx.add(new ArrayList<>());
+        }
+        for (int[] e : edges) {
+            mtx.get(e[0]).add(e[1]);
+            mtx.get(e[1]).add(e[0]);
+        }
+        q.offer(1);
+        possibility[1] = 1d;
+        while (!q.isEmpty() && t-- != 0) {
+            int qs = q.size();
+            double[] nextPos = new double[n + 1];
+            for (int i = 0; i < qs; i++) {
+                int p = q.poll();
+                visited[p] = true; // 这里不能根据是否曾经访问剪枝, 因为有可能一直停留在本位置
+                int canJumpCount = 0;
+                for (int next : mtx.get(p)) {
+                    if (visited[next]) continue;
+                    canJumpCount++;
+                }
+                if (canJumpCount == 0) {
+                    nextPos[p] += possibility[p];
+                    q.offer(p); // 一直停留在本位置
+                    continue;
+                }
+                for (int next : mtx.get(p)) {
+                    if (!visited[next]) {
+                        nextPos[next] += possibility[p] * ((1 + 0d) / (canJumpCount + 0d));
+                        q.offer(next);
+                    }
+                }
+            }
+            possibility = nextPos;
+        }
+        return possibility[target];
     }
 
     // LC1306
