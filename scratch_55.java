@@ -4,35 +4,6 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        BrowserHistory bh = new BrowserHistory("jrbilt.com");
-        bh.visit("uiza.com");
-        bh.forward(3);
-        bh.forward(3);
-        bh.visit("fveyl.com");
-        bh.visit("hyhqfqf.com");
-        bh.back(3);
-        bh.visit("cccs.com");
-        bh.visit("bivz.com");
-        bh.forward(6);
-        bh.back(1);
-        bh.visit("cmbw.com");
-        bh.visit("iywwwfn.com");
-        bh.visit("sktbhdx.com");
-        bh.forward(8);
-        bh.forward(10);
-        bh.visit("bskj.com");
-        bh.visit("thw.com");
-        bh.back(6);
-        bh.visit("hgesj.com");
-        bh.forward(6);
-        bh.visit("ctb.com");
-        bh.visit("fllnc.com");
-        bh.visit("fs.com");
-        bh.back(7);
-
-        System.out.println(bh.back(1));
-        System.out.println(bh.back(1));
-        System.out.println(bh.forward(1));
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
@@ -41,6 +12,22 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1784
+    public boolean checkOnesSegment(String s) {
+        int seg = 0;
+        char prev = '\0';
+        for (char c : s.toCharArray()) {
+            if (prev == '\0' || prev == '0') {
+                if (c == '1') {
+                    seg++;
+                    if (seg > 1) return false;
+                }
+            }
+            prev = c;
+        }
+        return true;
     }
 
     // LC1706
