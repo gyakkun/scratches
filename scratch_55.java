@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.fusesource.hawtbuf.codec.VarSignedIntegerCodec;
 
 import java.util.*;
 
@@ -19,6 +20,51 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1557
+    public List<Integer> findSmallestSetOfVertices(int n, List<List<Integer>> edges) {
+        List<List<Integer>> mtx = new ArrayList<>(n);
+        int[] indegree = new int[n], outdegree = new int[n];
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        for (List<Integer> e : edges) {
+            mtx.get(e.get(0)).add(e.get(1));
+            indegree[e.get(1)]++;
+            outdegree[e.get(0)]++;
+        }
+        Set<Integer> unreachable = new HashSet<>();
+        Set<Integer> candidate = new HashSet<>();
+        boolean[] visited = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0 && outdegree[i] == 0) {
+                unreachable.add(i);
+                continue;
+            }
+            if (indegree[i] == 0) {
+                candidate.add(i);
+            }
+        }
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i : candidate) {
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            int p = stack.pop();
+            if (visited[p]) continue;
+            visited[p] = true;
+            for (int next : mtx.get(p)) {
+                if (candidate.contains(next)) {
+                    candidate.remove(next);
+                }
+                if (!visited[next]) {
+                    stack.push(next);
+                }
+            }
+        }
+        List<Integer> result = new ArrayList<>();
+        result.addAll(unreachable);
+        result.addAll(candidate);
+        return result;
     }
 
     // LC1377
