@@ -14,6 +14,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC187
+    public List<String> findRepeatedDnaSequences(String s) {
+        if (s.length() < 10) return new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
+        Set<String> result = new HashSet<>();
+        char[] ca = s.toCharArray();
+        // A C G T 0 1 2 3
+        int[] alphabet = new int[256];
+        alphabet['A'] = 0;
+        alphabet['C'] = 1;
+        alphabet['G'] = 2;
+        alphabet['T'] = 3;
+        int hash = 0, fullMask = (1 << 20) - 1;
+        for (int i = 0; i < 10; i++) {
+            hash = (hash << 2) | (alphabet[ca[i]]);
+        }
+        set.add(hash);
+        for (int i = 10; i < ca.length; i++) {
+            hash = ((hash << 2) | (alphabet[ca[i]])) & fullMask;
+            if (set.contains(hash)) {
+                result.add(s.substring(i - 10 + 1, i + 1));
+            } else {
+                set.add(hash);
+            }
+        }
+        return new ArrayList<>(result);
+    }
+
     // LC414
     public int thirdMax(int[] nums) {
         int count = 0;
