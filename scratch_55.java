@@ -963,7 +963,7 @@ class MagicDictionary {
             int count = 0;
             for (int i = 0; i < len; i++) {
                 if (searchWord.charAt(i) != word.charAt(i)) count++;
-                if (count > 1) continue;
+                if (count > 1) break;
             }
             if (count == 1) return true;
         }
