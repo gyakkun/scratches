@@ -7,11 +7,44 @@ class Scratch {
 
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.thirdMax(new int[]{3, 2, 1}));
+        System.out.println(s.reconstructMatrix(5, 5, new int[]{2, 1, 2, 0, 1, 0, 1, 2, 0, 1}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1253
+    public List<List<Integer>> reconstructMatrix(int upper, int lower, int[] colsum) {
+        if (upper > colsum.length || lower > colsum.length || Arrays.stream(colsum).sum() != upper + lower) {
+            return new ArrayList<>();
+        }
+        List<Integer> up = new ArrayList<>(), low = new ArrayList<>();
+        for (int i : colsum) {
+            if (i == 2) {
+                upper--;
+                lower--;
+                up.add(1);
+                low.add(1);
+                if (upper < 0 || lower < 0) {
+                    return new ArrayList<>();
+                }
+            } else if (i == 1) {
+                if (upper > lower) {
+                    upper--;
+                    up.add(1);
+                    low.add(0);
+                } else {
+                    lower--;
+                    up.add(0);
+                    low.add(1);
+                }
+            } else {
+                up.add(0);
+                low.add(0);
+            }
+        }
+        return Arrays.asList(up, low);
     }
 
     // LC1784
