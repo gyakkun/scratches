@@ -21,6 +21,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1652
+    public int[] decrypt(int[] code, int k) {
+        if (k == 0) return new int[code.length];
+        int n = code.length;
+        int[] sums = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (k > 0) {
+                for (int j = 1; j <= k; j++) {
+                    sums[i] += code[(i + j) % n];
+                }
+            } else {
+                for (int j = 1; j <= (-k); j++) {
+                    sums[i] += code[(i - j + n) % n];
+                }
+            }
+        }
+        return sums;
+    }
+
     // LC1827
     public int minOperations(int[] nums) {
         int result = 0, prev = nums[0];
