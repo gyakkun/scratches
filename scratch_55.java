@@ -44,22 +44,24 @@ class Scratch {
     }
 
     // LC988
-    StringBuilder sb;
-    TreeSet<String> ts;
+    StringBuilder lc988Sb;
+    String lc988Result;
 
     public String smallestFromLeaf(TreeNode root) {
-        sb = new StringBuilder();
-        ts = new TreeSet<>();
+        lc988Result = ((char) ('z' + 1) + "");
+        lc988Sb = new StringBuilder();
         helper(root);
-        return ts.first();
+        return lc988Result;
     }
 
     private void helper(TreeNode root) {
-        sb.append((char) ('a' + root.val));
+        lc988Sb.append((char) ('a' + root.val));
         if (root.left == null && root.right == null) {
-            String result = new StringBuilder(sb).reverse().toString();
-            ts.add(result);
-            sb.deleteCharAt(sb.length() - 1);
+            String tmp = new StringBuilder(lc988Sb).reverse().toString();
+            if (tmp.compareTo(lc988Result) < 0) {
+                lc988Result = tmp;
+            }
+            lc988Sb.deleteCharAt(lc988Sb.length() - 1);
             return;
         }
         if (root.left != null) {
@@ -68,7 +70,7 @@ class Scratch {
         if (root.right != null) {
             helper(root.right);
         }
-        sb.deleteCharAt(sb.length() - 1);
+        lc988Sb.deleteCharAt(lc988Sb.length() - 1);
     }
 
     // LC187
