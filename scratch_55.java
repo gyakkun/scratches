@@ -7,6 +7,12 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        RangeModule rm = new RangeModule();
+        rm.addRange(10, 20);
+        rm.removeRange(14, 16);
+        rm.queryRange(10, 14);
+        rm.queryRange(13, 15);
+        rm.queryRange(16, 17);
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
         System.out.println(s.minSkips(new int[]{7, 3, 5, 2, 351, 23, 5, 61, 23, 3, 5, 36, 5}, 100, 10));
@@ -1232,5 +1238,49 @@ class SummaryRanges {
             result[ctr++] = new int[]{p.getKey(), p.getValue()};
         }
         return result;
+    }
+}
+
+// LC715
+class RangeModule {
+    TreeMap<Integer, Integer> tm = new TreeMap<>();
+
+    public RangeModule() {
+    }
+
+    public void addRange(int left, int right) {
+        Iterator<Map.Entry<Integer, Integer>> iterator = tm.tailMap(left).entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Integer> e = iterator.next();
+            if (right < e.getValue()) break;
+            left = Math.min(left, e.getValue());
+            right = Math.max(right, e.getKey());
+            iterator.remove();
+        }
+        tm.put(right, left);
+    }
+
+    public boolean queryRange(int left, int right) {
+        Map.Entry<Integer, Integer> higherEntry = tm.higherEntry(left);
+        return higherEntry != null && higherEntry.getValue() <= left && right <= higherEntry.getKey();
+    }
+
+    public void removeRange(int left, int right) {
+        addRange(left, right);
+        Iterator<Map.Entry<Integer, Integer>> iterator = tm.tailMap(left).entrySet().iterator();
+        int leftBorder = Integer.MAX_VALUE, rightBorder = Integer.MIN_VALUE;
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Integer> e = iterator.next();
+            if (e.getValue() > right) break;
+            leftBorder = Math.min(leftBorder, e.getValue());
+            rightBorder = Math.max(rightBorder, e.getKey());
+            iterator.remove();
+        }
+        if (leftBorder < left) {
+            tm.put(left, leftBorder);
+        }
+        if (rightBorder > right) {
+            tm.put(rightBorder, right);
+        }
     }
 }
