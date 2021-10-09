@@ -17,6 +17,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC436
+    public int[] findRightInterval(int[][] intervals) {
+        Map<Integer, Integer> idxMap = new HashMap<>();
+        TreeSet<int[]> ts = new TreeSet<>(Comparator.comparingInt(o -> o[0]));
+        int[] result = new int[intervals.length];
+        Arrays.fill(result, -1);
+        for (int i = 0; i < intervals.length; i++) {
+            idxMap.put(intervals[i][0], i);
+            ts.add(intervals[i]);
+        }
+        for (int i = 0; i < intervals.length; i++) {
+            int[] ceil = ts.ceiling(new int[]{intervals[i][1], -1});
+            if (ceil != null) {
+                result[i] = idxMap.get(ceil[0]);
+            }
+        }
+        return result;
+    }
+
     // LC228
     public List<String> summaryRanges(int[] nums) {
         List<String> result = new ArrayList<>();
