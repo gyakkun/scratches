@@ -15,12 +15,27 @@ class Scratch {
         rm.queryRange(16, 17);
 
 //        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.minSkips(new int[]{7, 3, 5, 2, 351, 23, 5, 61, 23, 3, 5, 36, 5}, 100, 10));
+        System.out.println(s.indexPairs("thestoryofleetcodeandme",
+                new String[]{"story", "fleet", "leetcode"}));
 //        System.out.println(s.minSkips(new int[]{1, 3, 2}, 4, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1065
+    public int[][] indexPairs(String text, String[] words) {
+        List<int[]> result = new ArrayList<>();
+        for (String w : words) {
+            int startIdx = 0;
+            while ((startIdx = text.indexOf(w, startIdx)) != -1) {
+                result.add(new int[]{startIdx, startIdx + w.length() - 1});
+                startIdx++;
+            }
+        }
+        Collections.sort(result, (o1, o2) -> o1[0] == o2[0] ? o1[1] - o2[1] : o1[0] - o2[0]);
+        return result.toArray(new int[result.size()][]);
     }
 
     // LC436
