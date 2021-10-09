@@ -1299,3 +1299,26 @@ class RangeModule {
         }
     }
 }
+
+// LC1476
+class SubrectangleQueries {
+
+    List<int[]> history = new ArrayList<>();
+    int[][] rectangle;
+
+    public SubrectangleQueries(int[][] rectangle) {
+        this.rectangle = rectangle;
+    }
+
+    public void updateSubrectangle(int row1, int col1, int row2, int col2, int newValue) {
+        history.add(new int[]{row1, col1, row2, col2, newValue});
+    }
+
+    public int getValue(int row, int col) {
+        for (int i = history.size() - 1; i >= 0; i--) {
+            int[] h = history.get(i);
+            if (h[0] <= row && h[1] <= col && h[2] >= row && h[3] >= col) return h[4];
+        }
+        return rectangle[row][col];
+    }
+}
