@@ -17,31 +17,56 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC228
+    public List<String> summaryRanges(int[] nums) {
+        List<String> result = new ArrayList<>();
+        if (nums.length == 0) return result;
+        int prev = nums[0], startVal = nums[0], n = nums.length;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] == prev + 1) {
+                prev = nums[i];
+            } else {
+                if (startVal != prev) {
+                    result.add("" + startVal + "->" + prev);
+                } else {
+                    result.add("" + prev);
+                }
+                startVal = prev = nums[i];
+            }
+        }
+        if (startVal != prev) {
+            result.add("" + startVal + "->" + prev);
+        } else {
+            result.add("" + prev);
+        }
+        return result;
+    }
+
     // LC1883 Hard ** 精度问题 转换为整数运算
-    Long[][] memo;
+    Long[][] lc1883Memo;
 
     public int minSkips(int[] dist, int speed, int hoursBefore) {
         int n = dist.length;
-        memo = new Long[n + 1][n + 1];
+        lc1883Memo = new Long[n + 1][n + 1];
         for (int i = 0; i <= n; i++) {
-            if (helper(n, i, dist, speed) <= (hoursBefore + 0l) * (speed + 0l)) return i;
+            if (lc1883Helper(n, i, dist, speed) <= (hoursBefore + 0l) * (speed + 0l)) return i;
         }
         return -1;
     }
 
-    private long helper(int roadsRemain, int countSkip, int[] dist, long speed) { // 返回的是耗时
+    private long lc1883Helper(int roadsRemain, int countSkip, int[] dist, long speed) { // 返回的是耗时
         if (roadsRemain == 0) {
             return 0;
         }
-        if (memo[roadsRemain][countSkip] != null) return memo[roadsRemain][countSkip];
+        if (lc1883Memo[roadsRemain][countSkip] != null) return lc1883Memo[roadsRemain][countSkip];
         long result = Long.MAX_VALUE / 2;
         if (roadsRemain > countSkip) { // 间隔和道路数量一一对应, 不应该出现间隔数量比道路多/一样多的情况
-            result = Math.min(result, ((helper(roadsRemain - 1, countSkip, dist, speed) + dist[roadsRemain - 1] - 1) / speed + 1) * speed);
+            result = Math.min(result, ((lc1883Helper(roadsRemain - 1, countSkip, dist, speed) + dist[roadsRemain - 1] - 1) / speed + 1) * speed);
         }
         if (countSkip != 0) {
-            result = Math.min(result, helper(roadsRemain - 1, countSkip - 1, dist, speed) + dist[roadsRemain - 1]);
+            result = Math.min(result, lc1883Helper(roadsRemain - 1, countSkip - 1, dist, speed) + dist[roadsRemain - 1]);
         }
-        return memo[roadsRemain][countSkip] = result;
+        return lc1883Memo[roadsRemain][countSkip] = result;
     }
 
     // LC1652
@@ -275,11 +300,11 @@ class Scratch {
     public String smallestFromLeaf(TreeNode root) {
         lc988Result = ((char) ('z' + 1) + "");
         lc988Sb = new StringBuilder();
-        helper(root);
+        lc1883Helper(root);
         return lc988Result;
     }
 
-    private void helper(TreeNode root) {
+    private void lc1883Helper(TreeNode root) {
         lc988Sb.append((char) ('a' + root.val));
         if (root.left == null && root.right == null) {
             String tmp = new StringBuilder(lc988Sb).reverse().toString();
@@ -290,10 +315,10 @@ class Scratch {
             return;
         }
         if (root.left != null) {
-            helper(root.left);
+            lc1883Helper(root.left);
         }
         if (root.right != null) {
-            helper(root.right);
+            lc1883Helper(root.right);
         }
         lc988Sb.deleteCharAt(lc988Sb.length() - 1);
     }
