@@ -7,21 +7,28 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        RangeModule rm = new RangeModule();
-        rm.addRange(10, 20);
-        rm.removeRange(14, 16);
-        rm.queryRange(10, 14);
-        rm.queryRange(13, 15);
-        rm.queryRange(16, 17);
 
-//        System.out.println(s.minTapsGreedy(7, new int[]{1, 2, 1, 0, 2, 1, 0, 1}));
-        System.out.println(s.indexPairs("thestoryofleetcodeandme",
-                new String[]{"story", "fleet", "leetcode"}));
-//        System.out.println(s.minSkips(new int[]{1, 3, 2}, 4, 2));
+        System.out.println(s.arrangeCoins(1804289383));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC441 注意精度
+    public int arrangeCoins(int n) {
+        if (n == 0) return 0;
+        int lo = 1, hi = (int) Math.sqrt(2d * (n + 0d)) + 1;
+        while (lo < hi) {
+            int mid = (hi + lo + 1) / 2;
+            long result = (1l + mid) * (mid+0l) / 2l;
+            if (result <= n) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return lo;
     }
 
     // LC1065
