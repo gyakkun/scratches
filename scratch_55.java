@@ -15,6 +15,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2000
+    public String reversePrefix(String word, char ch) {
+        char[] ca = word.toCharArray();
+        int targetIdx = -1;
+        for (int i = 0; i < ca.length; i++) {
+            if (ca[i] == ch) {
+                targetIdx = i;
+                break;
+            }
+        }
+        if (targetIdx == -1) return word;
+        for (int i = 0; i <= (targetIdx / 2); i++) {
+            char tmp = ca[i];
+            ca[i] = ca[targetIdx - i];
+            ca[targetIdx - i] = tmp;
+        }
+        return new String(ca);
+    }
+
     // LC1999
     int result = Integer.MAX_VALUE;
 
