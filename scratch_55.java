@@ -15,6 +15,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1554
+    public boolean differByOne(String[] dict) {
+        Set<Integer> set31 = new HashSet<>(), set29 = new HashSet<>();
+        for (String w : dict) {
+            char[] ca = w.toCharArray();
+            for (int i = 0; i < ca.length; i++) {
+                char tmp = ca[i];
+                ca[i] = '*';
+                int hash31 = wordHash(ca, 31), hash29 = wordHash(ca, 29);
+                boolean flag31 = set31.add(hash31), flag29 = set29.add(hash29);
+                if (!flag31 && !flag29) {
+                    return true;
+                }
+                ca[i] = tmp;
+            }
+        }
+        return false;
+    }
+
+    private int wordHash(char[] ca, int base) {
+        final int mod = 1000000007; // *号用30代替?
+        long result = 0;
+        long accu = 1;
+        for (char c : ca) {
+            if (c != '*') {
+                result += accu * (c - 'a');
+                result %= mod;
+            } else {
+                result += (base - 1) * accu;
+                result %= mod;
+            }
+            accu *= base;
+            accu %= mod;
+        }
+        return (int) result % mod;
+    }
+
     // LC29 **
     public int divide(int dividend, int divisor) {
         if (dividend == Integer.MIN_VALUE && divisor == -1) {
