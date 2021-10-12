@@ -16,11 +16,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 022 LC142
+    public ListNode detectCycle(ListNode head) {
+        // a b c
+        // b+c = 环长
+        // slow fast 在 b 相遇
+        // fast 在环上走了 (b+c)*k + b 路程, slow在环上走了 b 路程
+        // 又 (b+c)*k+b+a = 2*(b+a)
+        // 得 b+a = (b+c)*k, a = (b+c)*k-b = c + (k-1)(b+c)
+        ListNode slow = head, fast = head;
+        while (fast != null) {
+            fast = fast.next;
+            if (fast != null) fast = fast.next;
+            else return null;
+            slow = slow.next;
+
+            if (fast == slow) {
+                ListNode chase = head;
+                while (slow != chase) {
+                    slow = slow.next;
+                    chase = chase.next;
+                }
+                return chase;
+            }
+        }
+        return null;
+    }
+
     // LC1700 O(n) time O(1) space
     public int countStudents(int[] students, int[] sandwiches) {
         int n = students.length;
         int[] statistic = new int[2];
-        for(int i:students) statistic[i]++;
+        for (int i : students) statistic[i]++;
         int count = 0;
         while (count < n && statistic[sandwiches[count]] > 0) {
             statistic[sandwiches[count]]--;
