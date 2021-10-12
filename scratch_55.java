@@ -8,11 +8,38 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.divide(119, 30));
+        System.out.println(s.minSubarray(new int[]{8, 32, 31, 18, 34, 20, 21, 13, 1, 27, 23, 22, 11, 15, 30, 4, 2},
+                148));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1590
+    public int minSubarray(int[] nums, int p) {
+        int n = nums.length;
+        long[] prefix = new long[n + 1];
+        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + nums[i];
+        if (prefix[n] % p == 0) return 0;
+        long sum = prefix[n];
+        int theRemainder = (int) (sum % p);
+        int result = Integer.MAX_VALUE;
+        Map<Integer, Pair<Long, Integer>> remainderSumMap = new HashMap<>();
+        for (int i = 1; i <= n; i++) {
+            long sumSoFar = prefix[i];
+            int remainder = (int) (sumSoFar % p);
+            if (remainder == theRemainder) {
+                result = Math.min(result, i);
+            }
+            if (remainderSumMap.containsKey((remainder + p - theRemainder) % p)) {
+                int possible = i - remainderSumMap.get((remainder + p - theRemainder) % p).getValue();
+                result = Math.min(result, possible);
+            }
+            remainderSumMap.put(remainder, new Pair<>(sumSoFar, i));
+        }
+        if (result == Integer.MAX_VALUE || result == n) return -1;
+        return result;
     }
 
     // LC1554
