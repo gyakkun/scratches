@@ -17,26 +17,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC2009
+    // LC2009 Hard
     public int minOperationsLc2009(int[] nums) {
         int n = nums.length, result = Integer.MAX_VALUE;
-        TreeSet<Integer> ts = new TreeSet<>();
-        for (int i : nums) ts.add(i);
-        Iterator<Integer> it = ts.iterator();
-        TreeMap<Integer, Integer> reverseMap = new TreeMap<>();
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        for (int i : nums) tm.put(i, null);
         int ctr = 0;
-        for (int i : ts) {
-            reverseMap.put(i, ctr++);
+        for (int i : tm.keySet()) {
+            tm.put(i, ctr++);
         }
-        int[] count = new int[ts.size()];
-        for (int i : nums) {
-            count[reverseMap.get(i)] = 1;
-        }
-        int[] prefix = new int[ts.size() + 1];
-        for (int i = 0; i < count.length; i++) prefix[i + 1] = prefix[i] + count[i];
+        Iterator<Map.Entry<Integer, Integer>> it = tm.entrySet().iterator();
 
         while (it.hasNext()) {
-            int next = it.next();
+            Map.Entry<Integer, Integer> entry = it.next();
+            int next = entry.getKey();
             // 上界
             int upperBound;
             if (Integer.MAX_VALUE - n + 1 < next) {
@@ -45,12 +39,12 @@ class Scratch {
                 upperBound = next + n - 1;
             }
 
-            int left = reverseMap.get(next);
-            Integer right = ts.floor(upperBound);
-            if (right == null) right = ts.size();
-            else right = reverseMap.get(right) + 1;
+            int left = tm.get(next);
+            Integer right = tm.floorKey(upperBound);
+            if (right == null) right = tm.size();
+            else right = tm.get(right) + 1;
 
-            result = Math.min(result, n - (prefix[right] - prefix[left]));
+            result = Math.min(result, n - (right - left));
         }
         return result;
     }
