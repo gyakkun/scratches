@@ -15,6 +15,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1463 Hard
+    Integer[][][] memo;
+
+    public int cherryPickup(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        memo = new Integer[n + 1][n + 1][m + 1];
+        return helper(0, n - 1, 0, grid);
+    }
+
+    private int helper(int r1Col, int r2Col, int row, int[][] grid) {
+        if (row == grid.length) return Integer.MIN_VALUE;
+        if (memo[r1Col][r2Col][row] != null) return memo[r1Col][r2Col][row];
+        int result = 0;
+        for (int i = -1; i < 2; i++) {
+            int r1NextCol = r1Col + i;
+            if (r1NextCol >= 0 && r1NextCol < grid[0].length) {
+                for (int j = -1; j < 2; j++) {
+                    int r2NextCol = r2Col + j;
+                    if (r2NextCol >= 0 && r2NextCol < grid[0].length) {
+                        result = Math.max(result, helper(r1NextCol, r2NextCol, row + 1, grid));
+                    }
+                }
+            }
+        }
+        if (r1Col == r2Col) result += grid[row][r1Col];
+        else result += grid[row][r1Col] + grid[row][r2Col];
+        return memo[r1Col][r2Col][row] = result;
+    }
+
     // LC1351 O(m+n)
     public int countNegatives(int[][] grid) {
         int m = grid.length, n = grid[0].length;
