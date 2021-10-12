@@ -8,11 +8,29 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.findInteger(3, 4, 2));
+        System.out.println(
+                s.countNegatives(new int[][]{{5, 1, 0}, {-5, -5, -5}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1351 O(m+n)
+    public int countNegatives(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int col = n - 1, row = 0;
+        int result = 0;
+        while (col >= 0 && row < m) {
+            while (col >= 0 && row < m && grid[row][col] >= 0) {
+                row++;
+            }
+            if (row == m) break;
+            // now the current row is negative
+            result += m - row;
+            col--;
+        }
+        return result;
     }
 
     // LC2000
