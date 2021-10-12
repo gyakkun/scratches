@@ -8,12 +8,42 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minSubarray(new int[]{8, 32, 31, 18, 34, 20, 21, 13, 1, 27, 23, 22, 11, 15, 30, 4, 2},
-                148));
+        System.out.println(s.findInteger(3, 4, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1999
+    int result = Integer.MAX_VALUE;
+
+    public int findInteger(int k, int digit1, int digit2) {
+        helper(0, digit1, digit2, k);
+        if (result == Integer.MAX_VALUE) return -1;
+        return result;
+    }
+
+    private void helper(int cur, int d1, int d2, int k) {
+        if (cur > k && cur % k == 0) {
+            result = Math.min(result, cur);
+            return;
+        }
+        if (cur >= 1e9) return;
+
+        if (cur == 0) {
+            if (d1 != 0) {
+                helper(d1, d1, d2, k);
+            }
+            if (d2 != 0) {
+                helper(d2, d1, d2, k);
+            }
+        } else {
+            if (cur <= Integer.MAX_VALUE / 10) {
+                helper(cur * 10 + d1, d1, d2, k);
+                helper(cur * 10 + d2, d1, d2, k);
+            }
+        }
     }
 
     // JZOF II 022 LC142
