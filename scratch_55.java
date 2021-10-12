@@ -8,11 +8,51 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minSubarray(new int[]{3, 1, 4, 2}, 6));
+//        System.out.println(s.minOperationsLc2009(new int[]{1, 10, 100, 1000}));
+//        System.out.println(s.minOperationsLc2009(new int[]{4, 2, 5, 3}));
+        System.out.println(s.minOperationsLc2009(new int[]{8, 5, 9, 9, 8, 4}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC2009
+    public int minOperationsLc2009(int[] nums) {
+        int n = nums.length, result = Integer.MAX_VALUE;
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i : nums) ts.add(i);
+        Iterator<Integer> it = ts.iterator();
+        TreeMap<Integer, Integer> reverseMap = new TreeMap<>();
+        int ctr = 0;
+        for (int i : ts) {
+            reverseMap.put(i, ctr++);
+        }
+        int[] count = new int[ts.size()];
+        for (int i : nums) {
+            count[reverseMap.get(i)] = 1;
+        }
+        int[] prefix = new int[ts.size() + 1];
+        for (int i = 0; i < count.length; i++) prefix[i + 1] = prefix[i] + count[i];
+
+        while (it.hasNext()) {
+            int next = it.next();
+            // 上界
+            int upperBound;
+            if (Integer.MAX_VALUE - n + 1 < next) {
+                upperBound = Integer.MAX_VALUE;
+            } else {
+                upperBound = next + n - 1;
+            }
+
+            int left = reverseMap.get(next);
+            Integer right = ts.floor(upperBound);
+            if (right == null) right = ts.size();
+            else right = reverseMap.get(right) + 1;
+
+            result = Math.min(result, n - (prefix[right] - prefix[left]));
+        }
+        return result;
     }
 
     // Interview 08.10
