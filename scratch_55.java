@@ -16,29 +16,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1700
+    // LC1700 O(n) time O(1) space
     public int countStudents(int[] students, int[] sandwiches) {
         int n = students.length;
-        Deque<Integer> stack = new LinkedList<>(), queue = new LinkedList<>();
-        for (int i = 0; i < n; i++) {
-            stack.add(sandwiches[i]);
-            queue.offerFirst(students[i]);
+        int[] statistic = new int[2];
+        for(int i:students) statistic[i]++;
+        int count = 0;
+        while (count < n && statistic[sandwiches[count]] > 0) {
+            statistic[sandwiches[count]]--;
+            count++;
         }
-        int prev = 0;
-        while (queue.size() != prev) {
-            int qs = queue.size();
-            for (int i = 0; i < qs; i++) {
-                if (queue.peek() == stack.peek()) {
-                    stack.pop();
-                    queue.poll();
-                } else {
-                    int p = queue.poll();
-                    queue.offer(p);
-                }
-            }
-            prev = qs;
-        }
-        return stack.size();
+        return n - count;
     }
 
     // LC1590
