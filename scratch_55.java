@@ -15,6 +15,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 08.10
+    public int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
+        int[][] directions = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int m = image.length, n = image[0].length, origColor = image[sr][sc];
+        boolean[][] visited = new boolean[m][n];
+        Deque<int[]> q = new LinkedList<>();
+        q.offer(new int[]{sr, sc});
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            if (visited[p[0]][p[1]]) continue;
+            visited[p[0]][p[1]] = true;
+            image[p[0]][p[1]] = newColor;
+            for (int[] d : directions) {
+                int nr = p[0] + d[0], nc = p[1] + d[1];
+                if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc] && image[nr][nc] == origColor) {
+                    q.offer(new int[]{nr, nc});
+                }
+            }
+        }
+        return image;
+    }
+
     // LC1463 Hard
     Integer[][][] lc1463Memo;
 
