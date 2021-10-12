@@ -16,6 +16,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1700
+    public int countStudents(int[] students, int[] sandwiches) {
+        int n = students.length;
+        Deque<Integer> stack = new LinkedList<>(), queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            stack.add(sandwiches[i]);
+            queue.offerFirst(students[i]);
+        }
+        int prev = 0;
+        while (queue.size() != prev) {
+            int qs = queue.size();
+            for (int i = 0; i < qs; i++) {
+                if (queue.peek() == stack.peek()) {
+                    stack.pop();
+                    queue.poll();
+                } else {
+                    int p = queue.poll();
+                    queue.offer(p);
+                }
+            }
+            prev = qs;
+        }
+        return stack.size();
+    }
+
     // LC1590
     public int minSubarray(int[] nums, int p) {
         int n = nums.length;
