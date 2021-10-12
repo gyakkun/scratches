@@ -16,17 +16,17 @@ class Scratch {
     }
 
     // LC1463 Hard
-    Integer[][][] memo;
+    Integer[][][] lc1463Memo;
 
     public int cherryPickup(int[][] grid) {
         int m = grid.length, n = grid[0].length;
-        memo = new Integer[n + 1][n + 1][m + 1];
-        return helper(0, n - 1, 0, grid);
+        lc1463Memo = new Integer[n + 1][n + 1][m + 1];
+        return lc1463Helper(0, n - 1, 0, grid);
     }
 
-    private int helper(int r1Col, int r2Col, int row, int[][] grid) {
+    private int lc1463Helper(int r1Col, int r2Col, int row, int[][] grid) {
         if (row == grid.length) return Integer.MIN_VALUE;
-        if (memo[r1Col][r2Col][row] != null) return memo[r1Col][r2Col][row];
+        if (lc1463Memo[r1Col][r2Col][row] != null) return lc1463Memo[r1Col][r2Col][row];
         int result = 0;
         for (int i = -1; i < 2; i++) {
             int r1NextCol = r1Col + i;
@@ -34,14 +34,14 @@ class Scratch {
                 for (int j = -1; j < 2; j++) {
                     int r2NextCol = r2Col + j;
                     if (r2NextCol >= 0 && r2NextCol < grid[0].length) {
-                        result = Math.max(result, helper(r1NextCol, r2NextCol, row + 1, grid));
+                        result = Math.max(result, lc1463Helper(r1NextCol, r2NextCol, row + 1, grid));
                     }
                 }
             }
         }
         if (r1Col == r2Col) result += grid[row][r1Col];
         else result += grid[row][r1Col] + grid[row][r2Col];
-        return memo[r1Col][r2Col][row] = result;
+        return lc1463Memo[r1Col][r2Col][row] = result;
     }
 
     // LC1351 O(m+n)
@@ -81,32 +81,32 @@ class Scratch {
     }
 
     // LC1999
-    int result = Integer.MAX_VALUE;
+    int lc1999Result = Integer.MAX_VALUE;
 
     public int findInteger(int k, int digit1, int digit2) {
-        helper(0, digit1, digit2, k);
-        if (result == Integer.MAX_VALUE) return -1;
-        return result;
+        lc1999Helper(0, digit1, digit2, k);
+        if (lc1999Result == Integer.MAX_VALUE) return -1;
+        return lc1999Result;
     }
 
-    private void helper(int cur, int d1, int d2, int k) {
+    private void lc1999Helper(int cur, int d1, int d2, int k) {
         if (cur > k && cur % k == 0) {
-            result = Math.min(result, cur);
+            lc1999Result = Math.min(lc1999Result, cur);
             return;
         }
         if (cur >= 1e9) return;
 
         if (cur == 0) {
             if (d1 != 0) {
-                helper(d1, d1, d2, k);
+                lc1999Helper(d1, d1, d2, k);
             }
             if (d2 != 0) {
-                helper(d2, d1, d2, k);
+                lc1999Helper(d2, d1, d2, k);
             }
         } else {
             if (cur <= Integer.MAX_VALUE / 10) {
-                helper(cur * 10 + d1, d1, d2, k);
-                helper(cur * 10 + d2, d1, d2, k);
+                lc1999Helper(cur * 10 + d1, d1, d2, k);
+                lc1999Helper(cur * 10 + d2, d1, d2, k);
             }
         }
     }
