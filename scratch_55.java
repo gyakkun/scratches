@@ -8,11 +8,34 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.arrangeCoins(1804289383));
+        System.out.println(s.divide(119, 30));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC29 **
+    public int divide(int dividend, int divisor) {
+        if (dividend == Integer.MIN_VALUE && divisor == -1) {
+            return Integer.MAX_VALUE;
+        }
+
+        boolean positive = (dividend > 0 && divisor > 0) || (dividend < 0 && divisor < 0);
+        int result = 0;
+        dividend = -Math.abs(dividend); // 唯一会溢出的情况是 dividend 取到了Integer.MIN_VAL, 已经在上面处理
+        divisor = -Math.abs(divisor);
+        while (dividend <= divisor) { // 当分子大于分母
+            int tmp = divisor; // 快速试乘
+            int ctr = 1;
+            while (dividend - tmp <= tmp) { // 分子减分母大于分母时
+                tmp <<= 1;
+                ctr <<= 1;
+            }
+            result += ctr;
+            dividend -= tmp;
+        }
+        return positive ? result : -result;
     }
 
     // LC441 注意精度
@@ -21,7 +44,7 @@ class Scratch {
         int lo = 1, hi = (int) Math.sqrt(2d * (n + 0d)) + 1;
         while (lo < hi) {
             int mid = (hi + lo + 1) / 2;
-            long result = (1l + mid) * (mid+0l) / 2l;
+            long result = (1l + mid) * (mid + 0l) / 2l;
             if (result <= n) {
                 lo = mid;
             } else {
