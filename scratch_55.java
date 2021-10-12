@@ -8,8 +8,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(
-                s.countNegatives(new int[][]{{5, 1, 0}, {-5, -5, -5}}));
+        System.out.println(s.minSubarray(new int[]{3, 1, 4, 2}, 6));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -124,26 +123,28 @@ class Scratch {
     }
 
     // LC1590
-    public int minSubarray(int[] nums, int p) {
+    public int minSubarray(int[] nums, int mod) {
         int n = nums.length;
-        long[] prefix = new long[n + 1];
-        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + nums[i];
-        if (prefix[n] % p == 0) return 0;
-        long sum = prefix[n];
-        int theRemainder = (int) (sum % p);
+        long sum = 0;
+        for (int i : nums) sum += i;
+        if (sum % mod == 0) return 0;
+        long sumSoFar = 0;
+        int target = (int) (sum % mod);
         int result = Integer.MAX_VALUE;
-        Map<Integer, Pair<Long, Integer>> remainderSumMap = new HashMap<>();
+        Map<Integer, Integer> remainderSumMap = new HashMap<>();
         for (int i = 1; i <= n; i++) {
-            long sumSoFar = prefix[i];
-            int remainder = (int) (sumSoFar % p);
-            if (remainder == theRemainder) {
+            if (nums[i - 1] == target) return 1;
+            sumSoFar = sumSoFar + nums[i - 1];
+            int remainder = (int) (sumSoFar % mod);
+            if (remainder == target) {
                 result = Math.min(result, i);
             }
-            if (remainderSumMap.containsKey((remainder + p - theRemainder) % p)) {
-                int possible = i - remainderSumMap.get((remainder + p - theRemainder) % p).getValue();
-                result = Math.min(result, possible);
+            int key = ((remainder - target + mod) % mod);
+            Integer victim;
+            if ((victim = remainderSumMap.get(key)) != null) {
+                result = Math.min(result, i - victim);
             }
-            remainderSumMap.put(remainder, new Pair<>(sumSoFar, i));
+            remainderSumMap.put(remainder, i);
         }
         if (result == Integer.MAX_VALUE || result == n) return -1;
         return result;
