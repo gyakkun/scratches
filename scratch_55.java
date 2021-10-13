@@ -10,11 +10,60 @@ class Scratch {
 
 //        System.out.println(s.minOperationsLc2009(new int[]{1, 10, 100, 1000}));
 //        System.out.println(s.minOperationsLc2009(new int[]{4, 2, 5, 3}));
-        System.out.println(s.minOperationsLc2009(new int[]{8, 5, 9, 9, 8, 4}));
-
-
+//        System.out.println(s.checkMove(new char[][]{{'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', 'B', '.', '.', 'W', '.', '.', '.'}, {'.', '.', 'W', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'W', 'B', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', 'B', 'W', '.', '.'}, {'.', '.', '.', '.', '.', '.', 'W', '.'}, {'.', '.', '.', '.', '.', '.', '.', 'B'}}, 4, 4, 'W'));
+//        System.out.println(s.checkMove(new char[][]{{'.', '.', '.', 'B', '.', '.', '.', '.'}, {'.', '.', '.', 'W', '.', '.', '.', '.'}, {'.', '.', '.', 'W', '.', '.', '.', '.'}, {'.', '.', '.', 'W', '.', '.', '.', '.'}, {'W', 'B', 'B', '.', 'W', 'W', 'W', 'B'}, {'.', '.', '.', 'B', '.', '.', '.', '.'}, {'.', '.', '.', 'B', '.', '.', '.', '.'}, {'.', '.', '.', 'W', '.', '.', '.', '.'}}, 4, 3, 'B'));
+        System.out.println(s.checkMove(new char[][]{
+                        {'B', 'B', 'B', '.', 'W', 'W', 'B', 'W'},
+                        {'B', 'B', '.', 'B', '.', 'B', 'B', 'B'},
+                        {'.', 'W', '.', '.', 'B', '.', 'B', 'W'},
+                        {'B', 'W', '.', 'W', 'B', '.', 'B', '.'},
+                        {'B', 'W', 'W', 'B', 'W', '.', 'B', 'B'},
+                        {'.', '.', 'W', '.', '.', 'W', '.', '.'},
+                        {'W', '.', 'W', 'B', '.', 'W', 'W', 'B'},
+                        {'B', 'B', 'W', 'W', 'B', 'W', '.', '.'}},
+                5,
+                6,
+                'B'));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1958
+    public boolean checkMove(char[][] board, int rMove, int cMove, char color) {
+        int m = board.length, n = board[0].length;
+        int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
+        // 四个方向
+        for (int[] d : directions) {
+            char middle, endpoint;
+            int nr = rMove + d[0], nc = cMove + d[1];
+            // 如果这个方向无路可走
+            if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                continue;
+            }
+            middle = board[nr][nc];
+            if (middle == '.') {
+                continue;
+            }
+            endpoint = color;
+            if (middle == endpoint) {
+                continue;
+            }
+            int steps = 2;
+            while (nr + d[0] >= 0 && nr + d[0] < m && nc + d[1] >= 0 && nc + d[1] < n) {
+                nr += d[0];
+                nc += d[1];
+                steps++;
+                if (board[nr][nc] != middle) break;
+            }
+            if (steps < 3) {
+                continue;
+            }
+            if (board[nr][nc] != endpoint) {
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
     // LC2009 Hard
