@@ -1714,3 +1714,42 @@ class SubrectangleQueries {
         return rectangle[row][col];
     }
 }
+
+// JZOF 41 LC295
+class MedianFinder {
+    // 约定: 最大堆的堆顶存中位数
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Comparator.reverseOrder());
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>(Comparator.naturalOrder());
+
+    /**
+     * initialize your data structure here.
+     */
+    public MedianFinder() {
+
+    }
+
+    public void addNum(int num) {
+        if (maxHeap.size() == 0) {
+            maxHeap.offer(num);
+        } else {
+            if (num > maxHeap.peek()) {
+                minHeap.offer(num);
+            } else {
+                maxHeap.offer(num);
+            }
+        }
+
+        while (maxHeap.size() > minHeap.size()) {
+            minHeap.offer(maxHeap.poll());
+        }
+
+        while (minHeap.size() > maxHeap.size()) {
+            maxHeap.offer(minHeap.poll());
+        }
+    }
+
+    public double findMedian() {
+        if (maxHeap.size() > minHeap.size()) return maxHeap.peek();
+        return (maxHeap.peek() + minHeap.peek() + 0d) / 2d;
+    }
+}
