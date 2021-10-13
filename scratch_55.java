@@ -16,6 +16,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC386
+    public List<Integer> lexicalOrder(int n) {
+        List<Integer> result = new ArrayList<>(n);
+        for (int i = 1; i <= 9; i++) {
+            if (i > n) break;
+            result.add(i);
+            lc386Helper(i, n, result);
+        }
+        return result;
+    }
+
+    private void lc386Helper(int prefix, int n, List<Integer> result) {
+        prefix *= 10;
+        for (int i = 0; i <= 9; i++) {
+            if (prefix + i > n) break;
+            result.add(prefix + i);
+            lc386Helper(prefix + i, n, result);
+        }
+    }
+
     // LC1898
     public int maximumRemovals(String s, String p, int[] removable) {
         int lo = 0, hi = removable.length;
