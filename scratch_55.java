@@ -16,6 +16,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 04 LC240
+    public boolean findNumberIn2DArray(int[][] matrix, int target) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return false;
+        int m = matrix.length, n = matrix[0].length;
+        int col = n - 1, row = 0;
+        while (col >= 0 && row < m) {
+            if (matrix[row][col] == target) return true;
+            if (matrix[row][col] < target) row++;
+            else col--;
+        }
+        return false;
+    }
+
     // LC386
     public List<Integer> lexicalOrder(int n) {
         List<Integer> result = new ArrayList<>(n);
