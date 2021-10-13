@@ -8,31 +8,54 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.minOperationsLc2009(new int[]{1, 10, 100, 1000}));
-//        System.out.println(s.minOperationsLc2009(new int[]{4, 2, 5, 3}));
-//        System.out.println(s.checkMove(new char[][]{{'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', 'B', '.', '.', 'W', '.', '.', '.'}, {'.', '.', 'W', '.', '.', '.', '.', '.'}, {'.', '.', '.', 'W', 'B', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', 'B', 'W', '.', '.'}, {'.', '.', '.', '.', '.', '.', 'W', '.'}, {'.', '.', '.', '.', '.', '.', '.', 'B'}}, 4, 4, 'W'));
-//        System.out.println(s.checkMove(new char[][]{{'.', '.', '.', 'B', '.', '.', '.', '.'}, {'.', '.', '.', 'W', '.', '.', '.', '.'}, {'.', '.', '.', 'W', '.', '.', '.', '.'}, {'.', '.', '.', 'W', '.', '.', '.', '.'}, {'W', 'B', 'B', '.', 'W', 'W', 'W', 'B'}, {'.', '.', '.', 'B', '.', '.', '.', '.'}, {'.', '.', '.', 'B', '.', '.', '.', '.'}, {'.', '.', '.', 'W', '.', '.', '.', '.'}}, 4, 3, 'B'));
-        System.out.println(s.checkMove(new char[][]{
-                        {'B', 'B', 'B', '.', 'W', 'W', 'B', 'W'},
-                        {'B', 'B', '.', 'B', '.', 'B', 'B', 'B'},
-                        {'.', 'W', '.', '.', 'B', '.', 'B', 'W'},
-                        {'B', 'W', '.', 'W', 'B', '.', 'B', '.'},
-                        {'B', 'W', 'W', 'B', 'W', '.', 'B', 'B'},
-                        {'.', '.', 'W', '.', '.', 'W', '.', '.'},
-                        {'W', '.', 'W', 'B', '.', 'W', 'W', 'B'},
-                        {'B', 'B', 'W', 'W', 'B', 'W', '.', '.'}},
-                5,
-                6,
-                'B'));
+        System.out.println(s.maximumRemovals("abcacb",
+                "ab",
+                new int[]{3, 1, 0}));
+
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1898
+    public int maximumRemovals(String s, String p, int[] removable) {
+        int lo = 0, hi = removable.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (check(s, p, removable, mid)) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return lo;
+    }
+
+    private boolean check(String s, String p, int[] removable, int k) {
+        if (s.length() - k < p.length()) return false;
+        Set<Integer> idxSet = new HashSet<>(k);
+        for (int i = 0; i < k; i++) idxSet.add(removable[i]);
+        int sptr = 0, pptr = 0;
+        while (pptr != p.length()) {
+            if (sptr == s.length()) return false;
+            if (idxSet.contains(sptr)) {
+                sptr++;
+                continue;
+            }
+            if (s.charAt(sptr) == p.charAt(pptr)) {
+                sptr++;
+                pptr++;
+            } else {
+                sptr++;
+            }
+        }
+        return true;
     }
 
     // LC1958
     public boolean checkMove(char[][] board, int rMove, int cMove, char color) {
         int m = board.length, n = board[0].length;
         int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
-        // 四个方向
+        // 8个方向
         for (int[] d : directions) {
             char middle, endpoint;
             int nr = rMove + d[0], nc = cMove + d[1];
