@@ -17,6 +17,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1673 长度为K的字典序最小的子序列 单调栈 **
+    public int[] mostCompetitive(int[] nums, int k) {
+        if (k == nums.length) return nums;
+        if (k == 1) return new int[]{Arrays.stream(nums).min().getAsInt()};
+        int n = nums.length;
+        Deque<Integer> stack = new LinkedList<>(); // 单调递增栈
+        int removable = n - k; // 最多只能移除 n-k个, 否则不足k个数字; 移除即出栈
+        for (int i = 0; i < n; i++) {
+            while (removable > 0 && !stack.isEmpty() && nums[i] < stack.peek()) {
+                stack.pop();
+                removable--;
+            }
+            stack.push(nums[i]);
+        }
+        while (stack.size() > k) stack.pop();
+        int[] result = new int[k];
+        for (int i = 0; i < k; i++) {
+            result[k - 1 - i] = stack.pop();
+        }
+        return result;
+    }
+
     // LC1669
     public ListNode mergeInBetween(ListNode list1, int a, int b, ListNode list2) {
         ListNode dummy = new ListNode(-1);
