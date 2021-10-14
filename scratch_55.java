@@ -10,85 +10,31 @@ class Scratch {
 
 //        System.out.println(s.numSquarefulPerms(new int[]{13949, 64411, 26920, 5204, 2177, 23617, 44128, 3455, 47315, 40706, 45874, 22858}));
 //        System.out.println(s.numSquarefulPerms(new int[]{1, 17, 8}));
-//        System.out.println(s.numSquarefulPerms(new int[]{1, 1, 8, 1, 8}));
-        System.out.println(s.numSquarefulPerms(new int[]{5, 11, 5, 4, 5}));
+        System.out.println(s.numSquarefulPerms(new int[]{1, 1, 8, 1, 8}));
+//        System.out.println(s.numSquarefulPerms(new int[]{5, 11, 5, 4, 5}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC996 WA: 朴素的TSP DP无法解决中途的分歧和重复的排列; 加入去重也不能解决分歧导致的多个结果变成一个
-    int result = 0;
+    // LC996
+    int lc996Result = 0;
 
     public int numSquarefulPerms(int[] nums) {
-        if (nums.length < 2) return 0;
-        int n = nums.length, result = 0;
-        int fullMask = (1 << n) - 1;
-        // dp[mask][end]表示选择了mask这么多个数, 以end结尾的排列能否构成正方形排列
-        boolean[][] dp = new boolean[1 << n][n];
-        int[][] parent = new int[1 << n][n];
-        for (int i = 0; i <= fullMask; i++) {
-            Arrays.fill(parent[i], -1);
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int sum = nums[i] + nums[j];
-                int sqrt = (int) Math.sqrt(sum);
-                if (sqrt * sqrt != sum) continue;
-                int mask = 0;
-                mask |= (1 << i);
-                mask |= (1 << j);
-                dp[mask][i] = dp[mask][j] = true;
-                parent[mask][i] = j;
-                parent[mask][j] = i;
-            }
-        }
-        for (int mask = 3; mask <= fullMask; mask++) {
-            if (Integer.bitCount(mask) < 2) continue;
-            for (int selected = 0; selected < n; selected++) {
-                if (((mask >> selected) & 1) == 1) {
-                    int parentMask = mask ^ (1 << selected);
-                    for (int prevEnd = 0; prevEnd < n; prevEnd++) {
-                        if (((parentMask >> prevEnd) & 1) == 1) {
-                            int sum = nums[selected] + nums[prevEnd];
-                            int sqrt = (int) Math.sqrt(sum);
-                            boolean flag = sqrt * sqrt == sum;
-                            if (dp[parentMask][prevEnd] && flag && parent[mask][selected] == -1) {
-                                dp[mask][selected] = true;
-                                parent[mask][selected] = prevEnd;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Set<String> arrangeSet = new HashSet<>();
-        boolean[] last = dp[fullMask];
-        for (int i = 0; i < n; i++) {
-            if (dp[fullMask][i]) {
-                StringBuilder sb = new StringBuilder();
-                int mask = fullMask, end = i;
-                while (parent[mask][end] != -1) {
-                    sb.append(nums[end]);
-                    sb.append(",");
-
-                    int prev = parent[mask][end];
-                    mask ^= (1 << end);
-                    end = prev;
-                }
-                sb.append(nums[end]);
-                if (arrangeSet.add(sb.toString())) result++;
-            }
-        }
-
-        return result;
+        lc996Helper(nums, 0);
+        return lc996Result;
     }
 
     // 朴素全排列
-    private void perm(int[] arr, int cur) {
+    private void lc996Helper(int[] arr, int cur) {
         if (cur == arr.length - 1) {
-            if (check(arr)) result++;
+            if (lc996Check(arr)) lc996Result++;
             return;
+        }
+        if (cur > 1) {
+            int sum = arr[cur - 1] + arr[cur - 2];
+            int sqrt = (int) Math.sqrt(sum);
+            if (sqrt * sqrt != sum) return;
         }
         Set<Integer> set = new HashSet<>();
         for (int i = cur; i < arr.length; i++) {
@@ -96,14 +42,14 @@ class Scratch {
             int tmp = arr[cur];
             arr[cur] = arr[i];
             arr[i] = tmp;
-            perm(arr, cur + 1);
+            lc996Helper(arr, cur + 1);
             tmp = arr[cur];
             arr[cur] = arr[i];
             arr[i] = tmp;
         }
     }
 
-    private boolean check(int[] arr) {
+    private boolean lc996Check(int[] arr) {
         for (int i = 1; i < arr.length; i++) {
             int sum = arr[i] + arr[i - 1];
             int sqrt = (int) Math.sqrt(sum);
