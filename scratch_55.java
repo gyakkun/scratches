@@ -17,6 +17,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1042
+    public int[] gardenNoAdj(int n, int[][] paths) {
+        List<List<Integer>> mtx = new ArrayList<>(n);
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            mtx.add(new ArrayList<>(3));
+        }
+        for (int[] p : paths) {
+            mtx.get(p[0] - 1).add(p[1] - 1);
+            mtx.get(p[1] - 1).add(p[0] - 1);
+        }
+        for (int i = 0; i < n; i++) {
+            if (result[i] == 0) {
+                Deque<Integer> q = new LinkedList<>();
+                q.offer(i);
+                while (!q.isEmpty()) {
+                    int p = q.poll();
+                    boolean[] notAvail = new boolean[5];
+                    for (int neighbour : mtx.get(p)) {
+                        if (result[neighbour] != 0) {
+                            notAvail[result[neighbour]] = true;
+                        } else {
+                            q.offer(neighbour);
+                        }
+                    }
+                    for (int j = 1; j <= 4; j++) {
+                        if (!notAvail[j]) {
+                            result[p] = j;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     // LC1673 长度为K的字典序最小的子序列 单调栈 **
     public int[] mostCompetitive(int[] nums, int k) {
         if (k == nums.length) return nums;
