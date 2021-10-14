@@ -16,6 +16,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 069 LC852 **
+    public int peakIndexInMountainArray(int[] arr) {
+        int n = arr.length;
+        int lo = 1, hi = n - 1, max = 1; // 搜索范围不包括两个端点
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (arr[mid] > arr[mid + 1]) {
+                max = mid; // 在一个右肩位置, 往左继续搜索
+                hi = mid - 1;
+            } else {
+                lo = mid + 1; // 否则在左肩位置, 或者平原地带, 往右搜索
+            }
+        }
+        return max;
+    }
+
     // JZOF 04 LC240
     public boolean findNumberIn2DArray(int[][] matrix, int target) {
         if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return false;
