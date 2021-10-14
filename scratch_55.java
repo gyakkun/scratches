@@ -9,19 +9,39 @@ class Scratch {
 
 
         System.out.println(s.numSquarefulPerms(new int[]{13949, 64411, 26920, 5204, 2177, 23617, 44128, 3455, 47315, 40706, 45874, 22858}));
+//        System.out.println(s.numSquarefulPerms(new int[]{1, 17, 8}));
+//        System.out.println(s.numSquarefulPerms(new int[]{1, 1, 8, 1, 8}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
     // LC996 TLE
+    int result = 0;
+
     public int numSquarefulPerms(int[] nums) {
         Arrays.sort(nums);
-        int result = 0;
-        do {
-            if (check(nums)) result++;
-        } while (nextPerm(nums));
+        perm(nums, 0);
         return result;
+    }
+
+    // 朴素全排列
+    private void perm(int[] arr, int cur) {
+        if (cur == arr.length - 1) {
+            if (check(arr)) result++;
+            return;
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int i = cur; i < arr.length; i++) {
+            if (!set.add(arr[i])) continue;
+            int tmp = arr[cur];
+            arr[cur] = arr[i];
+            arr[i] = tmp;
+            perm(arr, cur + 1);
+            tmp = arr[cur];
+            arr[cur] = arr[i];
+            arr[i] = tmp;
+        }
     }
 
     private boolean check(int[] arr) {
