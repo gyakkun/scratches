@@ -47,7 +47,7 @@ class Scratch {
                     }
                 }
                 if (nums[lo] > target) {
-                    factor++;
+                    factor = (nums[lo] / luckyDraw) + 1;
                     continue;
                 }
                 freq[factor - 1] += (lo - prevEnd + 1) * sameNumLen;
