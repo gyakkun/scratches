@@ -17,6 +17,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1669
+    public ListNode mergeInBetween(ListNode list1, int a, int b, ListNode list2) {
+        ListNode dummy = new ListNode(-1);
+        dummy.next = list1;
+        if (a == 0) dummy.next = list2;
+        ListNode prev = null, cur = list1;
+        ListNode firstHalfEnd = new ListNode(-1), secondHalfStart = new ListNode(-1);
+        int idx = 0;
+        for (int i = 0; i <= b; i++) {
+            if (idx == a) {
+                firstHalfEnd = prev;
+            }
+            if (idx == b) {
+                secondHalfStart = cur.next;
+            }
+            prev = cur;
+            cur = cur.next;
+            idx++;
+        }
+
+        firstHalfEnd.next = list2;
+        cur = list2;
+        while (cur.next != null) cur = cur.next;
+        cur.next = secondHalfStart;
+        return dummy.next;
+    }
+
     // LC996
     int lc996Result = 0;
 
@@ -1450,6 +1477,7 @@ class Scratch {
         public boolean hasNext() {
             return cur != null || !stack.isEmpty();
         }
+
     }
 
     // JZOF 26
