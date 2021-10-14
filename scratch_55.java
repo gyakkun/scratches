@@ -23,44 +23,28 @@ class Scratch {
         int max = Integer.MIN_VALUE;
         for (int i : nums) max = Math.max(max, i);
         int maxDigit = Integer.SIZE - Integer.numberOfLeadingZeros(max);
-        // radix sort
-        List<List<Integer>>[] radix = new List[2];
-        radix[0] = new ArrayList<>(2);
-        radix[1] = new ArrayList<>(2);
-        radix[0].add(new ArrayList<>(n));
-        radix[0].add(new ArrayList<>(n));
-        radix[1].add(new ArrayList<>(n));
-        radix[1].add(new ArrayList<>(n));
-        // LSD
-        for (int i : nums) {
-            if ((i & 1) == 1) {//奇数
-                radix[0].get(1).add(i);
-            } else {
-                radix[0].get(0).add(i);
+        int[] buf = new int[n];
+        int count0 = 0;
+        for (int i = 0; i < maxDigit; i++) {
+            count0 = 0;
+            for (int j : nums) {
+                if (((j >> i) & 1) == 0) count0++;
             }
-        }
-        for (int i = 1; i <= maxDigit; i++) {
-            for (List<Integer> list : radix[(i - 1) % 2]) {
-                for (int j : list) {
-                    if (((j >> i) & 1) == 1) {
-                        radix[i % 2].get(1).add(j);
-                    } else {
-                        radix[i % 2].get(0).add(j);
-                    }
+            int idx0 = 0, idx1 = count0;
+            for (int j : nums) {
+                if (((j >> i) & 1) == 0) {
+                    buf[idx0++] = j;
+                } else {
+                    buf[idx1++] = j;
                 }
             }
-            radix[(i - 1) % 2].get(0).clear();
-            radix[(i - 1) % 2].get(1).clear();
-        }
-        List<Integer> sorted = new ArrayList<>(n);
-        for (List<Integer> list : radix[maxDigit % 2]) {
-            for (int i : list) {
-                sorted.add(i);
-            }
+            int[] tmp = nums;
+            nums = buf;
+            buf = tmp;
         }
         int result = 0;
         for (int i = 1; i < n; i++) {
-            result = Math.max(result, sorted.get(i) - sorted.get(i - 1));
+            result = Math.max(result, nums[i] - nums[i - 1]);
         }
         return result;
     }
