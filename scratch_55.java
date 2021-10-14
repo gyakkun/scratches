@@ -18,7 +18,25 @@ class Scratch {
 
     // LC1773
     public int countMatches(List<List<String>> items, String ruleKey, String ruleValue) {
-        return -1;
+        int matchIdx = -1, result = 0;
+        switch (ruleKey) {
+            case "type":
+                matchIdx = 0;
+                break;
+            case "color":
+                matchIdx = 1;
+                break;
+            case "name":
+                matchIdx = 2;
+                break;
+            default:
+        }
+        for (List<String> i : items) {
+            if (i.get(matchIdx).equals(ruleValue)) {
+                result++;
+            }
+        }
+        return result;
     }
 
     // JZOF II 069 LC852 **
