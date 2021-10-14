@@ -16,10 +16,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1773
+    public int countMatches(List<List<String>> items, String ruleKey, String ruleValue) {
+        return -1;
+    }
+
     // JZOF II 069 LC852 **
     public int peakIndexInMountainArray(int[] arr) {
         int n = arr.length;
-        int lo = 1, hi = n - 1, max = 1; // 搜索范围不包括两个端点
+        int lo = 1, hi = n - 2, max = 1; // 搜索范围不包括两个端点
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             if (arr[mid] > arr[mid + 1]) {
