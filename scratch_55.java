@@ -8,12 +8,60 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maximumRemovals("abcacb",
-                "ab",
-                new int[]{3, 1, 0}));
+        System.out.println(s.numSquarefulPerms(new int[]{13949, 64411, 26920, 5204, 2177, 23617, 44128, 3455, 47315, 40706, 45874, 22858}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC996 TLE
+    public int numSquarefulPerms(int[] nums) {
+        Arrays.sort(nums);
+        int result = 0;
+        do {
+            if (check(nums)) result++;
+        } while (nextPerm(nums));
+        return result;
+    }
+
+    private boolean check(int[] arr) {
+        for (int i = 1; i < arr.length; i++) {
+            int sum = arr[i] + arr[i - 1];
+            int sqrt = (int) Math.sqrt(sum);
+            if (sqrt * sqrt != sum) return false;
+        }
+        return true;
+    }
+
+    private boolean nextPerm(int[] arr) {
+        int right = arr.length - 2;
+        while (right >= 0 && arr[right] >= arr[right + 1]) {
+            right--;
+        }
+        if (right < 0) return false;
+        if (right >= 0) {
+            int left = arr.length - 1;
+            while (left >= 0 && arr[right] >= arr[left]) {
+                left--;
+            }
+            arrSwap(arr, left, right);
+        }
+        arrReverse(arr, right + 1, arr.length - 1);
+        return true;
+    }
+
+    private void arrSwap(int[] arr, int a, int b) {
+        if (arr[a] != arr[b]) {
+            arr[a] ^= arr[b];
+            arr[b] ^= arr[a];
+            arr[a] ^= arr[b];
+        }
+    }
+
+    private void arrReverse(int[] arr, int a, int b) {
+        for (int i = 0; i < (b - a + 1) / 2; i++) {
+            arrSwap(arr, a + i, b - i);
+        }
     }
 
     // LC164 Try Radix sort
