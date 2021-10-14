@@ -8,13 +8,61 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.numSquarefulPerms(new int[]{13949, 64411, 26920, 5204, 2177, 23617, 44128, 3455, 47315, 40706, 45874, 22858}));
-//        System.out.println(s.numSquarefulPerms(new int[]{1, 17, 8}));
-        System.out.println(s.numSquarefulPerms(new int[]{1, 1, 8, 1, 8}));
-//        System.out.println(s.numSquarefulPerms(new int[]{5, 11, 5, 4, 5}));
+//        System.out.println(s.sumOfFlooredPairs(new int[]{2, 5, 9}));
+//        System.out.println(s.sumOfFlooredPairs(new int[]{4, 3, 4, 3, 5}));
+        System.out.println(s.sumOfFlooredPairs(new int[]{4, 1, 1, 2, 4}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1862 Bad feel  (50min+)
+    public int sumOfFlooredPairs(int[] nums) {
+        long sum = 0, mod = 1000000007;
+        int n = nums.length;
+        Arrays.sort(nums);
+        long[] freq = new long[100001];
+        int min = nums[0], max = nums[n - 1];
+        int ptr = 0;
+        while (ptr < n) {
+            int luckyDraw = nums[ptr];
+            int start = ptr;
+            int end = start;
+            while (end + 1 < n && nums[end + 1] == nums[end]) end++;
+            long sameNumLen = end - start + 1;
+            // 让自身作为分母
+            freq[1] += sameNumLen * sameNumLen;
+            freq[1] %= mod;
+            int prevEnd = end + 1;
+            int factor = 2;
+            while (prevEnd < n) {
+                int lo = prevEnd, hi = n - 1;
+                int target = luckyDraw * factor - 1; // 找到小于等于target的最大下标
+                while (lo < hi) {
+                    int mid = lo + (hi - lo + 1) / 2;
+                    if (nums[mid] <= target) {
+                        lo = mid;
+                    } else {
+                        hi = mid - 1;
+                    }
+                }
+                if (nums[lo] > target) {
+                    factor++;
+                    continue;
+                }
+                freq[factor - 1] += (lo - prevEnd + 1) * sameNumLen;
+                freq[factor - 1] %= mod;
+                factor++;
+                prevEnd = lo + 1;
+            }
+            ptr = end + 1;
+        }
+
+        for (int i = 0; i <= 100000; i++) {
+            sum += i * freq[i];
+            sum %= mod;
+        }
+        return (int) (sum % mod);
     }
 
     // LC1042
