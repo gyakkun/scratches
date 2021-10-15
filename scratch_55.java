@@ -16,6 +16,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC38
+    public String countAndSay(int n) {
+        if (n == 1) return "1";
+        String toSay = "1";
+        for (int i = 2; i <= n; i++) {
+            toSay = lc38Helper(toSay);
+        }
+        return toSay;
+    }
+
+    private String lc38Helper(String toSay) {
+        StringBuilder sb = new StringBuilder();
+        int idx = 0;
+        while (idx < toSay.length()) {
+            char digit = toSay.charAt(idx);
+            int startIdx = idx, endIdx = -1;
+            while (idx + 1 < toSay.length() && toSay.charAt(idx + 1) == digit) idx++;
+            endIdx = idx;
+            int count = endIdx - startIdx + 1;
+            sb.append(count);
+            sb.append(digit);
+            idx = endIdx + 1;
+        }
+        return sb.toString();
+    }
+
     // LC1862 Bad feel  (50min+)
     public int sumOfFlooredPairs(int[] nums) {
         long sum = 0, mod = 1000000007;
