@@ -15,6 +15,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC259 ** Solution O(n^2)
+    public int threeSumSmaller(int[] nums, int target) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        int result = 0;
+        for (int i = 0; i < n - 2; i++) {
+            result += twoSumSmaller(nums, i + 1, target - nums[i]);
+        }
+        return result;
+    }
+
+    private int twoSumSmaller(int[] nums, int startIdx, int target) {
+        int result = 0;
+        int left = startIdx, right = nums.length - 1;
+        while (left < right) {
+            if (nums[left] + nums[right] < target) {
+                result += right - left;
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return result;
+    }
+
     // LC1243
     public List<Integer> transformArray(int[] arr) {
         int n = arr.length;
