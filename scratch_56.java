@@ -14,6 +14,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC439 ** Great Solution
+    public String parseTernary(String expression) {
+        int len = expression.length();
+        int level = 0;
+        for (int i = 1; i < len; i++) {
+            if (expression.charAt(i) == '?') level++;
+            if (expression.charAt(i) == ':') level--;
+            if (level == 0) {
+                return expression.charAt(0) == 'T' ?
+                        parseTernary(expression.substring(2, i)) : parseTernary(expression.substring(i + 1));
+            }
+        }
+        return expression;
+    }
+
     // LC385
     public NestedInteger deserialize(String s) {
         NestedInteger root = new NestedInteger();
