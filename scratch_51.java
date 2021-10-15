@@ -31,7 +31,7 @@ class Scratch {
         }};
 
         int ptr = 0;
-        while(ptr<command.length()){
+        while (ptr < command.length()) {
             sb.append(appendMap.getOrDefault(command.charAt(ptr), ""));
             ptr += stepMap.getOrDefault(command.charAt(ptr), 1);
         }
@@ -1798,10 +1798,15 @@ class Scratch {
             lc282Dfs(idx + 1, num, target, sb, cur, pre, accumulate);
         }
 
+        long judge; // accumulate 溢出判断
+
         // +
         sb.append("+");
         sb.append(cur);
-        lc282Dfs(idx + 1, num, target, sb, 0, cur, accumulate + cur);
+        judge = accumulate + 0l + cur;
+        if (judge <= Integer.MAX_VALUE) {
+            lc282Dfs(idx + 1, num, target, sb, 0, cur, accumulate + cur);
+        }
         sb.delete(sb.length() - 1 - curStr.length(), sb.length());
 
 
@@ -1810,13 +1815,19 @@ class Scratch {
             // -
             sb.append("-");
             sb.append(cur);
-            lc282Dfs(idx + 1, num, target, sb, 0, -cur, accumulate - cur);
+            judge = accumulate + 0l - cur;
+            if (judge >= Integer.MIN_VALUE) {
+                lc282Dfs(idx + 1, num, target, sb, 0, -cur, accumulate - cur);
+            }
             sb.delete(sb.length() - 1 - curStr.length(), sb.length());
 
             // *
             sb.append("*");
             sb.append(cur);
-            lc282Dfs(idx + 1, num, target, sb, 0, cur * pre, accumulate - pre + cur * pre);
+            judge = accumulate - pre + 0l + (cur + 0l) * (pre + 0l);
+            if (judge <= Integer.MAX_VALUE) {
+                lc282Dfs(idx + 1, num, target, sb, 0, cur * pre, accumulate - pre + cur * pre);
+            }
             sb.delete(sb.length() - 1 - curStr.length(), sb.length());
 
         }
