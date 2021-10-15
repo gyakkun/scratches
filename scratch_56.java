@@ -8,10 +8,62 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println();
+        System.out.println(s.canMeasureWater(3, 5, 4));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC365
+    public boolean canMeasureWater(int jug1Capacity, int jug2Capacity, int targetCapacity) {
+        Deque<int[]> q = new LinkedList<>();
+        Set<Pair<Integer, Integer>> visited = new HashSet<>();
+        q.offer(new int[]{0, 0});
+        q.offer(new int[]{jug1Capacity, jug2Capacity});
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            Pair<Integer, Integer> pair = new Pair<>(p[0], p[1]);
+            if (visited.contains(pair)) continue;
+            visited.add(pair);
+            if (p[0] == targetCapacity || p[1] == targetCapacity) return true;
+            if (p[0] + p[1] == targetCapacity) return true;
+            // 倒满一侧
+            pair = new Pair<>(jug1Capacity, p[1]);
+            if (!visited.contains(pair)) {
+                q.offer(new int[]{jug1Capacity, p[1]});
+            }
+            pair = new Pair<>(p[0], jug2Capacity);
+            if (!visited.contains(pair)) {
+                q.offer(new int[]{p[0], jug2Capacity});
+            }
+            // 倒掉一侧
+            pair = new Pair<>(0, p[1]);
+            if (!visited.contains(pair)) {
+                q.offer(new int[]{0, p[1]});
+            }
+            pair = new Pair<>(p[0], 0);
+            if (!visited.contains(pair)) {
+                q.offer(new int[]{p[0], 0});
+            }
+            // 一侧倒向另一侧
+            if (p[0] < jug1Capacity) {
+                int jug1Empty = jug1Capacity - p[0];
+                int jug2ToJug1 = Math.min(p[1], jug1Empty);
+                pair = new Pair<>(p[0] + jug2ToJug1, p[1] - jug2ToJug1);
+                if (!visited.contains(pair)) {
+                    q.offer(new int[]{p[0] + jug2ToJug1, p[1] - jug2ToJug1});
+                }
+            }
+            if (p[1] < jug2Capacity) {
+                int jug2Empty = jug2Capacity - p[1];
+                int jug1ToJug2 = Math.min(p[0], jug2Empty);
+                pair = new Pair<>(p[0] - jug1ToJug2, p[1] + jug1ToJug2);
+                if (!visited.contains(pair)) {
+                    q.offer(new int[]{p[0] - jug1ToJug2, p[1] + jug1ToJug2});
+                }
+            }
+        }
+        return false;
     }
 
     // LC439 ** Great Solution
