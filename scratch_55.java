@@ -21,41 +21,27 @@ class Scratch {
         char[] ca = s.toCharArray();
         for (char c : ca) freq[c - '0']++;
         if (Math.abs(freq[0] - freq[1]) > 1) return -1;
-        if (freq[0] > freq[1]) {// 只能是01010...10
-            return toPrefixZero(s.toCharArray());
-        } else if (freq[0] < freq[1]) { // 10101...01
-            return toPrefixOne(s.toCharArray());
-        } else { // 0101 / 1010
-            return Math.min(toPrefixOne(s.toCharArray()), toPrefixZero(s.toCharArray()));
-        }
-    }
-
-    private int toPrefixZero(char[] ca) {
-        int left = 0, right = ca.length - 1, n = ca.length, result = 0;
-        while (left < right) {
-            while (left < n && (ca[left] - '0') == (left & 1)) left++;
-            while (right >= 0 && (ca[right] - '0') == (right & 1)) right--;
-            if (left < right) {
-                result++;
-                ca[left] = (char) ((left & 1) + '0');
-                ca[right] = (char) ((right & 1) + '0');
+        if (freq[0] == freq[1]) {
+            int prefixZeroDiff = 0, prefixOneDiff = 0;
+            for (int i = 0; i < ca.length; i++) {
+                // prefixZero
+                if (ca[i] - '0' != (i & 1)) prefixZeroDiff++;
+                else prefixOneDiff++;
             }
-        }
-        return result;
-    }
-
-    private int toPrefixOne(char[] ca) {
-        int left = 0, right = ca.length - 1, n = ca.length, result = 0;
-        while (left < right) {
-            while (left < n && (ca[left] - '0') == (left & 1 ^ 1)) left++;
-            while (right >= 0 && (ca[right] - '0') == (right & 1 ^ 1)) right--;
-            if (left < right) {
-                result++;
-                ca[left] = (char) ((left & 1 ^ 1) + '0');
-                ca[right] = (char) ((right & 1 ^ 1) + '0');
+            return Math.min(prefixOneDiff, prefixZeroDiff) / 2;
+        } else if (freq[0] > freq[1]) {
+            int diff = 0;
+            for (int i = 0; i < ca.length; i++) {
+                if (ca[i] - '0' != (i & 1)) diff++;
             }
+            return diff / 2;
+        } else {
+            int diff = 0;
+            for (int i = 0; i < ca.length; i++) {
+                if (ca[i] - '0' != (i & 1 ^ 1)) diff++;
+            }
+            return diff / 2;
         }
-        return result;
     }
 
     // LC475
