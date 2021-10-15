@@ -8,43 +8,112 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.sumOfFlooredPairs(new int[]{2, 5, 9}));
-//        System.out.println(s.sumOfFlooredPairs(new int[]{4, 3, 4, 3, 5}));
-        System.out.println(s.sumOfFlooredPairs(new int[]{4, 1, 1, 2, 4}));
+        System.out.println(s.findRadius(new int[]{1, 2, 3, 5, 15},
+                new int[]{2, 30}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC475
+    public int findRadius(int[] houses, int[] heaters) {
+        Arrays.sort(houses);
+        Arrays.sort(heaters);
+        long lo = 0, hi = Integer.MAX_VALUE / 2;
+        while (lo < hi) {
+            long mid = lo + (hi - lo) / 2;
+            if (check(houses, heaters, mid)) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return (int) lo;
+    }
+
+    public boolean check(int[] houses, int[] heaters, long radius) {
+        int maxRight = -1, prevEndIdx = -1;
+        for (int heaterIdx : heaters) {
+            int left = -1, right = -1;
+            if (radius > heaterIdx) left = 0;
+            else left = (int) (heaterIdx - radius);
+            if (left > houses[houses.length - 1]) {
+                // 如果当前加热器的覆盖范围的左端点已经在界外了, 则根据上一个加热器最远覆盖到的右端点进行判断并返回
+                return maxRight >= houses[houses.length - 1];
+            }
+            if (radius + (long) heaterIdx > houses[houses.length - 1]) right = houses[houses.length - 1];
+            else right = (int) (heaterIdx + radius);
+            maxRight = Math.max(maxRight, right);
+            // 然后找覆盖范围内的两个端点坐标的下标, 如果这个区间的左侧坐标的下标比原来的极右侧坐标下标大超过1, 则中间有房屋没有被覆盖, 直接返回false
+            int lo = 0, hi = houses.length - 1;
+            while (lo < hi) { // 找houses里坐标大于等于left的最小值的下标
+                int mid = lo + (hi - lo) / 2;
+                if (houses[mid] >= left) {
+                    hi = mid;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+            if (houses[lo] < left) {
+                // 这种情况就是说, 如果数轴上最右侧的房子都不在加热范围内, 也就是加热站太右了, 且半径太小, 覆盖不到数轴上的任意房屋
+                // 那也没有继续往右遍历加热站的必要了, 直接返回当前能加热到的最右侧坐标下标是否大于等于最右侧房屋坐标
+                return maxRight >= houses[houses.length - 1];
+            }
+            // 然后找覆盖范围内的两个端点坐标的下标, 如果这个区间的左侧坐标的下标比原来的极右侧坐标下标大超过1, 则中间有房屋没有被覆盖, 直接返回false
+            int leftMostHouseIdx = lo;
+            if (leftMostHouseIdx - prevEndIdx > 1) return false;
+
+            // 找能覆盖到的最右侧的下标
+            lo = 0;
+            hi = houses.length - 1;
+            while (lo < hi) { // 找到houses里面坐标小于等于right的最大值的下标
+                int mid = lo + (hi - lo + 1) / 2;
+                if (houses[mid] <= right) {
+                    lo = mid;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            if (houses[lo] > right) {
+                // 这种情况就是说, 你这个加热器太靠左了, 数轴上最左的房子的点都在加热范围的右侧, 完全覆盖不到。
+                // 此时应该直接遍历下一个加热器
+                continue;
+            }
+            prevEndIdx = lo;
+            if (prevEndIdx == houses.length - 1) return true;
+        }
+        return false;
+    }
+
     // LC1434
-    Integer[][] memo;
-    List<Set<Integer>> peopleHatSet;
+    Integer[][] lc1434Memo;
+    List<Set<Integer>> lc1434PeopleHatSet;
 
     public int numberWays(List<List<Integer>> hats) {
         // #people <= 10, 每个人都得到喜欢的帽子, 每个人的帽子都和别人不一样
         int numPeople = hats.size();
-        peopleHatSet = new ArrayList<>(hats.size());
+        lc1434PeopleHatSet = new ArrayList<>(hats.size());
         for (int i = 0; i < hats.size(); i++) {
-            peopleHatSet.add(new HashSet<>(hats.get(i).size()));
-            peopleHatSet.get(i).addAll(hats.get(i));
+            lc1434PeopleHatSet.add(new HashSet<>(hats.get(i).size()));
+            lc1434PeopleHatSet.get(i).addAll(hats.get(i));
         }
-        memo = new Integer[1 << numPeople][42];
-        return helper((1 << numPeople) - 1, 41);
+        lc1434Memo = new Integer[1 << numPeople][42];
+        return lc1434Helper((1 << numPeople) - 1, 41);
     }
 
-    private int helper(int peopleMask, int idHats) { // idHats exclusive (from 1 to idHats-1)
+    private int lc1434Helper(int peopleMask, int idHats) { // idHats exclusive (from 1 to idHats-1)
         if (peopleMask != 0 && idHats <= 1) return 0;
         if (Integer.bitCount(peopleMask) > (idHats - 1)) return 0;
         if (peopleMask == 0 && idHats >= 1) return 1;
-        if (memo[peopleMask][idHats] != null) return memo[peopleMask][idHats];
+        if (lc1434Memo[peopleMask][idHats] != null) return lc1434Memo[peopleMask][idHats];
         long result = 0;
-        for (int i = 0; i < peopleHatSet.size(); i++) {
-            if ((((peopleMask >> i) & 1) == 1) && peopleHatSet.get(i).contains(idHats - 1)) {
-                result += helper(peopleMask ^ (1 << i), idHats - 1);
+        for (int i = 0; i < lc1434PeopleHatSet.size(); i++) {
+            if ((((peopleMask >> i) & 1) == 1) && lc1434PeopleHatSet.get(i).contains(idHats - 1)) {
+                result += lc1434Helper(peopleMask ^ (1 << i), idHats - 1);
             }
         }
-        result += helper(peopleMask, idHats - 1);
-        return memo[peopleMask][idHats] = (int) (result % 1000000007l);
+        result += lc1434Helper(peopleMask, idHats - 1);
+        return lc1434Memo[peopleMask][idHats] = (int) (result % 1000000007l);
     }
 
     // LC38
