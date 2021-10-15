@@ -14,6 +14,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 17.09 LC264 UglyNumber 丑数
+    public int getKthMagicNumber(int k) {
+        // Prime Factor 3,5,7
+        long[] factor = {3, 5, 7};
+        PriorityQueue<Long> pq = new PriorityQueue<>();
+        Set<Long> set = new HashSet<>();
+        pq.offer(1l);
+        set.add(1l);
+        long result = -1;
+        for (int i = 0; i < k; i++) {
+            long p = pq.poll();
+            result = p;
+            for (long f : factor) {
+                if (set.add(f * p)) {
+                    pq.offer(f * p);
+                }
+            }
+        }
+        return (int) result;
+    }
+
     // LC365
     public boolean canMeasureWater(int jug1Capacity, int jug2Capacity, int targetCapacity) {
         Deque<int[]> q = new LinkedList<>();
