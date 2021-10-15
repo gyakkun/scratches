@@ -8,11 +8,109 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.findRadius(new int[]{1, 2, 3, 5, 15},
-                new int[]{2, 30}));
+        System.out.println(s.removeComments(new String[]{
+                "struct Node{", "    /*/ declare members;/**/", "    int size;", "    /**/int val;", "};"
+        }));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC722
+    Boolean isInBlockComment = false, isBlockFromStart = false;
+
+    public List<String> removeComments(String[] source) {
+        List<String> result = new ArrayList<>();
+        outer:
+        for (String line : source) {
+            if (!isInBlockComment) {
+                line = helper(line);
+                if (line.length() != 0) result.add(line);
+            } else {
+                int secondHalfBlockIdx = line.indexOf("*/");
+                if (secondHalfBlockIdx < 0) continue outer;
+                if (isBlockFromStart) {
+                    line = line.substring(secondHalfBlockIdx + 2);
+                    if (line.length() == 0) {
+                        isInBlockComment = false;
+                        isBlockFromStart = false;
+                        continue outer;
+                    } else {
+                        isInBlockComment = false;
+                        isBlockFromStart = false;
+                        line = helper(line);
+                        if (line.length() != 0) {
+                            result.add(line);
+                        }
+                    }
+                } else {
+                    line = line.substring(secondHalfBlockIdx + 2);
+                    if (line.length() == 0) {
+                        isInBlockComment = false;
+                        isBlockFromStart = false;
+                        continue outer;
+                    } else {
+                        isInBlockComment = false;
+                        isBlockFromStart = false;
+                        line = helper(line);
+                        if (line.length() != 0) {
+                            String lastLine = result.get(result.size() - 1);
+                            result.set(result.size() - 1, lastLine + line);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private String helper(String line) {
+        int lineCommentIdx = line.indexOf("//");
+        int blockCommentIdx = line.indexOf("/*");
+        while (!(lineCommentIdx < 0 && blockCommentIdx < 0)) {
+            if (lineCommentIdx < 0 && blockCommentIdx >= 0) {
+                int secondHalfBlockIdx = line.indexOf("*/", blockCommentIdx + 2);
+                if (secondHalfBlockIdx < 0) {
+                    isInBlockComment = true;
+                    if (blockCommentIdx == 0) {
+                        isBlockFromStart = true;
+                        return "";
+                    }
+                    isBlockFromStart = false;
+                    return line.substring(0, blockCommentIdx);
+                } else {
+                    String newLine = line.substring(0, blockCommentIdx);
+                    newLine += line.substring(secondHalfBlockIdx + 2);
+                    line = newLine;
+                }
+            } else if (lineCommentIdx >= 0 && blockCommentIdx < 0) {
+                if (lineCommentIdx == 0) return "";
+                return line.substring(0, lineCommentIdx);
+            } else if (lineCommentIdx >= 0 && blockCommentIdx >= 0) {
+                if (lineCommentIdx < blockCommentIdx) {
+                    if (lineCommentIdx == 0) return "";
+                    return line.substring(0, lineCommentIdx);
+                } else {
+                    int secondHalfBlockIdx = line.indexOf("*/", blockCommentIdx + 2);
+                    if (secondHalfBlockIdx < 0) {
+                        isInBlockComment = true;
+                        if (blockCommentIdx == 0) {
+                            isBlockFromStart = true;
+                            return "";
+                        }
+                        isBlockFromStart = false;
+                        return line.substring(0, blockCommentIdx);
+                    } else {
+                        String newLine = line.substring(0, blockCommentIdx);
+                        newLine += line.substring(secondHalfBlockIdx + 2);
+                        line = newLine;
+                    }
+                }
+            }
+            lineCommentIdx = line.indexOf("//");
+            blockCommentIdx = line.indexOf("/*");
+        }
+        return line;
     }
 
     // LC1864 ** 贪心
