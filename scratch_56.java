@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -8,11 +9,44 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.canMeasureWater(3, 5, 4));
+        System.out.println(s.transformArray(new int[]{6, 2, 3, 4}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1243
+    public List<Integer> transformArray(int[] arr) {
+        int n = arr.length;
+        List<Integer> prev = Arrays.stream(arr).boxed().collect(Collectors.toList());
+        List<Integer> cur = new ArrayList<>();
+        for (int i = 0; i < n; i++) cur.add(-1);
+        while (true) {
+            cur = helper(prev);
+            if (cur.equals(prev)) return cur;
+            prev = cur;
+        }
+    }
+
+    private List<Integer> helper(List<Integer> prev) {
+        int n = prev.size();
+        List<Integer> cur = new ArrayList<>();
+        cur.add(prev.get(0));
+        for (int i = 1; i < n - 1; i++) {
+            // 假如一个元素小于它的左右邻居，那么该元素自增 1。
+            // 假如一个元素大于它的左右邻居，那么该元素自减 1。
+            if (prev.get(i) < prev.get(i - 1) && prev.get(i) < prev.get(i + 1)) {
+                cur.add(prev.get(i) + 1);
+            } else if (prev.get(i) > prev.get(i - 1) && prev.get(i) > prev.get(i + 1)) {
+                cur.add(prev.get(i) - 1);
+            } else {
+                cur.add(prev.get(i));
+            }
+        }
+        cur.add(prev.get(n - 1));
+        return cur;
+    }
+
 
     // Interview 17.09 LC264 UglyNumber 丑数
     public int getKthMagicNumber(int k) {
