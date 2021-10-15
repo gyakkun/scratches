@@ -16,6 +16,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1434
+    Integer[][] memo;
+    List<Set<Integer>> peopleHatSet;
+
+    public int numberWays(List<List<Integer>> hats) {
+        // #people <= 10, 每个人都得到喜欢的帽子, 每个人的帽子都和别人不一样
+        int numPeople = hats.size();
+        peopleHatSet = new ArrayList<>(hats.size());
+        for (int i = 0; i < hats.size(); i++) {
+            peopleHatSet.add(new HashSet<>(hats.get(i).size()));
+            peopleHatSet.get(i).addAll(hats.get(i));
+        }
+        memo = new Integer[1 << numPeople][42];
+        return helper((1 << numPeople) - 1, 41);
+    }
+
+    private int helper(int peopleMask, int idHats) { // idHats exclusive (from 1 to idHats-1)
+        if (idHats == 0) return 0;
+        if (Integer.bitCount(peopleMask) > (idHats - 1)) return 0;
+        if (peopleMask == 0 && idHats >= 1) return 1;
+        if (memo[peopleMask][idHats] != null) return memo[peopleMask][idHats];
+        long result = 0;
+        for (int i = 0; i < peopleHatSet.size(); i++) {
+            if ((((peopleMask >> i) & 1) == 1) && peopleHatSet.get(i).contains(idHats - 1)) {
+                result += helper(peopleMask ^ (1 << i), idHats - 1);
+            }
+        }
+        result += helper(peopleMask, idHats - 1);
+        return memo[peopleMask][idHats] = (int) (result % 1000000007l);
+    }
+
     // LC38
     public String countAndSay(int n) {
         if (n == 1) return "1";
