@@ -33,7 +33,7 @@ class Scratch {
     }
 
     private int helper(int peopleMask, int idHats) { // idHats exclusive (from 1 to idHats-1)
-        if (idHats == 0) return 0;
+        if (peopleMask != 0 && idHats <= 1) return 0;
         if (Integer.bitCount(peopleMask) > (idHats - 1)) return 0;
         if (peopleMask == 0 && idHats >= 1) return 1;
         if (memo[peopleMask][idHats] != null) return memo[peopleMask][idHats];
