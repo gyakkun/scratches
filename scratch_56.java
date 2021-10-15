@@ -21,8 +21,9 @@ class Scratch {
         int a = mat1.length, b = mat1[0].length, c = mat2[0].length;
         int[][] result = new int[a][c];
         for (int i = 0; i < a; i++) {
-            for (int j = 0; j < c; j++) {
-                for (int k = 0; k < b; k++) {
+            for (int k = 0; k < b; k++) {
+                if (mat1[i][k] == 0) continue;
+                for (int j = 0; j < c; j++) {
                     result[i][j] += mat1[i][k] * mat2[k][j];
                 }
             }
