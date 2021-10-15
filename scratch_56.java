@@ -15,6 +15,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC311 矩阵乘法
+    public int[][] multiply(int[][] mat1, int[][] mat2) {
+        // axb mult bxc = axc
+        int a = mat1.length, b = mat1[0].length, c = mat2[0].length;
+        int[][] result = new int[a][c];
+        for (int i = 0; i < a; i++) {
+            for (int j = 0; j < c; j++) {
+                for (int k = 0; k < b; k++) {
+                    result[i][j] += mat1[i][k] * mat2[k][j];
+                }
+            }
+        }
+        return result;
+    }
+
     // LC259 ** Solution O(n^2)
     public int threeSumSmaller(int[] nums, int target) {
         int n = nums.length;
