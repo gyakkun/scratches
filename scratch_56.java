@@ -9,11 +9,35 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.transformArray(new int[]{6, 2, 3, 4}));
+        System.out.println(s.isAdditiveNumber("199100199"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC306
+    public boolean isAdditiveNumber(String num) {
+        int n = num.length();
+        // 选前两个数
+        for (int i = 1; i <= n / 2; i++) {
+            long first = Long.parseLong(num.substring(0, i));
+            if (String.valueOf(first).length() != i) continue;
+            for (int j = i + 1; j < n; j++) {
+                long second = Long.parseLong(num.substring(i, j));
+                if (String.valueOf(second).length() != j - i) continue;
+                if (judge(first, second, j, num)) return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean judge(long first, long second, int idx, String num) {
+        if (idx == num.length()) return true;
+        long sum = first + second;
+        if (num.indexOf(String.valueOf(sum), idx) != idx) return false;
+        return judge(second, sum, idx + String.valueOf(sum).length(), num);
+    }
+
 
     // LC311 矩阵乘法
     public int[][] multiply(int[][] mat1, int[][] mat2) {
