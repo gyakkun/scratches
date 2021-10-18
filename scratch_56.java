@@ -17,10 +17,12 @@ class Scratch {
 
     // LC1218 TLE
     Map<Integer, TreeSet<Integer>> idxMap = new HashMap<>();
+    Integer[] memo;
 
     public int longestSubsequence(int[] arr, int difference) {
         int n = arr.length;
         boolean[] visited = new boolean[n];
+        memo = new Integer[n + 1];
         int max = 1;
         for (int i = 0; i < n; i++) {
             idxMap.putIfAbsent(arr[i], new TreeSet<>());
@@ -28,7 +30,7 @@ class Scratch {
         }
         for (int i = 0; i < n; i++) {
             if (!visited[i]) {
-                int result = helper(i, difference, arr, visited);
+                int result = 1 + helper(i, difference, arr, visited);
                 max = Math.max(max, result);
             }
         }
@@ -37,14 +39,15 @@ class Scratch {
 
     private int helper(int idx, int difference, int[] arr, boolean[] visited) {
         visited[idx] = true;
+        if (memo[idx] != null) return memo[idx];
         int expected = arr[idx] + difference;
-        if(idxMap.get(expected)!=null){
+        if (idxMap.get(expected) != null) {
             Integer nextIdx = idxMap.get(expected).higher(idx);
-            if(nextIdx!=null){
-                return 1 + helper(nextIdx, difference, arr, visited);
+            if (nextIdx != null) {
+                return memo[idx] = 1 + helper(nextIdx, difference, arr, visited);
             }
         }
-        return 0;
+        return memo[idx] = 0;
     }
 
     // JZOF II 102 LC494
