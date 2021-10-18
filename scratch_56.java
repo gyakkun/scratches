@@ -15,6 +15,12 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1087
+    public String[] expand(String s) {
+        List<String> l = braceExpansionII(s);
+        return l.toArray(new String[l.size()]);
+    }
+
     // LC1096 ** DFS
     public List<String> braceExpansionII(String expression) {
         Set<String> result = helper(expression);
