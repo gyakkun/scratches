@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import sun.util.resources.cldr.ar.CalendarData_ar_YE;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,21 +8,73 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.baseNeg2(2));
+        System.out.println(s.countPaths(7,
+                new int[][]{{0, 6, 7}, {0, 1, 2}, {1, 2, 3}, {1, 3, 3}, {6, 3, 3}, {3, 5, 1}, {6, 5, 1}, {2, 5, 1}, {0, 4, 5}, {4, 6, 2}}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1976 **
+    final long INF = Long.MAX_VALUE / 2;
+    Integer[] memo;
+
+    public int countPaths(int n, int[][] roads) {
+        // 最短路的数量
+        memo = new Integer[n];
+        long[][] matrix = new long[n][n];
+        long[][] minDist = new long[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(matrix[i], INF);
+            Arrays.fill(minDist[i], INF);
+        }
+        for (int[] r : roads) {
+            matrix[r[0]][r[1]] = r[2];
+            matrix[r[1]][r[0]] = r[2];
+            minDist[r[0]][r[1]] = r[2];
+            minDist[r[1]][r[0]] = r[2];
+        }
+        for (int i = 0; i < n; i++) {
+            minDist[i][i] = 0;
+        }
+        // Floyd 求出任意两点间的最短距离
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (j != k) {
+                        minDist[j][k] = minDist[k][j] = Math.min(minDist[j][k], minDist[j][i] + minDist[i][k]);
+                    }
+                }
+            }
+        }
+        return helper(0, minDist, matrix);
+    }
+
+    private int helper(int cur, long[][] minDist, long[][] matrix) {
+        int n = minDist.length;
+        if (cur == n - 1) return 1; // 已经到达最后一个节点
+        if (memo[cur] != null) return memo[cur];
+        long result = 0;
+        final long mod = 1000000007;
+        for (int next = 0; next < n; next++) {
+            if (matrix[cur][next] != INF && minDist[0][cur] + minDist[next][n - 1] + matrix[cur][next] == minDist[0][n - 1]) {
+                result += helper(next, minDist, matrix);
+                result %= mod;
+            }
+        }
+        return memo[cur] = (int) (result % mod);
+    }
+
     // LC1017 **
     public String baseNeg2(int n) {
         StringBuilder sb = new StringBuilder();
-        List<Integer> result = negBase(n, -2);
+        List<Integer> result = toBase(n, -2);
         for (int i : result) sb.append(i);
         return sb.toString();
     }
 
-    public List<Integer> negBase(int num, int base) {
+    public List<Integer> toBase(int num, int base) {
         if (num == 0) return Arrays.asList(0);
         List<Integer> result = new ArrayList<>();
         while (num != 0) {
