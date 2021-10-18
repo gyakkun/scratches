@@ -15,6 +15,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1807
+    public String evaluate(String s, List<List<String>> knowledge) {
+        StringBuilder sb = new StringBuilder();
+        char[] ca = s.toCharArray();
+        Map<String, String> map = new HashMap<>(knowledge.size());
+        for (List<String> k : knowledge) {
+            map.put(k.get(0), k.get(1));
+        }
+        int left = -1, right = -1;
+        boolean inParenthesis = false;
+        for (int i = 0; i < ca.length; i++) {
+            char c = ca[i];
+            if (c == '(') {
+                left = i;
+                inParenthesis = true;
+            } else if (c == ')') {
+                right = i;
+                inParenthesis = false;
+                String key = s.substring(left + 1, right);
+                sb.append(map.getOrDefault(key, "?"));
+            } else {
+                if (inParenthesis) continue;
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
     // LC814
     public TreeNode pruneTree(TreeNode root) {
         if (!subtreeHasOne(root)) return null;
