@@ -15,8 +15,67 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1096 ** BFS
+    // LC1096 ** DFS
     public List<String> braceExpansionII(String expression) {
+        Set<String> result = helper(expression);
+        List<String> l = new ArrayList<>(result);
+        Collections.sort(l);
+        return l;
+    }
+
+    private Set<String> helper(String chunk) {
+        if (chunk.length() == 0) return new HashSet<>();
+        Set<String> result = new HashSet<>();
+        Set<String> peek = new HashSet<>();
+        char[] ca = chunk.toCharArray();
+        int i = 0, n = ca.length;
+        while (i < n) {
+            char c = ca[i];
+            if (c == '{') {
+                int numParenthesis = 1;
+                int start = ++i; // 括号对内的起始下标(不包括括号)
+                while (numParenthesis != 0) {
+                    if (ca[i] == '{') numParenthesis++;
+                    if (ca[i] == '}') numParenthesis--;
+                    i++;
+                }
+                Set<String> next = helper(chunk.substring(start, i - 1));
+                peek = merge(peek, next);
+                continue;
+            } else if (c == ',') {
+                result.addAll(peek);
+                peek.clear();
+                i++;
+                continue;
+            } else { // 不会遍历到 '{'
+                StringBuilder word = new StringBuilder();
+                while (i < n && Character.isLetter(ca[i])) {
+                    word.append(ca[i]);
+                    i++;
+                }
+                Set<String> tmp = new HashSet<>();
+                tmp.add(word.toString());
+                peek = merge(peek, tmp);
+            }
+        }
+        if (i == n) result.addAll(peek);
+        return result;
+    }
+
+    private Set<String> merge(Set<String> prefix, Set<String> suffix) {
+        if (suffix.size() == 0) return prefix;
+        if (prefix.size() == 0) return suffix;
+        Set<String> result = new HashSet<>();
+        for (String p : prefix) {
+            for (String s : suffix) {
+                result.add(p + s);
+            }
+        }
+        return result;
+    }
+
+    // ** BFS
+    public List<String> braceExpansionIiBfs(String expression) {
         expression = "{" + expression + "}"; // 预防 "a,{b}c"这种情况
         Deque<String> q = new LinkedList<>();
         q.offer(expression);
