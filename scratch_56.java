@@ -14,6 +14,68 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1815 Try Simulate Anneal 模拟退火
+    class Lc1815 {
+        List<Integer> toSatisfy = new ArrayList<>();
+        int max = 0;
+        int n;
+        int batchSize;
+
+        public int maxHappyGroups(int batchSize, int[] groups) {
+            if (batchSize == 1) return groups.length;
+            this.batchSize = batchSize;
+            int modZeroGroupCount = 0;
+            for (int i : groups) {
+                if (i % batchSize == 0) modZeroGroupCount++;
+                else toSatisfy.add(i);
+            }
+            if (toSatisfy.size() < 2) return modZeroGroupCount + toSatisfy.size();
+            n = toSatisfy.size();
+            // 多次使用模拟退火
+            for (int i = 0; i < 32; i++) {
+                simulateAnneal();
+            }
+            return modZeroGroupCount + max;
+        }
+
+        private void simulateAnneal() {
+            Collections.shuffle(toSatisfy); // 随机化
+            for (double t = 1e6; t >= 1e-5; t *= 0.97d) {
+                int i = (int) (n * Math.random()), j = (int) (n * Math.random());
+                int prevScore = evaluate();
+                // 交换
+                int tmp = toSatisfy.get(i);
+                toSatisfy.set(i, toSatisfy.get(j));
+                toSatisfy.set(j, tmp);
+
+                int nextScore = evaluate();
+                int delta = nextScore - prevScore;
+                if (delta < 0 && Math.pow(Math.E, (delta / t)) <= (double) (Math.random())) {
+                    tmp = toSatisfy.get(i);
+                    toSatisfy.set(i, toSatisfy.get(j));
+                    toSatisfy.set(j, tmp);
+                }
+            }
+        }
+
+        private int evaluate() {
+            // 评价函数 直接返回在当前排列下有多少组可以好评
+            int result = 0, sum = 0;
+            for (int i : toSatisfy) {
+                sum += i;
+                if (sum % batchSize == 0) {
+                    result++; // 能收到这一组的好评
+                    sum = 0;
+                }
+            }
+            if (sum > 0) result++; // 总是能收到第一组的好评
+            max = Math.max(max, result);
+            return result;
+        }
+
+    }
+
+
     // LC286
     public void wallsAndGates(int[][] rooms) {
         int m = rooms.length, n = rooms[0].length;
