@@ -9,10 +9,37 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.isAdditiveNumber("199100199"));
+        System.out.println(s.longestSubsequence(new int[]{1, 3, 5, 7}, 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1218 TLE
+    public int longestSubsequence(int[] arr, int difference) {
+        int n = arr.length;
+        boolean[] visited = new boolean[n];
+        int max = 1;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                int result = helper(i, difference, arr, visited);
+                max = Math.max(max, result);
+            }
+        }
+        return max;
+    }
+
+    private int helper(int idx, int difference, int[] arr, boolean[] visited) {
+        visited[idx] = true;
+        int i = idx + 1;
+        int expected = arr[idx] + difference;
+        while (i < arr.length) {
+            if (arr[i] == expected) {
+                return 1 + helper(i, difference, arr, visited);
+            }
+            i++;
+        }
+        return 0;
     }
 
     // JZOF II 102 LC494
