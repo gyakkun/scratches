@@ -16,10 +16,16 @@ class Scratch {
     }
 
     // LC1218 TLE
+    Map<Integer, TreeSet<Integer>> idxMap = new HashMap<>();
+
     public int longestSubsequence(int[] arr, int difference) {
         int n = arr.length;
         boolean[] visited = new boolean[n];
         int max = 1;
+        for (int i = 0; i < n; i++) {
+            idxMap.putIfAbsent(arr[i], new TreeSet<>());
+            idxMap.get(arr[i]).add(i);
+        }
         for (int i = 0; i < n; i++) {
             if (!visited[i]) {
                 int result = helper(i, difference, arr, visited);
@@ -31,13 +37,12 @@ class Scratch {
 
     private int helper(int idx, int difference, int[] arr, boolean[] visited) {
         visited[idx] = true;
-        int i = idx + 1;
         int expected = arr[idx] + difference;
-        while (i < arr.length) {
-            if (arr[i] == expected) {
-                return 1 + helper(i, difference, arr, visited);
+        if(idxMap.get(expected)!=null){
+            Integer nextIdx = idxMap.get(expected).higher(idx);
+            if(nextIdx!=null){
+                return 1 + helper(nextIdx, difference, arr, visited);
             }
-            i++;
         }
         return 0;
     }
