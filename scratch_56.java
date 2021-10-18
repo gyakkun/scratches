@@ -7,13 +7,45 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.out.println(s.countPaths(7,
-                new int[][]{{0, 6, 7}, {0, 1, 2}, {1, 2, 3}, {1, 3, 3}, {6, 3, 3}, {3, 5, 1}, {6, 5, 1}, {2, 5, 1}, {0, 4, 5}, {4, 6, 2}}
-        ));
+        s.wallsAndGates(new int[][]{{2147483647, 0, 2147483647, 2147483647, 0, 2147483647, -1, 2147483647}});
+        System.out.println();
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC286
+    public void wallsAndGates(int[][] rooms) {
+        int m = rooms.length, n = rooms[0].length;
+        final int INF = Integer.MAX_VALUE;
+        int[][] direction = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int layer = -1;
+        boolean[][] visited = new boolean[m][n];
+        Deque<int[]> q = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (rooms[i][j] == 0) {
+                    q.offer(new int[]{i, j});
+                }
+            }
+        }
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            layer++;
+            for (int i = 0; i < qs; i++) {
+                int[] p = q.poll();
+                if (visited[p[0]][p[1]]) continue;
+                visited[p[0]][p[1]] = true;
+                if (rooms[p[0]][p[1]] == INF) rooms[p[0]][p[1]] = layer;
+                for (int[] d : direction) {
+                    int nr = p[0] + d[0], nc = p[1] + d[1];
+                    if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc] && rooms[nr][nc] != -1) {
+                        q.offer(new int[]{nr, nc});
+                    }
+                }
+            }
+        }
+        return;
     }
 
     // LC1976 **
