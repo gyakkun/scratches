@@ -15,6 +15,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1096 ** BFS
+    public List<String> braceExpansionII(String expression) {
+        expression = "{" + expression + "}"; // 预防 "a,{b}c"这种情况
+        Deque<String> q = new LinkedList<>();
+        q.offer(expression);
+        Set<String> result = new HashSet<>();
+        while (!q.isEmpty()) {
+            String p = q.poll();
+            if (p.indexOf("{") < 0) {
+                result.add(p);
+                continue;
+            }
+            // ** 找最深的括号对
+            int idx = 0, left = -1, right = -1;
+            while (p.charAt(idx) != '}') {
+                if (p.charAt(idx) == '{') left = idx;
+                idx++;
+            }
+            right = idx;
+            String prefix = p.substring(0, left);
+            String suffix = p.substring(right + 1);
+            String[] middle = p.substring(left + 1, right).split(",");
+
+            for (String m : middle) {
+                q.offer(prefix + m + suffix);
+            }
+        }
+        List<String> l = new ArrayList<>(result);
+        Collections.sort(l);
+        return l;
+    }
+
     // LC1807
     public String evaluate(String s, List<List<String>> knowledge) {
         StringBuilder sb = new StringBuilder();
