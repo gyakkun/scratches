@@ -15,7 +15,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1218 TLE
+    // LC1218
     Map<Integer, TreeSet<Integer>> idxMap = new HashMap<>();
     Integer[] memo;
 
