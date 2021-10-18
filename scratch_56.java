@@ -21,22 +21,22 @@ class Scratch {
         for (int i : nums) sum += i;
         if (Math.abs(target) > sum) return 0;
         int OFFSET = sum, n = nums.length;
-        int[][] dp = new int[n + 1][OFFSET * 2 + 1];
+        int[][] dp = new int[2][OFFSET * 2 + 1];
         dp[0][OFFSET] = 1; // 加入0个数, 和为 (0+OFFSET) 的个数为0
         for (int i = 1; i <= n; i++) {
             for (int total = 0; total <= 2 * sum; total++) {
                 int result = 0;
                 // 背包问题
                 if (total - nums[i - 1] >= 0) {
-                    result += dp[i - 1][total - nums[i - 1]];
+                    result += dp[(i - 1) % 2][total - nums[i - 1]];
                 }
                 if (total + nums[i - 1] <= 2 * OFFSET) {
-                    result += dp[i - 1][total + nums[i - 1]];
+                    result += dp[(i - 1) % 2][total + nums[i - 1]];
                 }
-                dp[i][total] = result;
+                dp[i % 2][total] = result;
             }
         }
-        return dp[n][OFFSET + target];
+        return dp[n % 2][OFFSET + target];
     }
 
     // LC1087
