@@ -17,17 +17,17 @@ class Scratch {
     }
 
     // LC1976 **
-    final long INF = Long.MAX_VALUE / 2;
-    Integer[] memo;
+    final long lc1976Inf = Long.MAX_VALUE / 2;
+    Integer[] lc1976Memo;
 
     public int countPaths(int n, int[][] roads) {
         // 最短路的数量
-        memo = new Integer[n];
+        lc1976Memo = new Integer[n];
         long[][] matrix = new long[n][n];
         long[][] minDist = new long[n][n];
         for (int i = 0; i < n; i++) {
-            Arrays.fill(matrix[i], INF);
-            Arrays.fill(minDist[i], INF);
+            Arrays.fill(matrix[i], lc1976Inf);
+            Arrays.fill(minDist[i], lc1976Inf);
         }
         for (int[] r : roads) {
             matrix[r[0]][r[1]] = r[2];
@@ -48,22 +48,22 @@ class Scratch {
                 }
             }
         }
-        return helper(0, minDist, matrix);
+        return lc1976Helper(0, minDist, matrix);
     }
 
-    private int helper(int cur, long[][] minDist, long[][] matrix) {
+    private int lc1976Helper(int cur, long[][] minDist, long[][] matrix) {
+        if (cur == minDist.length - 1) return 1; // 已经到达最后一个节点
+        if (lc1976Memo[cur] != null) return lc1976Memo[cur];
         int n = minDist.length;
-        if (cur == n - 1) return 1; // 已经到达最后一个节点
-        if (memo[cur] != null) return memo[cur];
         long result = 0;
         final long mod = 1000000007;
         for (int next = 0; next < n; next++) {
-            if (matrix[cur][next] != INF && minDist[0][cur] + minDist[next][n - 1] + matrix[cur][next] == minDist[0][n - 1]) {
-                result += helper(next, minDist, matrix);
+            if (matrix[cur][next] != lc1976Inf && minDist[0][cur] + minDist[next][n - 1] + matrix[cur][next] == minDist[0][n - 1]) {
+                result += lc1976Helper(next, minDist, matrix);
                 result %= mod;
             }
         }
-        return memo[cur] = (int) (result % mod);
+        return lc1976Memo[cur] = (int) (result % mod);
     }
 
     // LC1017 **
