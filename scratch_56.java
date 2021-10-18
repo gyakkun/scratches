@@ -15,6 +15,33 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC814
+    public TreeNode pruneTree(TreeNode root) {
+        if (!subtreeHasOne(root)) return null;
+        lc814Helper(root);
+        return root;
+    }
+
+    private void lc814Helper(TreeNode root) {
+        if (root == null) return;
+        if (!subtreeHasOne(root.left)) {
+            root.left = null;
+        } else {
+            lc814Helper(root.left);
+        }
+        if (!subtreeHasOne(root.right)) {
+            root.right = null;
+        } else {
+            lc814Helper(root.right);
+        }
+    }
+
+    private boolean subtreeHasOne(TreeNode root) {
+        if (root == null) return false;
+        if (root.val == 1) return true;
+        return subtreeHasOne(root.left) || subtreeHasOne(root.right);
+    }
+
     // LC306
     public boolean isAdditiveNumber(String num) {
         int n = num.length();
@@ -280,5 +307,15 @@ class NestedInteger {
     // Return empty list if this NestedInteger holds a single integer
     public List<NestedInteger> getList() {
         return null;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(int x) {
+        val = x;
     }
 }
