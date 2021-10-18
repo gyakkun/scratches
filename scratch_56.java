@@ -15,39 +15,68 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1256
+    public String encode(int num) {
+        // 0 -> ""
+        // 2 -> 0
+        // 3 -> 1
+        // 4 -> 00
+        // 5 -> 01
+        // 6 -> 10
+        // 7 -> 11
+        // 8 -> 000
+        if (num == 0) return "";
+        num++;
+        boolean flag = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 32; i++) {
+            if ((num >> (32 - i - 1) & 1) == 1) {
+                if (!flag) {
+                    flag = true;
+                    continue;
+                }
+            }
+            if (flag) {
+                sb.append(num >> (32 - i - 1) & 1);
+            }
+        }
+        return sb.toString();
+    }
+
     // LC1218
-    Map<Integer, TreeSet<Integer>> idxMap = new HashMap<>();
-    Integer[] memo;
+    Map<Integer, TreeSet<Integer>> lc1218IdxMap;
+    Integer[] lc1218Memo;
 
     public int longestSubsequence(int[] arr, int difference) {
         int n = arr.length;
         boolean[] visited = new boolean[n];
-        memo = new Integer[n + 1];
+        lc1218IdxMap = new HashMap<>();
+        lc1218Memo = new Integer[n + 1];
         int max = 1;
         for (int i = 0; i < n; i++) {
-            idxMap.putIfAbsent(arr[i], new TreeSet<>());
-            idxMap.get(arr[i]).add(i);
+            lc1218IdxMap.putIfAbsent(arr[i], new TreeSet<>());
+            lc1218IdxMap.get(arr[i]).add(i);
         }
         for (int i = 0; i < n; i++) {
             if (!visited[i]) {
-                int result = 1 + helper(i, difference, arr, visited);
+                int result = 1 + lc1218Helper(i, difference, arr, visited);
                 max = Math.max(max, result);
             }
         }
         return max;
     }
 
-    private int helper(int idx, int difference, int[] arr, boolean[] visited) {
+    private int lc1218Helper(int idx, int difference, int[] arr, boolean[] visited) {
         visited[idx] = true;
-        if (memo[idx] != null) return memo[idx];
+        if (lc1218Memo[idx] != null) return lc1218Memo[idx];
         int expected = arr[idx] + difference;
-        if (idxMap.get(expected) != null) {
-            Integer nextIdx = idxMap.get(expected).higher(idx);
+        if (lc1218IdxMap.get(expected) != null) {
+            Integer nextIdx = lc1218IdxMap.get(expected).higher(idx);
             if (nextIdx != null) {
-                return memo[idx] = 1 + helper(nextIdx, difference, arr, visited);
+                return lc1218Memo[idx] = 1 + lc1218Helper(nextIdx, difference, arr, visited);
             }
         }
-        return memo[idx] = 0;
+        return lc1218Memo[idx] = 0;
     }
 
     // JZOF II 102 LC494
