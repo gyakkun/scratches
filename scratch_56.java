@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import sun.util.resources.cldr.ar.CalendarData_ar_YE;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -8,11 +9,31 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
-        System.out.println(s.longestSubsequence(new int[]{1, 3, 5, 7}, 1));
+        System.out.println(s.baseNeg2(2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1017 **
+    public String baseNeg2(int n) {
+        StringBuilder sb = new StringBuilder();
+        List<Integer> result = negBase(n, -2);
+        for (int i : result) sb.append(i);
+        return sb.toString();
+    }
+
+    public List<Integer> negBase(int num, int base) {
+        if (num == 0) return Arrays.asList(0);
+        List<Integer> result = new ArrayList<>();
+        while (num != 0) {
+            int r = ((num % base) + Math.abs(base)) % Math.abs(base);
+            result.add(r);
+            num -= r;
+            num /= base;
+        }
+        Collections.reverse(result);
+        return result;
     }
 
     // LC1256
