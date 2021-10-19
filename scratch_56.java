@@ -8,31 +8,28 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        WordDictionary wd = new WordDictionary();
-        wd.addWord("ran");
-        wd.addWord("rune");
-        wd.addWord("runner");
-        wd.addWord("runs");
-        wd.addWord("add");
-        wd.addWord("adds");
-        wd.addWord("adder");
-        wd.addWord("addee");
-        wd.search("r.n");
-        wd.search("ru.n.e");
-        wd.search("add");
-        wd.search("add.");
-        wd.search("adde.");
-        wd.search(".an.");
-        wd.search("...s");
-        wd.search("....e.");
-        wd.search(".......");
-        wd.search("..n.r");
 
-
-        System.out.println(wd.search(".ad"));
+        System.out.println();
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1078
+    public String[] findOcurrences(String text, String first, String second) {
+        List<String> result = new ArrayList<>();
+        String[] words = text.split(" ");
+        String prev = '\0' + "";
+        for (int i = 0; i < words.length; i++) {
+            String cur = words[i];
+            if (prev.equals(first) && cur.equals(second)) {
+                if (i + 1 < words.length) {
+                    result.add(words[i + 1]);
+                }
+            }
+            prev = cur;
+        }
+        return result.toArray(new String[result.size()]);
     }
 
     // LC1815 Try Simulate Anneal 模拟退火
@@ -759,8 +756,7 @@ class Trie {
 
     public boolean search(String word) {
         TrieNode target = getNode(word);
-        if (target == null) return false;
-        return target.end > 0;
+        return target != null && target.end > 0;
     }
 
     public boolean beginWith(String prefix) {
