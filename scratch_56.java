@@ -20,6 +20,70 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1093
+    public double[] sampleStats(int[] count) {
+        // min max avg middle popular
+        double[] result = new double[5];
+        int total = 0;
+        for (int i : count) total += i;
+        if (total % 2 == 0) {
+            // 找 half, half+1
+            int first = -1, second = -1;
+            int half = total / 2;
+            int accu = 0;
+            for (int i = 0; i < 256; i++) {
+                accu += count[i];
+                if (first == -1 && accu >= half) {
+                    first = i;
+                }
+                if (first != -1 && accu >= half + 1) {
+                    second = i;
+                    break;
+                }
+            }
+            result[3] = (first + second + 0d) / 2d;
+        } else {
+            // 找half+1
+            int first = -1;
+            int half = total / 2;
+            int accu = 0;
+            for (int i = 0; i < 256; i++) {
+                accu += count[i];
+                if (first == -1 && accu >= half + 1) {
+                    first = i;
+                    break;
+                }
+            }
+            result[3] = first;
+        }
+        for (int i = 0; i < 256; i++) {
+            if (count[i] != 0) {
+                result[0] = i;
+                break;
+            }
+        }
+        for (int i = 255; i >= 0; i--) {
+            if (count[i] != 0) {
+                result[1] = i;
+                break;
+            }
+        }
+        long sum = 0;
+        for (int i = 0; i < 256; i++) {
+            sum += (count[i] + 0l) * (i + 0l);
+        }
+        result[2] = (sum + 0d) / (total + 0d);
+        int popCount = 0, popNum = -1;
+        for (int i = 0; i < 256; i++) {
+            if (count[i] > popCount) {
+                popNum = i;
+                popCount = count[i];
+            }
+        }
+        result[4] = popNum;
+        return result;
+    }
+
     // LC1058
     public String minimizeError(String[] prices, int target) {
         double max = 0d, min = 0d, sum = 0d;
