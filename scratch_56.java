@@ -7,8 +7,29 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        s.wallsAndGates(new int[][]{{2147483647, 0, 2147483647, 2147483647, 0, 2147483647, -1, 2147483647}});
-        System.out.println();
+
+        WordDictionary wd = new WordDictionary();
+        wd.addWord("ran");
+        wd.addWord("rune");
+        wd.addWord("runner");
+        wd.addWord("runs");
+        wd.addWord("add");
+        wd.addWord("adds");
+        wd.addWord("adder");
+        wd.addWord("addee");
+        wd.search("r.n");
+        wd.search("ru.n.e");
+        wd.search("add");
+        wd.search("add.");
+        wd.search("adde.");
+        wd.search(".an.");
+        wd.search("...s");
+        wd.search("....e.");
+        wd.search(".......");
+        wd.search("..n.r");
+
+
+        System.out.println(wd.search(".ad"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -696,5 +717,112 @@ class TreeNode {
 
     TreeNode(int x) {
         val = x;
+    }
+}
+
+
+class Trie {
+    TrieNode root;
+
+    public Trie() {
+        root = new TrieNode();
+    }
+
+
+    public boolean addWord(String word) {
+        if (search(word)) return false;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) {
+                cur.children.put(c, new TrieNode());
+            }
+            cur = cur.children.get(c);
+            cur.path++;
+        }
+        cur.end++;
+        return true;
+    }
+
+    public boolean remove(String word) {
+        if (!search(word)) return false;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children.get(c).path-- == 1) {
+                cur.children.remove(c);
+                return true;
+            }
+            cur = cur.children.get(c);
+        }
+        cur.end--;
+        return true;
+    }
+
+    public boolean search(String word) {
+        TrieNode target = getNode(word);
+        if (target == null) return false;
+        return target.end > 0;
+    }
+
+    public boolean beginWith(String prefix) {
+        return getNode(prefix) != null;
+    }
+
+    private TrieNode getNode(String prefix) {
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (!cur.children.containsKey(c)) return null;
+            cur = cur.children.get(c);
+        }
+        return cur;
+    }
+
+}
+
+
+class TrieNode {
+    Map<Character, TrieNode> children = new HashMap<>();
+    int end = 0;
+    int path = 0;
+}
+
+
+// LC211
+class WordDictionary {
+    Trie trie;
+
+    public WordDictionary() {
+        trie = new Trie();
+    }
+
+    public void addWord(String word) {
+        trie.addWord(word);
+    }
+
+    public boolean search(String word) {
+        return searchHelper("", word);
+    }
+
+    private boolean searchHelper(String prefix, String suffix) {
+        if (suffix.equals("")) return trie.search(prefix);
+        StringBuilder sb = new StringBuilder(prefix);
+        for (int i = 0; i < suffix.length(); i++) {
+            if (suffix.charAt(i) != '.') {
+                sb.append(suffix.charAt(i));
+            } else {
+                for (int j = 0; j < 26; j++) {
+                    sb.append((char) ('a' + j));
+                    if (!trie.beginWith(sb.toString())) {
+                        sb.deleteCharAt(sb.length() - 1);
+                        continue;
+                    }
+                    if (searchHelper(sb.toString(), suffix.substring(i + 1))) return true;
+                    sb.deleteCharAt(sb.length() - 1);
+                }
+                // 一旦所有'.'的可能性都被尝试, 且无一匹配, 即可返回false
+                return false;
+            }
+        }
+        // 如果全程没有'.', 返回Trie中是否有这个word
+        return trie.search(sb.toString());
     }
 }
