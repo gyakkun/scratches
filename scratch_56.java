@@ -15,6 +15,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1508 前缀和 + 暴力
+    public int rangeSum(int[] nums, int n, int left, int right) {
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + nums[i];
+        List<Integer> accu = new ArrayList<>((n + 1) * n / 2);
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                accu.add(prefix[j + 1] - prefix[i]);
+            }
+        }
+        Collections.sort(accu);
+        long sum = 0, mod = 1000000007;
+        for (int i = left - 1; i < right; i++) {
+            sum += accu.get(i);
+            sum %= mod;
+        }
+        return (int) (sum % mod);
+    }
+
     // LC1078
     public String[] findOcurrences(String text, String first, String second) {
         List<String> result = new ArrayList<>();
