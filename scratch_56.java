@@ -15,6 +15,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC767 **
+    public String reorganizeString(String s) {
+        PriorityQueue<Pair<Character, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o.getValue()));
+        Deque<Pair<Character, Integer>> q = new LinkedList<>();
+        Map<Character, Integer> freq = new HashMap<>(26);
+        for (char c : s.toCharArray()) {
+            freq.put(c, freq.getOrDefault(c, 0) + 1);
+        }
+        for (Map.Entry<Character, Integer> e : freq.entrySet()) {
+            pq.offer(new Pair<>(e.getKey(), e.getValue()));
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!pq.isEmpty()) {
+            Pair<Character, Integer> p = pq.poll();
+            sb.append(p.getKey());
+            q.offer(new Pair<>(p.getKey(), p.getValue() - 1));
+            if (q.size() == 2) {
+                if (q.peek().getValue() > 0) {
+                    pq.offer(q.peek());
+                }
+                q.poll();
+            }
+        }
+        return sb.length() < s.length() ? "" : sb.toString();
+    }
+
     // LC294 博弈
     public boolean canWin(String currentState) {
         List<String> next = generatePossibleNextMoves(currentState);
