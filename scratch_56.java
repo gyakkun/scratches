@@ -15,6 +15,16 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC294 博弈
+    public boolean canWin(String currentState) {
+        List<String> next = generatePossibleNextMoves(currentState);
+        if (next.size() == 0) return false;
+        for (String n : next) {
+            if (!canWin(n)) return true;
+        }
+        return false;
+    }
+
     // LC293
     public List<String> generatePossibleNextMoves(String currentState) {
         List<String> result = new ArrayList<>();
