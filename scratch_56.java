@@ -8,16 +8,37 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.out.println(s.rearrangeString("cihefgcceegaaebajgcfchhegfcehjbchfbjdjgdcedd", 6));
-//        System.out.println(s.rearrangeString("abcdabcdabdeac", 4));
-//        System.out.println(s.rearrangeString("aabbcc", 3));
-//        System.out.println(s.rearrangeString("abb", 2));
-//        System.out.println(s.rearrangeString("aabbccdd", 3));
-        System.out.println(s.rearrangeString("cijfgcdadbhffgjdjccbdgeihbdcbjdijajehgihihdijghcbffiedjahbdjbbjcfggaj", 6));
+//        System.out.println(s.rearrangeString("cijfgcdadbhffgjdjccbdgeihbdcbjdijajehgihihdijghcbffiedjahbdjbbjcfggaj", 6));
+        System.out.println(s.rearrangeString("aaabc", 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+
+    // LC358 ** Heap
+    public String rearrangeString(String s, int k) {
+        if (k == 0) return s;
+        PriorityQueue<Pair<Character, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o.getValue()));
+        Map<Character, Integer> freq = new HashMap<>(26);
+        Deque<Pair<Character, Integer>> q = new LinkedList<>();
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) freq.put(c, freq.getOrDefault(c, 0) + 1);
+        for (Map.Entry<Character, Integer> e : freq.entrySet()) pq.offer(new Pair<>(e.getKey(), e.getValue()));
+        while (!pq.isEmpty()) {
+            Pair<Character, Integer> p = pq.poll();
+            sb.append(p.getKey());
+            q.offer(new Pair<>(p.getKey(), p.getValue() - 1));
+            if (q.size() == k) {
+                if (q.peek().getValue() > 0) {
+                    pq.offer(q.peek());
+                }
+                q.poll();
+            }
+        }
+        return sb.length() < s.length() ? "" : sb.toString();
+    }
+
 
     // LC453
     public int minMoves(int[] nums) {
@@ -30,106 +51,6 @@ class Scratch {
             sum += i;
         }
         return (int) (sum - (min + 0l) * (nums.length + 0l));
-    }
-
-    // LC358 发牌算法 WA TBD
-    char[] lc358Result;
-
-    public String rearrangeString(String s, int k) {
-        if (k == 0) return s;
-        int n = s.length();
-        // 使相同字母的间隔至少为k, 不行则返回空串
-        int[] freq = new int[256];
-        for (char c : s.toCharArray()) {
-            freq[c]++;
-        }
-        int maxFreq = Arrays.stream(freq).max().getAsInt();
-        int gapNum = n / k;
-        int maxGap = n / k;
-        int lastGapSize = 0;
-        if (n % k != 0) {
-            maxGap++;
-            lastGapSize = n % k;
-        }
-        if (maxGap < maxFreq) return "";
-        List<Pair<Character, Integer>> pairList = new ArrayList<>(26);
-        for (int i = 0; i < 256; i++) {
-            if (freq[i] != 0) {
-                pairList.add(new Pair<>((char) i, freq[i]));
-            }
-        }
-        pairList.sort(Comparator.comparingInt(o -> -o.getValue()));
-
-        this.lc358Result = new char[n];
-
-        // 数下有多少个freq 为 max的个数c, 然后先将最后的gap 的 len - c个用频率最少的几个来填充
-
-        int maxFreqCount = 0;
-        for (Pair<Character, Integer> p : pairList) {
-            if (p.getValue() == maxFreq) {
-                maxFreqCount++;
-            } else {
-                break;
-            }
-        }
-
-        int alreadyFilled = 0;
-        if (lastGapSize != 0) {
-            int backIdx = n - 1;
-            int origPairSize = pairList.size();
-            int remainTurn = lastGapSize - maxFreqCount;
-            if (remainTurn > 0) {
-                alreadyFilled = remainTurn;
-                for (int i = origPairSize - 1; i >= 0 && remainTurn > 0; i--) {
-                    Pair<Character, Integer> lastPair = pairList.get(i);
-                    pairList.remove(i);
-                    lc358Result[backIdx--] = lastPair.getKey();
-                    if (lastPair.getValue() != 1) {
-                        pairList.add(new Pair<>(lastPair.getKey(), lastPair.getValue() - 1));
-                    }
-                    remainTurn--;
-                }
-            }
-        }
-
-        int idx = 0;
-        char[] ca = new char[n - alreadyFilled];
-        for (Pair<Character, Integer> p : pairList) {
-            for (int i = 0; i < p.getValue(); i++) {
-                ca[idx++] = p.getKey();
-            }
-        }
-
-        for (int i = 0; i < n - alreadyFilled; i++) {
-            idx = getIdx(i, n, maxGap, k);
-            lc358Result[idx] = ca[i];
-        }
-
-
-        // 除了max freq 的之外 其他占据最后一个gap的都应该是频率为
-        int[] lastOccur = new int[256];
-        Arrays.fill(lastOccur, -1);
-        for (int i = 0; i < n; i++) {
-            if (lastOccur[lc358Result[i]] != -1) {
-                if (i - lastOccur[lc358Result[i]] < k) return "";
-            }
-            lastOccur[lc358Result[i]] = i;
-        }
-        return new String(lc358Result);
-    }
-
-    private int getIdx(int current, int length, int gapNum, int gapLength) {
-        int round = current / gapNum;
-        int whichGap = current % gapNum;
-        int result = round + whichGap * gapLength;
-
-        if (result >= length) {
-            return getIdx(current + 1, length, gapNum, gapLength);
-        }
-        if (this.lc358Result[result] != 0) {
-            return getIdx(current + 1, length, gapNum, gapLength);
-        }
-        return result;
     }
 
     // LC1093
