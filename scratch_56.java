@@ -15,6 +15,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 31 LC946 **
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        Deque<Integer> stack = new LinkedList<>();
+        int popIdx = 0;
+        for (int i = 0; i < pushed.length; i++) {
+            stack.push(pushed[i]);
+            while (!stack.isEmpty() && stack.peek() == popped[popIdx]) {
+                stack.pop();
+                popIdx++;
+            }
+        }
+        return popIdx == popped.length;
+    }
+
+
     // LC1969 **
     public int minNonZeroProduct(int p) {
         // a+b 和不变, |a-b|越大, a*b 越小
