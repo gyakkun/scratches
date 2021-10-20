@@ -15,6 +15,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1457
+    int[] lc1457Freq = new int[10];
+    int lc1457Result = 0;
+
+    public int pseudoPalindromicPaths(TreeNode root) {
+        lc1457Helper(root);
+        return lc1457Result;
+    }
+
+    private void lc1457Helper(TreeNode root) {
+        if (root == null) return;
+        lc1457Freq[root.val]++;
+        if (root.left == null && root.right == null) {
+            int odd = 0, even = 0, sum = 0;
+            for (int i = 1; i <= 9; i++) {
+                if (lc1457Freq[i] % 2 == 0) even++;
+                else odd++;
+            }
+            if (odd == 1 || odd == 0) {
+                lc1457Result++;
+            }
+        }
+        lc1457Helper(root.left);
+        lc1457Helper(root.right);
+        lc1457Freq[root.val]--;
+    }
+
+
     // LC487
     public int findMaxConsecutiveOnes(int[] nums) {
         if (nums.length == 1) return 1;
