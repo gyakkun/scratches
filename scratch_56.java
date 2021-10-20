@@ -21,6 +21,50 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP33 MLE
+    public int storeWater(int[] bucket, int[] vat) {
+        // 两种操作: 1) 升级单个水桶 bucket[i] += 1 , 2) 所有水桶一起往水缸倒水
+        int n = bucket.length;
+        int layer = -1;
+        Deque<int[][]> q = new LinkedList<>(); // i[0] : bucket , i[1] 现在各个缸的水量
+        q.offer(new int[][]{bucket, new int[n]});
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            layer++;
+            for (int i = 0; i < qs; i++) {
+                int[][] p = q.poll();
+                int[] curBucket = p[0];
+                int[] curTotal = p[1];
+//                if (check(curBucket, vat)) return layer;
+
+                // 升级一个水桶
+                for (int j = 0; j < n; j++) {
+                    if (curBucket[j] < vat[j]) {
+                        int[] nextBucket = Arrays.copyOf(curBucket, n);
+                        nextBucket[j]++;
+                        q.offer(new int[][]{nextBucket, Arrays.copyOf(curTotal, n)});
+                    }
+                }
+
+                // 倒水
+                int[] nextTotal = Arrays.copyOf(curTotal, n);
+                for (int j = 0; j < n; j++) {
+                    nextTotal[j] += curBucket[j];
+                }
+                if (check(nextTotal, vat)) return layer + 1;
+                q.offer(new int[][]{curBucket, nextTotal});
+            }
+        }
+        return -1;
+    }
+
+    private boolean check(int[] cur, int[] vat) {
+        for (int i = 0; i < cur.length; i++) {
+            if (cur[i] < vat[i]) return false;
+        }
+        return true;
+    }
+
     // LC358 ** Heap
     public String rearrangeString(String s, int k) {
         if (k == 0) return s;
