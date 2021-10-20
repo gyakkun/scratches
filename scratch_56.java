@@ -21,6 +21,51 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1697 TLE
+    public boolean[] distanceLimitedPathsExist(int n, int[][] edgeList, int[][] queries) {
+        boolean[] result = new boolean[queries.length];
+        List<Map<Integer, Integer>> matrix = new ArrayList<>(n);
+        // [key,value] : key: 下一个点, value: 距离
+        for (int i = 0; i < n; i++) matrix.add(new HashMap<>());
+        for (int[] e : edgeList) {
+            if (!matrix.get(e[0]).containsKey(e[1]) || matrix.get(e[0]).get(e[1]) > e[2]) {
+                matrix.get(e[0]).put(e[1], e[2]);
+            }
+            if (!matrix.get(e[1]).containsKey(e[0]) || matrix.get(e[1]).get(e[0]) > e[2]) {
+                matrix.get(e[1]).put(e[0], e[2]);
+            }
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            int start = q[0], end = q[1], limit = q[2];
+            Set<Integer> visited = new HashSet<>();
+            // [key,value] : key: 下一个点, value: 距离
+            PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[1]));
+            pq.offer(new int[]{start, 0});
+            loop:
+            while (!pq.isEmpty()) {
+                int qs = pq.size();
+                Set<Integer> thisLayerVisited = new HashSet<>();
+                for (int j = 0; j < qs; j++) {
+                    int[] p = pq.poll();
+                    if (visited.contains(p[0])) continue;
+                    thisLayerVisited.add(p[0]);
+                    if (p[0] == end) {
+                        result[i] = true;
+                        break loop;
+                    }
+                    for (Map.Entry<Integer, Integer> e : matrix.get(p[0]).entrySet()) {
+                        if (e.getValue() < limit && !visited.contains(e.getKey())) {
+                            pq.offer(new int[]{e.getKey(), e.getValue()});
+                        }
+                    }
+                }
+                visited.addAll(thisLayerVisited);
+            }
+        }
+        return result;
+    }
+
     // LC1769
     public int[] minOperations(String boxes) {
         int n = boxes.length();
