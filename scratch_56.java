@@ -15,6 +15,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC293
+    public List<String> generatePossibleNextMoves(String currentState) {
+        List<String> result = new ArrayList<>();
+        for (int i = 1; i < currentState.length(); i++) {
+            if (currentState.charAt(i) == '+' && currentState.charAt(i - 1) == '+') {
+                result.add(currentState.substring(0, i - 1) + "--" + currentState.substring(i + 1));
+            }
+        }
+        return result;
+    }
+
     // LC1697 离线算法
     public boolean[] distanceLimitedPathsExist(int n, int[][] edgeList, int[][] queries) {
         boolean[] result = new boolean[queries.length];
