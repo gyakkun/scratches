@@ -15,6 +15,58 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1041 **
+    public boolean isRobotBounded(String instructions) {
+        int[][] direction = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+        int d = 0, x = 0, y = 0;
+        for (char c : instructions.toCharArray()) {
+            switch (c) {
+                case 'G':
+                    x += direction[d][0];
+                    y += direction[d][1];
+                    break;
+                case 'L':
+                    d = (d - 1 + 4) % 4;
+                    break;
+                case 'R':
+                    d = (d + 1) % 4;
+                    break;
+            }
+        }
+        return d != 0 || (x == 0 && y == 0);
+    }
+
+    // LC251
+    class Vector2D {
+        int x = 0, y = 0;
+        int[][] vector;
+
+        public Vector2D(int[][] vec) {
+            vector = vec;
+        }
+
+        public int next() {
+            int result = vector[x][y];
+            if (y < vector[x].length - 1) y++;
+            else {
+                x++;
+                y = 0;
+            }
+            return result;
+        }
+
+        public boolean hasNext() {
+            if (x < vector.length && y < vector[x].length) return true;
+            if (x >= vector.length) return false;
+            if (y >= vector[x].length) {
+                x++;
+                y = 0;
+                return hasNext();
+            }
+            return false;
+        }
+    }
+
     // JZOF 31 LC946 **
     public boolean validateStackSequences(int[] pushed, int[] popped) {
         Deque<Integer> stack = new LinkedList<>();
