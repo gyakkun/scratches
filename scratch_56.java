@@ -15,6 +15,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC487
+    public int findMaxConsecutiveOnes(int[] nums) {
+        if (nums.length == 1) return 1;
+        if (nums.length == 2) {
+            int sum = nums[0] + nums[1];
+            if (sum > 0) return 2;
+            return 1;
+        }
+        // 只能翻转1个0, 问最长连续1
+        int n = nums.length;
+        int[] rightOnes = new int[n]; // 右侧连续1的个数
+        int oneCount = nums[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            rightOnes[i] = oneCount;
+            if (nums[i] == 0) oneCount = 0;
+            else oneCount++;
+        }
+        int max = nums[0], leftOneCount = nums[0];
+        for (int i = 1; i < n; i++) {
+            max = Math.max(max, leftOneCount + rightOnes[i] + 1);
+            if (nums[i] == 0) leftOneCount = 0;
+            else leftOneCount++;
+        }
+        return max;
+    }
+
     // LC1041 **
     public boolean isRobotBounded(String instructions) {
         int[][] direction = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
