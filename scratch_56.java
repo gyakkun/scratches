@@ -3,18 +3,23 @@ import javafx.util.Pair;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
+        Lc126 lc126 = new Lc126();
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.rearrangeString("cijfgcdadbhffgjdjccbdgeihbdcbjdijajehgihihdijghcbffiedjahbdjbbjcfggaj", 6));
-        System.out.println(s.rearrangeString("aaabc", 3));
+        System.out.println(lc126.findLadders(
+                "red",
+                "tax",
+                Arrays.asList("ted", "tex", "red", "tax", "tad", "den", "rex", "pee")
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
-
 
     // LC358 ** Heap
     public String rearrangeString(String s, int k) {
@@ -995,5 +1000,87 @@ class WordDictionary {
         }
         // 如果全程没有'.', 返回Trie中是否有这个word
         return trie.search(sb.toString());
+    }
+}
+
+// LC126
+class Lc126 {
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        List<List<String>> result = new ArrayList<>();
+        Node start = new Node(null, beginWord);
+        Set<String> visited = new HashSet<>(wordList.size());
+        Map<String, Set<String>> edge = new HashMap<>();
+        for (String w : wordList) edge.put(w, new HashSet<>());
+        edge.put(beginWord, new HashSet<>());
+        for (int i = 0; i < wordList.size(); i++) {
+            for (int j = i + 1; j < wordList.size(); j++) {
+                String iw = wordList.get(i), jw = wordList.get(j);
+                if (oneLetterDiff(iw.toCharArray(), jw.toCharArray())) {
+                    edge.get(iw).add(jw);
+                    edge.get(jw).add(iw);
+                }
+            }
+            if (oneLetterDiff(wordList.get(i).toCharArray(), beginWord.toCharArray())) {
+                edge.get(beginWord).add(wordList.get(i));
+            }
+        }
+
+        Deque<Node> q = new LinkedList<>();
+        List<Node> resultNodeList = new ArrayList<>();
+        int layer = -1, finalLayer = -1;
+        q.offer(start);
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            Set<String> thisLayerVisited = new HashSet<>();
+            layer++;
+            if (finalLayer != -1 && layer > finalLayer) break;
+            for (int i = 0; i < qs; i++) {
+                Node p = q.poll();
+                if (p.word.equals(endWord)) {
+                    finalLayer = layer;
+                    resultNodeList.add(p);
+                    continue;
+                }
+                if (visited.contains(p.word)) continue;
+                thisLayerVisited.add(p.word);
+                if (finalLayer == -1) {
+                    for (String next : edge.get(p.word)) {
+                        if (!visited.contains(next)) {
+                            q.offer(new Node(p, next));
+                        }
+                    }
+                }
+            }
+            // 注意求所有情况的时候不能根据在同一层已经访问过的边剪枝, 应该等该层全部访问后, 再将已访问节点标记
+            visited.addAll(thisLayerVisited);
+        }
+        for (Node resultNode : resultNodeList) {
+            List<String> r = new LinkedList<>();
+            while (resultNode != null) {
+                r.add(0, resultNode.word);
+                resultNode = resultNode.prev;
+            }
+            result.add(r);
+        }
+        return result;
+    }
+
+    private boolean oneLetterDiff(char[] a, char[] b) {
+        int ctr = 0;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] != b[i]) ctr++;
+            if (ctr == 2) return false;
+        }
+        return true;
+    }
+
+    class Node {
+        Node prev;
+        String word;
+
+        public Node(Node prev, String word) {
+            this.prev = prev;
+            this.word = word;
+        }
     }
 }
