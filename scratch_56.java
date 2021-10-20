@@ -9,10 +9,37 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.rearrangeString("cijfgcdadbhffgjdjccbdgeihbdcbjdijajehgihihdijghcbffiedjahbdjbbjcfggaj", 6));
+        System.out.println(s.minNonZeroProduct(32));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1969 **
+    public int minNonZeroProduct(int p) {
+        // a+b 和不变, |a-b|越大, a*b 越小
+        // 如果算上0, 总共有 2^p 个数 -> 2^(p-1) 个数的正反码 -> 必然可以凑出 2^(p-1) 个1和(2^p -2)
+        // 因为现在0不在, 所以总共凑出了(2^(p-1)-1)个1和(2^p -2), 以及一个(2^p -1)
+        // 快速幂即可
+        final long mod = 1000000007;
+        long result = quickPowMod((1l << p) - 2l, (1l << (p - 1)) - 1l, mod);
+        long remain = ((1l << p) - 1l) % mod;
+        return (int) ((remain * result) % mod);
+    }
+
+    private long quickPowMod(long base, long exp, long mod) {
+        long result = 1l;
+        long accu = base % mod;
+        while (exp != 0l) {
+            if ((exp & 1l) == 1l) {
+                result *= accu;
+                result %= mod;
+            }
+            accu *= accu;
+            accu %= mod;
+            exp >>= 1l;
+        }
+        return result;
     }
 
     // LC767 **
