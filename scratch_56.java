@@ -23,10 +23,13 @@ class Scratch {
     public int minMoves(int[] nums) {
         // 每次n-1个数增加1, 问增加多少次相等
         // 等同于每次挑一个数减少1, 问总共减少多少次相等
-        int min = Arrays.stream(nums).min().getAsInt();
-        int result = 0;
-        for (int i : nums) result += i - min;
-        return result;
+        int min = Integer.MAX_VALUE;
+        long sum = 0;
+        for (int i : nums) {
+            min = Math.min(min, i);
+            sum += i;
+        }
+        return (int) (sum - (min + 0l) * (nums.length + 0l));
     }
 
     // LC358 发牌算法 WA TBD
