@@ -34,14 +34,15 @@ class Scratch {
                 matrix.get(e[1]).put(e[0], e[2]);
             }
         }
-        List<TreeSet<Pair<Integer, Integer>>> mtx = new ArrayList<>();
-        for (int i = 0; i < n; i++) mtx.add(new TreeSet<>(Comparator.comparingInt(o -> o.getValue())));
+        List<Set<Pair<Integer, Integer>>> mtx = new ArrayList<>();
+//        for (int i = 0; i < n; i++) mtx.add(new TreeSet<>(Comparator.comparingInt(o -> o.getValue())));
+        for (int i = 0; i < n; i++) mtx.add(new HashSet<>());
         for (int i = 0; i < n; i++) {
             for (Map.Entry<Integer, Integer> e : matrix.get(i).entrySet()) {
                 mtx.get(i).add(new Pair<>(e.getKey(), e.getValue()));
             }
         }
-        DisjointSetUnion<Integer> dsu = new DisjointSetUnion<>();
+        DSUArray dsu = new DSUArray();
         for (int i = 0; i < n; i++) dsu.add(i);
 
         Map<int[], Integer> queryIdxMap = new HashMap<>();
@@ -53,9 +54,11 @@ class Scratch {
             int[] q = queries[i];
             int start = q[0], end = q[1], limit = q[2];
             for (int j = 0; j < n; j++) {
-                NavigableSet<Pair<Integer, Integer>> pairs = mtx.get(j).subSet(new Pair<>(0, 0), true, new Pair<>(0, limit), false);
-                for (Pair<Integer, Integer> p : pairs) {
-                    dsu.merge(p.getKey(), j);
+//                NavigableSet<Pair<Integer, Integer>> pairs = mtx.get(j).subSet(new Pair<>(0, 0), true, new Pair<>(0, limit), false);
+                for (Pair<Integer, Integer> p : mtx.get(j)) {
+                    if (p.getValue() < limit) {
+                        dsu.merge(p.getKey(), j);
+                    }
                 }
                 if (dsu.isConnected(start, end)) {
                     result[queryIdxMap.get(q)] = true;
@@ -1265,3 +1268,78 @@ class DisjointSetUnion<T> {
     }
 
 }
+
+class DSUArray {
+    int[] father;
+    int[] rank;
+    int size;
+
+    public DSUArray(int size) {
+        this.size = size;
+        father = new int[size];
+        rank = new int[size];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public DSUArray() {
+        this.size = Integer.MAX_VALUE >> 16;
+        father = new int[Integer.MAX_VALUE >> 16];
+        rank = new int[Integer.MAX_VALUE >> 16];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public void add(int i) {
+        if (i >= this.size || i < 0) return;
+        if (father[i] == -1) {
+            father[i] = i;
+        }
+        if (rank[i] == -1) {
+            rank[i] = 1;
+        }
+    }
+
+    public int find(int i) {
+        if (i >= this.size || i < 0) return -1;
+        int root = i;
+        while (root < size && root >= 0 && father[root] != root) {
+            root = father[root];
+        }
+        if (root == -1) return -1;
+        while (father[i] != root) {
+            int origFather = father[i];
+            father[i] = root;
+            rank[root]++;
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (j >= this.size || j < 0) return false;
+        int iFather = find(i);
+        int jFather = find(j);
+        if (iFather == -1 || jFather == -1) return false;
+        if (iFather == jFather) return false;
+
+        if (rank[iFather] >= rank[jFather]) {
+            father[jFather] = iFather;
+            rank[iFather] += rank[jFather];
+        } else {
+            father[iFather] = jFather;
+            rank[jFather] += rank[iFather];
+        }
+        return true;
+    }
+
+    public boolean isConnected(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (i >= this.size || i < 0) return false;
+        return find(i) == find(j);
+    }
+
+
+}
+
