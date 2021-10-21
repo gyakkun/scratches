@@ -7,7 +7,10 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
+        Codec codec = new Codec();
         long timing = System.currentTimeMillis();
+
+        Codec.Node a = codec.deserialize("1(2(),3(6(),7(11(14()))),4(8(12())),5(9(13()),10()))");
 
         System.out.println(s.minNonZeroProduct(32));
 
@@ -1500,5 +1503,87 @@ class DSUArray {
     }
 
 
+}
+
+// LC428
+class Codec {
+    // Encodes a tree to a single string.
+    public String serialize(Node root) {
+        if (root == null) return "()";
+        StringBuilder sb = new StringBuilder();
+        sb.append(root.val);
+        if (root.children == null || root.children.size() == 0) {
+            sb.append("()");
+            return sb.toString();
+        }
+        sb.append("(");
+        for (Node c : root.children) {
+            sb.append(serialize(c));
+            sb.append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(")");
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public Node deserialize(String data) {
+        if (data.equals("()")) return null;
+        int left = data.indexOf("("), right = data.lastIndexOf(")");
+        Node root = new Node(Integer.parseInt(data.substring(0, left)));
+        List<Node> children = new ArrayList<>();
+        if (right - left == 1) {
+            root.children = children;
+            return root;
+        }
+        int idx = left + 1;
+        boolean digitStart = false;
+        int digitStartIdx = -1;
+        while (idx < right) {
+            if (Character.isDigit(data.charAt(idx))) {
+                if (!digitStart) {
+                    digitStart = true;
+                    digitStartIdx = idx;
+                }
+                idx++;
+                continue;
+            } else if (data.charAt(idx) == '(') {
+                // 开始括号匹配
+                int parenthesisCount = 1, ppIdx = idx + 1;
+                while (parenthesisCount != 0) {
+                    if (data.charAt(ppIdx) == '(') parenthesisCount++;
+                    if (data.charAt(ppIdx) == ')') parenthesisCount--;
+                    ppIdx++;
+                }
+                children.add(deserialize(data.substring(digitStartIdx, ppIdx)));
+                idx = ppIdx;
+                digitStart = false;
+                digitStartIdx = -1;
+            } else {
+                idx++;
+            }
+        }
+        root.children = children;
+        return root;
+    }
+
+    class Node {
+        public int val;
+        public List<Node> children;
+
+        public Node() {
+        }
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, List<Node> _children) {
+            val = _val;
+            children = _children;
+        }
+    }
+
+    ;
 }
 
