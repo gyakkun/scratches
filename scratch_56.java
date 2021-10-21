@@ -1583,7 +1583,66 @@ class Codec {
             children = _children;
         }
     }
-
-    ;
 }
 
+
+// LC431
+class CodecLc431 {
+    // left siblings right children
+    // Encodes an n-ary tree to a binary tree.
+    public TreeNode encode(Node root) {
+        if (root == null) return null;
+        TreeNode tn = new TreeNode(root.val);
+        if (root.children.size() == 0) return tn;
+        TreeNode rightForChildren = tn;
+        TreeNode siblings = null, firstSiblings = null;
+        for (Node c : root.children) {
+            TreeNode cn = encode(c);
+            if (siblings == null) {
+                siblings = cn;
+                firstSiblings = cn;
+                continue;
+            } else {
+                siblings.left = cn;
+                siblings = cn;
+            }
+        }
+        tn.right = firstSiblings;
+        return tn;
+    }
+
+    // Decodes your binary tree to an n-ary tree.
+    public Node decode(TreeNode root) {
+        if (root == null) return null;
+        Node n = new Node(root.val);
+        List<Node> children = new ArrayList<>();
+        if (root.right == null) {
+            n.children = children;
+            return n;
+        }
+        TreeNode siblings = root.right;
+        while (siblings != null) {
+            children.add(decode(siblings));
+            siblings = siblings.left;
+        }
+        n.children = children;
+        return n;
+    }
+
+    class Node {
+        public int val;
+        public List<Node> children;
+
+        public Node() {
+        }
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, List<Node> _children) {
+            val = _val;
+            children = _children;
+        }
+    }
+}
