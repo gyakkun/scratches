@@ -17,6 +17,42 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1245 无向树的直径
+    int lc1245Diameter = 0;
+
+    public int treeDiameter(int[][] edges) {
+        int n = edges.length + 1; // k条边, k+1个节点
+        List<List<Integer>> mtx = new ArrayList<>(n);
+        int[] indegree = new int[n];
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        for (int[] e : edges) {
+            mtx.get(e[0]).add(e[1]);
+            mtx.get(e[1]).add(e[0]);
+        }
+        boolean[] visited = new boolean[n];
+        lc1245Helper(0, visited, mtx);
+        return lc1245Diameter;
+    }
+
+    private int lc1245Helper(int idx, boolean[] visited, List<List<Integer>> mtx) {
+        visited[idx] = true;
+        int max1 = 0, max2 = 0;
+        for (int next : mtx.get(idx)) {
+            if (!visited[next]) {
+                int pathLen = lc1245Helper(next, visited, mtx);
+                if (pathLen > max1) {
+                    max2 = max1;
+                    max1 = pathLen;
+                } else if (pathLen > max2) {
+                    max2 = pathLen;
+                }
+            }
+        }
+        lc1245Diameter = Math.max(lc1245Diameter, max1 + max2);
+        return Math.max(max1, max2) + 1;
+    }
+
+
     // LC492
     public int[] constructRectangle(int area) {
         int sqrt = (int) Math.sqrt(area);
