@@ -10,12 +10,29 @@ class Scratch {
         Codec codec = new Codec();
         long timing = System.currentTimeMillis();
 
-        Codec.Node a = codec.deserialize("1(2(),3(6(),7(11(14()))),4(8(12())),5(9(13()),10()))");
 
-        System.out.println(s.minNonZeroProduct(32));
+        System.out.println(s.constructRectangle(122122));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC492
+    public int[] constructRectangle(int area) {
+        int sqrt = (int) Math.sqrt(area);
+        if (sqrt * sqrt == area) return new int[]{sqrt, sqrt};
+        int minDelta = area - sqrt * sqrt;
+        int[] result = new int[]{sqrt, sqrt};
+        for (int w = sqrt; w >= 1; w--) {
+            int l = area / w;
+            int actualArea = l * w;
+            int delta = area - actualArea;
+            if (delta < minDelta) {
+                minDelta = delta;
+                result = new int[]{l, w};
+            }
+        }
+        return result;
     }
 
     // LC1457
