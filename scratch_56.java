@@ -17,6 +17,53 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1522 N叉树的直径
+    class Lc1522 {
+        int d = 0;
+
+        public int diameter(Node root) {
+            helper(root);
+            return d;
+        }
+
+        private int helper(Node root) {
+            if (root == null) return 0;
+            if (root.children.size() == 0) return 1;
+            int max1 = 0, max2 = 0;
+            for (Node c : root.children) {
+                int pathLen = helper(c);
+                if (pathLen > max1) {
+                    max2 = max1;
+                    max1 = pathLen;
+                } else if (pathLen > max2) {
+                    max2 = pathLen;
+                }
+            }
+            d = Math.max(d, max1 + max2);
+            return Math.max(max1, max2) + 1;
+        }
+
+        class Node {
+            public int val;
+            public List<Node> children;
+
+
+            public Node() {
+                children = new ArrayList<Node>();
+            }
+
+            public Node(int _val) {
+                val = _val;
+                children = new ArrayList<Node>();
+            }
+
+            public Node(int _val, ArrayList<Node> _children) {
+                val = _val;
+                children = _children;
+            }
+        }
+    }
+
     // LC1245 无向树的直径
     int lc1245Diameter = 0;
 
