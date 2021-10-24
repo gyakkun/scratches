@@ -14,12 +14,55 @@ class Scratch {
         // [2,3,4]
         //[[1,1,0,4],[2,2,1,9]]
         //[1,2,1]
-        System.out.println(s.shoppingOffers(Arrays.asList(2, 3, 4),
-                Arrays.asList(Arrays.asList(1, 1, 0, 4), Arrays.asList(2, 2, 1, 9)),
-                Arrays.asList(1, 2, 1)));
+        System.out.println(s.getBiggestThree(new int[][]{{3, 4, 5, 1, 3}, {3, 3, 4, 2, 3}, {20, 30, 200, 40, 10}, {1, 5, 5, 4, 1}, {4, 3, 2, 2, 5}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1878
+    public int[] getBiggestThree(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        TreeSet<Integer> ts = new TreeSet<>(Comparator.reverseOrder());
+        for (int i = 0; i < m; i++) {
+            loop:
+            for (int j = 0; j < n; j++) {
+                // "边长"为0
+                ts.add(grid[i][j]);
+                for (int k = 1; ; k++) { // "边长"
+                    int sum = grid[i][j];
+                    int row = i;
+                    int leftCol = -1, rightCol = -1;
+                    // 前半
+                    for (int p = 0; p < k; p++) {
+                        leftCol = j - 1 - p;
+                        rightCol = j + 1 + p;
+                        int curRow = row + 1 + p;
+                        if (leftCol < 0 || rightCol >= n || curRow >= m) continue loop;
+                        sum += grid[curRow][leftCol] + grid[curRow][rightCol];
+                    }
+
+                    // 后半
+                    row += k;
+                    for (int p = 0; p < k; p++) {
+                        leftCol += 1;
+                        rightCol -= 1;
+                        int curRow = row + 1 + p;
+                        if (leftCol < 0 || rightCol >= n || curRow >= m) continue loop;
+                        sum += grid[curRow][leftCol] + grid[curRow][rightCol];
+                    }
+                    sum -= grid[i + 2 * k][j];
+                    ts.add(sum);
+
+                }
+            }
+        }
+        int[] result = new int[ts.size()>3?3:ts.size()];
+        Iterator<Integer> it = ts.iterator();
+        for (int i = 0; i < result.length; i++) {
+            result[i] = it.next();
+        }
+        return result;
     }
 
     // LC638
