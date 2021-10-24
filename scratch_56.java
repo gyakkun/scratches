@@ -11,10 +11,91 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.constructRectangle(122122));
+        // [2,3,4]
+        //[[1,1,0,4],[2,2,1,9]]
+        //[1,2,1]
+        System.out.println(s.shoppingOffers(Arrays.asList(2, 3, 4),
+                Arrays.asList(Arrays.asList(1, 1, 0, 4), Arrays.asList(2, 2, 1, 9)),
+                Arrays.asList(1, 2, 1)));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC638
+    Map<Integer, Map<Integer, Integer>> lc638Memo;
+
+    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+        lc638Memo = new HashMap<>();
+        List<List<Integer>> validSpecial = new ArrayList<>();
+        for (List<Integer> sp : special) if (isValidSpecial(sp, needs, price)) validSpecial.add(sp);
+        // 背包问题
+        int[] needArr = new int[needs.size()];
+        for (int i = 0; i < needs.size(); i++) needArr[i] = needs.get(i);
+        // 购买前i个礼包, 不超过need的情况下的最小价格
+        return helper(validSpecial.size(), needArr, price, validSpecial);
+    }
+
+    // 只使用前idx个大礼包, 顶格满足needs需求时候的最低价格
+    private int helper(int idx, int[] needs, List<Integer> price, List<List<Integer>> special) {
+        int status = calStatus(needs), n = needs.length;
+        if (lc638Memo.containsKey(idx) && lc638Memo.get(idx).containsKey(status)) return lc638Memo.get(idx).get(status);
+        if (idx == 0) {
+            int result = 0;
+            for (int i = 0; i < needs.length; i++) {
+                result += needs[i] * price.get(i);
+            }
+            lc638Memo.putIfAbsent(idx, new HashMap<>());
+            lc638Memo.get(idx).put(status, result);
+            return result;
+        }
+        int[] origNeeds = Arrays.copyOf(needs, needs.length);
+        int result = Integer.MAX_VALUE;
+        loop:
+        for (int i = 0; ; i++) {// 看选择多少个礼包(idx-1)
+            for (int j = 0; j < n; j++) {
+                if (needs[j] - i * special.get(idx - 1).get(j) < 0) break loop;
+            }
+            int tempPrice = i * special.get(idx - 1).get(n);
+            // 减少相应礼包数量
+            for (int j = 0; j < n; j++) {
+                needs[j] -= i * special.get(idx - 1).get(j);
+            }
+            tempPrice += helper(idx - 1, needs, price, special);
+            result = Math.min(result, tempPrice);
+            // 还原
+            for (int j = 0; j < n; j++) {
+                needs[j] = origNeeds[j];
+            }
+        }
+        lc638Memo.putIfAbsent(idx, new HashMap<>());
+        lc638Memo.get(idx).put(status, result);
+        return result;
+    }
+
+    private int calStatus(int[] needs) {
+        int base = 11;
+        int accu = 1;
+        int result = 0;
+        for (int i = 0; i < needs.length; i++) {
+            result += accu * needs[i];
+            accu *= base;
+        }
+        return result;
+    }
+
+    private boolean isValidSpecial(List<Integer> sp, List<Integer> needs, List<Integer> price) {
+        int sum = 0;
+        for (int i = 0; i < sp.size() - 1; i++) {
+            if (sp.get(i) > needs.get(i)) {
+                return false;
+            }
+            sum += price.get(i) * sp.get(i); // 单价*数量
+        }
+        if (sum < sp.get(sp.size() - 1)) {
+            return false; // 如果总价比单买还贵也没必要买这个大礼包了
+        }
+        return true;
     }
 
     // LC1522 N叉树的直径
