@@ -20,6 +20,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1510
+    BitSet visited = new BitSet((int) (1e5 + 1));
+    BitSet memo = new BitSet((int) (1e5 + 1));
+
+    public boolean winnerSquareGame(int n) {
+        if (n == 0) return false;
+        if (visited.get(n)) return memo.get(n);
+        visited.set(n);
+        int sqrt = (int) Math.sqrt(n);
+        for (int i = 1; i <= sqrt; i++) {
+            int next = n - i * i;
+            if (!winnerSquareGame(next)) {
+                memo.set(n);
+                return true;
+            }
+        }
+        return false;
+    }
+
     // LC272
     public List<Integer> closestKValues(TreeNode root, double target, int k) {
         PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingDouble(o -> -Math.abs(target - (double) o)));
