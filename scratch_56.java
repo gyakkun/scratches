@@ -20,6 +20,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC272
+    public List<Integer> closestKValues(TreeNode root, double target, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingDouble(o -> -Math.abs(target - (double) o)));
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            if (pq.size() < k) pq.offer(p.val);
+            else {
+                if (Math.abs(target - (double) p.val) < Math.abs(target - (double) pq.peek())) {
+                    pq.poll();
+                    pq.offer(p.val);
+                }
+            }
+            if (p.left != null) q.offer(p.left);
+            if (p.right != null) q.offer(p.right);
+        }
+        return new ArrayList<>(pq);
+    }
+
     // LC1878
     public int[] getBiggestThree(int[][] grid) {
         int m = grid.length, n = grid[0].length;
@@ -57,7 +77,7 @@ class Scratch {
                 }
             }
         }
-        int[] result = new int[ts.size()>3?3:ts.size()];
+        int[] result = new int[ts.size() > 3 ? 3 : ts.size()];
         Iterator<Integer> it = ts.iterator();
         for (int i = 0; i < result.length; i++) {
             result[i] = it.next();
