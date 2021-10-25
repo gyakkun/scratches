@@ -14,10 +14,30 @@ class Scratch {
         // [2,3,4]
         //[[1,1,0,4],[2,2,1,9]]
         //[1,2,1]
-        System.out.println(s.getBiggestThree(new int[][]{{3, 4, 5, 1, 3}, {3, 3, 4, 2, 3}, {20, 30, 200, 40, 10}, {1, 5, 5, 4, 1}, {4, 3, 2, 2, 5}}));
+        System.out.println(s.winnerSquareGame(99999));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF II 011
+    public int findMaxLength(int[] nums) {
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == 0) nums[i] = -1;
+        }
+        int max = 0;
+        Map<Integer, Integer> idxMap = new HashMap<>();
+        idxMap.put(0, -1);
+        int prefix = 0;
+        for (int i = 0; i < n; i++) {
+            prefix += nums[i];
+            if (idxMap.containsKey(prefix)) {
+                max = Math.max(max, i - idxMap.get(prefix));
+            }
+            idxMap.putIfAbsent(prefix, i);
+        }
+        return max;
     }
 
     // LC1510
