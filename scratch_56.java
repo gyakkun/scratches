@@ -20,6 +20,36 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC496
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        // nums1 是 nums2 的子集
+        int n = nums2.length;
+        int[] ngeNums2 = naiveNge(nums2);
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(nums2[i], ngeNums2[i]);
+        }
+        int[] result = new int[nums1.length];
+        for (int i = 0; i < nums1.length; i++) {
+            result[i] = map.getOrDefault(nums1[i], -1);
+        }
+        return result;
+    }
+
+    private int[] naiveNge(int[] arr) {
+        int n = arr.length;
+        Deque<Integer> stack = new LinkedList<>(); // 单调递减栈, 遇到大于栈顶的数立即出栈
+        int[] result = new int[n];
+        Arrays.fill(result, -1);
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && arr[stack.peek()] < arr[i]) {
+                result[stack.pop()] = arr[i];
+            }
+            stack.push(i);
+        }
+        return result;
+    }
+
     // JZOF II 011
     public int findMaxLength(int[] nums) {
         int n = nums.length;
