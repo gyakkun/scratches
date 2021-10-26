@@ -23,12 +23,7 @@ class Scratch {
             int curIdx = i;
             char cur = ca[i];
             while (i + 1 < n && ca[i + 1] == cur) i++;
-            int count = 0;
-            if (i - curIdx + 1 >= 2) {
-                count = 2;
-            } else {
-                count = i - curIdx + 1;
-            }
+            int count = Math.min(i - curIdx + 1, 2);
             for (int j = 0; j < count; j++) {
                 sb.append(cur);
             }
