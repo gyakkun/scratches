@@ -26,6 +26,36 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2050
+    public int minimumTime(int n, int[][] relations, int[] time) {
+        List<List<Integer>> mtx = new ArrayList<>(n + 1);
+        for (int i = 0; i <= n; i++) mtx.add(new ArrayList<>());
+        int[] indegree = new int[n + 1];
+        int[] result = new int[n + 1];
+        for (int[] r : relations) {
+            indegree[r[1]]++;
+            mtx.get(r[0]).add(r[1]);
+        }
+        Deque<Integer> q = new LinkedList<>();
+        for (int i = 1; i <= n; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+                result[i] = time[i - 1];
+            }
+        }
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            for (int next : mtx.get(p)) {
+                result[next] = Math.max(result[next], time[next - 1] + result[p]);
+                indegree[next]--;
+                if (indegree[next] == 0) {
+                    q.offer(next);
+                }
+            }
+        }
+        return Arrays.stream(result).max().getAsInt();
+    }
+
     // Interview 16.13
     public double[] cutSquares(int[] square1, int[] square2) {
         // 从左下到右上返回
