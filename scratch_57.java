@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
@@ -9,6 +12,29 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1540
+    public boolean canConvertString(String s, String t, int k) {
+        if (s.length() != t.length()) return false;
+        // 第i次操作(从1算) 可以将s种之前未被操作过的下标j(从1算)的char+i
+        char[] cs = s.toCharArray(), ct = t.toCharArray();
+        List<Integer> shouldChangeIdx = new ArrayList<>();
+        for (int i = 0; i < cs.length; i++) {
+            if (cs[i] != ct[i]) shouldChangeIdx.add(i);
+        }
+        int[] minSteps = new int[shouldChangeIdx.size()];
+        for (int i = 0; i < shouldChangeIdx.size(); i++) {
+            char sc = cs[shouldChangeIdx.get(i)], tc = ct[shouldChangeIdx.get(i)];
+            minSteps[i] = (tc - 'a' + 26 - (sc - 'a')) % 26;
+        }
+        int[] freq = new int[27];
+        for (int i : minSteps) freq[i]++;
+        int max = 0;
+        for (int i = 1; i <= 26; i++) {
+            max = Math.max(max, i + (freq[i] - 1) * 26);
+        }
+        return max <= k;
     }
 
     // LC266
