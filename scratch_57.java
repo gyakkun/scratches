@@ -14,6 +14,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1957
+    public String makeFancyString(String s) {
+        StringBuilder sb = new StringBuilder();
+        char[] ca = s.toCharArray();
+        int n = ca.length;
+        for (int i = 0; i < n; ) {
+            int curIdx = i;
+            char cur = ca[i];
+            while (i + 1 < n && ca[i + 1] == cur) i++;
+            int count = 0;
+            if (i - curIdx + 1 >= 2) {
+                count = 2;
+            } else {
+                count = i - curIdx + 1;
+            }
+            for (int j = 0; j < count; j++) {
+                sb.append(cur);
+            }
+            i++;
+        }
+        return sb.toString();
+    }
+
     // LC1540
     public boolean canConvertString(String s, String t, int k) {
         if (s.length() != t.length()) return false;
