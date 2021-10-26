@@ -14,10 +14,161 @@ class Scratch {
         // [2,3,4]
         //[[1,1,0,4],[2,2,1,9]]
         //[1,2,1]
-        System.out.println(s.winnerSquareGame(99999));
+        System.out.println(s.cutSquares(
+                new int[]{249, -199, 5},
+                new int[]{-1, 136, 76}
+        ));
+
+        System.out.println(s.euDistance(new double[]{15.0, 212.0}, new double[]{252.94737, -199.0}));
+        System.out.println(s.euDistance(new double[]{59.00000, 136.00000}, new double[]{252.94737, -199.00000}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 16.13
+    public double[] cutSquares(int[] square1, int[] square2) {
+        // 从左下到右上返回
+        double x1 = (double) square1[0] + ((double) (square1[2]) / 2d);
+        double x2 = (double) square2[0] + ((double) (square2[2]) / 2d);
+        double y1 = (double) square1[1] + ((double) (square1[2]) / 2d);
+        double y2 = (double) square2[1] + ((double) (square2[2]) / 2d);
+
+        int s1XLB = square1[0], s1XHB = square1[0] + square1[2], s1YLB = square1[1], s1YHB = square1[1] + square1[2];
+        int s2XLB = square2[0], s2XHB = square2[0] + square2[2], s2YLB = square2[1], s2YHB = square2[1] + square2[2];
+
+
+        // 两点重合: 返回 与大正方形相交的 下, 上 两点
+        if (x1 == x2 && y1 == y2) {
+            int larger = square1[2] > square2[2] ? square1[2] : square2[2];
+            double half = (double) (larger) / 2d;
+            return new double[]{x1, y1 - half, x2, y2 + half};
+        }
+
+        if (x1 == x2) {
+            int upY = Math.max(square1[1] + square1[2], square2[1] + square2[2]);
+            int downY = Math.min(square1[1], square2[1]);
+            return new double[]{x1, downY, x2, upY};
+        }
+
+        if (y1 == y2) {
+            int leftX = Math.min(square1[0], square2[0]);
+            int rightX = Math.max(square1[0] + square1[2], square2[0] + square2[2]);
+            return new double[]{leftX, y1, rightX, y2};
+        }
+
+        double k = (y1 - y2) / (x1 - x2);
+        double b = y1 - k * x1;
+
+        double[] leftDown = new double[]{Integer.MAX_VALUE / 2, Integer.MAX_VALUE / 2}, rightUp = new double[]{Integer.MIN_VALUE / 2, Integer.MIN_VALUE / 2};
+        List<double[]> points = new ArrayList<>();
+
+
+        // s1 的下 x
+        {
+            double x = s1XLB;
+            double y = k * x + b;
+            if (y >= s1YLB && y <= s1YHB) {
+                points.add(new double[]{x, y});
+            }
+        }
+        // s1 的上 x
+        {
+            double x = s1XHB;
+            double y = k * x + b;
+            if (y >= s1YLB && y <= s1YHB) {
+                points.add(new double[]{x, y});
+            }
+        }
+        // s1 的 左y
+        {
+            double y = s1YLB;
+            double x = (y - b) / k;
+            if (x >= s1XLB && x <= s1XHB) {
+                points.add(new double[]{x, y});
+            }
+        }
+        // s1 的 右y
+        {
+            double y = s1YHB;
+            double x = (y - b) / k;
+            if (x >= s1XLB && x <= s1XHB) {
+                points.add(new double[]{x, y});
+            }
+        }
+
+
+        ///////////////////////
+        // s2 的下 x
+        {
+            double x = s2XLB;
+            double y = k * x + b;
+            if (y >= s2YLB && y <= s2YHB) {
+                points.add(new double[]{x, y});
+            }
+        }
+        // s1 的上 x
+        {
+            double x = s2XHB;
+            double y = k * x + b;
+            if (y >= s2YLB && y <= s2YHB) {
+                points.add(new double[]{x, y});
+
+            }
+        }
+        // s1 的 左y
+        {
+            double y = s2YLB;
+            double x = (y - b) / k;
+            if (x >= s2XLB && x <= s2XHB) {
+                points.add(new double[]{x, y});
+            }
+        }
+        // s1 的 右y
+        {
+            double y = s2YHB;
+            double x = (y - b) / k;
+            if (x >= s2XLB && x <= s2XHB) {
+                points.add(new double[]{x, y});
+            }
+        }
+        Collections.sort(points, new Comparator<double[]>() {
+            @Override
+            public int compare(double[] o1, double[] o2) {
+                if (o1[0] != o2[0]) {
+                    if (o1[0] < o2[0]) return -1;
+                    if (o1[0] == o2[0]) return 0;
+                    return 1;
+                }
+                if (o1[1] < o2[1]) return -1;
+                if (o1[1] == o2[1]) return 0;
+                return 1;
+            }
+        });
+
+        double maxDistance = 0d;
+        double[] result = new double[]{};
+        for (int i = 0; i < points.size(); i++) {
+            for (int j = 0; j < points.size(); j++) {
+                double distance = euDistance(points.get(i), points.get(j));
+                if (distance > maxDistance) {
+                    maxDistance = distance;
+                    result = new double[]{points.get(i)[0], points.get(i)[1], points.get(j)[0], points.get(j)[1]};
+                } else if (distance == maxDistance) {
+
+                }
+            }
+        }
+
+
+        // (x-x1)/(x1-x2)=(y-y1)/(y1-y2)
+        // y = kx+b
+        // x = (y-b)/k
+        return result;
+    }
+
+    private double euDistance(double[] p1, double[] p2) {
+        return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
     }
 
     // LC496
@@ -171,7 +322,8 @@ class Scratch {
     // 只使用前idx个大礼包, 顶格满足needs需求时候的最低价格
     private int helper(int idx, int[] needs, List<Integer> price, List<List<Integer>> special) {
         int status = calStatus(needs), n = needs.length;
-        if (lc638Memo.containsKey(idx) && lc638Memo.get(idx).containsKey(status)) return lc638Memo.get(idx).get(status);
+        if (lc638Memo.containsKey(idx) && lc638Memo.get(idx).containsKey(status))
+            return lc638Memo.get(idx).get(status);
         if (idx == 0) {
             int result = 0;
             for (int i = 0; i < needs.length; i++) {
