@@ -4,11 +4,26 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.numberOfArrays("1234567890", 90));
+        System.out.println(s.longestPalindrome("abccccdd"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC409
+    public int longestPalindrome(String s) {
+        int[] freq = new int[256];
+        char[] ca = s.toCharArray();
+        for (char c : ca) {
+            freq[c]++;
+        }
+        int even = 0, oddMax = 0, odd = 0;
+        for (int i = 0; i < 256; i++) if (freq[i] % 2 == 0) even += freq[i];
+        for (int i = 0; i < 256; i++) if (freq[i] % 2 == 1) oddMax = Math.max(oddMax, freq[i]);
+        for (int i = 0; i < 256; i++) if (freq[i] % 2 == 1) odd += freq[i] - 1;
+        if (oddMax == 0) return even;
+        return odd + even + 1;
     }
 
     // LC1266
