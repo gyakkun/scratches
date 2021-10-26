@@ -11,6 +11,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC266
+    public boolean canPermutePalindrome(String s) {
+        int[] freq = new int[256];
+        char[] ca = s.toCharArray();
+        for (char c : ca) {
+            freq[c]++;
+        }
+        int oddCount = 0;
+        for (int i = 0; i < 256; i++) if (freq[i] % 2 == 1) oddCount++;
+        return oddCount <= 1;
+    }
+
     // LC409
     public int longestPalindrome(String s) {
         int[] freq = new int[256];
