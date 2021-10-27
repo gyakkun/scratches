@@ -13,6 +13,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1689
+    public int minPartitions(String n) {
+        int max = 0;
+        for (char c : n.toCharArray()) {
+            max = Math.max(max, c - '0');
+        }
+        return max;
+    }
+
     // LC1962
     public int minStoneSum(int[] piles, int k) {
         int[] freq = new int[10001];
