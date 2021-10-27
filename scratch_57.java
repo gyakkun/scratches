@@ -15,16 +15,21 @@ class Scratch {
 
     // LC1962
     public int minStoneSum(int[] piles, int k) {
-        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o / 2));
-        for (int i : piles) pq.offer(i);
-        for (int i = 0; i < k; i++) {
-            if (pq.isEmpty()) return 0;
-            int first = pq.poll();
-            int left = first - first / 2;
-            if (left != 0) pq.offer(left);
-        }
+        int[] freq = new int[10001];
+        for (int i : piles) freq[i]++;
         int sum = 0;
-        while (!pq.isEmpty()) sum += pq.poll();
+        for (int i = 10000; i >= 0; i--) {
+            if (freq[i] == 0) continue;
+            if (k > 0) {
+                int minusTime = Math.min(k, freq[i]);
+                freq[i] -= minusTime;
+                freq[i - i / 2] += minusTime;
+                sum += i * freq[i];
+                k -= minusTime;
+                continue;
+            }
+            sum += i * freq[i];
+        }
         return sum;
     }
 
