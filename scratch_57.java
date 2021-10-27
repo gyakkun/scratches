@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 class Scratch {
     public static void main(String[] args) {
@@ -12,6 +14,55 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC301 **
+    Set<String> lc301Result = new HashSet<>();
+
+    public List<String> removeInvalidParentheses(String s) {
+        char[] ca = s.toCharArray();
+        int n = ca.length;
+        // 多余的左右括号个数, 注意右括号多余当且仅当左边左括号不够匹配的时候
+        int leftToRemove = 0, rightToRemove = 0;
+        for (char c : ca) {
+            if (c == '(') leftToRemove++;
+            else if (c == ')') {
+                if (leftToRemove == 0) rightToRemove++;
+                else leftToRemove--;
+            }
+        }
+        lc301Helper(0, ca, leftToRemove, rightToRemove, 0, 0, new StringBuilder());
+        return new ArrayList<>(lc301Result);
+    }
+
+    private void lc301Helper(int curIdx, char[] ca,
+            /*待删的左括号数*/int leftToRemove, int rightToRemove,
+            /*已删的左括号数*/int leftCount, int rightCount,
+                             StringBuilder sb) {
+        if (curIdx == ca.length) {
+            if (leftToRemove == 0 && rightToRemove == 0) {
+                lc301Result.add(sb.toString());
+            }
+            return;
+        }
+
+        char c = ca[curIdx];
+        if (c == '(' && leftToRemove > 0) { // 无视当前左括号
+            lc301Helper(curIdx + 1, ca, leftToRemove - 1, rightToRemove, leftCount, rightCount, sb);
+        }
+        if (c == ')' && rightToRemove > 0) { // 无视当前右括号
+            lc301Helper(curIdx + 1, ca, leftToRemove, rightToRemove - 1, leftCount, rightCount, sb);
+        }
+
+        sb.append(c);
+        if (c != '(' && c != ')') {
+            lc301Helper(curIdx + 1, ca, leftToRemove, rightToRemove, leftCount, rightCount, sb);
+        } else if (c == '(') {
+            lc301Helper(curIdx + 1, ca, leftToRemove, rightToRemove, leftCount + 1, rightCount, sb);
+        } else if (c == ')' && rightCount < leftCount) { // 只有当当前已选择的左括号比右括号多才在此步选右括号
+            lc301Helper(curIdx + 1, ca, leftToRemove, rightToRemove, leftCount, rightCount + 1, sb);
+        }
+        sb.deleteCharAt(sb.length() - 1);
     }
 
     // LC1957
