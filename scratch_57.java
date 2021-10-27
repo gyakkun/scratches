@@ -6,11 +6,37 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minStoneSum(new int[]{5, 4, 9}, 2));
+        System.out.println(s.shortestWay("xyz", "xzyxz"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1055 WA: 是子序列不是子串!
+    public int shortestWay(String source, String target) {
+        boolean[] isShow = new boolean[256];
+        for (char c : source.toCharArray()) isShow[c] = true;
+        for (char c : target.toCharArray()) if (!isShow[c]) return -1;
+        Trie trie = new Trie();
+        for (int i = 0; i < source.length(); i++) {
+            trie.addWord(source.substring(i));
+        }
+        return helper(0, source, target, trie);
+    }
+
+    public int helper(int targetIdx, String source, String target, Trie trie) {
+        if (targetIdx == target.length()) return 0;
+        int lo = targetIdx + 1, hi = target.length();
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (trie.beginWith(target.substring(targetIdx, mid))) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return 1 + helper(lo, source, target, trie);
     }
 
     // LC1689
@@ -212,4 +238,67 @@ class Scratch {
     }
 
     //
+}
+
+class Trie {
+    TrieNode root;
+
+    public Trie() {
+        root = new TrieNode();
+    }
+
+
+    public boolean addWord(String word) {
+        if (search(word)) return false;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) {
+                cur.children.put(c, new TrieNode());
+            }
+            cur = cur.children.get(c);
+            cur.path++;
+        }
+        cur.end++;
+        return true;
+    }
+
+    public boolean remove(String word) {
+        if (!search(word)) return false;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children.get(c).path-- == 1) {
+                cur.children.remove(c);
+                return true;
+            }
+            cur = cur.children.get(c);
+        }
+        cur.end--;
+        return true;
+    }
+
+    public boolean search(String word) {
+        TrieNode target = getNode(word);
+        return target != null && target.end > 0;
+    }
+
+    public boolean beginWith(String prefix) {
+        return getNode(prefix) != null;
+    }
+
+    private TrieNode getNode(String prefix) {
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (!cur.children.containsKey(c)) return null;
+            cur = cur.children.get(c);
+        }
+        return cur;
+    }
+
+}
+
+
+class TrieNode {
+    Map<Character, TrieNode> children = new HashMap<>();
+    int end = 0;
+    int path = 0;
 }
