@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
@@ -9,11 +6,26 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.longestPalindrome("abccccdd"));
+        System.out.println(s.minStoneSum(new int[]{5, 4, 9}, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1962
+    public int minStoneSum(int[] piles, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o / 2));
+        for (int i : piles) pq.offer(i);
+        for (int i = 0; i < k; i++) {
+            if (pq.isEmpty()) return 0;
+            int first = pq.poll();
+            int left = first - first / 2;
+            if (left != 0) pq.offer(left);
+        }
+        int sum = 0;
+        while (!pq.isEmpty()) sum += pq.poll();
+        return sum;
     }
 
     // LC301 **
