@@ -24,9 +24,7 @@ class Scratch {
                 int minusTime = Math.min(k, freq[i]);
                 freq[i] -= minusTime;
                 freq[i - i / 2] += minusTime;
-                sum += i * freq[i];
                 k -= minusTime;
-                continue;
             }
             sum += i * freq[i];
         }
