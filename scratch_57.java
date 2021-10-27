@@ -6,12 +6,55 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.shortestWay("xyz", "xzyxz"));
+        System.out.println(s.partition("google"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // JZOF II 086 LC131
+    List<List<String>> lc131Result;
+    List<String> lc131Tmp;
+
+    public String[][] partition(String s) {
+        lc131Result = new ArrayList<>();
+        lc131Tmp = new ArrayList<>();
+        int n = s.length();
+        boolean[][] judge = new boolean[n][n];
+        char[] ca = s.toCharArray();
+        for (int i = 0; i < n; i++) judge[i][i] = true;
+        for (int len = 2; len <= n; len++) {
+            for (int left = 0; left + len - 1 < n; left++) {
+                if (len == 2) {
+                    judge[left][left + 1] = ca[left] == ca[left + 1];
+                } else if (judge[left + 1][left + len - 1 - 1] && ca[left] == ca[left + len - 1]) {
+                    judge[left][left + len - 1] = true;
+                }
+            }
+        }
+        lc131Helper(0, judge, s);
+        String[][] resArr = new String[lc131Result.size()][];
+        for (int i = 0; i < lc131Result.size(); i++) {
+            resArr[i] = lc131Result.get(i).toArray(new String[lc131Result.get(i).size()]);
+        }
+        return resArr;
+    }
+
+    private void lc131Helper(int idx, boolean[][] judge, String s) {
+        if (idx == judge.length) {
+            lc131Result.add(new ArrayList<>(lc131Tmp));
+            return;
+        }
+        for (int len = 1; idx + len - 1 < judge.length; len++) {
+            if (judge[idx][idx + len - 1]) {
+                lc131Tmp.add(s.substring(idx, idx + len));
+                lc131Helper(idx + len, judge, s);
+                lc131Tmp.remove(lc131Tmp.size() - 1);
+            }
+        }
+    }
+
 
     // LC792 ** 桶思想
     public int numMatchingSubseqBucket(String s, String[] words) {
