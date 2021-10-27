@@ -13,6 +13,42 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC792 ** 桶思想
+    public int numMatchingSubseqBucket(String s, String[] words) {
+        int result = 0;
+        Map<Character, List<List<Character>>> bucket = new HashMap<>();
+        for (String w : words) {
+            bucket.putIfAbsent(w.charAt(0), new LinkedList<>());
+            List<Character> bucketItem = new LinkedList<>();
+            for (char c : w.toCharArray()) bucketItem.add(c);
+            bucket.get(w.charAt(0)).add(bucketItem);
+        }
+        for (char c : s.toCharArray()) {
+            Set<Character> set = new HashSet<>(bucket.keySet());
+            for (char key : set) {
+                if (c != key) continue;
+                List<List<Character>> items = bucket.get(key);
+                ListIterator<List<Character>> it = items.listIterator();
+                while (it.hasNext()) {
+                    List<Character> seq = it.next();
+                    it.remove();
+                    seq.remove(0);
+                    if (seq.size() == 0) result++;
+                    else {
+                        bucket.putIfAbsent(seq.get(0), new LinkedList<>());
+                        if (seq.get(0) == key) {
+                            it.add(seq);
+                        } else {
+                            bucket.get(seq.get(0)).add(seq);
+                        }
+                    }
+                }
+                if (bucket.get(key).size() == 0) bucket.remove(key);
+            }
+        }
+        return result;
+    }
+
     // LC1055 **
     public int shortestWay(String source, String target) {
         int tIdx = 0, result = 0;
