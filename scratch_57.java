@@ -13,6 +13,39 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC869
+    public boolean reorderedPowerOf2(int n) {
+        if (n == 0) return false;
+        List<Integer> power2List = new ArrayList<>(31);
+        for (int i = 0; i < 31; i++) power2List.add(1 << i);
+        int[][] freqList = new int[31][10];
+        for (int i = 0; i < 31; i++) {
+            int power2 = power2List.get(i);
+            int[] freq = new int[10];
+            while (power2 != 0) {
+                freq[power2 % 10]++;
+                power2 /= 10;
+            }
+            freqList[i] = freq;
+        }
+        int[] thisFreq = new int[10];
+        int dummy = n;
+        while (dummy != 0) {
+            thisFreq[dummy % 10]++;
+            dummy /= 10;
+        }
+        outer:
+        for (int i = 0; i < 31; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (freqList[i][j] != thisFreq[j]) {
+                    continue outer;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     // JZOF II 086 LC131
     List<List<String>> lc131Result;
     List<String> lc131Tmp;
