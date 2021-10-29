@@ -13,9 +13,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1911 TBD
+    // LC1911 **
+    // from https://codeforces.com/contest/1420/submission/93658399
     public long maxAlternatingSum(int[] nums) {
-        return -1l;
+        // 偶数下标之和减奇数下标之和
+        int n = nums.length;
+        long[][] dp = new long[n + 2][2];
+        for (int i = 0; i < n; i++) {
+            dp[i + 1][0] = Math.max(dp[i][0], dp[i][1] + nums[i]);
+            dp[i + 1][1] = Math.max(dp[i][1], dp[i][0] - nums[i]);
+        }
+        return Math.max(dp[n][0], dp[n][1]);
     }
 
     // LC1102 **
