@@ -6,7 +6,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maximumMinimumPath(new int[][]{{5, 4, 5}, {1, 2, 6}, {7, 4, 6}}));
+        System.out.println(s.maximumMinimumPathDSU(new int[][]{{5, 4, 5}, {1, 2, 6}, {7, 4, 6}}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -14,6 +14,40 @@ class Scratch {
     }
 
     // LC1102 **
+    public int maximumMinimumPathDSU(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int start = 0, end = m * n - 1;
+        int min = Math.min(grid[0][0], grid[m - 1][n - 1]);
+        int[][] direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        DSUArray dsu = new DSUArray(m * n + 2);
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>(Comparator.comparingInt(o -> -o[2]));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int id = i * n + j;
+                if (id != start && id != end) {
+                    pq.offer(new int[]{i, j, grid[i][j]});
+                }
+            }
+        }
+        dsu.add(start);
+        dsu.add(end);
+        while (!pq.isEmpty() && !dsu.isConnected(start, end)) {
+            int[] p = pq.poll();
+            int r = p[0], c = p[1], val = p[2];
+            int id = r * n + c;
+            dsu.add(id);
+            for (int[] d : direction) {
+                int nr = r + d[0], nc = c + d[1];
+                int nid = nr * n + nc;
+                if (nr >= 0 && nr < m && nc >= 0 && nc < n && dsu.contains(nid)) {
+                    dsu.merge(id, nid);
+                    min = Math.min(min, val);
+                }
+            }
+        }
+        return min;
+    }
+
     public int maximumMinimumPath(int[][] grid) {
         int m = grid.length, n = grid[0].length;
         int min = Math.min(grid[0][0], grid[m - 1][n - 1]);
@@ -533,4 +567,83 @@ class TreeNode {
     TreeNode(int x) {
         val = x;
     }
+}
+
+class DSUArray {
+    int[] father;
+    int[] rank;
+    int size;
+
+    public DSUArray(int size) {
+        this.size = size;
+        father = new int[size];
+        rank = new int[size];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public DSUArray() {
+        this.size = Integer.MAX_VALUE >> 16;
+        father = new int[Integer.MAX_VALUE >> 16];
+        rank = new int[Integer.MAX_VALUE >> 16];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public void add(int i) {
+        if (i >= this.size || i < 0) return;
+        if (father[i] == -1) {
+            father[i] = i;
+        }
+        if (rank[i] == -1) {
+            rank[i] = 1;
+        }
+    }
+
+    public boolean contains(int i) {
+        if (i >= this.size || i < 0) return false;
+        return father[i] != -1;
+    }
+
+    public int find(int i) {
+        if (i >= this.size || i < 0) return -1;
+        int root = i;
+        while (root < size && root >= 0 && father[root] != root) {
+            root = father[root];
+        }
+        if (root == -1) return -1;
+        while (father[i] != root) {
+            int origFather = father[i];
+            father[i] = root;
+            rank[root]++;
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (j >= this.size || j < 0) return false;
+        int iFather = find(i);
+        int jFather = find(j);
+        if (iFather == -1 || jFather == -1) return false;
+        if (iFather == jFather) return false;
+
+        if (rank[iFather] >= rank[jFather]) {
+            father[jFather] = iFather;
+            rank[iFather] += rank[jFather];
+        } else {
+            father[iFather] = jFather;
+            rank[jFather] += rank[iFather];
+        }
+        return true;
+    }
+
+    public boolean isConnected(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (i >= this.size || i < 0) return false;
+        return find(i) == find(j);
+    }
+
+
 }
