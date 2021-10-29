@@ -24,9 +24,10 @@ class Scratch {
             prefix1 += nums1[i];
             prefix2 += nums2[i];
             int diff = prefix1 - prefix2;
-            map.putIfAbsent(diff, i);
-            if (map.containsKey(prefix1 - prefix2)) {
+            if (map.containsKey(diff)) {
                 result = Math.max(result, i - map.get(diff));
+            } else {
+                map.put(diff, i);
             }
         }
         return result;
