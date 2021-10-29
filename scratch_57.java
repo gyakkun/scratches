@@ -6,11 +6,32 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.partition("google"));
+        System.out.println(s.isSelfCrossing(new int[]{1, 1, 3, 2, 1, 1}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC335 **
+    public boolean isSelfCrossing(int[] distance) {
+        for (int i = 3; i < distance.length; i++) {
+            if (i >= 3
+                    && distance[i] >= distance[i - 2]
+                    && distance[i - 1] <= distance[i - 3])
+                return true;
+            else if (i >= 4
+                    && distance[i] + distance[i - 4] >= distance[i - 2]
+                    && distance[i - 1] == distance[i - 3])
+                return true;
+            else if (i >= 5
+                    && distance[i] + distance[i - 4] >= distance[i - 2]
+                    && distance[i - 5] + distance[i - 1] >= distance[i - 3]
+                    && distance[i - 2] > distance[i - 4]
+                    && distance[i - 3] > distance[i - 1])
+                return true;
+        }
+        return false;
     }
 
     // LC869
@@ -190,8 +211,10 @@ class Scratch {
     }
 
     private void lc301Helper(int curIdx, char[] ca,
-            /*待删的左括号数*/int leftToRemove, int rightToRemove,
-            /*已删的左括号数*/int leftCount, int rightCount,
+            /*待删的左括号数*/
+                             int leftToRemove, int rightToRemove,
+            /*已删的左括号数*/
+                             int leftCount, int rightCount,
                              StringBuilder sb) {
         if (curIdx == ca.length) {
             if (leftToRemove == 0 && rightToRemove == 0) {
