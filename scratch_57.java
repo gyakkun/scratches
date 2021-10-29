@@ -26,7 +26,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1145 **
+    // LC565
+    public int arrayNesting(int[] nums) {
+        int n = nums.length, max = 0;
+        boolean[] visited = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                int count = 1, cur = i;
+                visited[i] = true;
+                while (!visited[nums[cur]]) {
+                    visited[nums[cur]] = true;
+                    count++;
+                    cur = nums[cur];
+                }
+                max = Math.max(count, max);
+            }
+        }
+        return max;
+    }
+
+    // LC1145 ** 贪心策略: 选x周围的三个节点, 统计两个子图节点数量
     Map<Integer, TreeNode> valNodeMap = new HashMap<>();
     Map<TreeNode, TreeNode> fatherMap = new HashMap<>();
 
