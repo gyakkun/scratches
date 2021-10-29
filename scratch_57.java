@@ -21,13 +21,8 @@ class Scratch {
         int[][] direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         DSUArray dsu = new DSUArray(m * n + 2);
         PriorityQueue<int[]> pq = new PriorityQueue<int[]>(Comparator.comparingInt(o -> -o[2]));
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                int id = i * n + j;
-                if (id != start && id != end) {
-                    pq.offer(new int[]{i, j, grid[i][j]});
-                }
-            }
+        for (int i = 1; i < end; i++) {
+            pq.offer(new int[]{i / n, i % n, grid[i / n][i % n]});
         }
         dsu.add(start);
         dsu.add(end);
