@@ -13,6 +13,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1911 TBD
+    public long maxAlternatingSum(int[] nums) {
+        return -1l;
+    }
+
     // LC1102 **
     public int maximumMinimumPathDSU(int[][] grid) {
         int m = grid.length, n = grid[0].length;
@@ -20,7 +25,7 @@ class Scratch {
         int min = Math.min(grid[0][0], grid[m - 1][n - 1]);
         int[][] direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         DSUArray dsu = new DSUArray(m * n + 2);
-        PriorityQueue<int[]> pq = new PriorityQueue<int[]>(Comparator.comparingInt(o -> -o[2]));
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o[2]));
         for (int i = 1; i < end; i++) {
             pq.offer(new int[]{i / n, i % n, grid[i / n][i % n]});
         }
@@ -62,7 +67,7 @@ class Scratch {
             int mid = lo + (hi - lo + 1) / 2;
             int victim = possibleList.get(mid);
             boolean[][] visited = new boolean[m][n];
-            if (helper(0, 0, grid, visited, victim)) {
+            if (lc1102Helper(0, 0, grid, visited, victim)) {
                 lo = mid;
             } else {
                 hi = mid - 1;
@@ -71,14 +76,14 @@ class Scratch {
         return possibleList.get(lo);
     }
 
-    private boolean helper(int r, int c, int[][] grid, boolean[][] visited, int bound) {
+    private boolean lc1102Helper(int r, int c, int[][] grid, boolean[][] visited, int bound) {
         if (r == grid.length - 1 && c == grid[0].length - 1) return true;
         visited[r][c] = true;
         int[][] direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         for (int[] d : direction) {
             int nr = r + d[0], nc = c + d[1];
             if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && !visited[nr][nc] && grid[nr][nc] >= bound) {
-                if (helper(nr, nc, grid, visited, bound)) return true;
+                if (lc1102Helper(nr, nc, grid, visited, bound)) return true;
             }
         }
         return false;
