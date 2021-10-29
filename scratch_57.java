@@ -12,36 +12,30 @@ class Scratch {
         TreeNode t5 = new TreeNode(5);
         TreeNode t6 = new TreeNode(6);
         TreeNode t7 = new TreeNode(7);
-        t1.left = t2;
-        t1.right = t3;
-        t2.left = t4;
-        t2.right = t5;
-        t3.left = t6;
-        t3.right = t7;
+        t6.left = t3;
+        t3.left = t7;
+        t3.right = t4;
+        t4.right = t2;
+        t2.right = t1;
+        t1.right = t5;
 
-
-        System.out.println(s.btreeGameWinningMove(t1, 7, 1));
+        System.out.println(s.btreeGameWinningMove(t6, 7, 3));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1145 WA
-    final int UNCOLOR = -1, RIVAL = 0, ME = 1; // I'm two
-    Map<Integer, TreeNode> valTreenodeMap = new HashMap<>();
+    // LC1145 **
+    Map<Integer, TreeNode> valNodeMap = new HashMap<>();
     Map<TreeNode, TreeNode> fatherMap = new HashMap<>();
-    Boolean[][] memo;
-    int[] color;
 
     public boolean btreeGameWinningMove(TreeNode root, int n, int x) {
-        color = new int[n + 1];
-        memo = new Boolean[n + 1][n + 1];
         Deque<TreeNode> q = new LinkedList<>();
         q.offer(root);
         while (!q.isEmpty()) {
             TreeNode p = q.poll();
-            valTreenodeMap.put(p.val, p);
+            valNodeMap.put(p.val, p);
             n = Math.max(n, p.val);
             if (p.left != null) {
                 fatherMap.put(p.left, p);
@@ -52,88 +46,47 @@ class Scratch {
                 q.offer(p.right);
             }
         }
-        Arrays.fill(color, UNCOLOR);
-        for (int i = 1; i <= n; i++) {
-            if (x != i) {
-                color[x] = color[i] = ME;
-                if (helper(valTreenodeMap.get(i), valTreenodeMap.get(x), true)) {
-                    return true;
-                }
-                Arrays.fill(color, UNCOLOR);
+
+        TreeNode xNode = valNodeMap.get(x);
+        TreeNode[] choices = new TreeNode[]{getFather(xNode), getLeft(xNode), getRight(xNode)};
+        for (TreeNode y : choices) {
+            if (y != null) {
+                if (helper(n, x, xNode, y)) return true;
             }
         }
         return false;
     }
 
-    private boolean helper(TreeNode root, TreeNode rivalChoose, boolean isMe) {
-        if (root == null) return !helper(rivalChoose, null, !isMe);
-        int toColor = isMe ? ME : RIVAL;
-        boolean flagFather = true, flagLeft = true, flagRight = true;
-        TreeNode f = getFather(root), l = getLeft(root), r = getRight(root);
-        if (f == null || color[f.val] != UNCOLOR) flagFather = false;
-        if (l == null || color[l.val] != UNCOLOR) flagLeft = false;
-        if (r == null || color[r.val] != UNCOLOR) flagRight = false;
-        if (!flagFather && !flagLeft && !flagRight) {
-            if (rivalChoose == null) {
-                // 开始统计
-                int countMe = 0, countRival = 0;
-                for (int i : color) {
-                    if (i == ME) countMe++;
-                    if (i == RIVAL) countRival++;
-                }
-                boolean result = false;
-                if (countMe > countRival) {
-                    if (isMe) result = true;
-                    result = false;
-                }
-                if (countMe < countRival) {
-                    if (isMe) result = false;
-                    result = true;
-                }
-                return result;
-            }
+    private boolean helper(int n, int x, TreeNode rivalFirstChoice, TreeNode y) {
+        Deque<TreeNode> q = new LinkedList<>();
+        // BFS, 统计邻接节点数量
+        boolean[] visited = new boolean[n + 1];
+        visited[x] = true;
+        q.offer(y);
+        int myCount = getTreeNodeCount(q, visited);
 
-            // 回合被跳过, 不是输!
-            return memo[root.val][rivalChoose.val] = !helper(rivalChoose, null, !isMe);
-        }
-        if (root != null && rivalChoose != null && memo[root.val][rivalChoose.val] != null)
-            return memo[root.val][rivalChoose.val];
+        Arrays.fill(visited, false);
+        visited[y.val] = true;
+        q.clear();
+        q.offer(rivalFirstChoice);
+        int rivalCount = getTreeNodeCount(q, visited);
 
-        if (flagFather) {
-            color[f.val] = toColor;
-            boolean isRivalWin = helper(rivalChoose, f, !isMe);
-            color[f.val] = UNCOLOR;
-            if (!isRivalWin) {
-                if (root != null && rivalChoose != null)
-                    return memo[root.val][rivalChoose.val] = true;
-                return true;
-            }
-        }
+        return rivalCount < myCount;
+    }
 
-        if (flagLeft) {
-            color[l.val] = toColor;
-            boolean isRivalWin = helper(rivalChoose, l, !isMe);
-            color[l.val] = UNCOLOR;
-            if (!isRivalWin) {
-                if (root != null && rivalChoose != null)
-                    return memo[root.val][rivalChoose.val] = true;
-                return true;
-            }
+    private int getTreeNodeCount(Deque<TreeNode> q, boolean[] visited) {
+        int count = 0;
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            if (visited[p.val]) continue;
+            visited[p.val] = true;
+            count++;
+            TreeNode f = getFather(p), l = getLeft(p), r = getRight(p);
+            if (f != null && !visited[f.val]) q.offer(f);
+            if (l != null && !visited[l.val]) q.offer(l);
+            if (r != null && !visited[r.val]) q.offer(r);
         }
-
-        if (flagRight) {
-            color[r.val] = toColor;
-            boolean isRivalWin = helper(rivalChoose, r, !isMe);
-            color[r.val] = UNCOLOR;
-            if (!isRivalWin) {
-                if (root != null && rivalChoose != null)
-                    return memo[root.val][rivalChoose.val] = true;
-                return true;
-            }
-        }
-        if (root != null && rivalChoose != null)
-            return memo[root.val][rivalChoose.val] = false;
-        return false;
+        return count;
     }
 
     private TreeNode getFather(TreeNode root) {
