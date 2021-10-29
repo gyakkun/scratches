@@ -5,13 +5,149 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        TreeNode t1 = new TreeNode(1);
+        TreeNode t2 = new TreeNode(2);
+        TreeNode t3 = new TreeNode(3);
+        TreeNode t4 = new TreeNode(4);
+        TreeNode t5 = new TreeNode(5);
+        TreeNode t6 = new TreeNode(6);
+        TreeNode t7 = new TreeNode(7);
+        t1.left = t2;
+        t1.right = t3;
+        t2.left = t4;
+        t2.right = t5;
+        t3.left = t6;
+        t3.right = t7;
 
-        System.out.println(s.isSelfCrossing(new int[]{1, 1, 3, 2, 1, 1}));
+
+        System.out.println(s.btreeGameWinningMove(t1, 7, 1));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1145 WA
+    final int UNCOLOR = -1, RIVAL = 0, ME = 1; // I'm two
+    Map<Integer, TreeNode> valTreenodeMap = new HashMap<>();
+    Map<TreeNode, TreeNode> fatherMap = new HashMap<>();
+    Boolean[][] memo;
+    int[] color;
+
+    public boolean btreeGameWinningMove(TreeNode root, int n, int x) {
+        color = new int[n + 1];
+        memo = new Boolean[n + 1][n + 1];
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            valTreenodeMap.put(p.val, p);
+            n = Math.max(n, p.val);
+            if (p.left != null) {
+                fatherMap.put(p.left, p);
+                q.offer(p.left);
+            }
+            if (p.right != null) {
+                fatherMap.put(p.right, p);
+                q.offer(p.right);
+            }
+        }
+        Arrays.fill(color, UNCOLOR);
+        for (int i = 1; i <= n; i++) {
+            if (x != i) {
+                color[x] = color[i] = ME;
+                if (helper(valTreenodeMap.get(i), valTreenodeMap.get(x), true)) {
+                    return true;
+                }
+                Arrays.fill(color, UNCOLOR);
+            }
+        }
+        return false;
+    }
+
+    private boolean helper(TreeNode root, TreeNode rivalChoose, boolean isMe) {
+        if (root == null) return !helper(rivalChoose, null, !isMe);
+        int toColor = isMe ? ME : RIVAL;
+        boolean flagFather = true, flagLeft = true, flagRight = true;
+        TreeNode f = getFather(root), l = getLeft(root), r = getRight(root);
+        if (f == null || color[f.val] != UNCOLOR) flagFather = false;
+        if (l == null || color[l.val] != UNCOLOR) flagLeft = false;
+        if (r == null || color[r.val] != UNCOLOR) flagRight = false;
+        if (!flagFather && !flagLeft && !flagRight) {
+            if (rivalChoose == null) {
+                // 开始统计
+                int countMe = 0, countRival = 0;
+                for (int i : color) {
+                    if (i == ME) countMe++;
+                    if (i == RIVAL) countRival++;
+                }
+                boolean result = false;
+                if (countMe > countRival) {
+                    if (isMe) result = true;
+                    result = false;
+                }
+                if (countMe < countRival) {
+                    if (isMe) result = false;
+                    result = true;
+                }
+                return result;
+            }
+
+            // 回合被跳过, 不是输!
+            return memo[root.val][rivalChoose.val] = !helper(rivalChoose, null, !isMe);
+        }
+        if (root != null && rivalChoose != null && memo[root.val][rivalChoose.val] != null)
+            return memo[root.val][rivalChoose.val];
+
+        if (flagFather) {
+            color[f.val] = toColor;
+            boolean isRivalWin = helper(rivalChoose, f, !isMe);
+            color[f.val] = UNCOLOR;
+            if (!isRivalWin) {
+                if (root != null && rivalChoose != null)
+                    return memo[root.val][rivalChoose.val] = true;
+                return true;
+            }
+        }
+
+        if (flagLeft) {
+            color[l.val] = toColor;
+            boolean isRivalWin = helper(rivalChoose, l, !isMe);
+            color[l.val] = UNCOLOR;
+            if (!isRivalWin) {
+                if (root != null && rivalChoose != null)
+                    return memo[root.val][rivalChoose.val] = true;
+                return true;
+            }
+        }
+
+        if (flagRight) {
+            color[r.val] = toColor;
+            boolean isRivalWin = helper(rivalChoose, r, !isMe);
+            color[r.val] = UNCOLOR;
+            if (!isRivalWin) {
+                if (root != null && rivalChoose != null)
+                    return memo[root.val][rivalChoose.val] = true;
+                return true;
+            }
+        }
+        if (root != null && rivalChoose != null)
+            return memo[root.val][rivalChoose.val] = false;
+        return false;
+    }
+
+    private TreeNode getFather(TreeNode root) {
+        return fatherMap.get(root);
+    }
+
+    private TreeNode getLeft(TreeNode root) {
+        return root.left;
+    }
+
+    private TreeNode getRight(TreeNode root) {
+        return root.right;
+    }
+
 
     // LC1983
     public int widestPairOfIndices(int[] nums1, int[] nums2) {
@@ -385,4 +521,14 @@ class Scratch {
     }
 
     //
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(int x) {
+        val = x;
+    }
 }
