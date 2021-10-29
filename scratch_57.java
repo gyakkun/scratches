@@ -13,6 +13,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1983
+    public int widestPairOfIndices(int[] nums1, int[] nums2) {
+        int n = nums1.length;
+        int prefix1 = 0, prefix2 = 0;
+        int result = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        for (int i = 0; i < n; i++) {
+            prefix1 += nums1[i];
+            prefix2 += nums2[i];
+            int diff = prefix1 - prefix2;
+            map.putIfAbsent(diff, i);
+            if (map.containsKey(prefix1 - prefix2)) {
+                result = Math.max(result, i - map.get(diff));
+            }
+        }
+        return result;
+    }
+
     // LC335 **
     public boolean isSelfCrossing(int[] distance) {
         for (int i = 3; i < distance.length; i++) {
