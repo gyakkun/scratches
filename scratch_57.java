@@ -5,26 +5,56 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        TreeNode t1 = new TreeNode(1);
-        TreeNode t2 = new TreeNode(2);
-        TreeNode t3 = new TreeNode(3);
-        TreeNode t4 = new TreeNode(4);
-        TreeNode t5 = new TreeNode(5);
-        TreeNode t6 = new TreeNode(6);
-        TreeNode t7 = new TreeNode(7);
-        t6.left = t3;
-        t3.left = t7;
-        t3.right = t4;
-        t4.right = t2;
-        t2.right = t1;
-        t1.right = t5;
 
-        System.out.println(s.btreeGameWinningMove(t6, 7, 3));
+        System.out.println(s.maximumMinimumPath(new int[][]{{5, 4, 5}, {1, 2, 6}, {7, 4, 6}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1102 **
+    public int maximumMinimumPath(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int min = Math.min(grid[0][0], grid[m - 1][n - 1]);
+        Set<Integer> possibleSet = new HashSet<>();
+        possibleSet.add(min);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] <= min) {
+                    possibleSet.add(grid[i][j]);
+                }
+            }
+        }
+        List<Integer> possibleList = new ArrayList<>(possibleSet);
+        Collections.sort(possibleList);
+        int lo = 0, hi = possibleList.size() - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            int victim = possibleList.get(mid);
+            boolean[][] visited = new boolean[m][n];
+            if (helper(0, 0, grid, visited, victim)) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return possibleList.get(lo);
+    }
+
+    private boolean helper(int r, int c, int[][] grid, boolean[][] visited, int bound) {
+        if (r == grid.length - 1 && c == grid[0].length - 1) return true;
+        visited[r][c] = true;
+        int[][] direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int[] d : direction) {
+            int nr = r + d[0], nc = c + d[1];
+            if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && !visited[nr][nc] && grid[nr][nc] >= bound) {
+                if (helper(nr, nc, grid, visited, bound)) return true;
+            }
+        }
+        return false;
+    }
+
 
     // LC565
     public int arrayNesting(int[] nums) {
@@ -70,13 +100,13 @@ class Scratch {
         TreeNode[] choices = new TreeNode[]{getFather(xNode), getLeft(xNode), getRight(xNode)};
         for (TreeNode y : choices) {
             if (y != null) {
-                if (helper(n, x, xNode, y)) return true;
+                if (lc1145Helper(n, x, xNode, y)) return true;
             }
         }
         return false;
     }
 
-    private boolean helper(int n, int x, TreeNode rivalFirstChoice, TreeNode y) {
+    private boolean lc1145Helper(int n, int x, TreeNode rivalFirstChoice, TreeNode y) {
         Deque<TreeNode> q = new LinkedList<>();
         // BFS, 统计邻接节点数量
         boolean[] visited = new boolean[n + 1];
