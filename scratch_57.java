@@ -13,6 +13,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC260 **
+    public int[] singleNumber(int[] nums) {
+        long xor = 0;
+        for (long i : nums) xor ^= i;
+        long lsb = xor & (-xor);
+        long a = 0, b = 0;
+        for (int i : nums) {
+            if (((long) (i) & lsb) != 0) {
+                a ^= i;
+            } else {
+                b ^= i;
+            }
+        }
+        return new int[]{(int) a, (int) b};
+    }
+
     // LC1911 **
     // from https://codeforces.com/contest/1420/submission/93658399
     public long maxAlternatingSum(int[] nums) {
