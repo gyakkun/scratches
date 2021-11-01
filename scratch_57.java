@@ -13,6 +13,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC575
+    public int distributeCandies(int[] candyType) {
+        int n = candyType.length, result = 0;
+        Arrays.sort(candyType);
+        for (int i = 0; i < n; ) {
+            while (i + 1 < n && candyType[i] == candyType[i + 1]) i++;
+            result++;
+            if (result >= n / 2) return n / 2;
+            i++;
+        }
+        return result;
+    }
+
     // LC260 **
     public int[] singleNumber(int[] nums) {
         long xor = 0;
