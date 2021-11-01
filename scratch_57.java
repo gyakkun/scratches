@@ -3,14 +3,52 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
+
         long timing = System.currentTimeMillis();
+        int[] a = new int[99999];
+        Arrays.fill(a, 1);
+        a[49999] = 0;
 
-
-        System.out.println(s.modifyString("?zx"));
+        System.out.println(s.minMoves(a, 50000));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1703 TLE
+    public int minMoves(int[] nums, int k) {
+        int sum = Arrays.stream(nums).sum();
+        int[] oneIdx = new int[sum];
+        int[] zeroCountToNextOne = new int[sum]; // 表示这个1到上一个1之间有多少个0
+        int oneCount = 0, zeroCount = 0, n = nums.length;
+
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == 0) {
+                zeroCount++;
+            } else if (nums[i] == 1) {
+                oneIdx[oneCount] = i;
+                if (oneCount > 0) {
+                    zeroCountToNextOne[oneCount - 1] = zeroCount;
+                }
+                zeroCount = 0;
+                oneCount++;
+            }
+        }
+        int left = 0, right = k - 1;
+        int minCost = Integer.MAX_VALUE;
+        while (right < sum) {
+            int cost = 0;
+            for (int i = 0; i < k; i++) {
+                int whichOne = left + i;
+                int zeroCost = Math.min(i + 1, k - 1 - i) * zeroCountToNextOne[whichOne];
+                cost += zeroCost;
+            }
+            minCost = Math.min(minCost, cost);
+            left++;
+            right++;
+        }
+        return minCost;
     }
 
     // LC1576
