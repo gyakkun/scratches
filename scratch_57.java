@@ -3,17 +3,29 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-
-        int[] a = new int[100000];
-        Arrays.fill(a, 1);
-        for (int i = 0; i < 100000; i += 2) a[i] = 0;
         long timing = System.currentTimeMillis();
+
 
         System.out.println(s.spiralMatrixIII(5, 6, 1, 4));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC944
+    public int minDeletionSize(String[] strs) {
+        int result = 0;
+        outer:
+        for (int i = 0; i < strs[0].length(); i++) {
+            for (int j = 1; j < strs.length; j++) {
+                if (strs[j].charAt(i) < strs[j - 1].charAt(i)) {
+                    result++;
+                    continue outer;
+                }
+            }
+        }
+        return result;
     }
 
     // LC885
