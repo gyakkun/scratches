@@ -14,6 +14,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1462
+    public List<Boolean> checkIfPrerequisite(int numCourses, int[][] prerequisites, int[][] queries) {
+        // prerequisites[k] : [i,j] , i before j
+        // queries[k]: [i,j] is i before j
+        boolean[][] reachable = new boolean[numCourses][numCourses];
+        for (int[] pq : prerequisites) {
+            reachable[pq[0]][pq[1]] = true;
+        }
+        for (int i = 0; i < numCourses; i++) {
+            Deque<Integer> q = new LinkedList<>();
+            boolean[] visited = new boolean[numCourses];
+            q.offer(i);
+            while (!q.isEmpty()) {
+                int p = q.poll();
+                if (visited[p]) continue;
+                visited[p] = true;
+                if (i != p) reachable[i][p] = true;
+                for (int next = 0; next < numCourses; next++) {
+                    if (reachable[p][next]) {
+                        q.offer(next);
+                    }
+                }
+            }
+        }
+        List<Boolean> result = new ArrayList<>(queries.length);
+        for (int[] q : queries) {
+            result.add(reachable[q[0]][q[1]]);
+        }
+        return result;
+    }
+
     // LC1615
     public int maximalNetworkRank(int n, int[][] roads) {
         Map<Integer, Set<Integer>> m = new HashMap<>(n);
