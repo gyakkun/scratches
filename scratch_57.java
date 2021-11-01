@@ -6,49 +6,32 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.kSimilarity("bfcdeefada", "dafedecfab"));
+        System.out.println(s.kSimilarity("bfcdeefadabfcdeefada", "bfcdeefadadafedecfab"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC854 TLE
+    // LC854 ** 很妙的DFS
+    Map<String, Integer> memo = new HashMap<>();
+
     public int kSimilarity(String s1, String s2) {
-        int n = s1.length();
-        char[] c1 = s1.toCharArray(), c2 = s2.toCharArray();
-        Set<String> visited = new HashSet<>();
-        Deque<char[]> q = new LinkedList<>();
-        q.offer(c1);
-        int layer = -1;
-        while (!q.isEmpty()) {
-            int qs = q.size();
-            layer++;
-            for (int i = 0; i < qs; i++) {
-                char[] p = q.poll();
-                String pStr = new String(p);
-                if (visited.contains(pStr)) continue;
-                if (pStr.equals(s2)) return layer;
-                visited.add(pStr);
-                for (int j = 0; j < n; j++) {
-                    for (int k = 0; k < n; k++) {
-                        if (j != k) {
-                            char tmp = p[j];
-                            p[j] = p[k];
-                            p[k] = tmp;
-                            String tStr = new String(p);
-                            if (!visited.contains(tStr)) {
-                                q.offer(Arrays.copyOf(p, n));
-                            }
-                            tmp = p[j];
-                            p[j] = p[k];
-                            p[k] = tmp;
-                        }
-                    }
+        if (s1.equals("")) return 0;
+        if (memo.containsKey(s1 + "," + s2)) return memo.get(s1 + "," + s2);
+        int result = Integer.MAX_VALUE;
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) == s2.charAt(0)) {
+                if (i == 0) {
+                    result = Math.min(result, kSimilarity(s1.substring(1), s2.substring(1)));
+                } else {
+                    // 把 i 换到第一个来
+                    result = Math.min(result, 1 + kSimilarity(s1.substring(1, i) + s1.charAt(0) + s1.substring(i + 1), s2.substring(1)));
                 }
             }
         }
-        return -1;
+        memo.put(s1 + "," + s2, result);
+        return result;
     }
 
     // LC1944 ** 单调栈
