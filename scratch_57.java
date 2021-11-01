@@ -6,20 +6,40 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.kSimilarity("bfcdeefadabfcdeefada", "bfcdeefadadafedecfab"));
+        System.out.println(s.maximalNetworkRank(4,
+                new int[][]{{0, 1}, {0, 3}, {1, 2}, {1, 3}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1615
+    public int maximalNetworkRank(int n, int[][] roads) {
+        Map<Integer, Set<Integer>> m = new HashMap<>(n);
+        int result = 0;
+        for (int i = 0; i < n; i++) m.put(i, new HashSet<>());
+        for (int[] r : roads) {
+            m.get(r[0]).add(r[1]);
+            m.get(r[1]).add(r[0]);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int cross = m.get(i).contains(j) ? 1 : 0;
+                int rank = m.get(i).size() + m.get(j).size() - cross;
+                result = Math.max(rank, result);
+            }
+        }
+        return result;
+    }
+
     // LC854 ** 很妙的DFS
-    Map<String, Map<String, Integer>> memo = new HashMap<>();
+    Map<String, Map<String, Integer>> lc854Memo = new HashMap<>();
 
     public int kSimilarity(String s1, String s2) {
         if (s1.equals("")) return 0;
-        if (memo.containsKey(s1) && memo.get(s1).containsKey(s2)) return memo.get(s1).get(s2);
-        memo.putIfAbsent(s1, new HashMap<>());
+        if (lc854Memo.containsKey(s1) && lc854Memo.get(s1).containsKey(s2)) return lc854Memo.get(s1).get(s2);
+        lc854Memo.putIfAbsent(s1, new HashMap<>());
         int result = Integer.MAX_VALUE;
         for (int i = 0; i < s1.length(); i++) {
             if (s1.charAt(i) == s2.charAt(0)) {
@@ -31,7 +51,7 @@ class Scratch {
                 }
             }
         }
-        memo.get(s1).put(s2, result);
+        lc854Memo.get(s1).put(s2, result);
         return result;
     }
 
