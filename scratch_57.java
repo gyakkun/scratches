@@ -13,6 +13,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1944 ** 单调栈
+    public int[] canSeePersonsCount(int[] heights) {
+        int n = heights.length;
+        int[] result = new int[n];
+        Deque<Integer> stack = new LinkedList<>(); // 递减栈
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty()) {
+                result[i]++;
+                if (heights[i] > heights[stack.peek()]) {
+                    stack.pop();
+                } else {
+                    break;
+                }
+            }
+            stack.push(i);
+        }
+        return result;
+    }
+
     // LC944
     public int minDeletionSize(String[] strs) {
         int result = 0;
