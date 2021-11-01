@@ -4,51 +4,48 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
 
-        long timing = System.currentTimeMillis();
-        int[] a = new int[99999];
+        int[] a = new int[100000];
         Arrays.fill(a, 1);
-        a[49999] = 0;
+        for (int i = 0; i < 100000; i += 2) a[i] = 0;
+        long timing = System.currentTimeMillis();
 
-        System.out.println(s.minMoves(a, 50000));
+        System.out.println(s.minMoves(a, 25000));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1703 TLE
+    // LC1703 ** from solution 非常严格的数学证明 学不来
+    // https://leetcode-cn.com/problems/minimum-adjacent-swaps-for-k-consecutive-ones/solution/de-dao-lian-xu-k-ge-1-de-zui-shao-xiang-lpa9i/
     public int minMoves(int[] nums, int k) {
-        int sum = Arrays.stream(nums).sum();
+        int sum = 0, n = nums.length, result = Integer.MAX_VALUE;
+        for (int i : nums) sum += i;
+        // 1. 找出所有1的位置
         int[] oneIdx = new int[sum];
-        int[] zeroCountToNextOne = new int[sum]; // 表示这个1到上一个1之间有多少个0
-        int oneCount = 0, zeroCount = 0, n = nums.length;
-
+        int ctr = 0;
         for (int i = 0; i < n; i++) {
-            if (nums[i] == 0) {
-                zeroCount++;
-            } else if (nums[i] == 1) {
-                oneIdx[oneCount] = i;
-                if (oneCount > 0) {
-                    zeroCountToNextOne[oneCount - 1] = zeroCount;
-                }
-                zeroCount = 0;
-                oneCount++;
+            if (nums[i] == 1) {
+                oneIdx[ctr++] = i;
             }
         }
-        int left = 0, right = k - 1;
-        int minCost = Integer.MAX_VALUE;
-        while (right < sum) {
-            int cost = 0;
-            for (int i = 0; i < k; i++) {
-                int whichOne = left + i;
-                int zeroCost = Math.min(i + 1, k - 1 - i) * zeroCountToNextOne[whichOne];
-                cost += zeroCost;
-            }
-            minCost = Math.min(minCost, cost);
-            left++;
-            right++;
+
+        // 2. 构造 g 函数, 构造g函数的累加函数(前缀和)
+        int[] g = new int[sum];
+        for (int i = 0; i < sum; i++) {
+            g[i] = oneIdx[i] - i;
         }
-        return minCost;
+        int[] gPrefix = new int[sum + 1];
+        for (int i = 0; i < sum; i++) gPrefix[i + 1] = gPrefix[i] + g[i];
+
+        // 3. 滑窗
+        for (int i = 0; i + k <= g.length; i++) {
+            int mid = (i + i + k - 1) / 2;
+            int q = g[mid];
+            int possible = (2 * (mid - i) - k + 1) * q + (gPrefix[i + k] - gPrefix[mid + 1]) - (gPrefix[mid] - gPrefix[i]);
+            result = Math.min(result, possible);
+        }
+        return result;
     }
 
     // LC1576
