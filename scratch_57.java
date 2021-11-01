@@ -14,11 +14,12 @@ class Scratch {
     }
 
     // LC854 ** 很妙的DFS
-    Map<String, Integer> memo = new HashMap<>();
+    Map<String, Map<String, Integer>> memo = new HashMap<>();
 
     public int kSimilarity(String s1, String s2) {
         if (s1.equals("")) return 0;
-        if (memo.containsKey(s1 + "," + s2)) return memo.get(s1 + "," + s2);
+        if (memo.containsKey(s1) && memo.get(s1).containsKey(s2)) return memo.get(s1).get(s2);
+        memo.putIfAbsent(s1, new HashMap<>());
         int result = Integer.MAX_VALUE;
         for (int i = 0; i < s1.length(); i++) {
             if (s1.charAt(i) == s2.charAt(0)) {
@@ -30,7 +31,7 @@ class Scratch {
                 }
             }
         }
-        memo.put(s1 + "," + s2, result);
+        memo.get(s1).put(s2, result);
         return result;
     }
 
