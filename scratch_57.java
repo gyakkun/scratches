@@ -9,11 +9,34 @@ class Scratch {
         for (int i = 0; i < 100000; i += 2) a[i] = 0;
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minMoves(a, 25000));
+        System.out.println(s.spiralMatrixIII(5, 6, 1, 4));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC885
+    public int[][] spiralMatrixIII(int rows, int cols, int rStart, int cStart) {
+        int[][] result = new int[rows * cols][];
+        int ctr = 0, total = rows * cols;
+        int[][] directions = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int dIdx = 0;
+        int r = rStart, c = cStart;
+        result[ctr++] = new int[]{r, c};
+        int steps = 1;
+        while (ctr != total) {
+            for (int i = 0; i < steps; i++) {
+                r += directions[dIdx][0];
+                c += directions[dIdx][1];
+                if (r >= 0 && r < rows && c >= 0 && c < cols && ctr < total) {
+                    result[ctr++] = new int[]{r, c};
+                }
+            }
+            if (dIdx == 1 || dIdx == 3) steps++;
+            dIdx = (dIdx + 1) % 4;
+        }
+        return result;
     }
 
     // LC1703 ** from solution 非常严格的数学证明 学不来
