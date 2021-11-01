@@ -6,11 +6,49 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.spiralMatrixIII(5, 6, 1, 4));
+        System.out.println(s.kSimilarity("bfcdeefada", "dafedecfab"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC854 TLE
+    public int kSimilarity(String s1, String s2) {
+        int n = s1.length();
+        char[] c1 = s1.toCharArray(), c2 = s2.toCharArray();
+        Set<String> visited = new HashSet<>();
+        Deque<char[]> q = new LinkedList<>();
+        q.offer(c1);
+        int layer = -1;
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            layer++;
+            for (int i = 0; i < qs; i++) {
+                char[] p = q.poll();
+                String pStr = new String(p);
+                if (visited.contains(pStr)) continue;
+                if (pStr.equals(s2)) return layer;
+                visited.add(pStr);
+                for (int j = 0; j < n; j++) {
+                    for (int k = 0; k < n; k++) {
+                        if (j != k) {
+                            char tmp = p[j];
+                            p[j] = p[k];
+                            p[k] = tmp;
+                            String tStr = new String(p);
+                            if (!visited.contains(tStr)) {
+                                q.offer(Arrays.copyOf(p, n));
+                            }
+                            tmp = p[j];
+                            p[j] = p[k];
+                            p[k] = tmp;
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
     }
 
     // LC1944 ** 单调栈
