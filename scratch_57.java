@@ -19,6 +19,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 19
+    Boolean[][] memo;
+
+    public boolean isMatch(String s, String p) {
+        memo = new Boolean[s.length() + 1][p.length() + 1];
+        return helper(0, 0, s.toCharArray(), p.toCharArray());
+    }
+
+    private boolean helper(int sIdx, int pIdx, char[] s, char[] p) {
+        if (pIdx >= p.length) return sIdx >= s.length;
+        if (memo[sIdx][pIdx] != null) return memo[sIdx][pIdx];
+
+        // 单匹配
+        boolean singleMatch = sIdx < s.length && (s[sIdx] == p[pIdx] || p[pIdx] == '.');
+
+        // 多个匹配
+        if (pIdx < p.length - 1 && p[pIdx + 1] == '*') {
+            // 匹配0次 || 匹配多次
+            return memo[sIdx][pIdx] = helper(sIdx, pIdx + 2, s, p) || (singleMatch && helper(sIdx + 1, pIdx, s, p));
+        }
+        return memo[sIdx][pIdx] = singleMatch && helper(sIdx + 1, pIdx + 1, s, p);
+    }
+
     // LC1610 极坐标 滑动窗空 几何
     public int visiblePoints(List<List<Integer>> points, int angle, List<Integer> location) {
         int ox = location.get(0), oy = location.get(1);
