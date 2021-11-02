@@ -1,18 +1,105 @@
 import java.util.*;
 
+// LC1320 Hard TLE
+class Lc1320 {
+    int[][] alphabetIdx;
+    int[][] distance;
+    int min = Integer.MAX_VALUE;
+
+    public int minimumDistance(String word) {
+        init();
+        // 遍历两个手指的初始位置
+        for (int i = 0; i < 30; i++) {
+            for (int j = 0; j < 30; j++) {
+                helper(0, i, j, word, 0);
+            }
+        }
+        return min;
+    }
+
+
+    private void helper(int targetCharIdx, int curLeft, int curRight, String word, int curSteps) {
+        if (targetCharIdx == word.length()) {
+            min = Math.min(min, curSteps);
+            return;
+        }
+        if (curSteps > min) return;
+        // 选择左手到下一个字母
+        int leftToNext = distance[charConvert(curLeft)][word.charAt(targetCharIdx)];
+        helper(targetCharIdx + 1, word.charAt(targetCharIdx) - 'A', curRight, word, curSteps + leftToNext);
+
+        // 选择右手到下一个字母
+        int rightToNext = distance[charConvert(curRight)][word.charAt(targetCharIdx)];
+        helper(targetCharIdx + 1, curLeft, word.charAt(targetCharIdx) - 'A', word, curSteps + rightToNext);
+    }
+
+    private char charConvert(int code) {
+        return (char) ('A' + code);
+    }
+
+    private int[] idxConvert(int code) {
+        return new int[]{code / 6, code % 6};
+    }
+
+    private void init() {
+        alphabetIdx = new int[256][2];
+        distance = new int[256][256];
+        alphabetIdx['A'] = new int[]{0, 0};
+        alphabetIdx['B'] = new int[]{0, 1};
+        alphabetIdx['C'] = new int[]{0, 2};
+        alphabetIdx['D'] = new int[]{0, 3};
+        alphabetIdx['E'] = new int[]{0, 4};
+        alphabetIdx['F'] = new int[]{0, 5};
+        alphabetIdx['G'] = new int[]{1, 0};
+        alphabetIdx['H'] = new int[]{1, 1};
+        alphabetIdx['I'] = new int[]{1, 2};
+        alphabetIdx['J'] = new int[]{1, 3};
+        alphabetIdx['K'] = new int[]{1, 4};
+        alphabetIdx['L'] = new int[]{1, 5};
+        alphabetIdx['M'] = new int[]{2, 0};
+        alphabetIdx['N'] = new int[]{2, 1};
+        alphabetIdx['O'] = new int[]{2, 2};
+        alphabetIdx['P'] = new int[]{2, 3};
+        alphabetIdx['Q'] = new int[]{2, 4};
+        alphabetIdx['R'] = new int[]{2, 5};
+        alphabetIdx['S'] = new int[]{3, 0};
+        alphabetIdx['T'] = new int[]{3, 1};
+        alphabetIdx['U'] = new int[]{3, 2};
+        alphabetIdx['V'] = new int[]{3, 3};
+        alphabetIdx['W'] = new int[]{3, 4};
+        alphabetIdx['X'] = new int[]{3, 5};
+        alphabetIdx['Y'] = new int[]{4, 0};
+        alphabetIdx['Z'] = new int[]{4, 1};
+        alphabetIdx['['] = new int[]{4, 2};
+        alphabetIdx['\\'] = new int[]{4, 3};
+        alphabetIdx[']'] = new int[]{4, 4};
+        alphabetIdx['^'] = new int[]{4, 5};
+
+        for (int i = 'A'; i <= '^'; i++) {
+            for (int j = 'A'; j <= '^'; j++) {
+                distance[i][j] = distance[j][i] =
+                        Math.abs(alphabetIdx[i][0] - alphabetIdx[j][0])
+                                + Math.abs(alphabetIdx[i][1] - alphabetIdx[j][1]);
+            }
+        }
+
+    }
+
+}
+
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
+        Lc1320 lc1320 = new Lc1320();
 
-
-        System.out.println(s.maximalNetworkRank(4,
-                new int[][]{{0, 1}, {0, 3}, {1, 2}, {1, 3}}));
+        System.out.println(lc1320.minimumDistance("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
 
     // LC237
     public void deleteNode(ListNode node) {
