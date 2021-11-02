@@ -14,6 +14,12 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC237
+    public void deleteNode(ListNode node) {
+        node.val = node.next.val;
+        node.next = node.next.next;
+    }
+
     // LC1462
     public List<Boolean> checkIfPrerequisite(int numCourses, int[][] prerequisites, int[][] queries) {
         // prerequisites[k] : [i,j] , i before j
@@ -910,86 +916,12 @@ class DSUArray {
 
 }
 
-class DisjointSetUnion<T> {
+class ListNode {
+    int val;
+    ListNode next;
 
-    Map<T, T> father;
-    Map<T, Integer> rank;
-
-    public DisjointSetUnion() {
-        father = new HashMap<>();
-        rank = new HashMap<>();
+    ListNode(int x) {
+        val = x;
     }
-
-    public void add(T i) {
-        if (!father.containsKey(i)) {
-            // 置初始父亲为自身
-            // 之后判断连通分量个数时候, 遍历father, 找value==key的
-            father.put(i, i);
-        }
-        if (!rank.containsKey(i)) {
-            rank.put(i, 1);
-        }
-    }
-
-    // 找父亲, 路径压缩
-    public T find(T i) {
-        //先找到根 再压缩
-        T root = i;
-        while (father.get(root) != root) {
-            root = father.get(root);
-        }
-        // 找到根, 开始对一路上的子节点进行路径压缩
-        while (father.get(i) != root) {
-            T origFather = father.get(i);
-            father.put(i, root);
-            // 更新秩, 按照节点数
-            rank.put(root, rank.get(root) + 1);
-            i = origFather;
-        }
-        return root;
-    }
-
-    public boolean merge(T i, T j) {
-        T iFather = find(i);
-        T jFather = find(j);
-        if (iFather == jFather) return false;
-        // 按秩合并
-        if (rank.get(iFather) >= rank.get(jFather)) {
-            father.put(jFather, iFather);
-            rank.put(iFather, rank.get(jFather) + rank.get(iFather));
-        } else {
-            father.put(iFather, jFather);
-            rank.put(jFather, rank.get(jFather) + rank.get(iFather));
-        }
-        return true;
-    }
-
-    public boolean isConnected(T i, T j) {
-        return find(i) == find(j);
-    }
-
-    public Map<T, Set<T>> getAllGroups() {
-        Map<T, Set<T>> result = new HashMap<>();
-        // 找出所有根
-        for (T i : father.keySet()) {
-            T f = find(i);
-            result.putIfAbsent(f, new HashSet<>());
-            result.get(f).add(i);
-        }
-        return result;
-    }
-
-    public int getNumOfGroups() {
-        Set<T> s = new HashSet<T>();
-        for (T i : father.keySet()) {
-            s.add(find(i));
-        }
-        return s.size();
-    }
-
-    public boolean contains(T i) {
-        return father.containsKey(i);
-    }
-
 }
 
