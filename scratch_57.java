@@ -14,6 +14,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC469 ** 几何 叉积
+    public boolean isConvex(List<List<Integer>> points) {
+        long prev = 0;
+        int n = points.size();
+        for (int i = 0; i < n; i++) {
+            int x0 = points.get(i).get(0), y0 = points.get(i).get(1);
+            int x1 = points.get((i + 1) % n).get(0), y1 = points.get((i + 1) % n).get(1);
+            int x2 = points.get((i + 2) % n).get(0), y2 = points.get((i + 2) % n).get(1);
+            int dx1 = x1 - x0, dx2 = x2 - x0, dy1 = y1 - y0, dy2 = y2 - y0;
+            long cur = dx1 * dy2 - dx2 * dy1; // ** 叉积公式, 正负代表z轴方向
+            if (cur != 0) {
+                if (cur * prev < 0) return false; // 判断前后的向量叉积是否同向
+                prev = cur;
+            }
+        }
+        return true;
+    }
 
     // LC237
     public void deleteNode(ListNode node) {
