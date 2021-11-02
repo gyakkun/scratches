@@ -931,41 +931,45 @@ class Lc1320 {
     static int[][] alphabetIdx;
     static int[][] distance;
     int min = Integer.MAX_VALUE;
-    Integer[][][] memo;
+    int[][][] memo;
+    char[] word;
 
-    public int minimumDistance(String word) {
-        memo = new Integer[word.length() + 1][31][31];
+
+    public int minimumDistance(String wordStr) {
+        word = wordStr.toCharArray();
+        memo = new int[word.length][30][30];
+        for (int i = 0; i < word.length; i++) {
+            for (int j = 0; j < 30; j++) {
+                Arrays.fill(memo[i][j], -1);
+            }
+        }
         // 遍历两个手指的初始位置
         for (int i = 'A'; i <= '^'; i++) {
             for (int j = i; j <= '^'; j++) {
-                min = Math.min(min, helper(0, i, j, word));
+                min = Math.min(min, helper(0, i, j));
             }
         }
         return min;
     }
 
 
-    private int helper(int targetCharIdx, int curLeft, int curRight, String word) {
-        if (targetCharIdx == word.length()) {
+    private int helper(int targetCharIdx, int curLeft, int curRight) {
+        if (targetCharIdx == word.length) {
             return 0;
         }
-        if (memo[targetCharIdx][curLeft - 'A'][curRight - 'A'] != null)
+        if (memo[targetCharIdx][curLeft - 'A'][curRight - 'A'] != -1)
             return memo[targetCharIdx][curLeft - 'A'][curRight - 'A'];
-        int result = Integer.MAX_VALUE;
-        // 选择左手到下一个字母
-        int leftToNext = distance[curLeft][word.charAt(targetCharIdx)];
-        result = Math.min(result, leftToNext + helper(targetCharIdx + 1, word.charAt(targetCharIdx), curRight, word));
+        if (memo[targetCharIdx][curRight - 'A'][curLeft - 'A'] != -1)
+            return memo[targetCharIdx][curRight - 'A'][curLeft - 'A'];
 
-        // 选择右手到下一个字母
-        int rightToNext = distance[curRight][word.charAt(targetCharIdx)];
-        result = Math.min(result, rightToNext + helper(targetCharIdx + 1, curLeft, word.charAt(targetCharIdx), word));
-
-        return memo[targetCharIdx][curLeft - 'A'][curRight - 'A'] = result;
+        return memo[targetCharIdx][curLeft - 'A'][curRight - 'A'] = memo[targetCharIdx][curRight - 'A'][curLeft - 'A'] =
+                Math.min(distance[curLeft][word[targetCharIdx]] + helper(targetCharIdx + 1, word[targetCharIdx], curRight),
+                        distance[curRight][word[targetCharIdx]] + helper(targetCharIdx + 1, curLeft, word[targetCharIdx]));
     }
 
     static {
-        alphabetIdx = new int[256][2];
-        distance = new int[256][256];
+        alphabetIdx = new int[128][2];
+        distance = new int[128][128];
         alphabetIdx['A'] = new int[]{0, 0};
         alphabetIdx['B'] = new int[]{0, 1};
         alphabetIdx['C'] = new int[]{0, 2};
@@ -1004,7 +1008,5 @@ class Lc1320 {
                                 + Math.abs(alphabetIdx[i][1] - alphabetIdx[j][1]);
             }
         }
-
     }
-
 }
