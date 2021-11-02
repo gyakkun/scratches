@@ -4617,115 +4617,40 @@ class Lc1320 {
 }
 
 // LC1724 Hard **
+// From: https://leetcode-cn.com/problems/checking-existence-of-edge-length-limited-paths-ii/solution/javashuang-bai-gou-jian-bing-cha-ji-tong-c07a/
 class DistanceLimitedPathsExist {
-    DSUArray dsu;
-    Map<Integer, Map<Integer, Integer>> edgeLen;
-    Map<Integer, Map<Integer, Integer>> minLen;
-    Map<Integer, int[]> rootFatherArrMap;
-    int size;
+    int[][] dsu; // dsu[i][0] 存的是i的父亲(初始化为自身), dsu[i][1]存的是第一次连上两个分量的时间(时间戳)
+    // 查询的时候走时间戳严格小于limit的并查集路径即可
 
-    public DistanceLimitedPathsExist(int n, int[][] edge) {
-        size = n;
-        rootFatherArrMap = new HashMap<>();
-        edgeLen = new HashMap<>(n);
-        minLen = new HashMap<>(n);
-        dsu = new DSUArray(n);
-        Arrays.sort(edge, Comparator.comparingInt(o -> o[2]));
+    public DistanceLimitedPathsExist(int n, int[][] edgeList) {
+        Arrays.sort(edgeList, Comparator.comparingInt(o -> o[2]));
+        dsu = new int[n][2];
         for (int i = 0; i < n; i++) {
-            edgeLen.put(i, new HashMap<>());
-            edgeLen.get(i).put(i, 0);
-            minLen.put(i, new HashMap<>());
-            minLen.get(i).put(i, 0);
-            dsu.add(i);
+            dsu[i][0] = i;
+            dsu[i][1] = 0;
         }
-        // 构造最小生成树
-        for (int[] e : edge) {
-            if (dsu.isConnected(e[0], e[1])) continue;
-            dsu.merge(e[0], e[1]);
-            edgeLen.get(e[0]).put(e[1], e[2]);
-            edgeLen.get(e[1]).put(e[0], e[2]);
-        }
-
-    }
-
-    public boolean query(int p, int q, int limit) {
-        if (!dsu.isConnected(p, q)) return false;
-        int root = dsu.find(p);
-        int[] fatherArray = getFatherArray(root);
-        int lca = lca(p, q, root, fatherArray);
-        if (lca == -1) return false;
-
-        int fromPtoLca = getMinLen(p, lca);
-        int fromQtoLca = getMinLen(q, lca);
-
-        return Math.max(fromPtoLca, fromQtoLca) < limit;
-    }
-
-    private int getMinLen(int root, int target) {
-        if (minLen.containsKey(root) && minLen.get(root).containsKey(target)) return minLen.get(root).get(target);
-
-        boolean[] visited = new boolean[size];
-        int[] max = new int[size];
-        for (int j = 0; j < size; j++) {
-            if (!dsu.isConnected(root, j)) continue;
-            if (visited[j]) continue;
-            // [cur,next]
-            PriorityQueue<int[]> q = new PriorityQueue<>(Comparator.comparingInt(o -> minLen.get(o[0]).getOrDefault(o[1], Integer.MAX_VALUE / 2)));
-            q.offer(new int[]{root, root});
-            while (!q.isEmpty()) {
-                int[] p = q.poll();
-                int prev = p[0], cur = p[1];
-                if (visited[cur]) continue;
-                max[cur] = Math.max(max[prev], edgeLen.get(prev).get(cur));
-                visited[cur] = true;
-                minLen.get(root).put(cur, max[cur]);
-                minLen.get(cur).put(root, max[cur]);
-                for (int next : edgeLen.get(cur).keySet()) {
-                    if (!visited[next]) {
-                        q.offer(new int[]{cur, next});
-                    }
-                }
+        for (int[] e : edgeList) {
+            int a = e[0], b = e[1];
+            while (dsu[a][0] != a) {
+                a = dsu[a][0];
+            }
+            while (dsu[b][0] != b) {
+                b = dsu[b][0];
+            }
+            if (a != b) {
+                dsu[a][0] = b;
+                dsu[a][1] = e[2];
             }
         }
-        return minLen.get(root).get(target);
     }
 
-
-    private int lca(int i, int j, int root, int[] father) {
-        boolean[] visited = new boolean[size];
-        while (i != root) {
-            visited[i] = true;
-            i = father[i];
+    public boolean query(int a, int b, int limit) {
+        while (dsu[a][0] != a && dsu[a][1] < limit) {
+            a = dsu[a][0];
         }
-        while (j != root) {
-            if (visited[j]) {
-                return j;
-            }
-            j = father[j];
+        while (dsu[b][0] != b && dsu[b][1] < limit) {
+            b = dsu[b][0];
         }
-        return root;
-    }
-
-    private int[] getFatherArray(int root) {
-        if (rootFatherArrMap.containsKey(root)) return rootFatherArrMap.get(root);
-        boolean[] visited = new boolean[size];
-        int[] father = new int[size];
-        Arrays.fill(father, -1);
-        father[root] = root;
-        Deque<Integer> q = new LinkedList<>();
-        q.offer(root);
-        while (!q.isEmpty()) {
-            int p = q.poll();
-            if (visited[p]) continue;
-            visited[p] = true;
-            for (int next : edgeLen.get(p).keySet()) {
-                if (!visited[next] && father[next] == -1) {
-                    father[next] = p;
-                    q.offer(next);
-                }
-            }
-        }
-        rootFatherArrMap.put(root, father);
-        return father;
+        return a == b;
     }
 }
