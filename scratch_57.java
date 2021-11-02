@@ -928,20 +928,15 @@ class ListNode {
 
 // LC1320 Hard
 class Lc1320 {
-    static int[][] alphabetIdx;
     static int[][] distance;
     static int[][] id;
     int min = Integer.MAX_VALUE;
-    int[][] memo;
+    Integer[][] memo;
     char[] word;
-
 
     public int minimumDistance(String wordStr) {
         word = wordStr.toCharArray();
-        memo = new int[word.length][31 * 31];
-        for (int i = 0; i < word.length; i++) {
-            Arrays.fill(memo[i], -1);
-        }
+        memo = new Integer[word.length][31 * 31];
         // 遍历两个手指的初始位置
         for (int i = 'A'; i <= '^'; i++) {
             for (int j = i; j <= '^'; j++) {
@@ -951,14 +946,13 @@ class Lc1320 {
         return min;
     }
 
-
     private int helper(int targetCharIdx, int curLeft, int curRight) {
         if (targetCharIdx == word.length) {
             return 0;
         }
-        if (memo[targetCharIdx][id[curLeft][curRight]] != -1)
-            return memo[targetCharIdx][id[curLeft][curRight]];
 
+        if (memo[targetCharIdx][id[curLeft][curRight]] != null)
+            return memo[targetCharIdx][id[curLeft][curRight]];
 
         return memo[targetCharIdx][id[curLeft][curRight]] =
                 Math.min(distance[curLeft][word[targetCharIdx]] + helper(targetCharIdx + 1, word[targetCharIdx], curRight),
@@ -966,7 +960,7 @@ class Lc1320 {
     }
 
     static {
-        alphabetIdx = new int[128][2];
+        int[][] alphabetIdx = new int[128][];
         distance = new int[128][128];
         id = new int[128][128];
 
