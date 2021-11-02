@@ -2,15 +2,14 @@ import java.util.*;
 
 // LC1320 Hard TLE
 class Lc1320 {
-    int[][] alphabetIdx;
-    int[][] distance;
+    static int[][] alphabetIdx;
+    static int[][] distance;
     int min = Integer.MAX_VALUE;
 
     public int minimumDistance(String word) {
-        init();
         // 遍历两个手指的初始位置
-        for (int i = 0; i < 30; i++) {
-            for (int j = 0; j < 30; j++) {
+        for (int i = 'A'; i <= '^'; i++) {
+            for (int j = 'A'; j <= '^'; j++) {
                 helper(0, i, j, word, 0);
             }
         }
@@ -25,23 +24,15 @@ class Lc1320 {
         }
         if (curSteps > min) return;
         // 选择左手到下一个字母
-        int leftToNext = distance[charConvert(curLeft)][word.charAt(targetCharIdx)];
-        helper(targetCharIdx + 1, word.charAt(targetCharIdx) - 'A', curRight, word, curSteps + leftToNext);
+        int leftToNext = distance[curLeft][word.charAt(targetCharIdx)];
+        helper(targetCharIdx + 1, word.charAt(targetCharIdx), curRight, word, curSteps + leftToNext);
 
         // 选择右手到下一个字母
-        int rightToNext = distance[charConvert(curRight)][word.charAt(targetCharIdx)];
-        helper(targetCharIdx + 1, curLeft, word.charAt(targetCharIdx) - 'A', word, curSteps + rightToNext);
+        int rightToNext = distance[curRight][word.charAt(targetCharIdx)];
+        helper(targetCharIdx + 1, curLeft, word.charAt(targetCharIdx), word, curSteps + rightToNext);
     }
 
-    private char charConvert(int code) {
-        return (char) ('A' + code);
-    }
-
-    private int[] idxConvert(int code) {
-        return new int[]{code / 6, code % 6};
-    }
-
-    private void init() {
+    static {
         alphabetIdx = new int[256][2];
         distance = new int[256][256];
         alphabetIdx['A'] = new int[]{0, 0};
@@ -76,7 +67,7 @@ class Lc1320 {
         alphabetIdx['^'] = new int[]{4, 5};
 
         for (int i = 'A'; i <= '^'; i++) {
-            for (int j = 'A'; j <= '^'; j++) {
+            for (int j = i + 1; j <= '^'; j++) {
                 distance[i][j] = distance[j][i] =
                         Math.abs(alphabetIdx[i][0] - alphabetIdx[j][0])
                                 + Math.abs(alphabetIdx[i][1] - alphabetIdx[j][1]);
@@ -93,7 +84,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
         Lc1320 lc1320 = new Lc1320();
 
-        System.out.println(lc1320.minimumDistance("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+        System.out.println(lc1320.minimumDistance("ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
 
 
         timing = System.currentTimeMillis() - timing;
