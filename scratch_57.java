@@ -6,30 +6,49 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
-//        double y = Math.sqrt(3), x = 1d;
-        double y = 0, x = -1;
-        double theta = Math.atan2(y, x);
-
-
-        System.out.println(theta / Math.PI);
+        System.out.println(s.maxDistance(new int[]{1, 2, 3, 4, 7}, 3));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // JZOF 19
-    Boolean[][] memo;
-
-    public boolean isMatch(String s, String p) {
-        memo = new Boolean[s.length() + 1][p.length() + 1];
-        return helper(0, 0, s.toCharArray(), p.toCharArray());
+    // LC1552 ** 二分 注意判定函数的思想
+    public int maxDistance(int[] position, int m) {
+        Arrays.sort(position);
+        int lo = 1, hi = position[position.length - 1] - position[0] + 1;
+        while (lo < hi) { // 满足条件的最大值
+            int mid = lo + (hi - lo + 1) / 2;
+            if (check(position, mid, m)) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return lo;
     }
 
-    private boolean helper(int sIdx, int pIdx, char[] s, char[] p) {
+    private boolean check(int[] position, int distance, int bound) {
+        int count = 1, prev = position[0];
+        for (int i = 1; i < position.length; i++) {
+            if (position[i] - prev < distance) continue;
+            count++;
+            prev = position[i];
+        }
+        return count >= bound;
+    }
+
+    // JZOF 19 LC10
+    Boolean[][] lc10Memo;
+
+    public boolean isMatch(String s, String p) {
+        lc10Memo = new Boolean[s.length() + 1][p.length() + 1];
+        return lc10Helper(0, 0, s.toCharArray(), p.toCharArray());
+    }
+
+    private boolean lc10Helper(int sIdx, int pIdx, char[] s, char[] p) {
         if (pIdx >= p.length) return sIdx >= s.length;
-        if (memo[sIdx][pIdx] != null) return memo[sIdx][pIdx];
+        if (lc10Memo[sIdx][pIdx] != null) return lc10Memo[sIdx][pIdx];
 
         // 单匹配
         boolean singleMatch = sIdx < s.length && (s[sIdx] == p[pIdx] || p[pIdx] == '.');
@@ -37,9 +56,9 @@ class Scratch {
         // 多个匹配
         if (pIdx < p.length - 1 && p[pIdx + 1] == '*') {
             // 匹配0次 || 匹配多次
-            return memo[sIdx][pIdx] = helper(sIdx, pIdx + 2, s, p) || (singleMatch && helper(sIdx + 1, pIdx, s, p));
+            return lc10Memo[sIdx][pIdx] = lc10Helper(sIdx, pIdx + 2, s, p) || (singleMatch && lc10Helper(sIdx + 1, pIdx, s, p));
         }
-        return memo[sIdx][pIdx] = singleMatch && helper(sIdx + 1, pIdx + 1, s, p);
+        return lc10Memo[sIdx][pIdx] = singleMatch && lc10Helper(sIdx + 1, pIdx + 1, s, p);
     }
 
     // LC1610 极坐标 滑动窗空 几何
