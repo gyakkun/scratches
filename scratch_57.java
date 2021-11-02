@@ -1,82 +1,5 @@
 import java.util.*;
 
-// LC1320 Hard TLE
-class Lc1320 {
-    static int[][] alphabetIdx;
-    static int[][] distance;
-    int min = Integer.MAX_VALUE;
-
-    public int minimumDistance(String word) {
-        // 遍历两个手指的初始位置
-        for (int i = 'A'; i <= '^'; i++) {
-            for (int j = 'A'; j <= '^'; j++) {
-                helper(0, i, j, word, 0);
-            }
-        }
-        return min;
-    }
-
-
-    private void helper(int targetCharIdx, int curLeft, int curRight, String word, int curSteps) {
-        if (targetCharIdx == word.length()) {
-            min = Math.min(min, curSteps);
-            return;
-        }
-        if (curSteps > min) return;
-        // 选择左手到下一个字母
-        int leftToNext = distance[curLeft][word.charAt(targetCharIdx)];
-        helper(targetCharIdx + 1, word.charAt(targetCharIdx), curRight, word, curSteps + leftToNext);
-
-        // 选择右手到下一个字母
-        int rightToNext = distance[curRight][word.charAt(targetCharIdx)];
-        helper(targetCharIdx + 1, curLeft, word.charAt(targetCharIdx), word, curSteps + rightToNext);
-    }
-
-    static {
-        alphabetIdx = new int[256][2];
-        distance = new int[256][256];
-        alphabetIdx['A'] = new int[]{0, 0};
-        alphabetIdx['B'] = new int[]{0, 1};
-        alphabetIdx['C'] = new int[]{0, 2};
-        alphabetIdx['D'] = new int[]{0, 3};
-        alphabetIdx['E'] = new int[]{0, 4};
-        alphabetIdx['F'] = new int[]{0, 5};
-        alphabetIdx['G'] = new int[]{1, 0};
-        alphabetIdx['H'] = new int[]{1, 1};
-        alphabetIdx['I'] = new int[]{1, 2};
-        alphabetIdx['J'] = new int[]{1, 3};
-        alphabetIdx['K'] = new int[]{1, 4};
-        alphabetIdx['L'] = new int[]{1, 5};
-        alphabetIdx['M'] = new int[]{2, 0};
-        alphabetIdx['N'] = new int[]{2, 1};
-        alphabetIdx['O'] = new int[]{2, 2};
-        alphabetIdx['P'] = new int[]{2, 3};
-        alphabetIdx['Q'] = new int[]{2, 4};
-        alphabetIdx['R'] = new int[]{2, 5};
-        alphabetIdx['S'] = new int[]{3, 0};
-        alphabetIdx['T'] = new int[]{3, 1};
-        alphabetIdx['U'] = new int[]{3, 2};
-        alphabetIdx['V'] = new int[]{3, 3};
-        alphabetIdx['W'] = new int[]{3, 4};
-        alphabetIdx['X'] = new int[]{3, 5};
-        alphabetIdx['Y'] = new int[]{4, 0};
-        alphabetIdx['Z'] = new int[]{4, 1};
-        alphabetIdx['['] = new int[]{4, 2};
-        alphabetIdx['\\'] = new int[]{4, 3};
-        alphabetIdx[']'] = new int[]{4, 4};
-        alphabetIdx['^'] = new int[]{4, 5};
-
-        for (int i = 'A'; i <= '^'; i++) {
-            for (int j = i + 1; j <= '^'; j++) {
-                distance[i][j] = distance[j][i] =
-                        Math.abs(alphabetIdx[i][0] - alphabetIdx[j][0])
-                                + Math.abs(alphabetIdx[i][1] - alphabetIdx[j][1]);
-            }
-        }
-
-    }
-
-}
 
 class Scratch {
     public static void main(String[] args) {
@@ -84,7 +7,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
         Lc1320 lc1320 = new Lc1320();
 
-        System.out.println(lc1320.minimumDistance("ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+        System.out.println(lc1320.minimumDistance("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -1003,3 +926,85 @@ class ListNode {
     }
 }
 
+// LC1320 Hard
+class Lc1320 {
+    static int[][] alphabetIdx;
+    static int[][] distance;
+    int min = Integer.MAX_VALUE;
+    Integer[][][] memo;
+
+    public int minimumDistance(String word) {
+        memo = new Integer[word.length() + 1][31][31];
+        // 遍历两个手指的初始位置
+        for (int i = 'A'; i <= '^'; i++) {
+            for (int j = i; j <= '^'; j++) {
+                min = Math.min(min, helper(0, i, j, word));
+            }
+        }
+        return min;
+    }
+
+
+    private int helper(int targetCharIdx, int curLeft, int curRight, String word) {
+        if (targetCharIdx == word.length()) {
+            return 0;
+        }
+        if (memo[targetCharIdx][curLeft - 'A'][curRight - 'A'] != null)
+            return memo[targetCharIdx][curLeft - 'A'][curRight - 'A'];
+        int result = Integer.MAX_VALUE;
+        // 选择左手到下一个字母
+        int leftToNext = distance[curLeft][word.charAt(targetCharIdx)];
+        result = Math.min(result, leftToNext + helper(targetCharIdx + 1, word.charAt(targetCharIdx), curRight, word));
+
+        // 选择右手到下一个字母
+        int rightToNext = distance[curRight][word.charAt(targetCharIdx)];
+        result = Math.min(result, rightToNext + helper(targetCharIdx + 1, curLeft, word.charAt(targetCharIdx), word));
+
+        return memo[targetCharIdx][curLeft - 'A'][curRight - 'A'] = result;
+    }
+
+    static {
+        alphabetIdx = new int[256][2];
+        distance = new int[256][256];
+        alphabetIdx['A'] = new int[]{0, 0};
+        alphabetIdx['B'] = new int[]{0, 1};
+        alphabetIdx['C'] = new int[]{0, 2};
+        alphabetIdx['D'] = new int[]{0, 3};
+        alphabetIdx['E'] = new int[]{0, 4};
+        alphabetIdx['F'] = new int[]{0, 5};
+        alphabetIdx['G'] = new int[]{1, 0};
+        alphabetIdx['H'] = new int[]{1, 1};
+        alphabetIdx['I'] = new int[]{1, 2};
+        alphabetIdx['J'] = new int[]{1, 3};
+        alphabetIdx['K'] = new int[]{1, 4};
+        alphabetIdx['L'] = new int[]{1, 5};
+        alphabetIdx['M'] = new int[]{2, 0};
+        alphabetIdx['N'] = new int[]{2, 1};
+        alphabetIdx['O'] = new int[]{2, 2};
+        alphabetIdx['P'] = new int[]{2, 3};
+        alphabetIdx['Q'] = new int[]{2, 4};
+        alphabetIdx['R'] = new int[]{2, 5};
+        alphabetIdx['S'] = new int[]{3, 0};
+        alphabetIdx['T'] = new int[]{3, 1};
+        alphabetIdx['U'] = new int[]{3, 2};
+        alphabetIdx['V'] = new int[]{3, 3};
+        alphabetIdx['W'] = new int[]{3, 4};
+        alphabetIdx['X'] = new int[]{3, 5};
+        alphabetIdx['Y'] = new int[]{4, 0};
+        alphabetIdx['Z'] = new int[]{4, 1};
+        alphabetIdx['['] = new int[]{4, 2};
+        alphabetIdx['\\'] = new int[]{4, 3};
+        alphabetIdx[']'] = new int[]{4, 4};
+        alphabetIdx['^'] = new int[]{4, 5};
+
+        for (int i = 'A'; i <= '^'; i++) {
+            for (int j = i + 1; j <= '^'; j++) {
+                distance[i][j] = distance[j][i] =
+                        Math.abs(alphabetIdx[i][0] - alphabetIdx[j][0])
+                                + Math.abs(alphabetIdx[i][1] - alphabetIdx[j][1]);
+            }
+        }
+
+    }
+
+}
