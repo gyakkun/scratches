@@ -13,6 +13,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP44
+    public int numColor(TreeNode root) {
+        Set<Integer> s = new HashSet<>();
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            TreeNode p = q.poll();
+            s.add(p.val);
+            if (p.left != null) q.offer(p.left);
+            if (p.right != null) q.offer(p.right);
+
+        }
+        return s.size();
+    }
+
     // LC1552 ** 二分 注意判定函数的思想
     public int maxDistance(int[] position, int m) {
         Arrays.sort(position);
