@@ -26,29 +26,27 @@ class Scratch {
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 maxHeight = Math.max(maxHeight, heightMap[i][j]);
-                dsu.add(i * n + j);
                 heightIdxMap.putIfAbsent(heightMap[i][j], new ArrayList<>());
                 heightIdxMap.get(heightMap[i][j]).add(new int[]{i, j});
             }
         }
         int visitedCount = 0, result = 0;
-        boolean[][] visited = new boolean[m][n];
         for (int height = 0; height <= maxHeight; height++) {
-            if (!heightIdxMap.containsKey(height)) {
-                result += visitedCount - (dsu.getSelfGroupSize(outOfBoundId) - 1); // 因为界外本身不占任何数量, 所以要减一
-                continue;
-            }
-            for (int[] idx : heightIdxMap.get(height)) {
-                visitedCount++;
-                int r = idx[0], c = idx[1];
-                visited[r][c] = true;
-                for (int[] d : directions) {
-                    int nr = r + d[0], nc = c + d[1];
-                    // 如果界外或者已经访问过
-                    if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
-                        dsu.merge(r * n + c, outOfBoundId);
-                    } else if (visited[nr][nc]) {
-                        dsu.merge(r * n + c, nr * n + nc);
+            if (heightIdxMap.containsKey(height)) {
+                for (int[] idx : heightIdxMap.get(height)) {
+                    visitedCount++;
+                    int r = idx[0], c = idx[1];
+                    int id = r * n + c;
+                    dsu.add(id);
+                    for (int[] d : directions) {
+                        int nr = r + d[0], nc = c + d[1];
+                        int nid = nr * n + nc;
+                        // 如果界外或者已经访问过
+                        if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                            dsu.merge(id, outOfBoundId);
+                        } else if (dsu.contains(nid)) {
+                            dsu.merge(id, nid);
+                        }
                     }
                 }
             }
