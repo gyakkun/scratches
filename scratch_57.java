@@ -14,6 +14,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1701
+    public double averageWaitingTime(int[][] customers) {
+        long curTime = customers[0][0];
+        long[] totalTime = new long[customers.length];
+        curTime = totalTime[0] = curTime + customers[0][1];
+        for (int i = 1; i < customers.length; i++) {
+            if (curTime < customers[i][0]) {
+                curTime = customers[i][0];
+            }
+            curTime = totalTime[i] = curTime + customers[i][1];
+        }
+        long totalWaitingTime = 0;
+        for (int i = 0; i < customers.length; i++) {
+            totalWaitingTime += totalTime[i] - customers[i][0];
+        }
+        return (totalWaitingTime + 0d) / (customers.length + 0d);
+    }
+
     // LC823 **
     Long[] lc823Memo;
     int[] lc823Arr;
