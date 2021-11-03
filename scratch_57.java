@@ -7,56 +7,53 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.trapRainWater(new int[][]{{12,13,1,12},{13,4,13,12},{13,8,10,12},{12,13,12,12},{13,13,13,13}}));
+        System.out.println(s.trapRainWater(new int[][]{{12, 13, 1, 12}, {13, 4, 13, 12}, {13, 8, 10, 12}, {12, 13, 12, 12}, {13, 13, 13, 13}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC407 Hard ** 接雨水II WA
+    // LC407 Hard ** 接雨水II
     public int trapRainWater(int[][] heightMap) {
-        // 1<= m,n <=200
-        int m = heightMap.length, n = heightMap[0].length;
-        // 每行做一次一维接雨水DP, 每列做一次一维接雨水DP
-        int[][] rowDpFromLeft = new int[m][n];
-        int[][] rowDpFromRight = new int[m][n];
-        int[][] colDpFromUp = new int[n][m];
-        int[][] colDpFromDown = new int[n][m];
-        int[][] globalMinHeight = new int[m][n];
-        for (int row = 0; row < m; row++) {
-            rowDpFromLeft[row][0] = heightMap[row][0];
-            for (int j = 1; j < n; j++) {
-                rowDpFromLeft[row][j] = Math.max(rowDpFromLeft[row][j - 1], heightMap[row][j]);
-            }
-            rowDpFromRight[row][n - 1] = heightMap[row][n - 1];
-            for (int j = n - 2; j >= 0; j--) {
-                rowDpFromRight[row][j] = Math.max(rowDpFromRight[row][j + 1], heightMap[row][j]);
-            }
+        // 由外往内 BFS
+        int m = heightMap.length, n = heightMap[0].length, maxHeight = 0;
+        int[][] water = new int[m][n], directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        Deque<int[]> q = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                globalMinHeight[row][j] = Math.min(rowDpFromLeft[row][j], rowDpFromRight[row][j]);
+                maxHeight = Math.max(maxHeight, heightMap[i][j]);
             }
         }
-        for (int col = 0; col < n; col++) {
-            colDpFromUp[col][0] = heightMap[0][col];
-            for (int j = 1; j < m; j++) {
-                colDpFromUp[col][j] = Math.max(colDpFromUp[col][j - 1], heightMap[j][col]);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                water[i][j] = maxHeight;
             }
-            colDpFromDown[col][m - 1] = heightMap[m - 1][col];
-            for (int j = m - 2; j >= 0; j--) {
-                colDpFromDown[col][j] = Math.max(colDpFromDown[col][j + 1], heightMap[j][col]);
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
+                    water[i][j] = heightMap[i][j];
+                    q.offer(new int[]{i, j});
+                }
             }
-            for (int j = 0; j < m; j++) {
-                int tmp = Math.min(colDpFromUp[col][j], colDpFromDown[col][j]);
-                globalMinHeight[j][col] = Math.min(tmp, globalMinHeight[j][col]);
+        }
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            int r = p[0], c = p[1];
+            for (int[] d : directions) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr < 0 || nr >= m || nc < 0 || nc >= n) continue;
+                if (water[r][c] < water[nr][nc] && water[nr][nc] > heightMap[nr][nc]) {
+                    water[nr][nc] = Math.max(heightMap[nr][nc], water[r][c]);
+                    q.offer(new int[]{nr, nc});
+                }
             }
         }
         int result = 0;
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                if (globalMinHeight[i][j] > heightMap[i][j]) {
-                    result += globalMinHeight[i][j] - heightMap[i][j];
-                }
+                result += water[i][j] - heightMap[i][j];
             }
         }
         return result;
@@ -82,7 +79,7 @@ class Scratch {
         int lo = 1, hi = position[position.length - 1] - position[0] + 1;
         while (lo < hi) { // 满足条件的最大值
             int mid = lo + (hi - lo + 1) / 2;
-            if (check(position, mid, m)) {
+            if (lc1552Check(position, mid, m)) {
                 lo = mid;
             } else {
                 hi = mid - 1;
@@ -91,7 +88,7 @@ class Scratch {
         return lo;
     }
 
-    private boolean check(int[] position, int distance, int bound) {
+    private boolean lc1552Check(int[] position, int distance, int bound) {
         int count = 1, prev = position[0];
         for (int i = 1; i < position.length; i++) {
             if (position[i] - prev < distance) continue;
