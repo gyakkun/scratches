@@ -14,6 +14,47 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC823 **
+    Long[] lc823Memo;
+    int[] lc823Arr;
+    Map<Integer, Integer> lc823IdxMap;
+    final long lc823Mod = 1000000007;
+
+    public int numFactoredBinaryTrees(int[] arr) {
+        int n = arr.length;
+        lc823Memo = new Long[n + 1];
+        Arrays.sort(arr);
+        this.lc823Arr = arr;
+        lc823IdxMap = new HashMap<>();
+        for (int i = 0; i < n; i++) lc823IdxMap.put(arr[i], i);
+
+        long result = 0;
+        for (int i = 0; i < n; i++) {
+            result += lc823Helper(i);
+            result %= lc823Mod;
+        }
+        return (int) (result);
+    }
+
+    private long lc823Helper(int startIdx) {
+        if (lc823Memo[startIdx] != null) return lc823Memo[startIdx];
+        int val = lc823Arr[startIdx];
+        long result = 1;
+        for (int leftIdx = 0; leftIdx < startIdx; leftIdx++) {
+            int left = lc823Arr[leftIdx];
+            if (val % left == 0) {
+                int right = val / left;
+                if (lc823IdxMap.containsKey(right)) {
+                    int rightIdx = lc823IdxMap.get(right);
+                    // 注意是乘法原理
+                    result += lc823Helper(leftIdx) * lc823Helper(rightIdx);
+                    result %= lc823Mod;
+                }
+            }
+        }
+        return lc823Memo[startIdx] = result;
+    }
+
     // LC42 接雨水I Try DSU
     public int trap(int[] height) {
         int n = height.length;
