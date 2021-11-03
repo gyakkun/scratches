@@ -1148,10 +1148,7 @@ class DSUArray {
     }
 
     public int getSelfGroupSize(int x) {
-        int f = find(x);
-        int gs = groupSize[f];
-        int ggs = getAllGroups().get(f).size();
-        return ggs;
+        return rank[find(x)];
     }
 
 }
