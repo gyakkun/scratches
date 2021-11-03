@@ -49,11 +49,9 @@ class Scratch {
     // LC407 Hard ** 接雨水II
     // From Solution Dijkstra
     public int trapRainWaterDijk(int[][] heightMap) {
-        if (heightMap.length <= 2 || heightMap[0].length <= 2) {
-            return 0;
-        }
         int m = heightMap.length, n = heightMap[0].length, result = 0;
         int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int[][] water = new int[m][n];
         boolean[][] visited = new boolean[m][n];
         PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[2]));
 
@@ -61,24 +59,31 @@ class Scratch {
             for (int j = 0; j < n; ++j) {
                 if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
                     pq.offer(new int[]{i, j, heightMap[i][j]});
-                    visited[i][j] = true;
+                    water[i][j] = heightMap[i][j];
+                } else {
+                    water[i][j] = Integer.MAX_VALUE / 2;
                 }
             }
         }
 
         while (!pq.isEmpty()) {
             int[] p = pq.poll();
-            int r = p[0], c = p[1], h = p[2];
+            int r = p[0], c = p[1], w = p[2];
+            if (visited[r][c]) continue;
+            visited[r][c] = true;
             for (int[] d : directions) {
                 int nr = r + d[0], nc = c + d[1];
                 if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc]) {
                     int nh = heightMap[nr][nc];
-                    if (h > nh) {
-                        result += h - nh;
-                    }
-                    pq.offer(new int[]{nr, nc, Math.max(nh, h)});
-                    visited[nr][nc] = true;
+                    water[nr][nc] = Math.max(nh, Math.min(w, water[nr][nc]));
+                    pq.offer(new int[]{nr, nc, water[nr][nc]});
                 }
+            }
+        }
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                result += water[i][j] - heightMap[i][j];
             }
         }
 
