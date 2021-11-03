@@ -7,7 +7,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.trapRainWater(new int[][]{{12, 13, 1, 12}, {13, 4, 13, 12}, {13, 8, 10, 12}, {12, 13, 12, 12}, {13, 13, 13, 13}}));
+        System.out.println(s.trapRainWaterDSU(new int[][]{{12, 13, 1, 12}, {13, 4, 13, 12}, {13, 8, 10, 12}, {12, 13, 12, 12}, {13, 13, 13, 13}}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -15,6 +15,48 @@ class Scratch {
     }
 
     // LC407 Hard ** 接雨水II
+    // Try DSU
+    public int trapRainWaterDSU(int[][] heightMap) {
+        int m = heightMap.length, n = heightMap[0].length, maxHeight = 0;
+        int outOfBoundId = m * n;
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        DSUArray dsu = new DSUArray(m * n + 1); // 将 m*n 视作界外单元格集合
+        dsu.add(outOfBoundId);
+        Map<Integer, List<int[]>> heightIdxMap = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                maxHeight = Math.max(maxHeight, heightMap[i][j]);
+                dsu.add(i * n + j);
+                heightIdxMap.putIfAbsent(heightMap[i][j], new ArrayList<>());
+                heightIdxMap.get(heightMap[i][j]).add(new int[]{i, j});
+            }
+        }
+        int visitedCount = 0, result = 0;
+        boolean[][] visited = new boolean[m][n];
+        for (int height = 0; height <= maxHeight; height++) {
+            if (!heightIdxMap.containsKey(height)) {
+                result += visitedCount - (dsu.getSelfGroupSize(outOfBoundId) - 1); // 因为界外本身不占任何数量, 所以要减一
+                continue;
+            }
+            for (int[] idx : heightIdxMap.get(height)) {
+                visitedCount++;
+                int r = idx[0], c = idx[1];
+                visited[r][c] = true;
+                for (int[] d : directions) {
+                    int nr = r + d[0], nc = c + d[1];
+                    // 如果界外或者已经访问过
+                    if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                        dsu.merge(r * n + c, outOfBoundId);
+                    } else if (visited[nr][nc]) {
+                        dsu.merge(r * n + c, nr * n + nc);
+                    }
+                }
+            }
+            result += visitedCount - (dsu.getSelfGroupSize(outOfBoundId) - 1); // 因为界外本身不占任何数量, 所以要减一
+        }
+        return result;
+    }
+
     public int trapRainWater(int[][] heightMap) {
         // 由外往内 BFS
         int m = heightMap.length, n = heightMap[0].length, maxHeight = 0;
@@ -1059,7 +1101,6 @@ class DSUArray {
         while (father[i] != root) {
             int origFather = father[i];
             father[i] = root;
-            rank[root]++;
             i = origFather;
         }
         return root;
@@ -1104,6 +1145,13 @@ class DSUArray {
 
     public int getNumOfGroups() {
         return getAllGroups().size();
+    }
+
+    public int getSelfGroupSize(int x) {
+        int f = find(x);
+        int gs = groupSize[f];
+        int ggs = getAllGroups().get(f).size();
+        return ggs;
     }
 
 }
