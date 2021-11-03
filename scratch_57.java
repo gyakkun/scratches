@@ -14,6 +14,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC42 接雨水I Try DSU
+    public int trap(int[] height) {
+        int n = height.length;
+        DSUArray dsu = new DSUArray(n + 1);
+        int oobId = n, maxHeight = 0;
+        dsu.add(oobId);
+        Map<Integer, List<Integer>> m = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            maxHeight = Math.max(maxHeight, height[i]);
+            m.putIfAbsent(height[i], new ArrayList<>());
+            m.get(height[i]).add(i);
+        }
+        int visitedCount = 0, result = 0;
+        for (int h = 0; h <= maxHeight; h++) {
+            if (m.containsKey(h)) {
+                for (int id : m.get(h)) {
+                    dsu.add(id);
+                    visitedCount++;
+                    for (int next : new int[]{id - 1, id + 1}) {
+                        if (next >= n || next < 0) {
+                            dsu.merge(id, oobId);
+                        } else if (dsu.contains(next)) {
+                            dsu.merge(id, next);
+                        }
+                    }
+                }
+            }
+            result += visitedCount - dsu.getSelfGroupSize(oobId) + 1;
+        }
+        return result;
+    }
+
     // LC407 Hard ** 接雨水II
     // Try DSU
     public int trapRainWaterDSU(int[][] heightMap) {
