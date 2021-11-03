@@ -1,4 +1,3 @@
-import javax.persistence.criteria.Root;
 import java.util.*;
 
 
@@ -110,6 +109,37 @@ class Scratch {
             }
         }
         return lc823Memo[startIdx] = result;
+    }
+
+    // LC42 Try Dijkstra
+    public int trapDijk(int[] height) {
+        int n = height.length;
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[1]));
+        pq.offer(new int[]{0, height[0]});
+        pq.offer(new int[]{n - 1, height[n - 1]});
+        int[] water = new int[n];
+        Arrays.fill(water, Integer.MAX_VALUE / 2);
+        water[0] = height[0];
+        water[n - 1] = height[n - 1];
+        boolean[] visited = new boolean[n];
+        while (!pq.isEmpty()) {
+            int[] p = pq.poll();
+            int cur = p[0], w = p[1];
+            if (visited[cur]) continue;
+            visited[cur] = true;
+            for (int next : new int[]{cur - 1, cur + 1}) {
+                if (next >= 0 && next < n && !visited[next]) {
+                    int nh = height[next];
+                    water[next] = Math.max(height[next], Math.min(water[next], w));
+                    pq.offer(new int[]{next, water[next]});
+                }
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            result += water[i] - height[i];
+        }
+        return result;
     }
 
     // LC42 接雨水I Try DSU
