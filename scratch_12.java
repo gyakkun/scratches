@@ -63,7 +63,7 @@ class Dijkstra {
             visited[curIdx] = true;
 
             for (int next = 0; next < n; next++) {
-                if (next != curIdx && adj[curIdx][next] != INF) {
+                if (next != curIdx && adj[curIdx][next] != INF && !visited[next]) {
                     // 如果下一跳前到源点的距离大于 下一跳 途径当前点 再到源点的距离
                     if (result[next] > distanceFromCurIdxToSrc + adj[curIdx][next]) {
                         result[next] = distanceFromCurIdxToSrc + adj[curIdx][next];
