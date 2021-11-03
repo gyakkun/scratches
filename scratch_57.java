@@ -92,36 +92,41 @@ class Scratch {
         int m = heightMap.length, n = heightMap[0].length, maxHeight = 0;
         int[][] water = new int[m][n], directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         Deque<int[]> q = new LinkedList<>();
+
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 maxHeight = Math.max(maxHeight, heightMap[i][j]);
             }
         }
+
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                water[i][j] = maxHeight;
-            }
-        }
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
+                // 将最外层的接水高度调整至自身高度, 并且加入队列, 由外而内BFS
                 if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
                     water[i][j] = heightMap[i][j];
                     q.offer(new int[]{i, j});
+                } else {
+                    water[i][j] = maxHeight;
                 }
             }
         }
+
         while (!q.isEmpty()) {
             int[] p = q.poll();
             int r = p[0], c = p[1];
             for (int[] d : directions) {
                 int nr = r + d[0], nc = c + d[1];
                 if (nr < 0 || nr >= m || nc < 0 || nc >= n) continue;
+                // 如果当前位置比周围的接水高度要低, 并且周围位置的接水高度是高于本身高度的
+                // 说明周围位置要降低自身的接水高度到与当前位置一样, 并且周围位置的下一个外层也需要相应调整, 故加入队列
+                // 队列里每加入一个元素, 都可能导致整个water数组的调整, 故时间复杂度为O(m*m*n*n)
                 if (water[r][c] < water[nr][nc] && water[nr][nc] > heightMap[nr][nc]) {
                     water[nr][nc] = Math.max(heightMap[nr][nc], water[r][c]);
                     q.offer(new int[]{nr, nc});
                 }
             }
         }
+
         int result = 0;
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
