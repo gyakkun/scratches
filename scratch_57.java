@@ -6,11 +6,60 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxDistance(new int[]{1, 2, 3, 4, 7}, 3));
+
+        System.out.println(s.trapRainWater(new int[][]{{12,13,1,12},{13,4,13,12},{13,8,10,12},{12,13,12,12},{13,13,13,13}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC407 Hard ** 接雨水II WA
+    public int trapRainWater(int[][] heightMap) {
+        // 1<= m,n <=200
+        int m = heightMap.length, n = heightMap[0].length;
+        // 每行做一次一维接雨水DP, 每列做一次一维接雨水DP
+        int[][] rowDpFromLeft = new int[m][n];
+        int[][] rowDpFromRight = new int[m][n];
+        int[][] colDpFromUp = new int[n][m];
+        int[][] colDpFromDown = new int[n][m];
+        int[][] globalMinHeight = new int[m][n];
+        for (int row = 0; row < m; row++) {
+            rowDpFromLeft[row][0] = heightMap[row][0];
+            for (int j = 1; j < n; j++) {
+                rowDpFromLeft[row][j] = Math.max(rowDpFromLeft[row][j - 1], heightMap[row][j]);
+            }
+            rowDpFromRight[row][n - 1] = heightMap[row][n - 1];
+            for (int j = n - 2; j >= 0; j--) {
+                rowDpFromRight[row][j] = Math.max(rowDpFromRight[row][j + 1], heightMap[row][j]);
+            }
+            for (int j = 0; j < n; j++) {
+                globalMinHeight[row][j] = Math.min(rowDpFromLeft[row][j], rowDpFromRight[row][j]);
+            }
+        }
+        for (int col = 0; col < n; col++) {
+            colDpFromUp[col][0] = heightMap[0][col];
+            for (int j = 1; j < m; j++) {
+                colDpFromUp[col][j] = Math.max(colDpFromUp[col][j - 1], heightMap[j][col]);
+            }
+            colDpFromDown[col][m - 1] = heightMap[m - 1][col];
+            for (int j = m - 2; j >= 0; j--) {
+                colDpFromDown[col][j] = Math.max(colDpFromDown[col][j + 1], heightMap[j][col]);
+            }
+            for (int j = 0; j < m; j++) {
+                int tmp = Math.min(colDpFromUp[col][j], colDpFromDown[col][j]);
+                globalMinHeight[j][col] = Math.min(tmp, globalMinHeight[j][col]);
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (globalMinHeight[i][j] > heightMap[i][j]) {
+                    result += globalMinHeight[i][j] - heightMap[i][j];
+                }
+            }
+        }
+        return result;
     }
 
     // LCP44
@@ -23,7 +72,6 @@ class Scratch {
             s.add(p.val);
             if (p.left != null) q.offer(p.left);
             if (p.right != null) q.offer(p.right);
-
         }
         return s.size();
     }
@@ -956,8 +1004,6 @@ class Scratch {
         }
         return sb.toString();
     }
-
-    //
 }
 
 class TreeNode {
@@ -984,9 +1030,9 @@ class DSUArray {
     }
 
     public DSUArray() {
-        this.size = Integer.MAX_VALUE >> 16;
-        father = new int[Integer.MAX_VALUE >> 16];
-        rank = new int[Integer.MAX_VALUE >> 16];
+        this.size = 1 << 16;
+        father = new int[1 << 16];
+        rank = new int[1 << 16];
         Arrays.fill(father, -1);
         Arrays.fill(rank, -1);
     }
