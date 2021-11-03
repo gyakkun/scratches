@@ -7,7 +7,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.trapRainWaterDSU(new int[][]{{12, 13, 1, 12}, {13, 4, 13, 12}, {13, 8, 10, 12}, {12, 13, 12, 12}, {13, 13, 13, 13}}));
+        System.out.println(s.trapRainWaterDijk(new int[][]{{12, 13, 1, 12}, {13, 4, 13, 12}, {13, 8, 10, 12}, {12, 13, 12, 12}, {13, 13, 13, 13}}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -47,6 +47,44 @@ class Scratch {
     }
 
     // LC407 Hard ** 接雨水II
+    // From Solution Dijkstra
+    public int trapRainWaterDijk(int[][] heightMap) {
+        if (heightMap.length <= 2 || heightMap[0].length <= 2) {
+            return 0;
+        }
+        int m = heightMap.length, n = heightMap[0].length, result = 0;
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        boolean[][] visited = new boolean[m][n];
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[2]));
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
+                    pq.offer(new int[]{i, j, heightMap[i][j]});
+                    visited[i][j] = true;
+                }
+            }
+        }
+
+        while (!pq.isEmpty()) {
+            int[] p = pq.poll();
+            int r = p[0], c = p[1], h = p[2];
+            for (int[] d : directions) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc]) {
+                    int nh = heightMap[nr][nc];
+                    if (h > nh) {
+                        result += h - nh;
+                    }
+                    pq.offer(new int[]{nr, nc, Math.max(nh, h)});
+                    visited[nr][nc] = true;
+                }
+            }
+        }
+
+        return result;
+    }
+
     // Try DSU
     public int trapRainWaterDSU(int[][] heightMap) {
         int m = heightMap.length, n = heightMap[0].length, maxHeight = 0;

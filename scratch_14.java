@@ -1,5 +1,4 @@
-﻿import java.math.BigInteger;
-import java.util.*;
+﻿import java.util.*;
 import java.util.stream.Collectors;
 
 class Scratch {
@@ -12,6 +11,8 @@ class Scratch {
         System.err.println("total: " + (end - begin) + "ms.");
     }
 
+
+    // LC1128
     public int numEquivDominoPairs(int[][] dominoes) {
         int result = 0;
         Map<String, Integer> m = new HashMap<>();
@@ -50,6 +51,7 @@ class Scratch {
         return result;
     }
 
+    // LC628
     public int maximumProduct(int[] nums) {
 
         int n = nums.length;
@@ -74,6 +76,7 @@ class Scratch {
         return nums[n - 1] * nums[n - 2] * nums[n - 3];
     }
 
+    // LC1018
     public static List<Boolean> prefixesDivBy5(int[] A) {
         int n = A.length;
         List<Boolean> result = new ArrayList<>(Collections.nCopies(n, false));
@@ -85,6 +88,7 @@ class Scratch {
         return result;
     }
 
+    // LC1202
     public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
         if (pairs.size() == 0) return s;
         char[] sChar = s.toCharArray();
@@ -114,6 +118,7 @@ class Scratch {
         return new String(sChar);
     }
 
+    // LC959
     public static int regionsBySlashes(String[] grid) {
         final int n = grid.length;
         Set<Integer> pointSet = new HashSet<>();
@@ -160,13 +165,12 @@ class Scratch {
         return i;
     }
 
-
+    // LC1579
+    public static int maxNumEdgesToRemove(int n, int[][] edges) {
     // 1. 对alice&bob, 加入所有的III类边, 并找出里面可能的冗余边(merge返回false的情况), 记录冗余边数
     // 2. 对alice, 加入所有I类边, 记录冗余边。若最后dsu中有大于一个连通分量, 或dsu的总点数!=n, 直接返回-1
     // 3. 对bob同alice
     // 4. 返回冗余边总数
-
-    public static int maxNumEdgesToRemove(int n, int[][] edges) {
         DisjointSetUnion alice = new DisjointSetUnion();
         DisjointSetUnion bob = new DisjointSetUnion();
 
@@ -202,6 +206,7 @@ class Scratch {
         return typeIiiRedundancy + aliceRedundancy + bobRedundancy;
     }
 
+    // LC724
     public int pivotIndex(int[] nums) {
         if (nums.length == 0) return -1;
         int n = nums.length;
@@ -220,6 +225,7 @@ class Scratch {
         return -1;
     }
 
+    // LCP19
     public int minimumOperations(String leaves) {
         int n = leaves.length();
         int[][] dp = new int[n][3];
@@ -241,6 +247,7 @@ class Scratch {
         return dp[n - 1][2];
     }
 
+    // LC1631
     public int minimumEffortPath(int[][] heights) {
 
         // 0-上 1-下 2-左 3-右
@@ -280,6 +287,8 @@ class Scratch {
 
 }
 
+// LC1631
+// From Solution ?
 class Solution {
     int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
