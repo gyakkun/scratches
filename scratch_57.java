@@ -1,3 +1,4 @@
+import javax.persistence.criteria.Root;
 import java.util.*;
 
 
@@ -12,6 +13,44 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC998
+    public TreeNode insertIntoMaxTree(TreeNode root, int val) {
+        List<Integer> list = toList(root);
+        list.add(val);
+        return toTree(list);
+    }
+
+    private List<Integer> toList(TreeNode root) {
+        if (root == null) return null;
+        List<Integer> left = toList(root.left), right = toList(root.right);
+        List<Integer> result = new ArrayList<>();
+        result.add(root.val);
+        if (left != null) {
+            left.addAll(result);
+            result = left;
+        }
+        if (right != null) {
+            result.addAll(right);
+        }
+        return result;
+    }
+
+    // LC654
+    private TreeNode toTree(List<Integer> list) {
+        if (list.size() == 0) return null;
+        if (list.size() == 1) return new TreeNode(list.get(0));
+        int maxIdx = 0;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(maxIdx) < list.get(i)) {
+                maxIdx = i;
+            }
+        }
+        TreeNode result = new TreeNode(list.get(maxIdx));
+        result.left = toTree(list.subList(0, maxIdx));
+        result.right = toTree(list.subList(maxIdx + 1, list.size()));
+        return result;
     }
 
     // LC1701
