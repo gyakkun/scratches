@@ -7,11 +7,101 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minFlips("111000"));
+        System.out.println(s.generateTrees(3));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC95
+    public List<TreeNode> generateTrees(int n) {
+        List<TreeNode> result = new ArrayList<>();
+        Set<String> preOrder = new HashSet<>();
+        for (int i = 1; i <= n; i++) {
+            TreeNode root = new TreeNode(i);
+            boolean[] visited = new boolean[n + 1];
+            visited[i] = true;
+            lc95Helper(root, visited, n - 1, result, preOrder);
+        }
+        return result;
+    }
+
+    private void lc95Helper(TreeNode root, boolean[] visited, int leftCount, List<TreeNode> result, Set<String> preOrder) {
+        if (leftCount == 0) {
+            StringBuilder sb = new StringBuilder();
+            preOrderStr(root, sb);
+            if (preOrder.contains(sb.toString())) return;
+            preOrder.add(sb.toString());
+            result.add(copyTree(root));
+            return;
+        }
+        for (int i = 1; i <= visited.length - 1; i++) {
+            if (!visited[i]) {
+                insertToBST(root, i);
+                visited[i] = true;
+                lc95Helper(root, visited, leftCount - 1, result, preOrder);
+                visited[i] = false;
+                removeFromBST(root, i);
+            }
+        }
+    }
+
+    private void preOrderStr(TreeNode root, StringBuilder sb) {
+        if (root == null) return;
+        sb.append(root.val);
+        preOrderStr(root.left, sb);
+        preOrderStr(root.right, sb);
+    }
+
+    private void insertToBST(TreeNode root, int val) {
+        // 左小右大
+        if (val > root.val) {
+            if (root.right == null) {
+                root.right = new TreeNode(val);
+                return;
+            } else {
+                insertToBST(root.right, val);
+            }
+        } else if (val < root.val) {
+            if (root.left == null) {
+                root.left = new TreeNode(val);
+                return;
+            } else {
+                insertToBST(root.left, val);
+            }
+        }
+    }
+
+    private TreeNode removeFromBST(TreeNode root, int val) {
+        if (root == null) return null;
+        if (root.val == val) {
+            if (root.left == null) return root.right;
+            if (root.right == null) return root.left;
+            TreeNode minNode = findMinNode(root.right);
+            root.val = minNode.val;
+            root.right = removeFromBST(root.right, minNode.val);
+        } else if (root.val < val) {
+            root.right = removeFromBST(root.right, val);
+        } else {
+            root.left = removeFromBST(root.left, val);
+        }
+        return root;
+    }
+
+    private TreeNode findMinNode(TreeNode root) {
+        while (root.left != null) {
+            root = root.left;
+        }
+        return root;
+    }
+
+    private TreeNode copyTree(TreeNode root) {
+        if (root == null) return null;
+        TreeNode result = new TreeNode(root.val);
+        result.left = copyTree(root.left);
+        result.right = copyTree(root.right);
+        return result;
     }
 
     // LC777 **
