@@ -14,6 +14,40 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC777 **
+    public boolean canTransform(String start, String end) {
+        // L R 的相对位置是不会变的, 因为不存在L穿越R或反之
+        // 去除所有X后 start 和 end 应该一样
+        // L 不能到达L 的右侧
+        // R 不能到达R 的左侧
+
+        if (start.length() != end.length()) return false;
+        if (!start.replaceAll("X", "").equals(end.replaceAll("X", ""))) return false;
+        char[] cs = start.toCharArray(), ce = end.toCharArray();
+        int n = start.length();
+
+        // 正向遍历 找有无异常L
+        int j = 0;
+        for (int i = 0; i < n; i++) {
+            if (cs[i] == 'L') {
+                while (ce[j] != 'L') j++;
+                if (i < j) return false;
+                j++;
+            }
+        }
+
+        // 反向遍历 找有无异常R
+        j = n - 1;
+        for (int i = n - 1; i >= 0; i--) {
+            if (cs[i] == 'R') {
+                while (ce[j] != 'R') j--;
+                if (i > j) return false;
+                j--;
+            }
+        }
+        return true;
+    }
+
     // Interview 17.17
     public int[][] multiSearch(String big, String[] smalls) {
         int n = smalls.length;
