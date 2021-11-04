@@ -14,6 +14,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC422
+    public boolean validWordSquare(List<String> words) {
+        int n = words.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < words.get(i).length(); j++) {
+                if (j >= words.size()) return false;
+                if (i >= words.get(j).length()) return false;
+                if (words.get(i).charAt(j) != words.get(j).charAt(i)) return false;
+            }
+        }
+        return true;
+    }
+
     // JZOF 013
     public int movingCount(int m, int n, int k) {
         Deque<int[]> q = new LinkedList<>();
