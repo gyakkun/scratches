@@ -7,11 +7,46 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.trapRainWaterDijk(new int[][]{{12, 13, 1, 12}, {13, 4, 13, 12}, {13, 8, 10, 12}, {12, 13, 12, 12}, {13, 13, 13, 13}}));
+        System.out.println(s.minFlips("111000"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1888 ** DP
+    public int minFlips(String s) {
+        int n = s.length();
+        if (n == 1) return 0;
+        char[] ca = s.toCharArray();
+        // prefix[i][j] 表示将s的前i项变更为以j结尾的交替字符串所需要的操作步数
+        // suffix[i][j] 表示将s的i...n-1项变更为以j开头的交替字符串所需要的操作步数
+        int[][] prefix = new int[n][2], suffix = new int[n][2];
+        prefix[0][0] = ca[0] == '0' ? 0 : 1;
+        prefix[0][1] = ca[0] == '1' ? 0 : 1;
+
+        for (int i = 1; i < n; i++) {
+            prefix[i][0] = prefix[i - 1][1] + (ca[i] == '0' ? 0 : 1);
+            prefix[i][1] = prefix[i - 1][0] + (ca[i] == '1' ? 0 : 1);
+        }
+        if (n % 2 == 0) {
+            return Math.min(prefix[n - 1][0], prefix[n - 1][1]);
+        }
+
+        suffix[n - 1][0] = ca[n - 1] == '0' ? 0 : 1;
+        suffix[n - 1][1] = ca[n - 1] == '1' ? 0 : 1;
+        for (int i = n - 2; i >= 0; i--) {
+            suffix[i][0] = suffix[i + 1][1] + (ca[i] == '0' ? 0 : 1);
+            suffix[i][1] = suffix[i + 1][0] + (ca[i] == '1' ? 0 : 1);
+        }
+
+        int result = Math.min(prefix[n - 1][0], prefix[n - 1][1]);
+        for (int i = 0; i < n - 1; i++) {
+            result = Math.min(result, prefix[i][0] + suffix[i + 1][0]);
+            result = Math.min(result, prefix[i][1] + suffix[i + 1][1]);
+        }
+
+        return result;
     }
 
     // LC367
