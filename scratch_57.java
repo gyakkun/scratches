@@ -7,12 +7,63 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.generateTrees(3));
+        System.out.println(s.minimumJumps(new int[]{8, 3, 16, 6, 12, 20},
+                15,
+                13,
+                11));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1654 WA BFS
+    public int minimumJumps(int[] forbidden, int a, int b, int x) {
+        // 它可以 往前 跳恰好 a个位置（即往右跳）。
+        // 它可以 往后跳恰好 b个位置（即往左跳）。
+        // 它不能 连续 往后跳 2 次。
+        // 它不能跳到任何forbidden数组中的位置。
+        // 跳蚤可以往前跳 超过 它的家的位置，但是它 不能跳到负整数 的位置。
+
+        final int LIMIT = 8000;
+        boolean[][] visited = new boolean[LIMIT + 1][2];
+        // int[][][] prev = new int[LIMIT + 1][2][];
+        Set<Integer> forbid = new HashSet<>(forbidden.length);
+        for (int i : forbidden) forbid.add(i);
+        Deque<int[]> q = new LinkedList<>(); // [ 当前位置, 向后跳次数 ]
+        q.offer(new int[]{0, 0});
+        int layer = -1;
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            layer++;
+            for (int i = 0; i < qs; i++) {
+                int[] p = q.poll();
+                int cur = p[0], backwardCount = p[1];
+                if (cur == x) {
+                    // while (prev[cur][backwardCount] != null) {
+                    //     System.err.println(cur + " " + backwardCount);
+                    //     int origCur = cur;
+                    //     cur = prev[origCur][backwardCount][0];
+                    //     backwardCount = prev[origCur][backwardCount][1];
+                    // }
+                    return layer;
+                }
+                if (visited[cur][backwardCount]) continue;
+                visited[cur][backwardCount] = true;
+
+                if (cur + a <= LIMIT && !forbid.contains(cur + a)) {
+                    q.offer(new int[]{cur + a, 0});
+                    // prev[cur + a][0] = p;
+                }
+                if (cur - b >= 0 && backwardCount < 1 && !forbid.contains(cur - b)) {
+                    q.offer(new int[]{cur - b, backwardCount + 1});
+                    // prev[cur - b][backwardCount + 1] = p;
+                }
+            }
+        }
+        return -1;
+    }
+
 
     // LC95
     public List<TreeNode> generateTrees(int n) {
