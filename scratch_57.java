@@ -14,6 +14,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC367
+    public boolean isPerfectSquare(int num) {
+        if (num == 1) return true;
+        int lo = 2, hi = 1 << 16;
+        while (lo <= hi) {
+            long mid = lo + (hi - lo) / 2;
+            long product = mid * mid;
+            if (product == num) return true;
+            if (product < num) {
+                lo = (int) mid + 1;
+            } else if (product > num) {
+                hi = (int) mid - 1;
+            }
+        }
+        return false;
+    }
+
     // LC998
     public TreeNode insertIntoMaxTree(TreeNode root, int val) {
         List<Integer> list = toList(root);
