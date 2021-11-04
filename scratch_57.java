@@ -14,6 +14,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 17.17
+    public int[][] multiSearch(String big, String[] smalls) {
+        int n = smalls.length;
+        int[][] result = new int[n][];
+        for (int i = 0; i < n; i++) {
+            if (smalls[i].length() == 0) {
+                result[i] = new int[0];
+                continue;
+            }
+            List<Integer> l = new ArrayList<>();
+            int idx = 0;
+            while (idx < big.length()) {
+                idx = big.indexOf(smalls[i], idx);
+                if (idx >= 0) l.add(idx);
+                else break;
+                idx += 1;
+            }
+            int[] r = new int[l.size()];
+            for (int j = 0; j < r.length; j++) {
+                r[j] = l.get(j);
+            }
+            result[i] = r;
+        }
+        return result;
+    }
+
     // LC361
     public int maxKilledEnemies(char[][] grid) {
         int m = grid.length, n = grid[0].length, max = 0;
