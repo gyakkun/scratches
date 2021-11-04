@@ -14,6 +14,42 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF 013
+    public int movingCount(int m, int n, int k) {
+        Deque<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0, 0});
+        boolean[][] visited = new boolean[m][n];
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int result = 0;
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            int r = p[0], c = p[1];
+            if (visited[r][c]) continue;
+            visited[r][c] = true;
+            result++;
+            for (int[] d : directions) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr >= 0 && nr < m && nc >= 0 && nc < n && check(nr, nc, k) && !visited[nr][nc]) {
+                    q.offer(new int[]{nr, nc});
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean check(int x, int y, int bound) {
+        return digitSum(x) + digitSum(y) <= bound;
+    }
+
+    private int digitSum(int num) {
+        int result = 0;
+        while (num != 0) {
+            result += num % 10;
+            num /= 10;
+        }
+        return result;
+    }
+
     // LC1758
     public int minOperations(String s) {
         char[] ca = s.toCharArray();
