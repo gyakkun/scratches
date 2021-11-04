@@ -14,6 +14,84 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC361
+    public int maxKilledEnemies(char[][] grid) {
+        int m = grid.length, n = grid[0].length, max = 0;
+        DSUArray dsuRow = new DSUArray(m * n);
+        DSUArray dsuCol = new DSUArray(m * n);
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '0') dsuRow.add(i * n + j);
+                if (j - 1 >= 0 && grid[i][j - 1] == '0') dsuRow.merge(i * n + j, i * n + j - 1);
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[j][i] == '0') dsuCol.add(j * n + i);
+                if (j - 1 >= 0 && grid[j - 1][i] == '0') dsuCol.merge(j * n + i, (j - 1) * n + i);
+            }
+        }
+
+        Map<Integer, Integer> rowFatherVisited = new HashMap<>();
+        Map<Integer, Integer> colFatherVisited = new HashMap<>();
+
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '0') {
+                    int id = i * n + j;
+
+                    int rowFather = dsuRow.find(id);
+                    int colFather = dsuCol.find(id);
+                    int rowResult = 0, colResult = 0;
+
+                    if (rowFatherVisited.containsKey(rowFather)) {
+                        rowResult = rowFatherVisited.get(rowFather);
+                    } else {
+                        Deque<int[]> q = new LinkedList<>();
+                        for (int k = 0; k < 2; k++) {
+                            q.offer(new int[]{i, j, k});
+                        }
+                        while (!q.isEmpty()) {
+                            int[] p = q.poll();
+                            int r = p[0], c = p[1], d = p[2];
+                            if (grid[r][c] == 'E') rowResult++;
+                            int nr = r + directions[d][0], nc = c + directions[d][1];
+                            if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] != 'W') {
+                                q.offer(new int[]{nr, nc, d});
+                            }
+                        }
+                        rowFatherVisited.put(rowFather, rowResult);
+                    }
+
+                    if (colFatherVisited.containsKey(colFather)) {
+                        colResult = colFatherVisited.get(colFather);
+                    } else {
+                        Deque<int[]> q = new LinkedList<>();
+                        for (int k = 2; k < 4; k++) {
+                            q.offer(new int[]{i, j, k});
+                        }
+                        while (!q.isEmpty()) {
+                            int[] p = q.poll();
+                            int r = p[0], c = p[1], d = p[2];
+                            if (grid[r][c] == 'E') colResult++;
+                            int nr = r + directions[d][0], nc = c + directions[d][1];
+                            if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] != 'W') {
+                                q.offer(new int[]{nr, nc, d});
+                            }
+                        }
+                        colFatherVisited.put(colFather, colResult);
+                    }
+
+                    max = Math.max(max, colResult + rowResult);
+                }
+            }
+        }
+        return max;
+    }
+
     // LC422
     public boolean validWordSquare(List<String> words) {
         int n = words.size();
