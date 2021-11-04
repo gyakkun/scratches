@@ -31,11 +31,7 @@ class Scratch {
                 else break;
                 idx += 1;
             }
-            int[] r = new int[l.size()];
-            for (int j = 0; j < r.length; j++) {
-                r[j] = l.get(j);
-            }
-            result[i] = r;
+            result[i] = l.stream().mapToInt(Integer::valueOf).toArray();
         }
         return result;
     }
