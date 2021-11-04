@@ -14,6 +14,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1758
+    public int minOperations(String s) {
+        char[] ca = s.toCharArray();
+        int zero = 0, one = 0;
+        for (int i = 0; i < ca.length; i++) {
+            if (i % 2 == 0) {
+                zero += ca[i] == '0' ? 0 : 1;
+                one += ca[i] == '1' ? 0 : 1;
+            } else {
+                zero += ca[i] == '1' ? 0 : 1;
+                one += ca[i] == '0' ? 0 : 1;
+            }
+        }
+        return Math.min(one, zero);
+    }
+
     // LC1888 ** DP
     public int minFlips(String s) {
         int n = s.length();
