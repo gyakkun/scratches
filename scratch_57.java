@@ -17,7 +17,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1654 WA BFS
+    // LC1654 BFS
     public int minimumJumps(int[] forbidden, int a, int b, int x) {
         // 它可以 往前 跳恰好 a个位置（即往右跳）。
         // 它可以 往后跳恰好 b个位置（即往左跳）。
@@ -62,6 +62,41 @@ class Scratch {
             }
         }
         return -1;
+    }
+
+    // DFS
+    // LC1654
+    Long[][] lc1654Memo = new Long[8001][2];
+    final int lc1654Limit = 8000;
+    boolean[][] lc1654Visited = new boolean[8001][2];
+
+    public int minimumJumpsDFS(int[] forbidden, int a, int b, int x) {
+        // 它可以 往前 跳恰好 a个位置（即往右跳）。
+        // 它可以 往后跳恰好 b个位置（即往左跳）。
+        // 它不能 连续 往后跳 2 次。
+        // 它不能跳到任何forbidden数组中的位置。
+        // 跳蚤可以往前跳 超过 它的家的位置，但是它 不能跳到负整数 的位置。
+        Set<Integer> forbid = new HashSet<>(forbidden.length);
+        for (int i : forbidden) forbid.add(i);
+        long result = lc1654Helper(0, x, forbid, a, b, 0);
+        if (result == Integer.MAX_VALUE) return -1;
+        return (int) result;
+    }
+
+    private long lc1654Helper(int cur, int target, Set<Integer> forbid, int forwardStep, int backwardStep, int backwardCount) {
+        if (lc1654Memo[cur][backwardCount] != null) return lc1654Memo[cur][backwardCount];
+        if (cur == target) return 0;
+        if (lc1654Visited[cur][backwardCount]) return Integer.MAX_VALUE; // 防止成环
+        lc1654Visited[cur][backwardCount] = true;
+        long result = Integer.MAX_VALUE;
+        if (cur + forwardStep <= lc1654Limit && !forbid.contains(cur + forwardStep)) {
+            result = Math.min(result, 1 + lc1654Helper(cur + forwardStep, target, forbid, forwardStep, backwardStep, 0));
+        }
+        if (cur - backwardStep >= 0 && backwardCount < 1 && !forbid.contains(cur - backwardStep)) {
+            result = Math.min(result, 1 + lc1654Helper(cur - backwardStep, target, forbid, forwardStep, backwardStep, backwardCount + 1));
+        }
+        lc1654Visited[cur][backwardCount] = false;
+        return lc1654Memo[cur][backwardCount] = result;
     }
 
 
