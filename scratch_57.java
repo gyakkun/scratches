@@ -1827,3 +1827,79 @@ class DistanceLimitedPathsExist {
         return a == b;
     }
 }
+
+// LC308
+class NumMatrix {
+    BIT[] bitMtx;
+
+    public NumMatrix(int[][] matrix) {
+        int m = matrix.length, n = matrix[0].length;
+        bitMtx = new BIT[m];
+        for (int i = 0; i < m; i++) {
+            bitMtx[i] = new BIT(n);
+            for (int j = 0; j < n; j++) {
+                bitMtx[i].update(j, matrix[i][j]);
+            }
+        }
+    }
+
+    public void update(int row, int col, int val) {
+        bitMtx[row].set(col, val);
+    }
+
+    public int sumRegion(int row1, int col1, int row2, int col2) {
+        int result = 0;
+        for (int i = row1; i <= row2; i++) {
+            result += bitMtx[i].sumRange(col1, col2);
+        }
+        return result;
+    }
+}
+
+class BIT {
+    int[] tree;
+    int len;
+
+    public BIT(int size) {
+        this.len = size;
+        this.tree = new int[size + 1];
+    }
+
+    public void set(int idx, int val) {
+        int delta = val - get(idx);
+        update(idx, delta);
+    }
+
+    public int get(int idx) {
+        return sumRange(idx, idx);
+    }
+
+
+    public void update(int idx, int delta) {
+        updateOneBased(idx + 1, delta);
+    }
+
+    public int sumRange(int start, int end) { // end inclusive
+        return sum(end + 1) - sum(start);
+    }
+
+    private int sum(int idx) {
+        int result = 0;
+        while (idx > 0) {
+            result += tree[idx];
+            idx -= lowbit(idx);
+        }
+        return result;
+    }
+
+    private void updateOneBased(int idx, int delta) {
+        while (idx <= len) {
+            tree[idx] += delta;
+            idx += lowbit(idx);
+        }
+    }
+
+    private int lowbit(int x) {
+        return x & (-x);
+    }
+}
