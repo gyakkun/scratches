@@ -17,7 +17,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // Interview 17.18
+    // Interview 17.18 参考LC76, 不同的是LC76是字符, 这里是整数, 所以要用Map查频, 或者像下面这样优化
     public int[] shortestSeq(int[] big, int[] small) {
         int[] freq = new int[small.length];
         Map<Integer, Integer> idxMap = new HashMap<>(small.length);
