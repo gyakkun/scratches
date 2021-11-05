@@ -7,14 +7,71 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.shortestSeq(
-                new int[]{7, 5, 9, 0, 2, 1, 3, 5, 7, 9, 1, 1, 5, 8, 8, 9, 7},
-                new int[]{1, 5, 9}
-        ));
+        System.out.println(s.palindromePartition("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv", 6));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1278
+    Integer[][] memo;
+
+    public int palindromePartition(String s, int k) {
+        int n = s.length();
+        memo = new Integer[n + 1][k + 1];
+        char[] ca = s.toCharArray();
+        boolean[][] judge = new boolean[n][n];
+        int[][] cost = new int[n][n];
+        for (int i = 0; i < n; i++) Arrays.fill(cost[i], -1);
+        for (int i = 0; i < n; i++) {
+            judge[i][i] = true;
+            cost[i][i] = 0;
+        }
+        // 初始化判定矩阵和代价矩阵
+        for (int len = 2; len <= n; len++) {
+            for (int left = 0; left + len - 1 < n; left++) {
+                int right = left + len - 1;
+                if (len == 2) {
+                    judge[left][right] = ca[left] == ca[right];
+
+                } else {
+                    judge[left][right] = ca[left] == ca[right] && judge[left + 1][right - 1];
+                }
+
+                if (judge[left][right]) {
+                    cost[left][right] = 0;
+                } else {
+                    int lPtr = left, rPtr = right;
+                    int tmpCost = 0;
+                    while (lPtr < rPtr) {
+                        if (ca[lPtr] != ca[rPtr]) {
+                            tmpCost++;
+                        }
+                        if (lPtr + 1 < rPtr - 1 && cost[lPtr + 1][rPtr - 1] != -1) {
+                            tmpCost += cost[lPtr + 1][rPtr - 1];
+                            break;
+                        }
+                        lPtr++;
+                        rPtr--;
+                    }
+                    cost[left][right] = tmpCost;
+                }
+            }
+        }
+        return helper(0, k, cost);
+    }
+
+    private int helper(int cur, int remain, int[][] cost) {
+        if (cost.length - cur < remain) return Integer.MAX_VALUE / 2; // 如果剩下的字符个数不够分(每个字符作为一个回文串), 则视作无效答案, 返回极大值
+        if (remain == 0 && cur < cost.length) return Integer.MAX_VALUE / 2;
+        if (cur == cost.length) return 0;
+        if (memo[cur][remain] != null) return memo[cur][remain];
+        int result = Integer.MAX_VALUE / 2;
+        for (int i = cur; i < cost.length; i++) {
+            result = Math.min(result, cost[cur][i] + helper(i + 1, remain - 1, cost));
+        }
+        return memo[cur][remain] = result;
     }
 
     // LC245 LC244 LC243
@@ -44,16 +101,16 @@ class Scratch {
     // JZOF II 047 LC814
     public TreeNode pruneTree(TreeNode root) {
         if (!subtreeHasOne(root)) return null;
-        helper(root);
+        lc814Helper(root);
         return root;
     }
 
-    private void helper(TreeNode root) {
+    private void lc814Helper(TreeNode root) {
         if (root == null) return;
         if (!subtreeHasOne(root.left)) root.left = null;
-        else helper(root.left);
+        else lc814Helper(root.left);
         if (!subtreeHasOne(root.right)) root.right = null;
-        else helper(root.right);
+        else lc814Helper(root.right);
     }
 
     private boolean subtreeHasOne(TreeNode root) {
