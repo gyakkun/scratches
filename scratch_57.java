@@ -17,6 +17,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1419
+    public int minNumberOfFrogs(String croakOfFrogs) {
+        final char[] letters = {'c', 'r', 'o', 'a', 'k'};
+        int[] formerIdx = new int[128];
+        Arrays.fill(formerIdx, -1);
+        formerIdx['r'] = 'c';
+        formerIdx['o'] = 'r';
+        formerIdx['a'] = 'o';
+        formerIdx['k'] = 'a';
+        int[] freq = new int[128];
+        int result = 0;
+        for (char c : croakOfFrogs.toCharArray()) {
+            switch (c) {
+                case 'c':
+                    freq[c]++;
+                    break;
+                case 'k':
+                    if (freq[formerIdx[c]] == 0) return -1;
+                    result = Math.max(result, Arrays.stream(freq).sum());
+                    freq[formerIdx[c]]--;
+                    break;
+                default:
+                    if (freq[formerIdx[c]] == 0) return -1;
+                    freq[formerIdx[c]]--;
+                    freq[c]++;
+            }
+        }
+        if (Arrays.stream(freq).sum() != 0) return -1;
+        return result;
+    }
+
     // LC1366
     public String rankTeams(String[] votes) {
         int[][] freq = new int[128][26]; // freq[字母][排位] = 频率
