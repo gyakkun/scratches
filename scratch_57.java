@@ -7,14 +7,37 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minimumJumps(new int[]{8, 3, 16, 6, 12, 20},
-                15,
-                13,
-                11));
+        System.out.println(s.reverseWords("  hello world!  "));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF58
+    public String reverseWords(String s) {
+        int n = s.length();
+        char[] ca = s.toCharArray();
+        for (int i = 0; i < ca.length / 2; i++) {
+            char tmp = ca[i];
+            ca[i] = ca[n - 1 - i];
+            ca[n - 1 - i] = tmp;
+        }
+        List<String> list = new ArrayList<>();
+        int idx = 0;
+        while (idx < n) {
+            while (idx < n && ca[idx] == ' ') idx++;
+            if (idx >= n) break;
+            int start = idx;
+            while (idx < n && ca[idx] != ' ') idx++;
+            int end = idx;
+            StringBuilder sb = new StringBuilder(end - start);
+            for (int i = end - 1; i >= start; i--) {
+                sb.append(ca[i]);
+            }
+            list.add(sb.toString());
+        }
+        return String.join(" ", list);
     }
 
     // Interview 01.01
