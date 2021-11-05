@@ -7,11 +7,38 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.reverseWords("  hello world!  "));
+        System.out.println(s.minCost(new int[][]{{1, 1, 1, 1}, {2, 2, 2, 2}, {1, 1, 1, 1}, {2, 2, 2, 2}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1368 Hard ** 学习建图思路, 本质Dijkstra
+    public int minCost(int[][] grid) {
+        // 1 2 3 4  右左下上
+        int m = grid.length, n = grid[0].length;
+        boolean[][] visited = new boolean[m][n];
+        int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        PriorityQueue<int[]> q = new PriorityQueue<>(Comparator.comparingInt(o -> o[2])); // [ r, c, cost ], 代价小的优先
+        q.offer(new int[]{0, 0, 0});
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            int r = p[0], c = p[1], cost = p[2];
+            if (r == m - 1 && c == n - 1) return cost;
+            if (visited[r][c]) continue;
+            visited[r][c] = true;
+            for (int i = 0; i < 4; i++) {
+                int nr = r + directions[i][0], nc = c + directions[i][1];
+                if (nr < 0 || nr >= m || nc < 0 || nc >= n || visited[nr][nc]) continue;
+                if (i == grid[r][c] - 1) { // 注意grid里是1,2,3,4 要减一
+                    q.offer(new int[]{nr, nc, cost});
+                } else {
+                    q.offer(new int[]{nr, nc, cost + 1});
+                }
+            }
+        }
+        return -1;
     }
 
     // JZOF58
