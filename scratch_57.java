@@ -19,40 +19,43 @@ class Scratch {
 
     // Interview 17.18
     public int[] shortestSeq(int[] big, int[] small) {
-        Map<Integer, Integer> freq = new HashMap<>();
-        Set<Integer> set = new HashSet<>();
-        for (int i : small) set.add(i);
+        int[] freq = new int[small.length];
+        Map<Integer, Integer> idxMap = new HashMap<>(small.length);
+        for (int i = 0; i < small.length; i++) idxMap.put(small[i], i);
+        int count = 0;
         int left = 0, right = 0;
-        int min = Integer.MAX_VALUE;
         int[] result = new int[0];
+        int min = Integer.MAX_VALUE;
         for (; right < big.length; right++) {
-            if (!set.contains(big[right])) {
-                continue;
+            if (!idxMap.containsKey(big[right])) continue;
+
+            int rightIdx = idxMap.get(big[right]);
+            freq[rightIdx]++;
+            if (freq[rightIdx] == 1) {
+                count++;
             }
-            freq.put(big[right], freq.getOrDefault(big[right], 0) + 1);
-            if (set.equals(freq.keySet())) {
-                while (true) {
-                    if (!set.contains(big[left])) {
-                        left++;
-                        continue;
-                    }
-                    if (set.contains(big[left])) {
-                        if (freq.get(big[left]) == 1) {
-                            int len = right - left + 1;
-                            if (len < min) {
-                                min = len;
-                                result = new int[]{left, right};
-                            }
-                            freq.remove(big[left]);
-                            left++;
-                            break;
-                        } else if (freq.get(big[left]) > 1) {
-                            freq.put(big[left], freq.get(big[left]) - 1);
-                            left++;
-                            continue;
+
+            if (count != small.length) continue;
+
+            // 缩减左边
+            while (count == small.length) {
+                if (idxMap.containsKey(big[left])) {
+                    int leftIdx = idxMap.get(big[left]);
+                    if (freq[leftIdx] == 1) {
+                        // 左边不能再缩减了, 更新答案
+                        int len = right - left + 1;
+                        if (len < min) {
+                            min = len;
+                            result = new int[]{left, right};
                         }
+
+                        count--;
+                        freq[leftIdx] = 0;
+                    } else if (freq[leftIdx] > 1) {
+                        freq[leftIdx]--;
                     }
                 }
+                left++;
             }
         }
         return result;
