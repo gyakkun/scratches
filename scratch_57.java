@@ -15,12 +15,14 @@ class Scratch {
     }
 
     // LC1368 Hard ** 学习建图思路, 本质Dijkstra
+    // 稍加修改, 变成0-1 BFS, 不需要PQ
+    // 此外还应该了解带负权边的单源最短路算法SPFA
     public int minCost(int[][] grid) {
         // 1 2 3 4  右左下上
         int m = grid.length, n = grid[0].length;
         boolean[][] visited = new boolean[m][n];
         int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-        PriorityQueue<int[]> q = new PriorityQueue<>(Comparator.comparingInt(o -> o[2])); // [ r, c, cost ], 代价小的优先
+        Deque<int[]> q = new LinkedList<>(); // [ r, c, cost ], 代价小的优先
         q.offer(new int[]{0, 0, 0});
         while (!q.isEmpty()) {
             int[] p = q.poll();
@@ -32,9 +34,9 @@ class Scratch {
                 int nr = r + directions[i][0], nc = c + directions[i][1];
                 if (nr < 0 || nr >= m || nc < 0 || nc >= n || visited[nr][nc]) continue;
                 if (i == grid[r][c] - 1) { // 注意grid里是1,2,3,4 要减一
-                    q.offer(new int[]{nr, nc, cost});
+                    q.offerFirst(new int[]{nr, nc, cost}); // 代价较小, 添加到队首确保小代价的先出队
                 } else {
-                    q.offer(new int[]{nr, nc, cost + 1});
+                    q.offerLast(new int[]{nr, nc, cost + 1}); // 代价较大, 添加到队尾确保后出队
                 }
             }
         }
