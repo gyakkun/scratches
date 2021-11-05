@@ -17,6 +17,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1366
+    public String rankTeams(String[] votes) {
+        int[][] freq = new int[128][26]; // freq[字母][排位] = 频率
+        for (String s : votes) {
+            for (int i = 0; i < s.length(); i++) {
+                freq[s.charAt(i)][i]++;
+            }
+        }
+        List<Character> rank = new ArrayList<>(votes[0].length());
+        for (char c : votes[0].toCharArray()) rank.add(c);
+        Collections.sort(rank, (o1, o2) -> {
+            for (int i = 0; i < 26; i++) {
+                if (freq[o1][i] == freq[o2][i]) continue;
+                return freq[o2][i] - freq[o1][i];
+            }
+            return o1 - o2;
+        });
+        StringBuilder sb = new StringBuilder(rank.size());
+        for (char c : rank) sb.append(c);
+        return sb.toString();
+    }
+
     // LC1218
     public int longestSubsequence(int[] arr, int difference) {
         final int offset = 20001;
@@ -27,11 +49,6 @@ class Scratch {
             result = Math.max(result, idx[i + offset]);
         }
         return result;
-    }
-
-    // LC1366 TBD
-    public String rankTeams(String[] votes) {
-        return "";
     }
 
     // LC1654 BFS
