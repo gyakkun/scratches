@@ -21,20 +21,20 @@ class Scratch {
     // LC1090
     public int largestValsFromLabels(int[] values, int[] labels, int numWanted, int useLimit) {
         int n = values.length;
-        List<int[]> idxLabelSet = new ArrayList<>();
+        List<int[]> idxLabelSet = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            idxLabelSet.add(new int[]{i, labels[i], values[i]});
+            idxLabelSet.add(new int[]{labels[i], values[i]});
         }
-        Collections.sort(idxLabelSet, Comparator.comparingInt(o -> -o[2]));
+        Collections.sort(idxLabelSet, Comparator.comparingInt(o -> -o[1]));
         int totalCount = 0, sum = 0;
-        Map<Integer, Integer> labelFreq = new HashMap<>();
+        int[] labelFreq = new int[20001];
         for (int[] p : idxLabelSet) {
-            int idx = p[0], label = p[1], val = p[2];
-            if (labelFreq.getOrDefault(label, 0) == useLimit) continue;
+            int label = p[0], val = p[1];
+            if (labelFreq[label] == useLimit) continue;
             if (totalCount == numWanted) break;
             totalCount++;
             sum += val;
-            labelFreq.put(label, labelFreq.getOrDefault(label, 0) + 1);
+            labelFreq[label]++;
         }
         return sum;
     }
