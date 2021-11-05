@@ -17,6 +17,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 047 LC814
+    public TreeNode pruneTree(TreeNode root) {
+        if (!subtreeHasOne(root)) return null;
+        helper(root);
+        return root;
+    }
+
+    private void helper(TreeNode root) {
+        if (root == null) return;
+        if (!subtreeHasOne(root.left)) root.left = null;
+        else helper(root.left);
+        if (!subtreeHasOne(root.right)) root.right = null;
+        else helper(root.right);
+    }
+
+    private boolean subtreeHasOne(TreeNode root) {
+        if (root == null) return false;
+        if (root.val == 1) return true;
+        return subtreeHasOne(root.left) || subtreeHasOne(root.right);
+    }
+
+
     // LC1493 滑窗
     public int longestSubarray(int[] nums) {
         int result = 0, left = 0, right = 0, n = nums.length;
