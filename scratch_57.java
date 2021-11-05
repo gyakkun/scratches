@@ -17,6 +17,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC340 经典滑窗
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        Map<Character, Integer> freq = new HashMap<>();
+        int max = 0;
+        for (int left = 0, right = 0; right < s.length(); right++) {
+            freq.put(s.charAt(right), freq.getOrDefault(s.charAt(right), 0) + 1);
+            while (left < s.length() && freq.size() > k) {
+                if (freq.containsKey(s.charAt(left))) {
+                    freq.put(s.charAt(left), freq.get(s.charAt(left)) - 1);
+                    if (freq.get(s.charAt(left)) == 0) freq.remove(s.charAt(left));
+                }
+                left++;
+            }
+            max = Math.max(max, right - left + 1);
+        }
+        return max;
+    }
+
     // Interview 17.18 参考LC76, 不同的是LC76是字符, 这里是整数, 所以要用Map查频, 或者像下面这样优化
     public int[] shortestSeq(int[] big, int[] small) {
         int[] freq = new int[small.length];
