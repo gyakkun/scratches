@@ -17,6 +17,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1218
+    public int longestSubsequence(int[] arr, int difference) {
+        final int offset = 20001;
+        int[] idx = new int[40005];
+        int result = 0;
+        for (int i : arr) {
+            idx[i + offset] = idx[i - difference + offset] + 1;
+            result = Math.max(result, idx[i + offset]);
+        }
+        return result;
+    }
+
+    // LC1366 TBD
+    public String rankTeams(String[] votes) {
+        return "";
+    }
+
     // LC1654 BFS
     public int minimumJumps(int[] forbidden, int a, int b, int x) {
         // 它可以 往前 跳恰好 a个位置（即往右跳）。
