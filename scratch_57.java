@@ -17,6 +17,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC245 LC244 LC243
+    public int shortestWordDistance(String[] wordsDict, String word1, String word2) {
+        int n = wordsDict.length;
+        Map<String, TreeSet<Integer>> m = new HashMap<>();
+        m.put(word1, new TreeSet<>());
+        m.put(word2, new TreeSet<>());
+        for (int i = 0; i < wordsDict.length; i++) {
+            if (!m.containsKey(wordsDict[i])) continue;
+            m.get(wordsDict[i]).add(i);
+        }
+        TreeSet<Integer> ts1 = m.get(word1), ts2 = m.get(word2);
+        int result = Integer.MAX_VALUE;
+        for (int w1Idx : ts1) {
+            Integer lower = ts2.lower(w1Idx), higher = ts2.higher(w1Idx);
+            if (lower != null) {
+                result = Math.min(result, w1Idx - lower);
+            }
+            if (higher != null) {
+                result = Math.min(result, higher - w1Idx);
+            }
+        }
+        return result;
+    }
+
     // JZOF II 047 LC814
     public TreeNode pruneTree(TreeNode root) {
         if (!subtreeHasOne(root)) return null;
