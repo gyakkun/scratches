@@ -14,6 +14,47 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    class Lc158 {
+        String prev = "";
+
+        public int read(char[] buf, int n) {
+            if (n <= prev.length()) {
+                for (int i = 0; i < n; i++) {
+                    buf[i] = prev.charAt(i);
+                }
+                prev = prev.substring(n);
+                return n;
+            }
+
+            int ptr = prev.length();
+            for (int i = 0; i < prev.length(); i++) {
+                buf[i] = prev.charAt(i);
+            }
+            prev = "";
+
+            char[] buf4 = new char[4];
+            int thisReadLen = 0;
+            while (ptr < n && ((thisReadLen = read4(buf4)) != 0)) {
+                int buf4Ptr = 0;
+                for (; buf4Ptr < thisReadLen && ptr < n; buf4Ptr++) {
+                    buf[ptr++] = buf4[buf4Ptr];
+                }
+                if (ptr >= n && buf4Ptr < thisReadLen) {
+                    StringBuilder sb = new StringBuilder();
+                    while (buf4Ptr < thisReadLen) {
+                        sb.append(buf4[buf4Ptr++]);
+                    }
+                    prev = sb.toString();
+                }
+            }
+            return ptr;
+        }
+
+        private int read4(char[] buf) {
+            return -1;
+        }
+    }
+
     // LC1368 Hard ** 学习建图思路, 本质Dijkstra
     // 稍加修改, 变成0-1 BFS, 不需要PQ
     // 此外还应该了解带负权边的单源最短路算法SPFA
