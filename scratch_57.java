@@ -27,15 +27,17 @@ class Scratch {
         formerIdx['a'] = 'o';
         formerIdx['k'] = 'a';
         int[] freq = new int[128];
-        int result = 0;
+        int result = 0, count = 0;
         for (char c : croakOfFrogs.toCharArray()) {
             switch (c) {
                 case 'c':
                     freq[c]++;
+                    count++;
                     break;
                 case 'k':
                     if (freq[formerIdx[c]] == 0) return -1;
-                    result = Math.max(result, Arrays.stream(freq).sum());
+                    result = Math.max(result, count);
+                    count--;
                     freq[formerIdx[c]]--;
                     break;
                 default:
