@@ -17,6 +17,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1493 滑窗
+    public int longestSubarray(int[] nums) {
+        int result = 0, left = 0, right = 0, n = nums.length;
+        int[] freq = new int[2];
+        while (left < n && right < n) {
+            freq[nums[right++]]++;
+            while (freq[0] > 1) {
+                freq[nums[left++]]--;
+            }
+            result = Math.max(result, freq[1]);
+        }
+        if (result == n) return result - 1;
+        return result;
+    }
+
     // LC340 经典滑窗
     public int lengthOfLongestSubstringKDistinct(String s, int k) {
         Map<Character, Integer> freq = new HashMap<>();
