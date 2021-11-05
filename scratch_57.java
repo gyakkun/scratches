@@ -17,9 +17,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 01.01
+    public boolean isUnique(String astr) {
+        int[] freq = new int[128];
+        for (char c : astr.toCharArray()) {
+            if (freq[c]++ > 0) return false;
+        }
+        return true;
+    }
+
     // LC1419
     public int minNumberOfFrogs(String croakOfFrogs) {
-        final char[] letters = {'c', 'r', 'o', 'a', 'k'};
         int[] formerIdx = new int[128];
         Arrays.fill(formerIdx, -1);
         formerIdx['r'] = 'c';
