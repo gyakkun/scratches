@@ -7,11 +7,55 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minCost(new int[][]{{1, 1, 1, 1}, {2, 2, 2, 2}, {1, 1, 1, 1}, {2, 2, 2, 2}}));
+        System.out.println(s.shortestSeq(
+                new int[]{7, 5, 9, 0, 2, 1, 3, 5, 7, 9, 1, 1, 5, 8, 8, 9, 7},
+                new int[]{1, 5, 9}
+        ));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 17.18
+    public int[] shortestSeq(int[] big, int[] small) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        Set<Integer> set = new HashSet<>();
+        for (int i : small) set.add(i);
+        int left = 0, right = 0;
+        int min = Integer.MAX_VALUE;
+        int[] result = new int[0];
+        for (; right < big.length; right++) {
+            if (!set.contains(big[right])) {
+                continue;
+            }
+            freq.put(big[right], freq.getOrDefault(big[right], 0) + 1);
+            if (set.equals(freq.keySet())) {
+                while (true) {
+                    if (!set.contains(big[left])) {
+                        left++;
+                        continue;
+                    }
+                    if (set.contains(big[left])) {
+                        if (freq.get(big[left]) == 1) {
+                            int len = right - left + 1;
+                            if (len < min) {
+                                min = len;
+                                result = new int[]{left, right};
+                            }
+                            freq.remove(big[left]);
+                            left++;
+                            break;
+                        } else if (freq.get(big[left]) > 1) {
+                            freq.put(big[left], freq.get(big[left]) - 1);
+                            left++;
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     class Lc158 {
