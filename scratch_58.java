@@ -1,7 +1,4 @@
-import javafx.util.Pair;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -15,6 +12,66 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+
+    // LC893 WA TBD
+    Set<String> fbtTraversalSet = new HashSet<>();
+
+    public List<TreeNode> allPossibleFBT(int n) {
+        List<TreeNode> result = new ArrayList<>();
+        if (n % 2 == 0) return result;
+
+        TreeNode root = new TreeNode(n);
+        helper(root, root, n - 1, result);
+        return result;
+    }
+
+    private void helper(TreeNode cur, TreeNode root, int remain, List<TreeNode> result) {
+        if (remain == 0) {
+            StringBuilder sb = new StringBuilder();
+            preOrderStr(root, sb);
+            sb.append("|");
+            inOrderStr(root, sb);
+            if (fbtTraversalSet.contains(sb.toString())) return;
+            fbtTraversalSet.add(sb.toString());
+            result.add(copyTreeAndSetZero(root));
+            return;
+        }
+        cur.left = new TreeNode(remain - 1);
+        cur.right = new TreeNode(remain - 2);
+        helper(cur.left, root, remain - 2, result);
+        helper(cur.right, root, remain - 2, result);
+        cur.left = null;
+        cur.right = null;
+    }
+
+    private TreeNode copyTreeAndSetZero(TreeNode root) {
+        if (root == null) return null;
+        TreeNode result = new TreeNode(0);
+        result.left = copyTreeAndSetZero(root.left);
+        result.right = copyTreeAndSetZero(root.right);
+        return result;
+    }
+
+    private void preOrderStr(TreeNode root, StringBuilder sb) {
+        if (root == null) {
+            sb.append("#,");
+            return;
+        }
+        sb.append(root.val + ",");
+        preOrderStr(root.left, sb);
+        preOrderStr(root.right, sb);
+    }
+
+    private void inOrderStr(TreeNode root, StringBuilder sb) {
+        if (root == null) {
+            sb.append("#,");
+            return;
+        }
+        inOrderStr(root.left, sb);
+        sb.append(root.val + ",");
+        inOrderStr(root.right, sb);
     }
 
     // LC966
@@ -247,5 +304,15 @@ class Scratch {
             labelFreq[label]++;
         }
         return sum;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(int x) {
+        val = x;
     }
 }
