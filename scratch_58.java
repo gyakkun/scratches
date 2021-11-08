@@ -1,3 +1,6 @@
+import sun.reflect.generics.tree.Tree;
+
+import java.rmi.server.RMIClassLoader;
 import java.util.*;
 
 class Scratch {
@@ -7,7 +10,7 @@ class Scratch {
 
 
 //        System.out.println(s.maxRepOpt1("babbaaabbbbbaa"));
-
+        s.allPossibleFBT(7);
         System.out.println("jisafdousaiouoi".replaceAll("[aeiou]", "#"));
 
         timing = System.currentTimeMillis() - timing;
@@ -15,63 +18,38 @@ class Scratch {
     }
 
 
-    // LC893 WA TBD
-    Set<String> fbtTraversalSet = new HashSet<>();
+    // LC893 ** TAG: 卡特兰数
+    Map<Integer, List<TreeNode>> memo = new HashMap<>();
 
     public List<TreeNode> allPossibleFBT(int n) {
+        if (memo.containsKey(n)) return memo.get(n);
         List<TreeNode> result = new ArrayList<>();
-        if (n % 2 == 0) return result;
-
-        TreeNode root = new TreeNode(n);
-        helper(root, root, n - 1, result);
+        if (n == 1) {
+            result.add(new TreeNode(0));
+        } else if (n % 2 == 1) {
+            for (int leftCount = 1; leftCount <= n - 1; leftCount++) {
+                int rightCount = n - 1 - leftCount;
+                for (TreeNode left : allPossibleFBT(leftCount)) {
+                    for (TreeNode right : allPossibleFBT(rightCount)) {
+                        TreeNode root = new TreeNode(0);
+                        root.left = left;
+                        root.right = right;
+                        result.add(copyTree(root));
+                    }
+                }
+            }
+        }
+        memo.put(n, result);
         return result;
     }
 
-    private void helper(TreeNode cur, TreeNode root, int remain, List<TreeNode> result) {
-        if (remain == 0) {
-            StringBuilder sb = new StringBuilder();
-            preOrderStr(root, sb);
-            sb.append("|");
-            inOrderStr(root, sb);
-            if (fbtTraversalSet.contains(sb.toString())) return;
-            fbtTraversalSet.add(sb.toString());
-            result.add(copyTreeAndSetZero(root));
-            return;
-        }
-        cur.left = new TreeNode(remain - 1);
-        cur.right = new TreeNode(remain - 2);
-        helper(cur.left, root, remain - 2, result);
-        helper(cur.right, root, remain - 2, result);
-        cur.left = null;
-        cur.right = null;
-    }
 
-    private TreeNode copyTreeAndSetZero(TreeNode root) {
+    private TreeNode copyTree(TreeNode root) {
         if (root == null) return null;
-        TreeNode result = new TreeNode(0);
-        result.left = copyTreeAndSetZero(root.left);
-        result.right = copyTreeAndSetZero(root.right);
+        TreeNode result = new TreeNode(root.val);
+        result.left = copyTree(root.left);
+        result.right = copyTree(root.right);
         return result;
-    }
-
-    private void preOrderStr(TreeNode root, StringBuilder sb) {
-        if (root == null) {
-            sb.append("#,");
-            return;
-        }
-        sb.append(root.val + ",");
-        preOrderStr(root.left, sb);
-        preOrderStr(root.right, sb);
-    }
-
-    private void inOrderStr(TreeNode root, StringBuilder sb) {
-        if (root == null) {
-            sb.append("#,");
-            return;
-        }
-        inOrderStr(root.left, sb);
-        sb.append(root.val + ",");
-        inOrderStr(root.right, sb);
     }
 
     // LC966
