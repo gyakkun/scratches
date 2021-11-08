@@ -18,6 +18,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC299
+    public String getHint(String secret, String guess) {
+        // secret.length = guess.length
+        int n = secret.length();
+        int[] sFreq = new int[10], gFreq = new int[10];
+        char[] cs = secret.toCharArray(), cg = guess.toCharArray();
+        int exactly = 0;
+        for (int i = 0; i < n; i++) {
+            if (cs[i] == cg[i]) {
+                exactly++;
+                continue;
+            }
+            sFreq[cs[i] - '0']++;
+            gFreq[cg[i] - '0']++;
+        }
+        int blur = 0;
+        for (int i = 0; i < 10; i++) {
+            blur += Math.min(sFreq[i], gFreq[i]);
+        }
+        return exactly + "A" + blur + "B";
+    }
+
     // LC1090
     public int largestValsFromLabels(int[] values, int[] labels, int numWanted, int useLimit) {
         int n = values.length;
