@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
@@ -8,11 +9,29 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maxDistance(new int[][]{{1, 0, 1}, {0, 0, 0}, {1, 0, 1}}));
+        System.out.println(s.printBin(0.625));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 05.02
+    public String printBin(double num) {
+        double eps = 1e-11;
+        StringBuilder bin = new StringBuilder("0.");
+        while (true) {
+            if (Math.abs(num - 0d) < eps) break;
+            num = num * 2d;
+            if (num >= 1d) {
+                bin.append("1");
+                num -= 1d;
+            } else {
+                bin.append("0");
+            }
+            if (bin.length() > 32) return "ERROR";
+        }
+        return bin.toString();
     }
 
     // LC1162 ** 多源最短路
