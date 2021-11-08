@@ -8,14 +8,65 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.largestValsFromLabels(new int[]{9, 8, 8, 7, 6},
-                new int[]{0, 0, 0, 1, 1},
-                3,
-                3));
+        System.out.println(s.maxDistance(new int[][]{{1, 0, 1}, {0, 0, 0}, {1, 0, 1}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1162 ** 多源最短路
+    public int maxDistance(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        Deque<int[]> q = new LinkedList<>();
+        int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int landCount = 0, seaCount = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) seaCount++;
+                else {
+                    landCount++;
+                    q.offer(new int[]{i, j});
+                }
+            }
+        }
+        if (landCount == m * n || seaCount == m * n) return -1;
+        final int INF = Integer.MAX_VALUE / 2;
+        int[][] minDistance = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) minDistance[i][j] = INF;
+            }
+        }
+        int layer = -1;
+        while (!q.isEmpty()) {
+            layer++;
+            int qs = q.size();
+            for (int i = 0; i < qs; i++) {
+                int[] p = q.poll();
+                int r = p[0], c = p[1];
+                if (grid[r][c] == 0 && minDistance[r][c] != INF) continue;
+                if (grid[r][c] == 0) {
+                    minDistance[r][c] = layer;
+                }
+                for (int[] d : directions) {
+                    int nr = r + d[0], nc = c + d[1];
+                    if (nr < 0 || nr >= m || nc < 0 || nc >= n || grid[nr][nc] == 1 || minDistance[nr][nc] != INF) {
+                        continue;
+                    }
+                    q.offer(new int[]{nr, nc});
+                }
+            }
+        }
+        int maxDistance = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    maxDistance = Math.max(maxDistance, minDistance[i][j]);
+                }
+            }
+        }
+        return maxDistance;
     }
 
     // LC1267
