@@ -9,11 +9,74 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.printBin(0.625));
+        System.out.println(s.maxRepOpt1("babbaaabbbbbaa"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1156
+    public int maxRepOpt1(String text) {
+        Map<Character, List<int[]>> letterAppearIdxPairMap = new HashMap<>(26);
+        for (char c = 'a'; c <= 'z'; c++) {
+            letterAppearIdxPairMap.put(c, new ArrayList<>());
+        }
+        char[] ca = text.toCharArray();
+        int idx = 0;
+        while (idx < ca.length) {
+            int start = idx;
+            while (idx + 1 < ca.length && ca[idx + 1] == ca[idx]) idx++;
+            int end = idx;
+            letterAppearIdxPairMap.get(ca[idx]).add(new int[]{start, end});
+            idx++;
+        }
+        int maxLen = 0;
+        for (char c = 'a'; c <= 'z'; c++) {
+            List<int[]> appear = letterAppearIdxPairMap.get(c);
+            for (int i = 0; i < appear.size(); i++) {
+                int[] cur = appear.get(i);
+                int curLen = cur[1] - cur[0] + 1;
+                maxLen = Math.max(maxLen, curLen);
+                if (i + 1 < appear.size()) {
+                    int[] next = appear.get(i + 1);
+                    int nextLen = next[1] - next[0] + 1;
+                    if (next[0] - cur[1] == 2) {
+                        // 中间只隔了一个字母 首先考虑当前c只有两段的情况
+                        maxLen = Math.max(maxLen, curLen + nextLen);
+                        // 如果c有三段或以上, 则从第三段调取一个字母过来填充
+                        if (appear.size() >= 3) {
+                            maxLen = Math.max(maxLen, curLen + nextLen + 1);
+                        }
+                    } else if (next[0] - cur[1] > 2) {
+                        // 如果两段之间有超过一个字母, 则最多能抽掉一个过来填充
+                        maxLen = Math.max(maxLen, curLen + 1);
+                    }
+                }
+            }
+            // 反过来再试一遍
+            for (int i = appear.size() - 1; i >= 0; i--) {
+                int[] cur = appear.get(i);
+                int curLen = cur[1] - cur[0] + 1;
+                maxLen = Math.max(maxLen, curLen);
+                if (i - 1 >= 0) {
+                    int[] next = appear.get(i - 1);
+                    int nextLen = next[1] - next[0] + 1;
+                    if (next[0] - cur[1] == -2) { // 注意符号, 或者用绝对值
+                        // 中间只隔了一个字母 首先考虑当前c只有两段的情况
+                        maxLen = Math.max(maxLen, curLen + nextLen);
+                        // 如果c有三段或以上, 则从第三段调取一个字母过来填充
+                        if (appear.size() >= 3) {
+                            maxLen = Math.max(maxLen, curLen + nextLen + 1);
+                        }
+                    } else if (next[0] - cur[1] < -2) { // 注意符号, 或者用绝对值
+                        // 如果两段之间有超过一个字母, 则最多能抽掉一个过来填充
+                        maxLen = Math.max(maxLen, curLen + 1);
+                    }
+                }
+            }
+        }
+        return maxLen;
     }
 
     // Interview 05.02
