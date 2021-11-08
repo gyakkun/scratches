@@ -9,11 +9,45 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maxRepOpt1("babbaaabbbbbaa"));
+//        System.out.println(s.maxRepOpt1("babbaaabbbbbaa"));
 
+        System.out.println("jisafdousaiouoi".replaceAll("[aeiou]", "#"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC966
+    public String[] spellchecker(String[] wordlist, String[] queries) {
+        Map<String, Integer> lowerCaseIdxMap = new HashMap<>();
+        Map<String, Integer> deVowelIdxMap = new HashMap<>();
+        Set<String> wordSet = new HashSet<>();
+        for (int i = 0; i < wordlist.length; i++) {
+            lowerCaseIdxMap.putIfAbsent(wordlist[i].toLowerCase(), i);
+            String deVowel = wordlist[i].toLowerCase().replaceAll("[aeiou]", "#");
+            deVowelIdxMap.putIfAbsent(deVowel, i);
+            wordSet.add(wordlist[i]);
+        }
+        String[] result = new String[queries.length];
+
+        for (int i = 0; i < queries.length; i++) {
+            if (wordSet.contains(queries[i])) {
+                result[i] = queries[i];
+                continue;
+            }
+            String lcKey = queries[i].toLowerCase();
+            if (lowerCaseIdxMap.containsKey(lcKey)) {
+                result[i] = wordlist[lowerCaseIdxMap.get(lcKey)];
+                continue;
+            }
+            String dvKey = queries[i].toLowerCase().replaceAll("[aeiou]", "#");
+            if (deVowelIdxMap.containsKey(dvKey)) {
+                result[i] = wordlist[deVowelIdxMap.get(dvKey)];
+                continue;
+            }
+            result[i] = "";
+        }
+        return result;
     }
 
     // LC1156
