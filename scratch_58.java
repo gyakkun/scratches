@@ -6,16 +6,15 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.maxRepOpt1("babbaaabbbbbaa"));
-        s.allPossibleFBT(7);
-        System.out.println("jisafdousaiouoi".replaceAll("[aeiou]", "#"));
+//        System.out.println(s.removeBoxes(new int[]{1, 2, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 2, 2, 1, 1, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1}));
+        System.out.println(s.removeBoxes(new int[]{1, 2, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 2, 2, 1, 1, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 1, 2, 1}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC546
-    // TLE, From: https://leetcode-cn.com/problems/remove-boxes/solution/yi-chu-he-zi-by-leetcode-solution/546152
+    // LC546 ** 祖玛
+    // Solution, From: https://leetcode-cn.com/problems/remove-boxes/solution/yi-chu-he-zi-by-leetcode-solution/546152
     Integer[][][] memo;
 
     public int removeBoxes(int[] boxes) {
@@ -27,6 +26,8 @@ class Scratch {
     private int helper(int left, int right, int k, int[] boxes) {
         if (left > right) return 0;
         if (memo[left][right][k] != null) return memo[left][right][k];
+
+        int origRight = right, origK = k;
         while (left < right && boxes[right] == boxes[right - 1]) {
             right--;
             k++;
@@ -37,7 +38,7 @@ class Scratch {
                 result = Math.max(result, helper(i + 1, right - 1, 0, boxes) + helper(left, i, k + 1, boxes));
             }
         }
-        return memo[left][right][k] = result;
+        return memo[left][origRight][origK] = result;
     }
 
     // LC1437
