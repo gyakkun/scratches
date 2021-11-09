@@ -27,6 +27,10 @@ class Scratch {
                 mask = ((mask << 1) | (ca[i] - '0')) & fullMask;
                 if (mask > 0 && mask <= n) bs.set(mask);
             }
+            if (len < maxLen) {
+                int total = bs.cardinality();
+                if (total != (1 << len) - 1) return false;
+            }
         }
         int total = bs.cardinality();
         if (total != n) return false;
