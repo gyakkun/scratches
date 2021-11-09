@@ -14,6 +14,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC546
+    // TLE, From: https://leetcode-cn.com/problems/remove-boxes/solution/yi-chu-he-zi-by-leetcode-solution/546152
+    Integer[][][] memo;
+
+    public int removeBoxes(int[] boxes) {
+        int n = boxes.length;
+        memo = new Integer[n + 1][n + 1][n + 1];
+        return helper(0, n - 1, 0, boxes);
+    }
+
+    private int helper(int left, int right, int k, int[] boxes) {
+        if (left > right) return 0;
+        if (memo[left][right][k] != null) return memo[left][right][k];
+        while (left < right && boxes[right] == boxes[right - 1]) {
+            right--;
+            k++;
+        }
+        int result = helper(left, right - 1, 0, boxes) + (k + 1) * (k + 1);
+        for (int i = left; i < right; i++) {
+            if (boxes[i] == boxes[right]) {
+                result = Math.max(result, helper(i + 1, right - 1, 0, boxes) + helper(left, i, k + 1, boxes));
+            }
+        }
+        return memo[left][right][k] = result;
+    }
+
     // LC1437
     public boolean kLengthApart(int[] nums, int k) {
         if (k == 0) return true;
