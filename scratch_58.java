@@ -12,6 +12,84 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2029 TLE
+    final int LOSE = 0, WIN = 1, BOB_WIN = 2;
+    int[] freq = new int[3];
+    Map<String, Integer> memo = new HashMap<>();
+
+    public boolean stoneGameIX(int[] stones) {
+        for (int i : stones) freq[i % 3]++;
+        int result = helper(0, freq, true);
+        return result == WIN;
+    }
+
+    private int helper(int sum, int[] freq, boolean isAlice) {
+        String memoKey = getMemoKey(freq);
+        if (memo.containsKey(memoKey)) return memo.get(memoKey);
+        int totalStone = 0;
+        for (int i = 0; i < 3; i++) totalStone += freq[i];
+        if (totalStone == 1) {
+            for (int i = 0; i < 3; i++) {
+                if (freq[i] == 1) {
+                    if ((sum + i) % 3 == 0) {
+                        memo.put(memoKey, LOSE);
+                        return LOSE;
+                    }
+                }
+            }
+            memo.put(memoKey, BOB_WIN);
+            return BOB_WIN;
+        } else {
+            boolean rivalCanWin = false, rivalCanLose = false, canBobWin = false;
+            for (int i = 0; i < 3; i++) {
+                if (freq[i] != 0 && (sum + i) % 3 != 0) {
+                    freq[i]--;
+                    int result = helper(sum + i, freq, !isAlice);
+                    freq[i]++;
+                    if (isAlice && result == LOSE) { // 我是ALICE, 下一手BOB会输, 则我必赢
+                        memo.put(memoKey, WIN);
+                        return WIN;
+                    } else if (!isAlice && result == BOB_WIN) { // 我是BOB, 下一手BOB必赢, 则我必嬴
+                        memo.put(memoKey, WIN);
+                        return WIN;
+                    }
+                    switch (result) {
+                        case WIN:
+                            rivalCanWin = true;
+                            break;
+                        case LOSE:
+                            rivalCanLose = true;
+                            break;
+                        case BOB_WIN:
+                            canBobWin = true;
+                            break;
+                    }
+                }
+            }
+            if (isAlice) {
+                if (!rivalCanLose) {
+                    memo.put(memoKey, LOSE);
+                    return LOSE;
+                }
+            } else {
+                if (!rivalCanLose && !canBobWin) {
+                    memo.put(memoKey, LOSE);
+                    return LOSE;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private String getMemoKey(int[] freq) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 3; i++) {
+            sb.append(freq[i]);
+            sb.append(",");
+        }
+        return sb.toString();
+    }
+
     // LC974
     public int subarraysDivByK(int[] nums, int k) {
         int[] modMap = new int[k];
