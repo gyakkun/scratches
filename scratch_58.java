@@ -12,82 +12,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC2029 TLE
-    final int LOSE = 0, WIN = 1, BOB_WIN = 2;
-    int[] freq = new int[3];
-    Map<String, Integer> memo = new HashMap<>();
-
+    // LC2029 **
+    // https://leetcode-cn.com/problems/stone-game-ix/solution/guan-jian-zai-yu-qiu-chu-hui-he-shu-by-e-mcgv/
     public boolean stoneGameIX(int[] stones) {
+        int[] freq = new int[3];
         for (int i : stones) freq[i % 3]++;
-        int result = helper(0, freq, true);
-        return result == WIN;
+        return check(new int[]{freq[0], freq[2], freq[1]}) || check(freq);
     }
 
-    private int helper(int sum, int[] freq, boolean isAlice) {
-        String memoKey = getMemoKey(freq);
-        if (memo.containsKey(memoKey)) return memo.get(memoKey);
-        int totalStone = 0;
-        for (int i = 0; i < 3; i++) totalStone += freq[i];
-        if (totalStone == 1) {
-            for (int i = 0; i < 3; i++) {
-                if (freq[i] == 1) {
-                    if ((sum + i) % 3 == 0) {
-                        memo.put(memoKey, LOSE);
-                        return LOSE;
-                    }
-                }
-            }
-            memo.put(memoKey, BOB_WIN);
-            return BOB_WIN;
-        } else {
-            boolean rivalCanWin = false, rivalCanLose = false, canBobWin = false;
-            for (int i = 0; i < 3; i++) {
-                if (freq[i] != 0 && (sum + i) % 3 != 0) {
-                    freq[i]--;
-                    int result = helper(sum + i, freq, !isAlice);
-                    freq[i]++;
-                    if (isAlice && result == LOSE) { // 我是ALICE, 下一手BOB会输, 则我必赢
-                        memo.put(memoKey, WIN);
-                        return WIN;
-                    } else if (!isAlice && result == BOB_WIN) { // 我是BOB, 下一手BOB必赢, 则我必嬴
-                        memo.put(memoKey, WIN);
-                        return WIN;
-                    }
-                    switch (result) {
-                        case WIN:
-                            rivalCanWin = true;
-                            break;
-                        case LOSE:
-                            rivalCanLose = true;
-                            break;
-                        case BOB_WIN:
-                            canBobWin = true;
-                            break;
-                    }
-                }
-            }
-            if (isAlice) {
-                if (!rivalCanLose) {
-                    memo.put(memoKey, LOSE);
-                    return LOSE;
-                }
-            } else {
-                if (!rivalCanLose && !canBobWin) {
-                    memo.put(memoKey, LOSE);
-                    return LOSE;
-                }
-            }
+    private boolean check(int[] freq) {
+        // 1这个下标表示我们要抽的数, 为0时说明无牌可丑, 直接输掉
+        if (freq[1] == 0) return false;
+        freq[1]--;
+        int turn = 1 + Math.min(freq[1], freq[2]) * 2 + freq[0]; // 这样下去可以玩多少个回合
+        if (freq[1] > freq[2]) { // 最后剩下的都是我们想抽的牌, 对方想抽的牌就没有了
+            turn++;
+            freq[1]--;
         }
-        return -1;
-    }
-
-    private String getMemoKey(int[] freq) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
-            sb.append(freq[i]);
-            sb.append(",");
-        }
-        return sb.toString();
+        return turn % 2 == 1 && freq[1] != freq[2]; // freq[1] == freq[2] 说明剩下没有牌了, 这时候BOB自动嬴
     }
 
     // LC974
