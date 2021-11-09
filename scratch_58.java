@@ -15,32 +15,47 @@ class Scratch {
     }
 
     // LC488 祖玛 TLE
-    int maxLeft = Integer.MIN_VALUE;
+    Map<String, Map<String, Integer>> memo;
 
     public int findMinStep(String board, String hand) {
+        char[] ca = hand.toCharArray();
+        Arrays.sort(ca);
+        String sortedKey = new String(ca);
+        memo = new HashMap<>();
         helper(board, hand);
-        if (maxLeft == Integer.MIN_VALUE) return -1;
-        return hand.length() - maxLeft;
+        int result = helper(board, sortedKey);
+        if (result == Integer.MAX_VALUE / 2) return -1;
+        return result;
     }
 
-    private void helper(String board, String hand) {
+    private int helper(String board, String hand) {
+        if (memo.containsKey(board) && memo.get(board).containsKey(hand)) {
+            return memo.get(board).get(hand);
+        }
+        memo.putIfAbsent(board, new HashMap<>());
         if (hand.equals("")) {
             board = zumaProcess(board);
-            if (!board.equals("")) return;
-            maxLeft = Math.max(maxLeft, 0);
-            return;
+            if (!board.equals("")) {
+                memo.get(board).put(hand, Integer.MAX_VALUE / 2);
+                return Integer.MAX_VALUE / 2;
+            }
+            memo.get(board).put(hand, 0);
+            return 0;
         }
         if (board.equals("")) {
-            maxLeft = Math.max(hand.length(), maxLeft);
-            return;
+            memo.get(board).put(hand, 0);
+            return 0;
         }
+        int result = Integer.MAX_VALUE / 2;
         for (int i = 0; i <= board.length(); i++) {
             for (int j = 0; j < hand.length(); j++) {
                 String tmpBoard = board.substring(0, i) + hand.charAt(j) + board.substring(i);
                 tmpBoard = zumaProcess(tmpBoard);
-                helper(tmpBoard, hand.substring(0, j) + hand.substring(j + 1));
+                result = Math.min(result, 1 + helper(tmpBoard, hand.substring(0, j) + hand.substring(j + 1)));
             }
         }
+        memo.get(board).put(hand, result);
+        return result;
     }
 
     private String zumaProcess(String board) {
