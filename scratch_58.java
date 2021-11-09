@@ -6,21 +6,22 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.countOrders(2));
+        System.out.println(s.subarraysDivByK(new int[]{4, 5, 0, -2, -3, 1}, 5));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC974 目测TLE
+    // LC974
     public int subarraysDivByK(int[] nums, int k) {
-        int n = nums.length, result = 0;
-        int[] prefix = new int[n + 1];
-        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + nums[i];
-        for (int len = 1; len <= n; len++) {
-            for (int end = len; end <= n; end++) {
-                if ((prefix[end] - prefix[end - len]) % k == 0) result++;
-            }
+        int[] modMap = new int[k];
+        modMap[0] = 1;
+        int sum = 0, result = 0;
+        for (int i : nums) {
+            sum += i;
+            int mod = (sum % k + k) % k; // sum%k有可能为负
+            result += modMap[mod];
+            modMap[mod]++;
         }
         return result;
     }
@@ -46,8 +47,6 @@ class Scratch {
     }
 
     // LC1359 Hard ** 组合数学
-    final long mod = 1000000007;
-
     public int countOrders(int n) {
         return helper(n);
     }
@@ -62,7 +61,7 @@ class Scratch {
             // result %= mod; // 这一步求模没有必要, 因为 n<=500, 求等差数列可知不可能超过1e9+7
         }
         result = result * helper(n - 1);
-        result %= mod;
+        result %= 1000000007;
         return (int) result;
     }
 
