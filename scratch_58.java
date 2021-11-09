@@ -12,6 +12,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC974 目测TLE
+    public int subarraysDivByK(int[] nums, int k) {
+        int n = nums.length, result = 0;
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) prefix[i + 1] = prefix[i] + nums[i];
+        for (int len = 1; len <= n; len++) {
+            for (int end = len; end <= n; end++) {
+                if ((prefix[end] - prefix[end - len]) % k == 0) result++;
+            }
+        }
+        return result;
+    }
+
     // LC1727 **
     public int largestSubmatrix(int[][] matrix) {
         int m = matrix.length, n = matrix[0].length;
