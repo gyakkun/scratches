@@ -1,6 +1,3 @@
-import sun.reflect.generics.tree.Tree;
-
-import java.rmi.server.RMIClassLoader;
 import java.util.*;
 
 class Scratch {
@@ -17,12 +14,62 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC488 祖玛 TLE
+    int maxLeft = Integer.MIN_VALUE;
+
+    public int findMinStep(String board, String hand) {
+        helper(board, hand);
+        if (maxLeft == Integer.MIN_VALUE) return -1;
+        return hand.length() - maxLeft;
+    }
+
+    private void helper(String board, String hand) {
+        if (hand.equals("")) {
+            board = zumaProcess(board);
+            if (!board.equals("")) return;
+            maxLeft = Math.max(maxLeft, 0);
+            return;
+        }
+        if (board.equals("")) {
+            maxLeft = Math.max(hand.length(), maxLeft);
+            return;
+        }
+        for (int i = 0; i <= board.length(); i++) {
+            for (int j = 0; j < hand.length(); j++) {
+                String tmpBoard = board.substring(0, i) + hand.charAt(j) + board.substring(i);
+                tmpBoard = zumaProcess(tmpBoard);
+                helper(tmpBoard, hand.substring(0, j) + hand.substring(j + 1));
+            }
+        }
+    }
+
+    private String zumaProcess(String board) {
+        int[] check;
+        while ((check = zumaCheck(board)) != null) {
+            board = board.substring(0, check[0]) + board.substring(check[1] + 1);
+        }
+        return board;
+    }
+
+
+    private int[] zumaCheck(String s) {
+        int idx = 0;
+        while (idx < s.length()) {
+            int start = idx;
+            while (idx + 1 < s.length() && s.charAt(idx) == s.charAt(idx + 1)) idx++;
+            int end = idx;
+            if (end - start + 1 >= 3) return new int[]{start, end};
+            idx++;
+        }
+        return null;
+    }
+
 
     // LC893 ** TAG: 卡特兰数
-    Map<Integer, List<TreeNode>> memo = new HashMap<>();
+    Map<Integer, List<TreeNode>> lc893Memo = new HashMap<>();
 
     public List<TreeNode> allPossibleFBT(int n) {
-        if (memo.containsKey(n)) return memo.get(n);
+        if (lc893Memo.containsKey(n)) return lc893Memo.get(n);
         List<TreeNode> result = new ArrayList<>();
         if (n == 1) {
             result.add(new TreeNode(0));
@@ -39,7 +86,7 @@ class Scratch {
                 }
             }
         }
-        memo.put(n, result);
+        lc893Memo.put(n, result);
         return result;
     }
 
