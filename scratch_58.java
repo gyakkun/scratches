@@ -14,36 +14,53 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC488 祖玛 TLE
-    Map<String, Map<String, Integer>> memo;
+    // LC1437
+    public boolean kLengthApart(int[] nums, int k) {
+        if (k == 0) return true;
+        int idx = 0;
+        List<Integer> idxs = new ArrayList<>();
+        while (idx < nums.length) {
+            if (nums[idx] == 1) idxs.add(idx);
+            idx++;
+        }
+        if (idxs.size() <= 1) return true;
+        for (int i = 1; i < idxs.size(); i++) {
+            int prev = idxs.get(i - 1), cur = idxs.get(i);
+            if (cur - prev - 1 < k) return false;
+        }
+        return true;
+    }
+
+    // LC488 祖玛
+    Map<String, Map<String, Integer>> lc488Memo;
 
     public int findMinStep(String board, String hand) {
         char[] ca = hand.toCharArray();
         Arrays.sort(ca);
         String sortedKey = new String(ca);
-        memo = new HashMap<>();
-        helper(board, hand);
-        int result = helper(board, sortedKey);
+        lc488Memo = new HashMap<>();
+        lc488Helper(board, hand);
+        int result = lc488Helper(board, sortedKey);
         if (result == Integer.MAX_VALUE / 2) return -1;
         return result;
     }
 
-    private int helper(String board, String hand) {
-        if (memo.containsKey(board) && memo.get(board).containsKey(hand)) {
-            return memo.get(board).get(hand);
+    private int lc488Helper(String board, String hand) {
+        if (lc488Memo.containsKey(board) && lc488Memo.get(board).containsKey(hand)) {
+            return lc488Memo.get(board).get(hand);
         }
-        memo.putIfAbsent(board, new HashMap<>());
+        lc488Memo.putIfAbsent(board, new HashMap<>());
         if (hand.equals("")) {
             board = zumaProcess(board);
             if (!board.equals("")) {
-                memo.get(board).put(hand, Integer.MAX_VALUE / 2);
+                lc488Memo.get(board).put(hand, Integer.MAX_VALUE / 2);
                 return Integer.MAX_VALUE / 2;
             }
-            memo.get(board).put(hand, 0);
+            lc488Memo.get(board).put(hand, 0);
             return 0;
         }
         if (board.equals("")) {
-            memo.get(board).put(hand, 0);
+            lc488Memo.get(board).put(hand, 0);
             return 0;
         }
         int result = Integer.MAX_VALUE / 2;
@@ -51,10 +68,10 @@ class Scratch {
             for (int j = 0; j < hand.length(); j++) {
                 String tmpBoard = board.substring(0, i) + hand.charAt(j) + board.substring(i);
                 tmpBoard = zumaProcess(tmpBoard);
-                result = Math.min(result, 1 + helper(tmpBoard, hand.substring(0, j) + hand.substring(j + 1)));
+                result = Math.min(result, 1 + lc488Helper(tmpBoard, hand.substring(0, j) + hand.substring(j + 1)));
             }
         }
-        memo.get(board).put(hand, result);
+        lc488Memo.get(board).put(hand, result);
         return result;
     }
 
@@ -65,7 +82,6 @@ class Scratch {
         }
         return board;
     }
-
 
     private int[] zumaCheck(String s) {
         int idx = 0;
