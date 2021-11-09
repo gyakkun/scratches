@@ -25,8 +25,8 @@ class Scratch {
         int prevLen = (n - 1) * 2;
         int numGaps = prevLen + 1;
         for (int i = 0; i < numGaps; i++) {
-            result += numGaps - i;
-            result %= mod;
+            result += numGaps - i; // 在占了第i个间隙之后, 自己右边也会多出一个间隙, 实际右侧可选间隙个数还是numGaps-i
+            // result %= mod; // 这一步求模没有必要, 因为 n<=500, 求等差数列可知不可能超过1e9+7
         }
         result = result * helper(n - 1);
         result %= mod;
