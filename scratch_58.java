@@ -6,39 +6,59 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.removeBoxes(new int[]{1, 2, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 2, 2, 1, 1, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1}));
-        System.out.println(s.removeBoxes(new int[]{1, 2, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 2, 2, 1, 1, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 2, 2, 1, 2, 1}));
+        System.out.println(s.queryString("1", 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1016
+    public boolean queryString(String s, int n) {
+        BitSet bs = new BitSet(n + 1);
+        int maxLen = Integer.SIZE - Integer.numberOfLeadingZeros(n);
+        char[] ca = s.toCharArray();
+        for (int len = 1; len <= maxLen; len++) {
+            int mask = 0, fullMask = (1 << len) - 1;
+            for (int i = 0; i < len && i < ca.length; i++) {
+                mask = (mask << 1) | (ca[i] - '0');
+            }
+            if (mask > 0 && mask <= n) bs.set(mask);
+            for (int i = len; i < ca.length; i++) {
+                mask = ((mask << 1) | (ca[i] - '0')) & fullMask;
+                if (mask > 0 && mask <= n) bs.set(mask);
+            }
+        }
+        int total = bs.cardinality();
+        if (total != n) return false;
+        return true;
+    }
+
     // LC546 ** 祖玛
     // Solution, From: https://leetcode-cn.com/problems/remove-boxes/solution/yi-chu-he-zi-by-leetcode-solution/546152
-    Integer[][][] memo;
+    Integer[][][] lc546Memo;
 
     public int removeBoxes(int[] boxes) {
         int n = boxes.length;
-        memo = new Integer[n + 1][n + 1][n + 1];
-        return helper(0, n - 1, 0, boxes);
+        lc546Memo = new Integer[n + 1][n + 1][n + 1];
+        return lc546Helper(0, n - 1, 0, boxes);
     }
 
-    private int helper(int left, int right, int k, int[] boxes) {
+    private int lc546Helper(int left, int right, int k, int[] boxes) {
         if (left > right) return 0;
-        if (memo[left][right][k] != null) return memo[left][right][k];
+        if (lc546Memo[left][right][k] != null) return lc546Memo[left][right][k];
 
         int origRight = right, origK = k;
         while (left < right && boxes[right] == boxes[right - 1]) {
             right--;
             k++;
         }
-        int result = helper(left, right - 1, 0, boxes) + (k + 1) * (k + 1);
+        int result = lc546Helper(left, right - 1, 0, boxes) + (k + 1) * (k + 1);
         for (int i = left; i < right; i++) {
             if (boxes[i] == boxes[right]) {
-                result = Math.max(result, helper(i + 1, right - 1, 0, boxes) + helper(left, i, k + 1, boxes));
+                result = Math.max(result, lc546Helper(i + 1, right - 1, 0, boxes) + lc546Helper(left, i, k + 1, boxes));
             }
         }
-        return memo[left][origRight][origK] = result;
+        return lc546Memo[left][origRight][origK] = result;
     }
 
     // LC1437
