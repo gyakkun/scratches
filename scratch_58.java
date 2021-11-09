@@ -6,10 +6,31 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.queryString("1", 1));
+        System.out.println(s.countOrders(2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1359 Hard ** 组合数学
+    final long mod = 1000000007;
+
+    public int countOrders(int n) {
+        return helper(n);
+    }
+
+    private int helper(int n) {
+        if (n <= 1) return 1;
+        long result = 0;
+        int prevLen = (n - 1) * 2;
+        int numGaps = prevLen + 1;
+        for (int i = 0; i < numGaps; i++) {
+            result += numGaps - i;
+            result %= mod;
+        }
+        result = result * helper(n - 1);
+        result %= mod;
+        return (int) result;
     }
 
     // LC505
