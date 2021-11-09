@@ -12,6 +12,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC505
+    public int shortestDistance(int[][] maze, int[] start, int[] destination) {
+        int m = maze.length, n = maze[0].length;
+        boolean[][] visited = new boolean[m][n];
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[2])); // [ r, c, dis ]
+        pq.offer(new int[]{start[0], start[1], 0});
+        while (!pq.isEmpty()) {
+            int[] p = pq.poll();
+            int r = p[0], c = p[1], dis = p[2];
+            if (visited[r][c]) continue;
+            visited[r][c] = true;
+            if (r == destination[0] && c == destination[1]) return dis;
+
+            for (int[] d : directions) {
+                int nr = r, nc = c, ndis = dis;
+                while (nr + d[0] >= 0 && nr + d[0] < m && nc + d[1] >= 0 && nc + d[1] < n && maze[nr + d[0]][nc + d[1]] != 1) {
+                    nr += d[0];
+                    nc += d[1];
+                    ndis++;
+                }
+                if (!visited[nr][nc]) {
+                    pq.offer(new int[]{nr, nc, ndis});
+                }
+            }
+        }
+        return -1;
+    }
+
     // LC1016
     public boolean queryString(String s, int n) {
         BitSet bs = new BitSet(n + 1);
