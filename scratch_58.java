@@ -3,19 +3,24 @@ import java.util.*;
 
 class Scratch {
 
-    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.waysToPartition(new int[]{2, -1, 2}, 3));
-//        System.out.println(s.waysToPartition(new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30827, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0));
-//        System.out.println(s.waysToPartition(new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, -4732, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, -4732));
-//        System.out.println(s.waysToPartition(all, -74));
         System.out.println(s.lenLongestFibSubseq(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1910
+    public String removeOccurrences(String s, String part) {
+        int idx = -1, pl = part.length();
+        while ((idx = s.indexOf(part)) >= 0) {
+            s = s.substring(0, idx) + s.substring(idx + pl);
+        }
+        return s;
     }
 
     // JZOF II 093
