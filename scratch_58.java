@@ -14,6 +14,48 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
+    // JZOF II 040 **
+    public int maximalRectangle(String[] matrix) {
+        if (matrix == null) return 0;
+        if (matrix.length == 0) return 0;
+        if (matrix[0].length() == 0) return 0;
+        // 预处理 变成整型数组
+        int m = matrix.length, n = matrix[0].length();
+        int[][] mtx = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            char[] ca = matrix[i].toCharArray();
+            for (int j = 0; j < n; j++) {
+                mtx[i][j] = ca[j] - '0';
+            }
+        }
+
+        // 预处理 prefix[i][j] 存的是i,j左边有多少个1
+        int[][] prefix = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (mtx[i - 1][j - 1] == 1) {
+                    prefix[i][j] = prefix[i][j - 1] + 1;
+                }
+            }
+        }
+
+        int result = 0;
+        for (int i = 0; i <= m; i++) {
+            for (int j = 0; j <= n; j++) {
+                int width = prefix[i][j];
+                // 从低行到高行, 实时更新最小宽度
+                for (int k = i; k >= 0; k--) {
+                    int height = i - k + 1;
+                    width = Math.min(width, prefix[k][j]);
+                    result = Math.max(result, height * width);
+                }
+            }
+        }
+        return result;
+
+    }
+
     // LC1910
     public String removeOccurrences(String s, String part) {
         int idx = -1, pl = part.length();
