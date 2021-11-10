@@ -14,6 +14,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 044
+    public List<Integer> largestValues(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            long max = Long.MIN_VALUE;
+            int qs = q.size();
+            for (int i = 0; i < qs; i++) {
+                TreeNode p = q.poll();
+                max = Math.max(max, p.val);
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+            }
+            result.add((int) max);
+        }
+        return result;
+    }
+
     // LC2032
     public List<Integer> twoOutOfThree(int[] nums1, int[] nums2, int[] nums3) {
         boolean[] f1 = new boolean[101], f2 = new boolean[101], f3 = new boolean[101];
