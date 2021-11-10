@@ -92,7 +92,6 @@ class Scratch {
         Map<Long, TreeSet<Integer>> diffIdxSetMap = new HashMap<>();
         for (int i : nums) sum += i;
 
-        // 先从左往右看一遍
         long left = 0;
         for (int i = 1; i < n; i++) {
             left += nums[i - 1];
@@ -103,15 +102,13 @@ class Scratch {
         }
         if (diffIdxSetMap.containsKey(0l)) result = diffIdxSetMap.get(0l).size(); // 不修改任何数的情况下的结果
 
-        // 修改左边的
         for (int i = 0; i < n; i++) {
-            // 改变后左侧发生的diff的相反数, 然后在map里找这个相反数的key, 再找这个treeset里面大于等于(i+1) 的 subset 的大小
             long diff = k - nums[i];
             long revDiff = -diff;
             int tmpResult = 0;
             if (diffIdxSetMap.containsKey(revDiff)) {
                 TreeSet<Integer> ts = diffIdxSetMap.get(revDiff);
-                tmpResult += ts.subSet(i + 1, true, n + 2, true).size();
+                tmpResult += ts.subSet(i + 1, true, n, true).size();
             }
             if (diffIdxSetMap.containsKey(diff)) {
                 TreeSet<Integer> ts = diffIdxSetMap.get(diff);
