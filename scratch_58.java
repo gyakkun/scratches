@@ -1,5 +1,4 @@
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 class Scratch {
@@ -13,20 +12,49 @@ class Scratch {
 //        System.out.println(s.waysToPartition(new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30827, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0));
 //        System.out.println(s.waysToPartition(new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, -4732, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, -4732));
 //        System.out.println(s.waysToPartition(all, -74));
-        System.out.println(s.stoneGameVII(new int[]{7, 90, 5, 1, 100}));
+        System.out.println(s.lenLongestFibSubseq(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1690 **
+    // JZOF II 093
     Integer[][] memo = new Integer[1001][1001];
-    int[] prefix = new int[1001];
+
+    public int lenLongestFibSubseq(int[] arr) {
+        Map<Integer, TreeSet<Integer>> m = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            m.putIfAbsent(arr[i], new TreeSet<>());
+            m.get(arr[i]).add(i);
+        }
+        int result = 0;
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = i + 1; j < arr.length; j++) {
+                int tmp = helper(i, j, arr, m);
+                if (tmp == 0) continue;
+                result = Math.max(result, 2 + tmp);
+            }
+        }
+        return result;
+    }
+
+    private int helper(int prevIdx, int curIdx, int[] arr, Map<Integer, TreeSet<Integer>> m) {
+        if (memo[prevIdx][curIdx] != null) return memo[prevIdx][curIdx];
+        int sum = arr[prevIdx] + arr[curIdx];
+        if (!m.containsKey(sum)) return memo[prevIdx][curIdx] = 0;
+        Integer next = m.get(sum).higher(curIdx);
+        if (next == null) return memo[prevIdx][curIdx] = 0;
+        return memo[prevIdx][curIdx] = 01 + helper(curIdx, next, arr, m);
+    }
+
+    // LC1690 **
+    Integer[][] lc1690Memo = new Integer[1001][1001];
+    int[] lc1690Prefix = new int[1001];
 
     public int stoneGameVII(int[] stones) {
         int n = stones.length;
         for (int i = 0; i < n; i++) {
-            prefix[i + 1] = prefix[i] + stones[i];
+            lc1690Prefix[i + 1] = lc1690Prefix[i] + stones[i];
         }
         return helper(0, n - 1);
     }
@@ -37,10 +65,10 @@ class Scratch {
         if (left >= right) {
             return 0;
         }
-        if (memo[left][right] != null) return memo[left][right];
-        int removeLeftGain = prefix[right + 1] - prefix[left + 1], removeRightGain = prefix[right] - prefix[left];
+        if (lc1690Memo[left][right] != null) return lc1690Memo[left][right];
+        int removeLeftGain = lc1690Prefix[right + 1] - lc1690Prefix[left + 1], removeRightGain = lc1690Prefix[right] - lc1690Prefix[left];
         // 取左侧的石子
-        return memo[left][right] = Math.max(removeLeftGain - helper(left + 1, right),
+        return lc1690Memo[left][right] = Math.max(removeLeftGain - helper(left + 1, right),
                 removeRightGain - helper(left, right - 1));
     }
 
