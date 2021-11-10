@@ -14,23 +14,23 @@ class Scratch {
     }
 
     // JZOF II 091
-    Integer[][] memo = new Integer[101][3];
+    Integer[][] jzofii091Memo = new Integer[101][3];
 
     public int minCost(int[][] costs) {
-        return helper(0, -1, costs);
+        return jzofii091Helper(0, -1, costs);
     }
 
-    private int helper(int idx, int preColor, int[][] cost) {
+    private int jzofii091Helper(int idx, int preColor, int[][] cost) {
         if (idx == cost.length) return 0;
-        if (preColor != -1 && memo[idx][preColor] != null) return memo[idx][preColor];
+        if (preColor != -1 && jzofii091Memo[idx][preColor] != null) return jzofii091Memo[idx][preColor];
         int result = Integer.MAX_VALUE;
         for (int i = 0; i < 3; i++) {
             if (i != preColor) {
-                result = Math.min(result, cost[idx][i] + helper(idx + 1, i, cost));
+                result = Math.min(result, cost[idx][i] + jzofii091Helper(idx + 1, i, cost));
             }
         }
         if (preColor == -1) return result;
-        return memo[idx][preColor] = result;
+        return jzofii091Memo[idx][preColor] = result;
     }
 
     // LCP 46
@@ -190,7 +190,7 @@ class Scratch {
     }
 
     // JZOF II 093
-    Integer[][] memo = new Integer[1001][1001];
+    Integer[][] jzofii093Memo = new Integer[1001][1001];
 
     public int lenLongestFibSubseq(int[] arr) {
         Map<Integer, TreeSet<Integer>> m = new HashMap<>();
@@ -201,7 +201,7 @@ class Scratch {
         int result = 0;
         for (int i = 0; i < arr.length; i++) {
             for (int j = i + 1; j < arr.length; j++) {
-                int tmp = helper(i, j, arr, m);
+                int tmp = jzoffii093Helper(i, j, arr, m);
                 if (tmp == 0) continue;
                 result = Math.max(result, 2 + tmp);
             }
@@ -209,13 +209,13 @@ class Scratch {
         return result;
     }
 
-    private int helper(int prevIdx, int curIdx, int[] arr, Map<Integer, TreeSet<Integer>> m) {
-        if (memo[prevIdx][curIdx] != null) return memo[prevIdx][curIdx];
+    private int jzoffii093Helper(int prevIdx, int curIdx, int[] arr, Map<Integer, TreeSet<Integer>> m) {
+        if (jzofii093Memo[prevIdx][curIdx] != null) return jzofii093Memo[prevIdx][curIdx];
         int sum = arr[prevIdx] + arr[curIdx];
-        if (!m.containsKey(sum)) return memo[prevIdx][curIdx] = 0;
+        if (!m.containsKey(sum)) return jzofii093Memo[prevIdx][curIdx] = 0;
         Integer next = m.get(sum).higher(curIdx);
-        if (next == null) return memo[prevIdx][curIdx] = 0;
-        return memo[prevIdx][curIdx] = 1 + helper(curIdx, next, arr, m);
+        if (next == null) return jzofii093Memo[prevIdx][curIdx] = 0;
+        return jzofii093Memo[prevIdx][curIdx] = 1 + jzoffii093Helper(curIdx, next, arr, m);
     }
 
     // LC1690 **
@@ -227,20 +227,20 @@ class Scratch {
         for (int i = 0; i < n; i++) {
             lc1690Prefix[i + 1] = lc1690Prefix[i] + stones[i];
         }
-        return helper(0, n - 1);
+        return lc1690Helper(0, n - 1);
     }
 
-    // 返回的是分差, 两者目标是一样的, 都是希望得分更高(alice得分更高有利于扩大分差, bob得分更高有利于缩小分差)
-    // 分差: 当前的得分 - 下次对手的最大得分(递归定义)
-    private int helper(int left, int right) {
+    // 返回的是分差, 两者目标是一样的, 都是希望得分更高(alice得分更高有利于扩大分差, bob得分更高有利于缩小分差), 下面这个"分差"更大
+    // "分差": 当前的得分 - 下次对手的最大得分(递归定义)
+    private int lc1690Helper(int left, int right) {
         if (left >= right) {
+            // ** left == right 只剩一个, 返回0
             return 0;
         }
         if (lc1690Memo[left][right] != null) return lc1690Memo[left][right];
         int removeLeftGain = lc1690Prefix[right + 1] - lc1690Prefix[left + 1], removeRightGain = lc1690Prefix[right] - lc1690Prefix[left];
-        // 取左侧的石子
-        return lc1690Memo[left][right] = Math.max(removeLeftGain - helper(left + 1, right),
-                removeRightGain - helper(left, right - 1));
+        return lc1690Memo[left][right] = Math.max(removeLeftGain - lc1690Helper(left + 1, right),
+                removeRightGain - lc1690Helper(left, right - 1));
     }
 
     // LC2025
@@ -348,10 +348,10 @@ class Scratch {
 
     // LC1359 Hard ** 组合数学
     public int countOrders(int n) {
-        return helper(n);
+        return lc1359Helper(n);
     }
 
-    private int helper(int n) {
+    private int lc1359Helper(int n) {
         if (n <= 1) return 1;
         long result = 0;
         int prevLen = (n - 1) * 2;
@@ -360,7 +360,7 @@ class Scratch {
             result += numGaps - i; // 在占了第i个间隙之后, 自己右边也会多出一个间隙, 实际右侧可选间隙个数还是numGaps-i
             // result %= mod; // 这一步求模没有必要, 因为 n<=500, 求等差数列可知不可能超过1e9+7
         }
-        result = result * helper(n - 1);
+        result = result * lc1359Helper(n - 1);
         result %= 1000000007;
         return (int) result;
     }
