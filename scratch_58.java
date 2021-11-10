@@ -12,6 +12,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC495
+    public int findPoisonedDuration(int[] timeSeries, int duration) {
+        int result = 0, expire = 0;
+        for (int i : timeSeries) {
+            if (i < expire) {
+                result += (duration - (expire - i));
+            } else {
+                result += duration;
+            }
+            expire = Math.max(expire, i + duration);
+        }
+        return result;
+    }
+
     // LC2029 **
     // https://leetcode-cn.com/problems/stone-game-ix/solution/guan-jian-zai-yu-qiu-chu-hui-he-shu-by-e-mcgv/
     public boolean stoneGameIX(int[] stones) {
@@ -21,7 +35,7 @@ class Scratch {
     }
 
     private boolean check(int[] freq) {
-        // 1这个下标表示我们要抽的数, 为0时说明无牌可丑, 直接输掉
+        // 1这个下标表示我们要抽的数, 为0时说明无牌可抽, 直接输掉
         if (freq[1] == 0) return false;
         freq[1]--;
         int turn = 1 + Math.min(freq[1], freq[2]) * 2 + freq[0]; // 这样下去可以玩多少个回合
