@@ -14,6 +14,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2032
+    public List<Integer> twoOutOfThree(int[] nums1, int[] nums2, int[] nums3) {
+        boolean[] f1 = new boolean[101], f2 = new boolean[101], f3 = new boolean[101];
+        for (int i : nums1) f1[i] = true;
+        for (int i : nums2) f2[i] = true;
+        for (int i : nums3) f3[i] = true;
+        List<Integer> result = new ArrayList<>(101);
+        for (int i = 0; i <= 100; i++) {
+            if ((f1[i] && f2[i]) || (f1[i] && f3[i]) || (f2[i] && f3[i])) result.add(i);
+        }
+        return result;
+    }
+
 
     // JZOF II 040 **
     public int maximalRectangle(String[] matrix) {
