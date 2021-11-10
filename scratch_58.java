@@ -1,6 +1,3 @@
-import javafx.util.Pair;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 class Scratch {
@@ -27,7 +24,7 @@ class Scratch {
                 reach.get(e[0]).add(e[1]);
                 reach.get(e[1]).add(e[0]);
             }
-            mtx[m][0] = new Node(0, 1d);
+            mtx[m][0] = new Node(0, 1l);
             for (int i = 1; i < n; i++) {
                 mtx[m][i] = new Node(finalCnt[i - 1], 0);
             }
@@ -37,55 +34,53 @@ class Scratch {
                     case 1:
                         for (int j = 0; j < n; j++) {
                             if (j == stadiumIdx) {
-                                mtx[i][j] = new Node(mtx[i + 1][j].val * 2, mtx[i + 1][j].factorOfX * 2d);
+                                mtx[i][j] = new Node(mtx[i + 1][j].val * 2l, mtx[i + 1][j].factor * 2l);
                             } else {
-                                mtx[i][j] = new Node(mtx[i + 1][j].val, mtx[i + 1][j].factorOfX);
+                                mtx[i][j] = new Node(mtx[i + 1][j].val, mtx[i + 1][j].factor);
                             }
                         }
                         break;
                     case 2:
                         Set<Integer> n1 = reach.get(stadiumIdx);
                         for (int j = 0; j < n; j++) {
-                            if (!n1.contains(j)) mtx[i][j] = new Node(mtx[i + 1][j].val, mtx[i + 1][j].factorOfX);
+                            if (!n1.contains(j)) mtx[i][j] = new Node(mtx[i + 1][j].val, mtx[i + 1][j].factor);
                             else {
-                                mtx[i][j] = new Node(mtx[i + 1][j].val - mtx[i + 1][stadiumIdx].val, mtx[i + 1][j].factorOfX - mtx[i + 1][stadiumIdx].factorOfX);
+                                mtx[i][j] = new Node(mtx[i + 1][j].val - mtx[i + 1][stadiumIdx].val, mtx[i + 1][j].factor - mtx[i + 1][stadiumIdx].factor);
                             }
                         }
                         break;
                     case 3:
                         Set<Integer> n2 = reach.get(stadiumIdx);
                         for (int j = 0; j < n; j++) {
-                            if (!n2.contains(j)) mtx[i][j] = new Node(mtx[i + 1][j].val, mtx[i + 1][j].factorOfX);
+                            if (!n2.contains(j)) mtx[i][j] = new Node(mtx[i + 1][j].val, mtx[i + 1][j].factor);
                             else {
-                                mtx[i][j] = new Node(mtx[i + 1][j].val + mtx[i + 1][stadiumIdx].val, mtx[i + 1][j].factorOfX + mtx[i + 1][stadiumIdx].factorOfX);
+                                mtx[i][j] = new Node(mtx[i + 1][j].val + mtx[i + 1][stadiumIdx].val, mtx[i + 1][j].factor + mtx[i + 1][stadiumIdx].factor);
                             }
                         }
                 }
             }
-            double k = 0d;
+            long k = 0;
             long b = 0;
             for (Node nn : mtx[0]) {
-                k += nn.factorOfX;
+                k += nn.factor;
                 b += nn.val;
             }
-            // kx + b = tt
-            // x = tt-b/k
-            double x = (double) (totalNum - b) / k;
-            int ix = (int) x;
+            double dx = (double) (totalNum - b) / (double) k;
+            long x = (long) dx;
             int[] result = new int[n];
             for (int i = 0; i < n; i++) {
-                result[i] = (int) (mtx[0][i].factorOfX * x + mtx[0][i].val);
+                result[i] = (int) (mtx[0][i].factor * x + mtx[0][i].val);
             }
             return result;
         }
 
         class Node {
             long val = 0;
-            double factorOfX = 0d;
+            long factor = 0;
 
-            public Node(long val, double factorOfX) {
+            public Node(long val, long factor) {
                 this.val = val;
-                this.factorOfX = factorOfX;
+                this.factor = factor;
             }
         }
     }
