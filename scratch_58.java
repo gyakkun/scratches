@@ -44,7 +44,7 @@ class Scratch {
         if (!m.containsKey(sum)) return memo[prevIdx][curIdx] = 0;
         Integer next = m.get(sum).higher(curIdx);
         if (next == null) return memo[prevIdx][curIdx] = 0;
-        return memo[prevIdx][curIdx] = 01 + helper(curIdx, next, arr, m);
+        return memo[prevIdx][curIdx] = 1 + helper(curIdx, next, arr, m);
     }
 
     // LC1690 **
@@ -711,5 +711,29 @@ class Excel {
             }
             return result;
         }
+    }
+}
+
+// JZOF 09
+class CQueue {
+    Deque<Integer> stack1 = new LinkedList<>();
+    Deque<Integer> stack2 = new LinkedList<>();
+
+    public CQueue() {
+
+    }
+
+    public void appendTail(int value) {
+        stack1.push(value);
+    }
+
+    public int deleteHead() {
+        if (stack1.size() == 0) return -1;
+        while (stack1.size() > 1) {
+            stack2.push(stack1.pop());
+        }
+        int result = stack1.pop();
+        while (!stack2.isEmpty()) stack1.push(stack2.pop());
+        return result;
     }
 }
