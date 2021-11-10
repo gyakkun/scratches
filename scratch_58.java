@@ -6,10 +6,47 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.subarraysDivByK(new int[]{4, 5, 0, -2, -3, 1}, 5));
+        System.out.println(s.waysToPartition(new int[]{2, -1, 2}, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC2025 WA
+    public int waysToPartition(int[] nums, int k) {
+        // 结果最多为 n - 1
+        int n = nums.length, sum = 0, result = 0;
+        Map<Integer, TreeSet<Integer>> diffIdxSetMap = new HashMap<>();
+        for (int i : nums) sum += i;
+
+        // 先从左往右看一遍
+        int left = 0;
+        for (int i = 0; i < n - 1; i++) {
+            left += nums[i];
+            int diff = left - (sum - left); // gap编号: i+1, diff: gap左侧减右侧
+            diffIdxSetMap.putIfAbsent(diff, new TreeSet<>());
+            diffIdxSetMap.get(diff).add(i + 1);
+        }
+        if (diffIdxSetMap.containsKey(0)) result = diffIdxSetMap.get(0).size(); // 不修改任何数的情况下的结果
+
+        // 修改左边的
+        for (int i = 0; i < n - 1; i++) {
+            // 改变后左侧发生的diff的相反数, 然后在map里找这个相反数的key, 再找这个treeset里面大于等于(i+1) 的 subset 的大小
+            int revDiff = nums[i] - k;
+            if (!diffIdxSetMap.containsKey(revDiff)) continue;
+            TreeSet<Integer> ts = diffIdxSetMap.get(revDiff);
+            result = Math.max(result, ts.subSet(i + 1, true, n + 2, true).size());
+        }
+
+        // 修改右边的
+        for (int i = n - 1; i >= 1; i--) {
+            int diff = k - nums[i];
+            if(!diffIdxSetMap.containsKey(diff)) continue;
+            TreeSet<Integer> ts = diffIdxSetMap.get(diff);
+            result = Math.max(result, ts.subSet(0, true, i, true).size());
+        }
+
+        return result;
     }
 
     // LC495
