@@ -21,34 +21,27 @@ class Scratch {
 
     // LC1690 **
     Integer[][] memo = new Integer[1001][1001];
+    int[] prefix = new int[1001];
 
     public int stoneGameVII(int[] stones) {
         int n = stones.length;
-        int[] prefix = new int[n + 1];
-        int[][] sum = new int[n][n];
         for (int i = 0; i < n; i++) {
             prefix[i + 1] = prefix[i] + stones[i];
         }
-        for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                if (i == j) sum[i][j] = stones[i]; //记录区间和
-                else sum[i][j] = stones[j] + sum[i][j - 1];
-            }
-        }
-
-        return helper(0, n - 1, 0l, 0l, sum);
+        return helper(0, n - 1);
     }
 
-    // helper 返回的是分差, 两者目标是一样的, 都是希望得分更高(alice得分更高有利于扩大分差, bob得分更高有利于缩小分差)
-    private int helper(int left, int right, long myGain, long advGain, int[][] sum) {
-        if (left == right) {
+    // 返回的是分差, 两者目标是一样的, 都是希望得分更高(alice得分更高有利于扩大分差, bob得分更高有利于缩小分差)
+    // 分差: 当前的得分 - 下次对手的最大得分(递归定义)
+    private int helper(int left, int right) {
+        if (left >= right) {
             return 0;
         }
         if (memo[left][right] != null) return memo[left][right];
-        int removeLeftGain = sum[left + 1][right], removeRightGain = sum[left][right - 1];
+        int removeLeftGain = prefix[right + 1] - prefix[left + 1], removeRightGain = prefix[right] - prefix[left];
         // 取左侧的石子
-        return memo[left][right] = Math.max(removeLeftGain - helper(left + 1, right, advGain, myGain + removeLeftGain, sum),
-                removeRightGain - helper(left, right - 1, advGain, myGain + removeRightGain, sum));
+        return memo[left][right] = Math.max(removeLeftGain - helper(left + 1, right),
+                removeRightGain - helper(left, right - 1));
     }
 
     // LC2025
