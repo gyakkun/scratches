@@ -13,6 +13,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // JZOF II 091
+    Integer[][] memo = new Integer[101][3];
+
+    public int minCost(int[][] costs) {
+        return helper(0, -1, costs);
+    }
+
+    private int helper(int idx, int preColor, int[][] cost) {
+        if (idx == cost.length) return 0;
+        if (preColor != -1 && memo[idx][preColor] != null) return memo[idx][preColor];
+        int result = Integer.MAX_VALUE;
+        for (int i = 0; i < 3; i++) {
+            if (i != preColor) {
+                result = Math.min(result, cost[idx][i] + helper(idx + 1, i, cost));
+            }
+        }
+        if (preColor == -1) return result;
+        return memo[idx][preColor] = result;
+    }
+
     // LCP 46
     class LCP46 {
         public int[] volunteerDeployment(int[] finalCnt, long totalNum, int[][] edges, int[][] plans) {
