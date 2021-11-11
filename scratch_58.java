@@ -7,13 +7,35 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minCost(30,
+        System.out.println(s.minCostDP(30,
                 new int[][]{{0, 1, 10}, {1, 2, 10}, {2, 5, 10}, {0, 3, 1}, {3, 4, 10}, {4, 5, 15}},
                 new int[]{5, 1, 2, 20, 20, 3}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1928 ** Try DP
+    public int minCostDP(int limit, int[][] edges, int[] passingFees) {
+        int n = passingFees.length, INF = Integer.MAX_VALUE / 2;
+        int[][] dp = new int[n][limit + 1];
+        for (int i = 0; i < n; i++) Arrays.fill(dp[i], INF);
+        dp[0][0] = passingFees[0];
+        for (int i = 0; i <= limit; i++) {
+            for (int[] e : edges) {
+                int u = e[0], v = e[1], time = e[2];
+                if (i - time >= 0) {
+                    dp[u][i] = Math.min(dp[u][i], dp[v][i - time] + passingFees[u]);
+                    dp[v][i] = Math.min(dp[v][i], dp[u][i - time] + passingFees[v]);
+                }
+            }
+        }
+        int result = INF;
+        for (int i = 0; i <= limit; i++) result = Math.min(result, dp[n - 1][i]);
+        if (result == INF) return -1;
+        return result;
+    }
+
 
     // LC1928 ** 联动 LC787 Dijkstra 变形
     public int minCost(int limit, int[][] edges, int[] passingFees) {
