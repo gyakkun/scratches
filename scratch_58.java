@@ -13,6 +13,30 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1079
+    int result = 0;
+
+    public int numTilePossibilities(String tiles) {
+        char[] ca = tiles.toCharArray();
+        for (int len = 1; len <= ca.length; len++) {
+            helper(0, 0, len, ca);
+        }
+        return result;
+    }
+
+    private void helper(int cur, int mask, int len, char[] ca) {
+        if (cur == len) {
+            result++;
+        }
+        boolean[] used = new boolean[128];
+        for (int i = 0; i < ca.length; i++) {
+            if (((mask >> i) & 1) == 0 && !used[ca[i]]) {
+                used[ca[i]] = true;
+                helper(cur + 1, mask ^ (1 << i), len, ca);
+            }
+        }
+    }
+
     // LC463
     public int islandPerimeter(int[][] grid) {
         int m = grid.length, n = grid[0].length, result = 0;
@@ -232,12 +256,12 @@ class Scratch {
             String keyword = searchWord.substring(0, i);
             TrieNode node = trie.getNode(keyword);
             if (node == null) continue;
-            helper(node, tmp, new StringBuilder(keyword));
+            lc1268Helper(node, tmp, new StringBuilder(keyword));
         }
         return result;
     }
 
-    private void helper(TrieNode root, List<String> result, StringBuilder sb) {
+    private void lc1268Helper(TrieNode root, List<String> result, StringBuilder sb) {
         if (result.size() == 3) return;
         if (root.end > 0) {
             result.add(sb.toString());
@@ -245,7 +269,7 @@ class Scratch {
         for (char c = 'a'; c <= 'z'; c++) {
             if (root.children.containsKey(c)) {
                 sb.append(c);
-                helper(root.children.get(c), result, sb);
+                lc1268Helper(root.children.get(c), result, sb);
                 sb.deleteCharAt(sb.length() - 1);
                 if (result.size() == 3) return;
             }
