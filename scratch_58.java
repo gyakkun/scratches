@@ -7,10 +7,38 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.suggestedProducts(new String[]{"mobile", "mouse", "moneypot", "monitor", "mousepad"}, "mouse"));
+        System.out.println(s.prevPermOpt1(new int[]{3, 2, 1}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1053 ** 极小化极大 minmax 类比nextPerm
+    public int[] prevPermOpt1(int[] arr) {
+        int n = arr.length;
+        boolean hasResult = false;
+        // 逆序寻找第一个降序
+        int minMaxIdx = -1, minMaxVal = -1;
+        for (int i = n - 2; i >= 0; i--) {
+            if (arr[i] > arr[i + 1]) {
+                for (int j = i + 1; j < n; j++) { // 然后再在i的右侧找比i小的最大值及其下标
+                    if (arr[i] > arr[j]) {
+                        hasResult = true;
+                        if (arr[j] > minMaxVal) {
+                            minMaxIdx = j;
+                            minMaxVal = arr[j];
+                        }
+                    }
+                }
+                if (hasResult) { // 交换即为最小值
+                    int tmp = arr[i];
+                    arr[i] = arr[minMaxIdx];
+                    arr[minMaxIdx] = tmp;
+                    return arr;
+                }
+            }
+        }
+        return arr;
     }
 
     // LC1268 Trie + DFS
