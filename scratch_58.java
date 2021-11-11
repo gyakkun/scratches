@@ -13,6 +13,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC463
+    public int islandPerimeter(int[][] grid) {
+        int m = grid.length, n = grid[0].length, result = 0;
+        final int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int tmp = 0;
+                    for (int[] d : directions) {
+                        int nr = i + d[0], nc = j + d[1];
+                        if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                            tmp++;
+                            continue;
+                        }
+                        if (grid[nr][nc] == 0) {
+                            tmp++;
+                        }
+                    }
+                    result += tmp;
+                }
+            }
+        }
+        return result;
+    }
+
     // LC953
     public boolean isAlienSorted(String[] words, String order) {
         if (words.length <= 1) return true;
