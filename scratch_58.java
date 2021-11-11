@@ -7,10 +7,33 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.mirrorReflection(2, 1));
+        System.out.println(s.isAlienSorted(new String[]{"apple", "app"}, "abcdefghijklmnopqrstuvwxyz"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC953
+    public boolean isAlienSorted(String[] words, String order) {
+        if (words.length <= 1) return true;
+        int[] letterOrderIdxMap = new int[128];
+        for (int i = 0; i < order.length(); i++) letterOrderIdxMap[order.charAt(i)] = i;
+        for (int i = 1; i < words.length; i++) {
+            String prev = words[i - 1], cur = words[i];
+            int minLen = Math.min(prev.length(), cur.length());
+            int same = 0;
+            for (int j = 0; j < minLen; j++) {
+                if (prev.charAt(j) == cur.charAt(j)) {
+                    same++;
+                    continue;
+                } else {
+                    if (letterOrderIdxMap[prev.charAt(j)] > letterOrderIdxMap[cur.charAt(j)]) return false;
+                    break;
+                }
+            }
+            if (same == minLen && prev.length() > cur.length()) return false;
+        }
+        return true;
     }
 
     // LC858
