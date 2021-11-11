@@ -13,37 +13,55 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC629 ** TLE
-    Integer[][] memo = new Integer[1001][1001];
-    final long mod = 1000000007;
+    // LC1881 非常巧妙
+    public String maxValue(String n, int x) {
+        if (n.startsWith("-")) {
+            for (int i = 1; i < n.length(); i++) {
+                if (n.charAt(i) - '0' > x) {
+                    return n.substring(0, i) + x + n.substring(i);
+                }
+            }
+        } else {
+            for (int i = 0; i < n.length(); i++) {
+                if (n.charAt(i) - '0' < x) {
+                    return n.substring(0, i) + x + n.substring(i);
+                }
+            }
+        }
+        return n + x;
+    }
+
+    // LC629 ** DP 注意递推式的推导
+    Integer[][] lc629Memo = new Integer[1001][1001];
+    final long lc629Mod = 1000000007;
 
     public int kInversePairs(int n, int k) {
-        return helper(n, k);
+        return lc629Helper(n, k);
     }
 
     // n 数字个数, k 逆序对个数
-    private int helper(int n, int k) {
+    private int lc629Helper(int n, int k) {
         if (k < 0 || n < 0) return 0;
         if (k == 0) return 1; // 如果没有逆序对, 则只有升序一种排列
         if (k == 1) return n - 1; // 如果只有一个逆序对, 则想象将 i 与 i+1 交换 (0<=i<n-1), 总共有n-1 种交换方法
-        if (memo[n][k] != null) return memo[n][k];
+        if (lc629Memo[n][k] != null) return lc629Memo[n][k];
         // 如何递推?
         // From Solution
         //  (n,k) 组成的逆序对可视作两部分, 记最右侧元素为p (p = 1...n)
         //  1) 则左侧元素为 1...p-1, p+1...n 的一个排列
         //     由 p 构成的逆序对个数为 n-p (左侧有 n - (p+1) +1 个元素比 p 大)
         //  2) 由 剩下这i-1个元素构成的逆序对个数, 我们预期它有 k-(n-p) 个逆序对, 因为逆序对只和相对大小有关, 剩下的n-1个数和连续的1...i-1并无区别
-        //     故剩下的i-1个元素构成的逆序对的方案数 = helper(n-1, k-(n-p))
-        //  所以目标就是把 helper(n-1,k-(n-p))  (1<=p<=n) 这么多方案个数求和起来即可
+        //     故剩下的i-1个元素构成的逆序对的方案数 = f(n-1, k-(n-p))
+        //  所以目标就是把 f(n-1,k-(n-p))  (1<=p<=n) 这么多方案个数求和起来即可
+        // 递推式推导:
+        // f(n,k) = SUM(p:0...n-1) f(n-1,k-p)
+        // f(n,k-1) = SUM(p:0...n-1) f(n-1,k-1-p) = f(n,k) - f(n-1,k) + f(n-1,k-n)
+        // f(n,k) = f(n,k-1) + f(n-1,k) - f(n-1,k-n)
 
-        long result = helper(n, k - 1) + helper(n - 1, k) - helper(n - 1, k - n);
-        result = ((result % mod) + mod) % mod; // result 有可能为负的模数处理方法
-        return memo[n][k] = (int) result;
+        long result = lc629Helper(n, k - 1) + lc629Helper(n - 1, k) - lc629Helper(n - 1, k - n);
+        result = ((result % lc629Mod) + lc629Mod) % lc629Mod; // result 有可能为负的模数处理方法
+        return lc629Memo[n][k] = (int) result;
     }
-
-    // f(n,k) = SUM(p:0...n-1) f(n-1,k-p)
-    // f(n,k-1) = SUM(p:0...n-1) f(n-1,k-1-p) = f(n,k) - f(n-1,k) + f(n-1,k-n)
-    // f(n,k) = f(n,k-1) + f(n-1,k) - f(n-1,k-n)
 
     // JZOF II 091
     Integer[][] jzofii091Memo = new Integer[101][3];
