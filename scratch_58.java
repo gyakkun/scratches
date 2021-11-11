@@ -23,7 +23,7 @@ class Scratch {
 
     // n 数字个数, k 逆序对个数
     private int helper(int n, int k) {
-        if (k < 0) return 0;
+        if (k < 0 || n < 0) return 0;
         if (k == 0) return 1; // 如果没有逆序对, 则只有升序一种排列
         if (k == 1) return n - 1; // 如果只有一个逆序对, 则想象将 i 与 i+1 交换 (0<=i<n-1), 总共有n-1 种交换方法
         if (memo[n][k] != null) return memo[n][k];
@@ -36,17 +36,14 @@ class Scratch {
         //     故剩下的i-1个元素构成的逆序对的方案数 = helper(n-1, k-(n-p))
         //  所以目标就是把 helper(n-1,k-(n-p))  (1<=p<=n) 这么多方案个数求和起来即可
 
-        long result = 0;
-        for (int p = 0; p < n; p++) {
-            result += helper(n - 1, k - p);
-            result %= mod;
-        }
+        long result = helper(n, k - 1) + helper(n - 1, k) - helper(n - 1, k - n);
+        result = ((result % mod) + mod) % mod; // result 有可能为负的模数处理方法
         return memo[n][k] = (int) result;
     }
 
     // f(n,k) = SUM(p:0...n-1) f(n-1,k-p)
     // f(n,k-1) = SUM(p:0...n-1) f(n-1,k-1-p) = f(n,k) - f(n-1,k) + f(n-1,k-n)
-    // f(n,k) = f(n-1,k-1) + f(n-1,k) - f(n-1,k-n)
+    // f(n,k) = f(n,k-1) + f(n-1,k) - f(n-1,k-n)
 
     // JZOF II 091
     Integer[][] jzofii091Memo = new Integer[101][3];
