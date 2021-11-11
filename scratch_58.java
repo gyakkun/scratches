@@ -7,10 +7,44 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.lenLongestFibSubseq(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}));
+        System.out.println(s.suggestedProducts(new String[]{"mobile", "mouse", "moneypot", "monitor", "mousepad"}, "mouse"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1268 Trie + DFS
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        int n = searchWord.length();
+        List<List<String>> result = new ArrayList<>(n);
+        Trie trie = new Trie();
+        for (String w : products) {
+            trie.addWord(w);
+        }
+        for (int i = 1; i <= n; i++) {
+            List<String> tmp = new ArrayList<>();
+            result.add(tmp);
+            String keyword = searchWord.substring(0, i);
+            if (!trie.startsWith(keyword)) continue;
+            TrieNode node = trie.getNode(keyword);
+            helper(node, tmp, new StringBuilder(keyword));
+        }
+        return result;
+    }
+
+    private void helper(TrieNode root, List<String> result, StringBuilder sb) {
+        if (result.size() == 3) return;
+        if (root.end > 0) {
+            result.add(sb.toString());
+        }
+        for (char c = 'a'; c <= 'z'; c++) {
+            if (root.children.containsKey(c)) {
+                sb.append(c);
+                helper(root.children.get(c), result, sb);
+                sb.deleteCharAt(sb.length() - 1);
+                if (result.size() == 3) return;
+            }
+        }
     }
 
     // LC1881 非常巧妙
@@ -957,4 +991,77 @@ class CQueue {
         while (!stack2.isEmpty()) stack1.push(stack2.pop());
         return result;
     }
+}
+
+class Trie {
+    TrieNode root = new TrieNode();
+
+    public void addWord(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) cur.children.put(c, new TrieNode());
+            cur = cur.children.get(c);
+            cur.path++;
+        }
+        cur.end++;
+    }
+
+    public boolean removeWord(String word) {
+        TrieNode target = getNode(word);
+        if (target == null) return false;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children.get(c).path-- == 1) {
+                cur.children.remove(c);
+                return true;
+            }
+            cur = cur.children.get(c);
+        }
+        cur.end--;
+        return true;
+    }
+
+    public boolean search(String word) {
+        TrieNode target = getNode(word);
+        return target.end > 0;
+    }
+
+    public boolean startsWith(String word) {
+        return getNode(word) != null;
+    }
+
+    public void insert(String word) {
+        addWord(word);
+    }
+
+    public int countWordsStartingWith(String prefix) {
+        TrieNode target = getNode(prefix);
+        if (target == null) return 0;
+        return target.path;
+    }
+
+    public int countWordsEqualTo(String word) {
+        TrieNode target = getNode(word);
+        if (target == null) return 0;
+        return target.end;
+    }
+
+    public void erase(String word) {
+        removeWord(word);
+    }
+
+    public TrieNode getNode(String prefix) {
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (!cur.children.containsKey(c)) return null;
+            cur = cur.children.get(c);
+        }
+        return cur;
+    }
+}
+
+class TrieNode {
+    Map<Character, TrieNode> children = new HashMap<>();
+    int end = 0;
+    int path = 0;
 }
