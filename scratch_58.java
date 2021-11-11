@@ -7,10 +7,46 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.prevPermOpt1(new int[]{3, 2, 1}));
+        System.out.println(s.minCost(30,
+                new int[][]{{0, 1, 10}, {1, 2, 10}, {2, 5, 10}, {0, 3, 1}, {3, 4, 10}, {4, 5, 15}},
+                new int[]{5, 1, 2, 20, 20, 3}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1928 ** 联动 LC787 Dijkstra 变形
+    public int minCost(int limit, int[][] edges, int[] passingFees) {
+        int n = passingFees.length, INF = Integer.MAX_VALUE / 2;
+        Map<Integer, Map<Integer, Integer>> mtx = new HashMap<>(); // 耗时矩阵
+        for (int[] e : edges) {
+            mtx.putIfAbsent(e[0], new HashMap<>());
+            mtx.putIfAbsent(e[1], new HashMap<>());
+            mtx.get(e[0]).put(e[1], Math.min(e[2], mtx.get(e[0]).getOrDefault(e[1], INF)));
+            mtx.get(e[1]).put(e[0], Math.min(e[2], mtx.get(e[1]).getOrDefault(e[0], INF)));
+        }
+        Integer[][] minCost = new Integer[n][limit + 1]; // minCost[i][j] 表示在时间j到达车站i的最小费用, 同时当作visited使用(null即未访问)
+        minCost[0][0] = passingFees[0];
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[2])); // [当前地点, 耗时, 费用]
+        pq.offer(new int[]{0, 0, passingFees[0]});
+        while (!pq.isEmpty()) {
+            int[] p = pq.poll();
+            int cur = p[0], timing = p[1], cost = p[2];
+            if (cur == n - 1) return cost;
+            if (minCost[cur][timing] != null && cost > minCost[cur][timing]) continue;
+            if (minCost[cur][timing] == null) {
+                minCost[cur][timing] = cost; // pq 保证了这个时间到cur的费用是最小的
+            }
+            for (int next : mtx.get(cur).keySet()) {
+                int nTime = mtx.get(cur).get(next) + timing;
+                int nCost = cost + passingFees[next];
+                if (nTime <= limit && (minCost[next][nTime] == null || nCost < minCost[next][nTime])) {
+                    pq.offer(new int[]{next, nTime, nCost});
+                    minCost[next][nTime] = nCost;
+                }
+            }
+        }
+        return -1;
     }
 
     // LC1053 ** 极小化极大 minmax 类比nextPerm
