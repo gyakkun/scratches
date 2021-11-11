@@ -25,8 +25,8 @@ class Scratch {
             List<String> tmp = new ArrayList<>();
             result.add(tmp);
             String keyword = searchWord.substring(0, i);
-            if (!trie.startsWith(keyword)) continue;
             TrieNode node = trie.getNode(keyword);
+            if (node == null) continue;
             helper(node, tmp, new StringBuilder(keyword));
         }
         return result;
