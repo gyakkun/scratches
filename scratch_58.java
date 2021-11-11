@@ -7,15 +7,86 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minCostDP(30,
-                new int[][]{{0, 1, 10}, {1, 2, 10}, {2, 5, 10}, {0, 3, 1}, {3, 4, 10}, {4, 5, 15}},
-                new int[]{5, 1, 2, 20, 20, 3}));
+        System.out.println(s.mirrorReflection(2, 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1928 ** Try DP
+    // LC858
+    final double eps = 1e-6;
+
+    public int mirrorReflection(int p, int q) {
+        if (q == 0) return 0;
+        if (q == p) return 1;
+        // 向量表示: double[4] ： [x1,y1, x2, y2]
+        double[] vec = new double[]{0d, 0d, p, q};
+        int result = -1;
+        while ((result = check(vec, p)) == -1) {
+            vec = reflect(vec, p);
+        }
+        return result;
+    }
+
+    private double[] reflect(double[] vec, int sideLen) {
+        double sx = vec[0], sy = vec[1], tx = vec[2], ty = vec[3];
+        double k = -(ty - sy) / (tx - sx);
+        double b = ty - k * tx;
+        int whichSide = getWhichSide(sideLen, tx, ty);
+        // 分别求解
+        // 东 x = sideLen
+        double[] p;
+        if (whichSide != 0) {
+            p = new double[]{sideLen, k * sideLen + b};
+            if (p[1] >= 0d && p[1] <= (double) sideLen) return new double[]{tx, ty, p[0], p[1]};
+        }
+        // 南, y= 0
+        if (whichSide != 1) {
+            p = new double[]{-b / k, 0};
+            if (p[0] >= 0d && p[0] <= (double) sideLen) return new double[]{tx, ty, p[0], p[1]};
+        }
+        // 西, x = 0
+        if (whichSide != 2) {
+            p = new double[]{0, b};
+            if (p[1] >= 0d && p[1] <= (double) sideLen) return new double[]{tx, ty, p[0], p[1]};
+        }
+        // 北, y = sideLen
+        if (whichSide != 3) {
+            p = new double[]{(0d + sideLen - b) / k, sideLen};
+            if (p[0] >= 0d && p[0] <= (double) sideLen) return new double[]{tx, ty, p[0], p[1]};
+        }
+
+        return new double[]{};
+
+    }
+
+    private int getWhichSide(int sideLen, double tx, double ty) {
+        int which; // 0 1 2 3 东南西北
+        if (Math.abs(tx - 0) < eps) {
+            which = 2;
+        } else if (Math.abs(ty - 0) < eps) {
+            which = 1;
+        } else if (Math.abs(ty - sideLen) < eps) {
+            which = 3;
+        } else if (Math.abs(tx - sideLen) < eps) {
+            which = 0;
+        } else {
+            which = -1;
+        }
+        return which;
+    }
+
+    private int check(double[] vec, int sideLen) {
+        // 右下 - 0
+        if (Math.abs(vec[2] - sideLen) < eps && Math.abs(vec[3] - 0) < eps) return 0;
+        // 右上 - 1
+        if (Math.abs(vec[2] - sideLen) < eps && Math.abs(vec[3] - sideLen) < eps) return 1;
+        // 左上 - 2
+        if (Math.abs(vec[2] - 0) < eps && Math.abs(vec[3] - sideLen) < eps) return 2;
+        return -1;
+    }
+
+    // LC1928 ** Try DP TAG: BF算法
     public int minCostDP(int limit, int[][] edges, int[] passingFees) {
         int n = passingFees.length, INF = Integer.MAX_VALUE / 2;
         int[][] dp = new int[n][limit + 1];
