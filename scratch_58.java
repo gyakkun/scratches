@@ -7,10 +7,41 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.waysToDistribute(3, 2));
+        System.out.println(s.surfaceArea(new int[][]{{1, 2}, {3, 4}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC892
+    public int surfaceArea(int[][] grid) {
+        int m = grid.length, n = grid[0].length, maxHeight = 0, result = 0, bottom = 0;
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                maxHeight = Math.max(maxHeight, grid[i][j]);
+                bottom += grid[i][j] == 0 ? 0 : 1;
+            }
+        }
+        for (int height = 1; height <= maxHeight; height++) {
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (grid[i][j] < height) continue;
+                    int tmp = 0;
+                    for (int[] d : directions) {
+                        int nr = i + d[0], nc = j + d[1];
+                        if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                            tmp++;
+                            continue;
+                        }
+                        if (grid[nr][nc] < height) tmp++;
+                    }
+                    if (height == grid[i][j]) tmp++;
+                    result += tmp;
+                }
+            }
+        }
+        return result + bottom;
     }
 
     // LC1692  **** 第二类斯特林数 : n不同球分m堆 不能有空堆
