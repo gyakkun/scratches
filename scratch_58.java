@@ -13,6 +13,28 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1318
+    public int minFlips(int a, int b, int c) {
+        int result = 0;
+        for (int i = 0; i < Integer.SIZE; i++) {
+            int abit = (a >> i) & 1;
+            int bbit = (b >> i) & 1;
+            int cbit = (c >> i) & 1;
+            if ((abit | bbit) == cbit) continue;
+
+            if (cbit == 1) {
+                result++;
+                continue;
+            }
+
+            if (cbit == 0) {
+                result += abit + bbit;
+                continue;
+            }
+        }
+        return result;
+    }
+
     // LC892
     public int surfaceArea(int[][] grid) {
         int m = grid.length, n = grid[0].length, maxHeight = 0, result = 0, bottom = 0;
