@@ -15,7 +15,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1123
+    // LC1123 LC865 朴素方法 朴素LCA
     public TreeNode lcaDeepestLeaves(TreeNode root) {
         List<TreeNode> prev = null, cur = new ArrayList<>();
         cur.add(root);
