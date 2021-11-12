@@ -7,10 +7,34 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.isAlienSorted(new String[]{"apple", "app"}, "abcdefghijklmnopqrstuvwxyz"));
+        System.out.println(s.maxUniqueSplit("abcdefghijklmnop"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1593
+    int result = 0;
+
+    public int maxUniqueSplit(String s) {
+        Set<String> set = new HashSet<>();
+        helper(0, s, set);
+        return result;
+    }
+
+    private void helper(int idx, String s, Set<String> set) {
+        if (idx >= s.length()) {
+            result = Math.max(result, set.size());
+            return;
+        }
+        for (int i = idx + 1; i <= s.length(); i++) {
+            String subbed = s.substring(idx, i);
+            if (!set.contains(subbed)) {
+                set.add(subbed);
+                helper(i, s, set);
+                set.remove(subbed);
+            }
+        }
     }
 
     // LC375
