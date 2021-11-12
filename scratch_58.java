@@ -1,3 +1,5 @@
+import org.hsqldb.rights.Right;
+
 import java.util.*;
 
 class Scratch {
@@ -11,6 +13,39 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1123
+    public TreeNode lcaDeepestLeaves(TreeNode root) {
+        List<TreeNode> prev = null, cur = new ArrayList<>();
+        cur.add(root);
+        while (cur.size() != 0) {
+            List<TreeNode> next = new ArrayList<>();
+            for (TreeNode n : cur) {
+                if (n.left != null) next.add(n.left);
+                if (n.right != null) next.add(n.right);
+            }
+            prev = cur;
+            cur = next;
+        }
+        if (prev.size() == 1) return prev.get(0);
+        Deque<TreeNode> q = new LinkedList<>(prev);
+        while (q.size() > 1) {
+            TreeNode n1 = q.poll(), n2 = q.poll();
+            TreeNode lca = simpleLca(root, n1, n2);
+            q.offer(lca);
+        }
+        return q.poll();
+    }
+
+    private TreeNode simpleLca(TreeNode root, TreeNode a, TreeNode b) {
+        if (root == null) return null;
+        if (root == a || root == b) return root;
+        TreeNode l = simpleLca(root.left, a, b);
+        TreeNode r = simpleLca(root.right, a, b);
+        if (l != null && r != null) return root;
+        if (l != null) return l;
+        return r;
     }
 
     // LC1318
