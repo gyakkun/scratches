@@ -13,26 +13,46 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC375
+    Integer[][] memo;
+
+    public int getMoneyAmount(int n) {
+        memo = new Integer[n + 1][n + 1];
+        return helper(1, n);
+    }
+
+    private int helper(int lo, int hi) {
+        if (lo >= hi) return 0;
+        if (memo[lo][hi] != null) return memo[lo][hi];
+        // 猜
+        int minCost = Integer.MAX_VALUE;
+        for (int i = lo; i <= hi; i++) {
+            int maxCost = Math.max(i + helper(i + 1, hi), i + helper(lo, i - 1));
+            minCost = Math.min(maxCost, minCost);
+        }
+        return memo[lo][hi] = minCost;
+    }
+
     // LC1079
-    int result = 0;
+    int lc1079Result = 0;
 
     public int numTilePossibilities(String tiles) {
         char[] ca = tiles.toCharArray();
         for (int len = 1; len <= ca.length; len++) {
-            helper(0, 0, len, ca);
+            lc1079Helper(0, 0, len, ca);
         }
-        return result;
+        return lc1079Result;
     }
 
-    private void helper(int cur, int mask, int len, char[] ca) {
+    private void lc1079Helper(int cur, int mask, int len, char[] ca) {
         if (cur == len) {
-            result++;
+            lc1079Result++;
         }
         boolean[] used = new boolean[128];
         for (int i = 0; i < ca.length; i++) {
             if (((mask >> i) & 1) == 0 && !used[ca[i]]) {
                 used[ca[i]] = true;
-                helper(cur + 1, mask ^ (1 << i), len, ca);
+                lc1079Helper(cur + 1, mask ^ (1 << i), len, ca);
             }
         }
     }
