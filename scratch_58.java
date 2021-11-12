@@ -13,6 +13,69 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 04.09
+    public List<List<Integer>> BSTSequences(TreeNode root) {
+        if (root == null) return new ArrayList<List<Integer>>() {{
+            add(new ArrayList<>());
+        }};
+        if (root.left == null && root.right == null) {
+            List<List<Integer>> result = new ArrayList<>();
+            List<Integer> working = new ArrayList<>();
+            working.add(root.val);
+            result.add(working);
+            return result;
+        }
+
+        List<List<Integer>> leftResult = BSTSequences(root.left);
+        List<List<Integer>> rightResult = BSTSequences(root.right);
+
+        List<List<Integer>> result = new ArrayList<>();
+
+
+        for (int i = 0; i < leftResult.size(); i++) {
+            List<Integer> l = leftResult.get(i);
+            for (int j = 0; j < rightResult.size(); j++) {
+                List<Integer> r = rightResult.get(j);
+                List<List<Integer>> tmp = new ArrayList<>();
+                genSequence(l, r, 0, 0, tmp, new ArrayList<Integer>() {{
+                    add(root.val);
+                }});
+                result.addAll(tmp);
+            }
+        }
+
+        return result;
+    }
+
+    private void genSequence(List<Integer> l, List<Integer> r, int lIdx, int rIdx, List<List<Integer>> result, List<Integer> working) {
+        if (lIdx == l.size() && rIdx == r.size()) {
+            result.add(new ArrayList<>(working));
+            return;
+        }
+        if (lIdx == l.size()) {
+            List<Integer> tmp = new ArrayList<>(working);
+            tmp.addAll(r.subList(rIdx, r.size()));
+            genSequence(l, r, lIdx, r.size(), result, tmp);
+            return;
+        }
+
+        if (rIdx == r.size()) {
+            List<Integer> tmp = new ArrayList<>(working);
+            tmp.addAll(l.subList(lIdx, l.size()));
+            genSequence(l, r, l.size(), rIdx, result, tmp);
+            return;
+        }
+        int n = working.size();
+        working.add(l.get(lIdx));
+        genSequence(l, r, lIdx + 1, rIdx, result, working);
+        working.remove(n);
+
+        working.add(r.get(rIdx));
+        genSequence(l, r, lIdx, rIdx + 1, result, working);
+        working.remove(n);
+    }
+
+
     // LC651 **
     public int maxA(int n) {
         // 0 - 输入A , 1 - 全选, 2 - 复制, 3 - 粘贴
