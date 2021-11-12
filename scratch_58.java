@@ -1496,3 +1496,40 @@ class TrieNode {
     int end = 0;
     int path = 0;
 }
+
+// LC1797
+class AuthenticationManager {
+    Map<String, Integer> tokenExpireTimeMap = new HashMap<>();
+    int ttl;
+
+    public AuthenticationManager(int timeToLive) {
+        ttl = timeToLive;
+    }
+
+    public void generate(String tokenId, int currentTime) {
+        tokenExpireTimeMap.put(tokenId, currentTime + ttl);
+    }
+
+    public void renew(String tokenId, int currentTime) {
+        if (!tokenExpireTimeMap.containsKey(tokenId)) return;
+        if (tokenExpireTimeMap.get(tokenId) <= currentTime) {
+            tokenExpireTimeMap.remove(tokenId);
+            return;
+        }
+        tokenExpireTimeMap.put(tokenId, currentTime + ttl);
+    }
+
+    public int countUnexpiredTokens(int currentTime) {
+        int result = 0;
+        Iterator<Map.Entry<String, Integer>> it = tokenExpireTimeMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Integer> e = it.next();
+            if (e.getValue() <= currentTime) {
+                it.remove();
+                continue;
+            }
+            result++;
+        }
+        return result;
+    }
+}
