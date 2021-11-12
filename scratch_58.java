@@ -18,24 +18,19 @@ class Scratch {
         if (root == null) return new ArrayList<List<Integer>>() {{
             add(new ArrayList<>());
         }};
-        if (root.left == null && root.right == null) {
-            List<List<Integer>> result = new ArrayList<>();
-            List<Integer> working = new ArrayList<>();
-            working.add(root.val);
-            result.add(working);
-            return result;
-        }
+        if (root.left == null && root.right == null) return new ArrayList<List<Integer>>() {{
+            add(new ArrayList<Integer>() {{
+                add(root.val);
+            }});
+        }};
 
         List<List<Integer>> leftResult = BSTSequences(root.left);
         List<List<Integer>> rightResult = BSTSequences(root.right);
 
         List<List<Integer>> result = new ArrayList<>();
 
-
-        for (int i = 0; i < leftResult.size(); i++) {
-            List<Integer> l = leftResult.get(i);
-            for (int j = 0; j < rightResult.size(); j++) {
-                List<Integer> r = rightResult.get(j);
+        for (List<Integer> l : leftResult) {
+            for (List<Integer> r : rightResult) {
                 List<List<Integer>> tmp = new ArrayList<>();
                 genSequence(l, r, 0, 0, tmp, new ArrayList<Integer>() {{
                     add(root.val);
@@ -65,6 +60,7 @@ class Scratch {
             genSequence(l, r, l.size(), rIdx, result, tmp);
             return;
         }
+
         int n = working.size();
         working.add(l.get(lIdx));
         genSequence(l, r, lIdx + 1, rIdx, result, working);
