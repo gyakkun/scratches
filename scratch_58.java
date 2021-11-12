@@ -7,10 +7,47 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maxA(9));
+        System.out.println(s.waysToDistribute(20, 5));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1692 WA
+    Integer[][] memo = new Integer[1001][1001];
+    Long[][] cMemo = new Long[1001][1001];
+    final long mod = 1000000007;
+
+    public int waysToDistribute(int n, int k) { // n个不同的糖果, k个相同的袋子, 每个袋子至少一个糖果
+        if (n < k) return 0;
+        long result = helper(n, k);
+        return (int) (result % mod);
+    }
+
+    public long helper(int n, int k) { // n个不同的糖果, k个相同的袋子, 每个袋子至少一个糖果
+        if (n == k) return 1;
+        if (memo[n][k] != null) return memo[n][k];
+        // n > k 的情况
+        // 乘法原理 + 组合数
+        // 先确保每个袋子有一个糖果, 这时候共有C(n,k) 种方法
+        // 再让剩下的做组合
+        long result = 0;
+        if (n > k) {
+            result += C(n, k) * helper(n - k, k);
+            result %= mod;
+        } else {
+            result += 1;
+            result %= mod;
+        }
+        return memo[n][k] = (int) result;
+    }
+
+    private long C(int bottom, int top) {
+        if (top > bottom) return 0;
+        if (top == 1) return bottom;
+        if (top == bottom) return 1;
+        if (cMemo[bottom][top] != null) return cMemo[bottom][top];
+        return cMemo[bottom][top] = C(bottom - 1, top - 1) + (long) C(bottom - 1, top);
     }
 
     // LC1330 ** 需要算式推导 Hard
