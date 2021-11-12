@@ -7,7 +7,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minimumLength("cabaabac"));
+        System.out.println(s.minimumLength("ca"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -15,24 +15,27 @@ class Scratch {
 
     // LC1750
     public int minimumLength(String s) {
-        while (check(s)) {
-            s = handle(s);
+        char[] ca = s.toCharArray();
+        int left = 0, right = ca.length - 1;
+        while (check(ca, left, right)) {
+            int[] bound = handle(ca, left, right);
+            left = bound[0];
+            right = bound[1];
         }
-        return s.length();
+        return right - left + 1;
     }
 
-    private boolean check(String s) {
-        return s.length() > 1 && s.charAt(0) == s.charAt(s.length() - 1);
+    private boolean check(char[] ca, int left, int right) {
+        return right - left + 1 > 1 && ca[left] == ca[right];
     }
 
-    private String handle(String s) {
-        char c = s.charAt(0);
-        int left = 0, right = s.length() - 1;
-        while (left < s.length() && s.charAt(left) == c) left++;
-        if (left == s.length()) return "";
-        while (right >= 0 && s.charAt(right) == c) right--;
-        if (right == -1) return "";
-        return s.substring(left, right + 1);
+    private int[] handle(char[] ca, int left, int right) {
+        char c = ca[left];
+        while (left < right + 1 && ca[left] == c) left++;
+        if (left == right + 1) return new int[]{right, right - 1};
+        while (right > left - 1 && ca[right] == c) right--;
+        if (right == left - 1) return new int[]{left, left - 1};
+        return new int[]{left, right};
     }
 
     // LC1593
