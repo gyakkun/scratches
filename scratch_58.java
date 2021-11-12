@@ -13,6 +13,56 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1330 ** 需要算式推导 Hard
+    public int maxValueAfterReverse(int[] nums) {
+        int n = nums.length, orig = 0, maxDelta = 0;
+
+        for (int i = 0; i < n - 1; i++) {
+            orig += Math.abs(nums[i] - nums[i + 1]);
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (i != n - 1)
+                maxDelta = Math.max(maxDelta, Math.abs(nums[0] - nums[i + 1]) -
+                        Math.abs(nums[i] - nums[i + 1])); // 左端点为0右端点为i
+            if (i != 0)
+                maxDelta = Math.max(maxDelta, Math.abs(nums[n - 1] - nums[i - 1]) -
+                        Math.abs(nums[i] - nums[i - 1])); // 右端点为n-1,左端点为i
+        }
+
+        int[][] sign = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+
+        for (int j = 0; j < 4; j++) {
+            int plusMax = Integer.MIN_VALUE, minusMin = Integer.MAX_VALUE;
+            for (int i = 0; i < n - 1; i++) {
+                plusMax = Math.max(plusMax, sign[j][0] * nums[i] + sign[j][1] * nums[i + 1] - Math.abs(nums[i] - nums[i + 1]));
+                minusMin = Math.min(minusMin, sign[j][0] * nums[i] + sign[j][1] * nums[i + 1] + Math.abs(nums[i] - nums[i + 1]));
+            }
+            maxDelta = Math.max(maxDelta, plusMax - minusMin);
+        }
+        return orig + maxDelta;
+
+        // int l = 0, r = n-1;
+        // int minus = Math.abs(nums[l] - nums[l - 1]) + Math.abs(nums[r] - nums[r + 1]);
+        // int plus = Math.abs(nums[l - 1] - nums[r]) + Math.abs(nums[l] - nums[r + 1]);
+        // int delta = plus - minus;
+        // // 拆plus两边的绝对值, 即
+        // plus = Math.max(
+        //         nums[l - 1] + nums[l] - nums[r] - nums[r + 1], // + +
+        //         -nums[l - 1] + nums[l] + nums[r] - nums[r + 1] // - +
+        //         nums[l - 1] - nums[l] - nums[r] + nums[r + 1], // + -
+        //         -nums[l - 1] - nums[l] + nums[r] + nums[r + 1] // - -
+        // );
+        // // 合起来可以看到:
+        // delta = Math.max(
+        //         nums[l - 1] + nums[l] - Math.abs(nums[l] - nums[l - 1]) - (nums[r] + nums[r + 1] + Math.abs(nums[r] - nums[r + 1])),
+        //         -nums[l - 1] + nums[l] - Math.abs(nums[l] - nums[l - 1]) - (-nums[r] + nums[r + 1] + Math.abs(nums[r] - nums[r + 1]))
+        //         nums[l - 1] - nums[l] - Math.abs(nums[l] - nums[l - 1]) - (nums[r] - nums[r + 1] + Math.abs(nums[r] - nums[r + 1])),
+        //         -nums[l - 1] - nums[l] - Math.abs(nums[l] - nums[l - 1]) - (-nums[r] - nums[r + 1] + Math.abs(nums[r] - nums[r + 1]))
+        // );
+
+    }
+
     // Interview 04.09
     public List<List<Integer>> BSTSequences(TreeNode root) {
         if (root == null) return new ArrayList<List<Integer>>() {{
