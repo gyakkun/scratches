@@ -7,10 +7,34 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minimumLength("ca"));
+        System.out.println(s.maxA(9));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC651 **
+    public int maxA(int n) {
+        // 0 - 输入A , 1 - 全选, 2 - 复制, 3 - 粘贴
+        // 状态: 已经输入的A数量, 粘贴板大小, 上一个按键
+        // 1k: A
+        // 2K: AA
+        // 3K: AAA
+        // 4K: AAAA
+        // 5K: AAAAA
+        // 6K: AAAAAA (6*A OR 000123)
+        // 7K: AAAAAAAAA (0001233)
+        // 8k: 00012333,12 // 00001233, 12 // 00000123, 10
+        // 9k: 000012333,16 // 000123123,12 // 000000123, 12
+        if (n <= 6) return n;
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            dp[i] = dp[i - 1] + 1; // 在上一个最佳结果的基础上按0
+            for (int j = 0; j <= i - 2; j++) { // 按多少次3? 按3之前一定要按12, 所以 0<=j<=i-2
+                dp[i] = Math.max(dp[i], dp[j] * (i - (j + 2)) + dp[j]); // 总按键数 - (全选+复制的两次), 剩下的就是粘贴的次数, 再加上粘贴之前的dp[j]个
+            }
+        }
+        return dp[n];
     }
 
     // LC1750
