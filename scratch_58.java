@@ -7,54 +7,76 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maxUniqueSplit("abcdefghijklmnop"));
+        System.out.println(s.minimumLength("cabaabac"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1750
+    public int minimumLength(String s) {
+        while (check(s)) {
+            s = handle(s);
+        }
+        return s.length();
+    }
+
+    private boolean check(String s) {
+        return s.length() > 1 && s.charAt(0) == s.charAt(s.length() - 1);
+    }
+
+    private String handle(String s) {
+        char c = s.charAt(0);
+        int left = 0, right = s.length() - 1;
+        while (left < s.length() && s.charAt(left) == c) left++;
+        if (left == s.length()) return "";
+        while (right >= 0 && s.charAt(right) == c) right--;
+        if (right == -1) return "";
+        return s.substring(left, right + 1);
+    }
+
     // LC1593
-    int result = 0;
+    int lc1593Result = 0;
 
     public int maxUniqueSplit(String s) {
         Set<String> set = new HashSet<>();
-        helper(0, s, set);
-        return result;
+        lc1593Helper(0, s, set);
+        return lc1593Result;
     }
 
-    private void helper(int idx, String s, Set<String> set) {
+    private void lc1593Helper(int idx, String s, Set<String> set) {
         if (idx >= s.length()) {
-            result = Math.max(result, set.size());
+            lc1593Result = Math.max(lc1593Result, set.size());
             return;
         }
         for (int i = idx + 1; i <= s.length(); i++) {
             String subbed = s.substring(idx, i);
             if (!set.contains(subbed)) {
                 set.add(subbed);
-                helper(i, s, set);
+                lc1593Helper(i, s, set);
                 set.remove(subbed);
             }
         }
     }
 
     // LC375
-    Integer[][] memo;
+    Integer[][] lc375Memo;
 
     public int getMoneyAmount(int n) {
-        memo = new Integer[n + 1][n + 1];
-        return helper(1, n);
+        lc375Memo = new Integer[n + 1][n + 1];
+        return lc375Helper(1, n);
     }
 
-    private int helper(int lo, int hi) {
+    private int lc375Helper(int lo, int hi) {
         if (lo >= hi) return 0;
-        if (memo[lo][hi] != null) return memo[lo][hi];
+        if (lc375Memo[lo][hi] != null) return lc375Memo[lo][hi];
         // 猜
         int minCost = Integer.MAX_VALUE;
         for (int i = lo; i <= hi; i++) {
-            int maxCost = Math.max(i + helper(i + 1, hi), i + helper(lo, i - 1));
+            int maxCost = Math.max(i + lc375Helper(i + 1, hi), i + lc375Helper(lo, i - 1));
             minCost = Math.min(maxCost, minCost);
         }
-        return memo[lo][hi] = minCost;
+        return lc375Memo[lo][hi] = minCost;
     }
 
     // LC1079
@@ -138,7 +160,7 @@ class Scratch {
         // 向量表示: double[4] ： [x1,y1, x2, y2]
         double[] vec = new double[]{0d, 0d, p, q};
         int result = -1;
-        while ((result = check(vec, p)) == -1) {
+        while ((result = lc858Check(vec, p)) == -1) {
             vec = reflect(vec, p);
         }
         return result;
@@ -192,7 +214,7 @@ class Scratch {
         return which;
     }
 
-    private int check(double[] vec, int sideLen) {
+    private int lc858Check(double[] vec, int sideLen) {
         // 右下 - 0
         if (Math.abs(vec[2] - sideLen) < eps && Math.abs(vec[3] - 0) < eps) return 0;
         // 右上 - 1
@@ -654,10 +676,10 @@ class Scratch {
     public boolean stoneGameIX(int[] stones) {
         int[] freq = new int[3];
         for (int i : stones) freq[i % 3]++;
-        return check(new int[]{freq[0], freq[2], freq[1]}) || check(freq);
+        return lc2029Check(new int[]{freq[0], freq[2], freq[1]}) || lc2029Check(freq);
     }
 
-    private boolean check(int[] freq) {
+    private boolean lc2029Check(int[] freq) {
         // 1这个下标表示我们要抽的数, 为0时说明无牌可抽, 直接输掉
         if (freq[1] == 0) return false;
         freq[1]--;
