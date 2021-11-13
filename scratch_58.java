@@ -1,5 +1,3 @@
-import org.hsqldb.rights.Right;
-
 import java.util.*;
 
 class Scratch {
@@ -9,10 +7,59 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.surfaceArea(new int[][]{{1, 2}, {3, 4}}));
+        System.out.println(s.prisonAfterNDays(new int[]{0, 1, 0, 1, 1, 0, 0, 1}, 7));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC957 找周期
+    public int[] prisonAfterNDays(int[] cells, int n) {
+        int mask = 0, len = cells.length;
+        for (int i = 0; i < len; i++) {
+            mask ^= cells[i] << i;
+        }
+        Map<Integer, Integer> m = new HashMap<>(1 << len);
+        List<Integer> l = new ArrayList<>();
+        l.add(mask);
+        m.put(mask, 0);
+        int ctr = 1;
+        int lastIdx = -1, found = -1;
+        while (true) {
+            int newMask = handle(mask, len);
+            if (m.containsKey(newMask)) {
+                lastIdx = ctr;
+                found = newMask;
+                break;
+            }
+            l.add(newMask);
+            m.put(newMask, ctr);
+            ctr++;
+            mask = newMask;
+        }
+        int firstIdx = m.get(found);
+        int cycle = lastIdx - firstIdx;
+        int remain = n - firstIdx;
+        int loc = remain % cycle;
+        int result = l.get(firstIdx + loc);
+        int[] resultArr = new int[len];
+        for (int i = 0; i < len; i++) {
+            resultArr[i] = (result >> i) & 1;
+        }
+        return resultArr;
+    }
+
+    private int handle(int mask, int len) {
+        int origMask = mask, newMask = 0;
+        for (int i = 1; i < len - 1; i++) {
+            int middle = (origMask >> i) & 1;
+            int right = (origMask >> (i - 1)) & 1;
+            int left = (origMask >> (i + 1)) & 1;
+            if ((right == 1 && left == 1) || (right == 0 && left == 0)) {
+                newMask ^= 1 << i;
+            }
+        }
+        return newMask;
     }
 
     // LC1123 LC865 朴素方法 朴素LCA
@@ -251,19 +298,19 @@ class Scratch {
     public int minimumLength(String s) {
         char[] ca = s.toCharArray();
         int left = 0, right = ca.length - 1;
-        while (check(ca, left, right)) {
-            int[] bound = handle(ca, left, right);
+        while (lc1750Check(ca, left, right)) {
+            int[] bound = lc1750Handle(ca, left, right);
             left = bound[0];
             right = bound[1];
         }
         return right - left + 1;
     }
 
-    private boolean check(char[] ca, int left, int right) {
+    private boolean lc1750Check(char[] ca, int left, int right) {
         return right - left + 1 > 1 && ca[left] == ca[right];
     }
 
-    private int[] handle(char[] ca, int left, int right) {
+    private int[] lc1750Handle(char[] ca, int left, int right) {
         char c = ca[left];
         while (left < right + 1 && ca[left] == c) left++;
         if (left == right + 1) return new int[]{right, right - 1};
