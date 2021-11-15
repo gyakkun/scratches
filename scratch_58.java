@@ -7,10 +7,42 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.prisonAfterNDays(new int[]{0, 1, 0, 1, 1, 0, 0, 1}, 7));
+        System.out.println(s.balancedString("WWEQERQWQWWRWWERQWEQ"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1234 ** 滑动窗口
+    public int balancedString(String s) {
+        int n = s.length();
+        final char[] cs = {'Q', 'W', 'E', 'R'};
+        int[] idxMap = new int[128];
+        idxMap['Q'] = 0;
+        idxMap['W'] = 1;
+        idxMap['E'] = 2;
+        idxMap['R'] = 3;
+        int[] freq = new int[4];
+        char[] ca = s.toCharArray();
+        int targetFreq = ca.length / 4;
+        for (char c : ca) freq[idxMap[c]]++;
+        if (check(freq, targetFreq)) return 0;
+        int result = ca.length, left = 0;
+        // 挖了 [left,right] 这一段后, 每个字母出现的频率都小于等于目标值, 则这一段是可以挖的一段, 取所有可能值的最小值
+        for (int right = 0; right < n; right++) {
+            freq[idxMap[ca[right]]]--;
+            while (check(freq, targetFreq)) {
+                result = Math.min(result, right - left + 1);
+                freq[idxMap[ca[left]]]++;
+                left++;
+            }
+        }
+        return result;
+    }
+
+    private boolean check(int[] freq, int targetFreq) {
+        for (int i : freq) if (i > targetFreq) return false;
+        return true;
     }
 
     // LCP11 ** 概率
