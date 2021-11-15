@@ -13,6 +13,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1374
+    public String generateTheString(int n) {
+        StringBuilder sb = new StringBuilder(n);
+        if (n % 2 == 0) {
+            for (int i = 0; i < n - 1; i++) sb.append('a');
+            sb.append('b');
+            return sb.toString();
+        }
+        for (int i = 0; i < n; i++) sb.append('a');
+        return sb.toString();
+    }
+
     // LC1234 ** 滑动窗口
     public int balancedString(String s) {
         int n = s.length();
