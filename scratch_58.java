@@ -14,7 +14,22 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1923 TLE
+    // LC1192 Kruskal 求最小生成树 WA
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        DSUArray dsu = new DSUArray(n);
+        List<List<Integer>> result = new ArrayList<>();
+        for (List<Integer> c : connections) {
+            int u = c.get(0), v = c.get(1);
+            dsu.add(u);
+            dsu.add(v);
+            if (dsu.isConnected(u, v)) continue;
+            dsu.merge(u, v);
+            result.add(c);
+        }
+        return result;
+    }
+
+    // LC1923 ** 滚动哈希 哈希碰撞 (emm)
     long base1 = (long) 1e6 + 7, base2 = 104729l;
 
     public boolean check(int[][] paths, int len, long base) {
@@ -1853,4 +1868,102 @@ class AuthenticationManager {
         }
         return result;
     }
+}
+
+class DSUArray {
+    int[] father;
+    int[] rank;
+    int size;
+
+    public DSUArray(int size) {
+        this.size = size;
+        father = new int[size];
+        rank = new int[size];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public DSUArray() {
+        this.size = 1 << 16;
+        father = new int[1 << 16];
+        rank = new int[1 << 16];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public void add(int i) {
+        if (i >= this.size || i < 0) return;
+        if (father[i] == -1) {
+            father[i] = i;
+        }
+        if (rank[i] == -1) {
+            rank[i] = 1;
+        }
+    }
+
+    public boolean contains(int i) {
+        if (i >= this.size || i < 0) return false;
+        return father[i] != -1;
+    }
+
+    public int find(int i) {
+        if (i >= this.size || i < 0) return -1;
+        int root = i;
+        while (root < size && root >= 0 && father[root] != root) {
+            root = father[root];
+        }
+        if (root == -1) return -1;
+        while (father[i] != root) {
+            int origFather = father[i];
+            father[i] = root;
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (j >= this.size || j < 0) return false;
+        int iFather = find(i);
+        int jFather = find(j);
+        if (iFather == -1 || jFather == -1) return false;
+        if (iFather == jFather) return false;
+
+        if (rank[iFather] >= rank[jFather]) {
+            father[jFather] = iFather;
+            rank[iFather] += rank[jFather];
+        } else {
+            father[iFather] = jFather;
+            rank[jFather] += rank[iFather];
+        }
+        return true;
+    }
+
+    public boolean isConnected(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (i >= this.size || i < 0) return false;
+        return find(i) == find(j);
+    }
+
+    public Map<Integer, Set<Integer>> getAllGroups() {
+        Map<Integer, Set<Integer>> result = new HashMap<>();
+        // 找出所有根
+        for (int i = 0; i < size; i++) {
+            if (father[i] != -1) {
+                int f = find(i);
+                result.putIfAbsent(f, new HashSet<>());
+                result.get(f).add(i);
+            }
+        }
+        return result;
+    }
+
+    public int getNumOfGroups() {
+        return getAllGroups().size();
+    }
+
+    public int getSelfGroupSize(int x) {
+        return rank[find(x)];
+    }
+
 }
