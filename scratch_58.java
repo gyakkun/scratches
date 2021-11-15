@@ -15,31 +15,29 @@ class Scratch {
 
     // LC1444
     final long mod = 1000000007l;
-    Integer[][][][] memo = new Integer[51][51][11][11];
+    Integer[][][] memo = new Integer[51][51][11];
 
     public int ways(String[] pizza, int k) {
         char[][] mtx = new char[pizza.length][];
         for (int i = 0; i < mtx.length; i++) mtx[i] = pizza[i].toCharArray();
         int m = mtx.length, n = mtx[0].length;
         int[][] prefix = new int[m + 1][n + 1];
-        int numApples = 0;
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                if (mtx[i][j] == 'A') numApples++;
                 prefix[i + 1][j + 1] = (mtx[i][j] == 'A' ? 1 : 0) + prefix[i + 1][j] + prefix[i][j + 1] - prefix[i][j];
             }
         }
-        return helper(0, 0, 0, 0, k, k, numApples, prefix);
+        return helper(0, 0, 0, k, prefix[m][n], prefix);
     }
 
-    private int helper(int fromRow, int fromCol, int rowCuts, int colCuts, int peopleLeft, int totalPeople, int applesRemain, int[][] prefix) {
+    private int helper(int fromRow, int fromCol, int cuts, int peopleLeft, int applesRemain, int[][] prefix) {
         if (applesRemain < peopleLeft) return 0;
         int m = prefix.length - 1, n = prefix[0].length - 1;
         if (peopleLeft == 1 && applesRemain >= 1) {
             return 1;
         }
         if (fromRow >= m || fromCol >= n) return 0; // 越界了
-        if (memo[fromRow][fromCol][rowCuts][colCuts] != null) return memo[fromRow][fromCol][rowCuts][colCuts];
+        if (memo[fromRow][fromCol][cuts] != null) return memo[fromRow][fromCol][cuts];
         long result = 0;
         // 从上面切打横切
         for (int i = fromRow; i < m; i++) {
@@ -51,17 +49,15 @@ class Scratch {
             if (applesRemain - appleCount < peopleLeft - 1) break;
 
             // 都没问题才进入下一步
-            result += helper(i + 1, fromCol, rowCuts + 1, colCuts, peopleLeft - 1, totalPeople, applesRemain - appleCount, prefix);
-            result %= mod;
+            result += helper(i + 1, fromCol, cuts + 1, peopleLeft - 1, applesRemain - appleCount, prefix);
         }
         for (int j = fromCol; j < n; j++) {
             int appleCount = prefix[m][j + 1] - prefix[fromRow][j + 1] - prefix[m][fromCol] + prefix[fromRow][fromCol];
             if (appleCount < 1) continue;
             if (applesRemain - appleCount < peopleLeft - 1) break;
-            result += helper(fromRow, j + 1, rowCuts, colCuts + 1, peopleLeft - 1, totalPeople, applesRemain - appleCount, prefix);
-            result %= mod;
+            result += helper(fromRow, j + 1, cuts + 1, peopleLeft - 1, applesRemain - appleCount, prefix);
         }
-        return memo[fromRow][fromCol][rowCuts][colCuts] = (int) result;
+        return memo[fromRow][fromCol][cuts] = (int) (result % mod);
     }
 
 
