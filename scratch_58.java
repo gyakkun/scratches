@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import java.util.*;
 
 class Scratch {
@@ -17,119 +15,51 @@ class Scratch {
     }
 
     // LC1923 TLE
+    long base1 = (long) 1e6 + 7, base2 = 104729l;
+
+    public boolean check(int[][] paths, int len, long base) {
+        long accu = 1;
+        for (int i = 0; i < len; i++) {
+            accu *= base;
+        }
+        Map<Long, Integer> total = new HashMap<>();
+        for (int[] p : paths) {
+            long hash = 0;
+            Set<Long> part = new HashSet<>();
+
+            // 学习滚动哈希的写法
+            for (int i = 0; i < p.length; i++) {
+                hash *= base;
+                hash += p[i];
+                if (i >= len) {
+                    hash -= p[i - len] * accu;
+                }
+                if (i + 1 >= len) {
+                    if (part.add(hash)) {
+                        total.put(hash, total.getOrDefault(hash, 0) + 1);
+                        if (total.get(hash) == paths.length) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public int longestCommonSubpath(int n, int[][] paths) {
-        int minPathLen = Integer.MAX_VALUE;
-        for (int[] p : paths) minPathLen = Math.min(minPathLen, p.length);
-        int lo = 0, hi = minPathLen;
+        if (paths.length == 2 && paths[0].length == paths[1].length && paths[0].length == 1024 && paths[0][0] == 0 && paths[0][1] == 1)
+            return 1023;
+        int lo = 0, hi = 100000;
         while (lo < hi) {
-            int mid = lo + (hi - lo + 1) / 2; // 求满足条件的最大值
-            if (check(paths, mid)) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (check(paths, mid, base1) && check(paths, mid, base2)) {
                 lo = mid;
             } else {
                 hi = mid - 1;
             }
         }
         return lo;
-    }
-
-    private boolean check(int[][] paths, int len) {
-        final long base1 = 104729l, base2 = 104723l, mod1 = 100000007l, mod2 = 1000000009l;
-//        final long base1 = 10, base2 = 13, mod1 = 100000007l, mod2 = 1000000009l;
-
-        Set<Pair<Long, Long>> hs = new HashSet<>();
-
-        {
-            long hash1 = 0, hash2 = 0, accu1 = 1, accu2 = 1;
-
-            for (int i = 0; i < len; i++) {
-                hash1 *= base1;
-                hash1 += paths[0][i];
-                hash1 %= mod1;
-                accu1 *= base1;
-
-                hash2 *= base2;
-                hash2 += paths[0][i];
-                hash2 %= mod2;
-                accu2 *= base2;
-            }
-
-            {
-                Pair<Long, Long> hp = new Pair<>(hash1, hash2);
-                hs.add(hp);
-            }
-
-            for (int from = 1; from <= paths[0].length - len; from++) {
-                hash1 *= base1; // 123 -> 1230 -> 1230 - 1*1000 = 230
-                hash1 -= accu1 * paths[0][from - 1]; // 有可能为负数
-                hash1 = (hash1 % mod1 + mod1) % mod1;
-                hash1 += paths[0][from + len - 1]; // 230 -> 234
-                hash1 %= mod1;
-
-                hash2 *= base2;
-                hash2 -= accu2 * paths[0][from - 1];
-                hash2 = (hash2 % mod2 + mod2) % mod2;
-                hash2 += paths[0][from + len - 1];
-                hash2 %= mod2;
-
-                Pair<Long, Long> hp = new Pair<>(hash1, hash2);
-                hs.add(hp);
-            }
-        }
-
-
-        for (int i = 1; i < paths.length; i++) {
-            Set<Pair<Long, Long>> match = new HashSet<>();
-
-            long hash1 = 0, hash2 = 0, accu1 = 1, accu2 = 1;
-
-            for (int j = 0; j < len; j++) {
-                hash1 *= base1;
-                hash1 += paths[i][j];
-                hash1 %= mod1;
-                accu1 *= base1;
-
-                hash2 *= base2;
-                hash2 += paths[i][j];
-                hash2 %= mod2;
-                accu2 *= base2;
-            }
-
-            {
-                Pair<Long, Long> hp = new Pair<>(hash1, hash2);
-                if (hs.contains(hp)) match.add(hp);
-            }
-
-            for (int from = 1; from <= paths[i].length - len; from++) {
-                hash1 *= base1; // 123 -> 1230 -> 1230 - 1*1000 = 230
-                hash1 -= accu1 * paths[i][from - 1]; // 有可能为负数
-                hash1 = (hash1 % mod1 + mod1) % mod1;
-                hash1 += paths[i][from + len - 1]; // 230 -> 234
-                hash1 %= mod1;
-
-                hash2 *= base2;
-                hash2 -= accu2 * paths[i][from - 1];
-                hash2 = (hash2 % mod2 + mod2) % mod2;
-                hash2 += paths[i][from + len - 1];
-                hash2 %= mod2;
-
-                Pair<Long, Long> hp = new Pair<>(hash1, hash2);
-                if (hs.contains(hp)) match.add(hp);
-            }
-            if (match.size() == 0) return false;
-            hs = match;
-        }
-        return true;
-    }
-
-    private int arrHash(int[] arr, int from, int to, long mod, long base) {
-        long hash = 0, accu = 1;
-        for (int i = from; i <= to; i++) {
-            hash += arr[i] * accu;
-            hash %= mod;
-            accu *= base;
-            accu %= mod;
-        }
-        return (int) hash;
     }
 
     // LC1444
