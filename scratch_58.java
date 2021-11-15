@@ -13,6 +13,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2053
+    public String kthDistinct(String[] arr, int k) {
+        Map<String, Integer> freq = new HashMap<>();
+        for (String w : arr) freq.put(w, freq.getOrDefault(w, 0) + 1);
+        int ctr = 0;
+        for (String w : arr) {
+            if (freq.get(w) == 1) ctr++;
+            if (ctr == k) return w;
+        }
+        return "";
+    }
+
     // LC1374
     public String generateTheString(int n) {
         StringBuilder sb = new StringBuilder(n);
