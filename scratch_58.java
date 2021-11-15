@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -7,10 +9,66 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.ways(new String[]{"A..", "AAA", "..."}, 3));
+        System.out.println(s.longestCommonSubpath(
+                5, new int[][]{{0, 1, 2, 3, 4}, {2, 3, 4}, {4, 0, 1, 2, 3}}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1923 TLE
+    public int longestCommonSubpath(int n, int[][] paths) {
+        int minPathLen = Integer.MAX_VALUE;
+        for (int[] p : paths) minPathLen = Math.min(minPathLen, p.length);
+        int lo = 0, hi = minPathLen;
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2; // 求满足条件的最大值
+            if (check(paths, mid)) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return lo;
+    }
+
+    private boolean check(int[][] paths, int len) {
+        final long base1 = 104729l, base2 = 104723, mod = 100000007l;
+
+        Set<Pair<Integer, Integer>> hs = new HashSet<>();
+        // 线哈希第一条path
+        for (int i = 0; i <= paths[0].length - len; i++) {
+            int hash1 = arrHash(paths[0], i, i + len - 1, mod, base1);
+            int hash2 = arrHash(paths[0], i, i + len - 1, mod, base2);
+            hs.add(new Pair<>(hash1, hash2));
+        }
+
+        for (int i = 1; i < paths.length; i++) {
+            Set<Pair<Integer, Integer>> match = new HashSet<>();
+            for (int j = 0; j <= paths[i].length - len; j++) {
+                int hash1 = arrHash(paths[i], j, j + len - 1, mod, base1);
+                int hash2 = arrHash(paths[i], j, j + len - 1, mod, base2);
+                Pair<Integer, Integer> hp = new Pair<>(hash1, hash2);
+                if (hs.contains(hp)) {
+                    match.add(hp);
+                }
+            }
+            if (match.size() == 0) return false;
+            hs = match;
+        }
+        return true;
+    }
+
+    private int arrHash(int[] arr, int from, int to, long mod, long base) {
+        long hash = 0, accu = 1;
+        for (int i = from; i <= to; i++) {
+            hash += arr[i] * accu;
+            hash %= mod;
+            accu *= base;
+            accu %= mod;
+        }
+        return (int) hash;
     }
 
     // LC1444
