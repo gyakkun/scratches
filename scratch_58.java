@@ -14,7 +14,7 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1192 Tarjan 算法 求无向图中的桥
+    // LC1192 ** Tarjan 算法 求无向图中的桥
     List<List<Integer>> mtx, result;
     int[] low;
 
@@ -29,21 +29,25 @@ class Scratch {
             mtx.get(u).add(v);
             mtx.get(v).add(u);
         }
-        tarjan(0, 0, -1);
+        for (int i = 0; i < n; i++) { // 无向图不一定连通, 所以遍历所有搜索根
+            if (low[i] == -1) {
+                tarjan(i, 0, -1, i);
+            }
+        }
         return result;
     }
 
-    private int tarjan(int cur, int timestamp, int parent) {
+    private int tarjan(int cur, int timestamp, int parent, int root) {
         low[cur] = cur;
         for (int next : mtx.get(cur)) {
-            if (next == parent) continue;
+            if (next == parent) continue; // 不经过父亲节点DFS
             if (low[next] == -1) {
-                low[cur] = Math.min(low[cur], tarjan(next, timestamp + 1, cur));
+                low[cur] = Math.min(low[cur], tarjan(next, timestamp + 1, cur, root));
                 continue;
             }
             low[cur] = Math.min(low[cur], low[next]);
         }
-        if (low[cur] == cur && cur != 0) { // 0 - 即搜索根
+        if (low[cur] == cur && cur != root) { // 0 - 即搜索根
             result.add(Arrays.asList(cur, parent));
         }
         return low[cur];
