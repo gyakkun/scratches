@@ -13,6 +13,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
+    // LC1848
+    public int getMinDistance(int[] nums, int target, int start) {
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != target) continue;
+            min = Math.min(min, Math.abs(i - start));
+        }
+        return min;
+    }
+
     // LC957 找周期
     public int[] prisonAfterNDays(int[] cells, int n) {
         int mask = 0, len = cells.length;
