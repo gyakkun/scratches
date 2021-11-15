@@ -7,11 +7,63 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.balancedString("WWEQERQWQWWRWWERQWEQ"));
+        System.out.println(s.ways(new String[]{"A..", "AAA", "..."}, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1444
+    final long mod = 1000000007l;
+    Integer[][][][] memo = new Integer[51][51][11][11];
+
+    public int ways(String[] pizza, int k) {
+        char[][] mtx = new char[pizza.length][];
+        for (int i = 0; i < mtx.length; i++) mtx[i] = pizza[i].toCharArray();
+        int m = mtx.length, n = mtx[0].length;
+        int[][] prefix = new int[m + 1][n + 1];
+        int numApples = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (mtx[i][j] == 'A') numApples++;
+                prefix[i + 1][j + 1] = (mtx[i][j] == 'A' ? 1 : 0) + prefix[i + 1][j] + prefix[i][j + 1] - prefix[i][j];
+            }
+        }
+        return helper(0, 0, 0, 0, k, k, numApples, prefix);
+    }
+
+    private int helper(int fromRow, int fromCol, int rowCuts, int colCuts, int peopleLeft, int totalPeople, int applesRemain, int[][] prefix) {
+        if (applesRemain < peopleLeft) return 0;
+        int m = prefix.length - 1, n = prefix[0].length - 1;
+        if (peopleLeft == 1 && applesRemain >= 1) {
+            return 1;
+        }
+        if (fromRow >= m || fromCol >= n) return 0; // 越界了
+        if (memo[fromRow][fromCol][rowCuts][colCuts] != null) return memo[fromRow][fromCol][rowCuts][colCuts];
+        long result = 0;
+        // 从上面切打横切
+        for (int i = fromRow; i < m; i++) {
+            // 先校验有没有苹果
+            int appleCount = prefix[i + 1][n] - prefix[i + 1][fromCol] - prefix[fromRow][n] + prefix[fromRow][fromCol];
+            if (appleCount < 1) continue;
+
+            // 然后校验切完之后苹果够不够分
+            if (applesRemain - appleCount < peopleLeft - 1) break;
+
+            // 都没问题才进入下一步
+            result += helper(i + 1, fromCol, rowCuts + 1, colCuts, peopleLeft - 1, totalPeople, applesRemain - appleCount, prefix);
+            result %= mod;
+        }
+        for (int j = fromCol; j < n; j++) {
+            int appleCount = prefix[m][j + 1] - prefix[fromRow][j + 1] - prefix[m][fromCol] + prefix[fromRow][fromCol];
+            if (appleCount < 1) continue;
+            if (applesRemain - appleCount < peopleLeft - 1) break;
+            result += helper(fromRow, j + 1, rowCuts, colCuts + 1, peopleLeft - 1, totalPeople, applesRemain - appleCount, prefix);
+            result %= mod;
+        }
+        return memo[fromRow][fromCol][rowCuts][colCuts] = (int) result;
+    }
+
 
     // LC2053
     public String kthDistinct(String[] arr, int k) {
@@ -50,12 +102,12 @@ class Scratch {
         char[] ca = s.toCharArray();
         int targetFreq = ca.length / 4;
         for (char c : ca) freq[idxMap[c]]++;
-        if (check(freq, targetFreq)) return 0;
+        if (lc1234Check(freq, targetFreq)) return 0;
         int result = ca.length, left = 0;
         // 挖了 [left,right] 这一段后, 每个字母出现的频率都小于等于目标值, 则这一段是可以挖的一段, 取所有可能值的最小值
         for (int right = 0; right < n; right++) {
             freq[idxMap[ca[right]]]--;
-            while (check(freq, targetFreq)) {
+            while (lc1234Check(freq, targetFreq)) {
                 result = Math.min(result, right - left + 1);
                 freq[idxMap[ca[left]]]++;
                 left++;
@@ -64,7 +116,7 @@ class Scratch {
         return result;
     }
 
-    private boolean check(int[] freq, int targetFreq) {
+    private boolean lc1234Check(int[] freq, int targetFreq) {
         for (int i : freq) if (i > targetFreq) return false;
         return true;
     }
@@ -102,7 +154,7 @@ class Scratch {
         int ctr = 1;
         int lastIdx = -1, found = -1;
         while (true) {
-            int newMask = handle(mask, len);
+            int newMask = lc957Handle(mask, len);
             if (m.containsKey(newMask)) {
                 lastIdx = ctr;
                 found = newMask;
@@ -125,7 +177,7 @@ class Scratch {
         return resultArr;
     }
 
-    private int handle(int mask, int len) {
+    private int lc957Handle(int mask, int len) {
         int origMask = mask, newMask = 0;
         for (int i = 1; i < len - 1; i++) {
             int middle = (origMask >> i) & 1;
@@ -225,15 +277,15 @@ class Scratch {
     }
 
     // LC1692  **** 第二类斯特林数 : n不同球分m堆 不能有空堆
-    Integer[][] memo = new Integer[1001][1001];
+    Integer[][] lc1692Memo = new Integer[1001][1001];
 
     // S2(n,m)=S2(n-1,m-1) + m*S2(n-1,m)
     public int waysToDistribute(int n, int m) {
         if (n < 0 || m < 0) return 0;
         if (n < m) return 0;
         if (n == m) return 1;
-        if (memo[n][m] != null) return memo[n][m];
-        return memo[n][m] = (int) (((long) waysToDistribute(n - 1, m - 1) + (long) m * (long) waysToDistribute(n - 1, m)) % 1000000007l);
+        if (lc1692Memo[n][m] != null) return lc1692Memo[n][m];
+        return lc1692Memo[n][m] = (int) (((long) waysToDistribute(n - 1, m - 1) + (long) m * (long) waysToDistribute(n - 1, m)) % 1000000007l);
     }
 
 
