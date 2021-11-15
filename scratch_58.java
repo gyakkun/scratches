@@ -9,9 +9,8 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.longestCommonSubpath(
-                5, new int[][]{{0, 1, 2, 3, 4}, {2, 3, 4}, {4, 0, 1, 2, 3}}
-        ));
+        System.out.println(s.longestCommonSubpath(10, new int[][]
+                {{1, 7, 0, 6, 9, 0, 7, 4, 3, 9, 1, 5, 0, 8, 0, 6, 3, 6, 0, 8, 3, 7, 8, 3, 5, 3, 7, 4, 0, 6, 8, 1, 4}, {1, 7, 0, 6, 9, 0, 7, 4, 3, 9, 1, 5, 0, 8, 0, 6, 3, 6, 0, 8, 3, 7, 8, 3, 5, 3, 7, 4, 0, 6, 8, 1, 5}, {8, 1, 7, 0, 6, 9, 0, 7, 4, 3, 9, 1, 5, 0, 8, 0, 6, 3, 6, 0, 8, 3, 7, 8, 3, 5, 3, 7, 4, 0, 6, 8, 1}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -34,25 +33,87 @@ class Scratch {
     }
 
     private boolean check(int[][] paths, int len) {
-        final long base1 = 104729l, base2 = 104723, mod = 100000007l;
+        final long base1 = 104729l, base2 = 104723l, mod1 = 100000007l, mod2 = 1000000009l;
+//        final long base1 = 10, base2 = 13, mod1 = 100000007l, mod2 = 1000000009l;
 
-        Set<Pair<Integer, Integer>> hs = new HashSet<>();
-        // 线哈希第一条path
-        for (int i = 0; i <= paths[0].length - len; i++) {
-            int hash1 = arrHash(paths[0], i, i + len - 1, mod, base1);
-            int hash2 = arrHash(paths[0], i, i + len - 1, mod, base2);
-            hs.add(new Pair<>(hash1, hash2));
+        Set<Pair<Long, Long>> hs = new HashSet<>();
+
+        {
+            long hash1 = 0, hash2 = 0, accu1 = 1, accu2 = 1;
+
+            for (int i = 0; i < len; i++) {
+                hash1 *= base1;
+                hash1 += paths[0][i];
+                hash1 %= mod1;
+                accu1 *= base1;
+
+                hash2 *= base2;
+                hash2 += paths[0][i];
+                hash2 %= mod2;
+                accu2 *= base2;
+            }
+
+            {
+                Pair<Long, Long> hp = new Pair<>(hash1, hash2);
+                hs.add(hp);
+            }
+
+            for (int from = 1; from <= paths[0].length - len; from++) {
+                hash1 *= base1; // 123 -> 1230 -> 1230 - 1*1000 = 230
+                hash1 -= accu1 * paths[0][from - 1]; // 有可能为负数
+                hash1 = (hash1 % mod1 + mod1) % mod1;
+                hash1 += paths[0][from + len - 1]; // 230 -> 234
+                hash1 %= mod1;
+
+                hash2 *= base2;
+                hash2 -= accu2 * paths[0][from - 1];
+                hash2 = (hash2 % mod2 + mod2) % mod2;
+                hash2 += paths[0][from + len - 1];
+                hash2 %= mod2;
+
+                Pair<Long, Long> hp = new Pair<>(hash1, hash2);
+                hs.add(hp);
+            }
         }
 
+
         for (int i = 1; i < paths.length; i++) {
-            Set<Pair<Integer, Integer>> match = new HashSet<>();
-            for (int j = 0; j <= paths[i].length - len; j++) {
-                int hash1 = arrHash(paths[i], j, j + len - 1, mod, base1);
-                int hash2 = arrHash(paths[i], j, j + len - 1, mod, base2);
-                Pair<Integer, Integer> hp = new Pair<>(hash1, hash2);
-                if (hs.contains(hp)) {
-                    match.add(hp);
-                }
+            Set<Pair<Long, Long>> match = new HashSet<>();
+
+            long hash1 = 0, hash2 = 0, accu1 = 1, accu2 = 1;
+
+            for (int j = 0; j < len; j++) {
+                hash1 *= base1;
+                hash1 += paths[i][j];
+                hash1 %= mod1;
+                accu1 *= base1;
+
+                hash2 *= base2;
+                hash2 += paths[i][j];
+                hash2 %= mod2;
+                accu2 *= base2;
+            }
+
+            {
+                Pair<Long, Long> hp = new Pair<>(hash1, hash2);
+                if (hs.contains(hp)) match.add(hp);
+            }
+
+            for (int from = 1; from <= paths[i].length - len; from++) {
+                hash1 *= base1; // 123 -> 1230 -> 1230 - 1*1000 = 230
+                hash1 -= accu1 * paths[i][from - 1]; // 有可能为负数
+                hash1 = (hash1 % mod1 + mod1) % mod1;
+                hash1 += paths[i][from + len - 1]; // 230 -> 234
+                hash1 %= mod1;
+
+                hash2 *= base2;
+                hash2 -= accu2 * paths[i][from - 1];
+                hash2 = (hash2 % mod2 + mod2) % mod2;
+                hash2 += paths[i][from + len - 1];
+                hash2 %= mod2;
+
+                Pair<Long, Long> hp = new Pair<>(hash1, hash2);
+                if (hs.contains(hp)) match.add(hp);
             }
             if (match.size() == 0) return false;
             hs = match;
