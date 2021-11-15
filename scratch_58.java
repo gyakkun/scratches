@@ -13,6 +13,15 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LCP11 ** 概率
+    // https://leetcode-cn.com/problems/qi-wang-ge-shu-tong-ji/solution/qi-wang-ge-shu-tong-ji-qi-wang-ji-suan-yu-zheng-mi/
+    public int expectNumber(int[] scores) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int i : scores) {
+            freq.put(i, freq.getOrDefault(i, 0) + 1);
+        }
+        return freq.size();
+    }
 
     // LC1848
     public int getMinDistance(int[] nums, int target, int start) {
