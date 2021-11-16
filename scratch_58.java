@@ -14,6 +14,51 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // Interview 10.03 **
+    public int search(int[] arr, int target) {
+        if (arr[0] == target) return 0;
+        // 二分, 旋转后的升序数组
+        int n = arr.length;
+        int lo = 0, hi = n;
+        while (lo <= hi) { // 找目标值下标, 用小于等于
+            if (lo == hi && arr[lo] != target) return -1;
+            int mid = lo + (hi - lo) / 2;
+
+            // 如果找到目标值, 则一直往左找下标最小的
+            if (arr[mid] == target) {
+                while (mid - 1 >= 0 && arr[mid] == arr[mid - 1]) {
+                    mid--;
+                }
+                return mid;
+            }
+
+            // 如果mid和左侧相等, 则左边界右移
+            while (lo < mid && arr[lo] == arr[mid]) {
+                lo++;
+            }
+
+            // 如果mid和右侧相等, 则右边界左移
+            while (hi > mid && arr[hi] == arr[mid]) {
+                hi--;
+            }
+
+            if (arr[mid] >= arr[lo]) { // 左侧有序
+                if (arr[lo] <= target && target < arr[mid]) {
+                    hi = mid - 1;
+                } else {
+                    lo = mid + 1;
+                }
+            } else {
+                if (arr[mid] < target && target <= arr[hi]) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+
     // LC1456
     public int maxVowels(String s, int k) {
         char[] vowel = {'a', 'e', 'i', 'o', 'u'}, cs = s.toCharArray();
