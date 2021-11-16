@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import javafx.util.converter.NumberStringConverter;
 
 import java.util.*;
 
@@ -185,42 +184,69 @@ class Scratch {
     }
 
     // LC1192 ** Tarjan 算法 求无向图中的桥
-    List<List<Integer>> lc1192Mtx, lc1192Result;
-    int[] lc1192Low;
+    class Tarjan {
+        List<List<Integer>> mtx, result;
+        int[] low;
+        int[] id;
 
-    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
-        lc1192Low = new int[n];
-        Arrays.fill(lc1192Low, -1);
-        lc1192Mtx = new ArrayList<>();
-        lc1192Result = new ArrayList<>();
-        for (int i = 0; i < n; i++) lc1192Mtx.add(new ArrayList<>());
-        for (List<Integer> c : connections) {
-            int u = c.get(0), v = c.get(1);
-            lc1192Mtx.get(u).add(v);
-            lc1192Mtx.get(v).add(u);
+        public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+            buildMap(n, connections);
+            for (int i = 0; i < n; i++) { // 无向图不一定连通, 所以遍历所有搜索根
+                if (low[i] == -1) {
+                    // 先打时间戳
+                    int groupSize = timing(i, 0);
+                    // 然后Tarjan
+                    tarjan(i, -1, i);
+                }
+            }
+            return result;
         }
-        for (int i = 0; i < n; i++) { // 无向图不一定连通, 所以遍历所有搜索根
-            if (lc1192Low[i] == -1) {
-                tarjan(i, 0, -1, i);
+
+        private void buildMap(int n, List<List<Integer>> connections) {
+            low = new int[n];
+            id = new int[n];
+            Arrays.fill(low, -1);
+            Arrays.fill(id, -1);
+            mtx = new ArrayList<>();
+            result = new ArrayList<>();
+            for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+            for (List<Integer> c : connections) {
+                int u = c.get(0), v = c.get(1);
+                mtx.get(u).add(v);
+                mtx.get(v).add(u);
             }
         }
-        return lc1192Result;
-    }
 
-    private int tarjan(int cur, int timestamp, int parent, int root) {
-        lc1192Low[cur] = cur;
-        for (int next : lc1192Mtx.get(cur)) {
-            if (next == parent) continue; // 不经过父亲节点DFS
-            if (lc1192Low[next] == -1) {
-                lc1192Low[cur] = Math.min(lc1192Low[cur], tarjan(next, timestamp + 1, cur, root));
-                continue;
+        private int tarjan(int cur, int parent, int root) {
+            low[cur] = cur;
+            for (int next : mtx.get(cur)) {
+                if (next == parent) continue; // 不经过父亲节点DFS
+                if (low[next] == -1) {
+                    low[cur] = Math.min(low[cur], tarjan(next, cur, root));
+                    continue;
+                }
+                low[cur] = Math.min(low[cur], low[next]);
             }
-            lc1192Low[cur] = Math.min(lc1192Low[cur], lc1192Low[next]);
+
+            // 核心是: 如果该节点在不经过父节点的请苦况下, 能遍历到比父节点更早(时间戳更小)的节点, 则该节点到父节点的边
+            // 不是**桥**
+
+            if (low[cur] == id[cur] && cur != root) { // root - 即搜索根. 如果是搜索根, 更早的只有自己, parent是-1(或者一个无效值), 不能加进答案
+                result.add(Arrays.asList(cur, parent));
+            }
+            // 如果是求**割点**: 判断 low[cur] >= id[cur]
+            return low[cur];
         }
-        if (lc1192Low[cur] == cur && cur != root) { // 0 - 即搜索根
-            lc1192Result.add(Arrays.asList(cur, parent));
+
+        private int timing(int rootIdx, int timestamp) {
+            int count = 1;
+            id[rootIdx] = timestamp;
+            for (int next : mtx.get(rootIdx)) {
+                if (id[next] != -1) continue;
+                count += timing(next, timestamp + count);
+            }
+            return count;
         }
-        return lc1192Low[cur];
     }
 
     // LC1923 ** 滚动哈希 哈希碰撞 (emm)
