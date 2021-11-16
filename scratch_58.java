@@ -8,8 +8,9 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        Tarjan tarjan = new Tarjan();
 
-        System.out.println(s.rearrangeArray(new int[]{1, 2, 3, 4, 5}));
+        System.out.println(tarjan.criticalConnections(4, Arrays.asList(Arrays.asList(0, 1), Arrays.asList(1, 2), Arrays.asList(2, 0), Arrays.asList(1, 3))));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -183,71 +184,6 @@ class Scratch {
         return result;
     }
 
-    // LC1192 ** Tarjan 算法 求无向图中的桥
-    class Tarjan {
-        List<List<Integer>> mtx, result;
-        int[] low;
-        int[] id;
-
-        public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
-            buildMap(n, connections);
-            for (int i = 0; i < n; i++) { // 无向图不一定连通, 所以遍历所有搜索根
-                if (low[i] == -1) {
-                    // 先打时间戳
-                    int groupSize = timing(i, 0);
-                    // 然后Tarjan
-                    tarjan(i, -1, i);
-                }
-            }
-            return result;
-        }
-
-        private void buildMap(int n, List<List<Integer>> connections) {
-            low = new int[n];
-            id = new int[n];
-            Arrays.fill(low, -1);
-            Arrays.fill(id, -1);
-            mtx = new ArrayList<>();
-            result = new ArrayList<>();
-            for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
-            for (List<Integer> c : connections) {
-                int u = c.get(0), v = c.get(1);
-                mtx.get(u).add(v);
-                mtx.get(v).add(u);
-            }
-        }
-
-        private int tarjan(int cur, int parent, int root) {
-            low[cur] = cur;
-            for (int next : mtx.get(cur)) {
-                if (next == parent) continue; // 不经过父亲节点DFS
-                if (low[next] == -1) {
-                    low[cur] = Math.min(low[cur], tarjan(next, cur, root));
-                    continue;
-                }
-                low[cur] = Math.min(low[cur], low[next]);
-            }
-
-            // 核心是: 如果该节点在不经过父节点的请苦况下, 能遍历到比父节点更早(时间戳更小)的节点, 则该节点到父节点的边
-            // 不是**桥**
-
-            if (low[cur] == id[cur] && cur != root) { // root - 即搜索根. 如果是搜索根, 更早的只有自己, parent是-1(或者一个无效值), 不能加进答案
-                result.add(Arrays.asList(cur, parent));
-            }
-            // 如果是求**割点**: 判断 low[cur] >= id[cur]
-            return low[cur];
-        }
-
-        private int timing(int rootIdx, int timestamp) {
-            int count = 1;
-            id[rootIdx] = timestamp;
-            for (int next : mtx.get(rootIdx)) {
-                if (id[next] != -1) continue;
-                count += timing(next, timestamp + count);
-            }
-            return count;
-        }
-    }
 
     // LC1923 ** 滚动哈希 哈希碰撞 (emm)
     long base1 = (long) 1e6 + 7, base2 = 104729l;
@@ -2090,3 +2026,52 @@ class AuthenticationManager {
     }
 }
 
+// LC1192 ** Tarjan 算法 求无向图中的桥
+class Tarjan {
+    List<List<Integer>> mtx, result;
+    int[] low;
+    int[] timestamp;
+    int timing;
+
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        buildMap(n, connections);
+        for (int i = 0; i < n; i++) { // 无向图不一定连通, 所以遍历所有搜索根
+            if (low[i] == -1) {
+                timing = 0;
+                tarjan(i, i);
+            }
+        }
+        return result;
+    }
+
+    private int tarjan(int cur, int parent) {
+        low[cur] = timestamp[cur] = timing++;
+        for (int next : mtx.get(cur)) {
+            if (next == parent) continue;
+            if (timestamp[next] == -1) { // timestamp==-1 表示未访问
+                low[cur] = Math.min(tarjan(next, cur), low[cur]); // 不断取最小值
+            } else {
+                low[cur] = Math.min(low[next], low[cur]);
+            }
+        }
+        if (cur != parent && low[cur] > timestamp[parent]) {
+            result.add(Arrays.asList(parent, cur));
+        }
+        return low[cur];
+    }
+
+    private void buildMap(int n, List<List<Integer>> connections) {
+        low = new int[n];
+        timestamp = new int[n];
+        Arrays.fill(low, -1);
+        Arrays.fill(timestamp, -1);
+        mtx = new ArrayList<>();
+        result = new ArrayList<>();
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        for (List<Integer> c : connections) {
+            int u = c.get(0), v = c.get(1);
+            mtx.get(u).add(v);
+            mtx.get(v).add(u);
+        }
+    }
+}
