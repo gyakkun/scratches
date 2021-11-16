@@ -14,6 +14,18 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1935
+    public int canBeTypedWords(String text, String brokenLetters) {
+        int result = 0;
+        Set<Character> set = new HashSet<>();
+        for(char c:brokenLetters.toCharArray()) set.add(c);
+        outer: for (String w : text.split(" ")) {
+            for(char c:w.toCharArray()) if(set.contains(c)) continue outer;
+            result++;
+        }
+        return result;
+    }
+
     // LC1192 ** Tarjan 算法 求无向图中的桥
     List<List<Integer>> mtx, result;
     int[] low;
