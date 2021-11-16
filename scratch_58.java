@@ -10,7 +10,10 @@ class Scratch {
 
         Lc928 lc928 = new Lc928();
 
-        System.out.println(lc928.minMalwareSpread(new int[][]{{1, 1, 0, 0}, {1, 1, 0, 1}, {0, 0, 1, 0}, {0, 1, 0, 1}}, new int[]{3, 0}));
+        System.out.println(lc928.minMalwareSpread(
+                new int[][]
+                        {{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+                new int[]{1, 6, 35, 5, 27, 32}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -2145,194 +2148,58 @@ class TarjanVertex {
     }
 }
 
-// LC928 Try Tarjan WA
+// LC928 DFS^2
 class Lc928 {
-    DSUArray dsu;
+    List<List<Integer>> mtx;
     int n;
-    int[] groupSize, timestamp, low;
-    int[][] mtx;
-    Set<Integer> cutVertex = new HashSet<>();
-    Map<Integer, Set<Integer>> dsuRootVirusSetMap = new HashMap<>();
+    int minSpreadCount;
+    int result = -1;
 
-    public int minMalwareSpread(int[][] graph, int[] virusIdx) {  // 搜索根: initial
-        mtx = graph;
-        n = graph.length;
-        groupSize = new int[n];
-        timestamp = new int[n];
-        low = new int[n];
-        dsu = new DSUArray(n);
-        Arrays.fill(timestamp, -1);
-        Arrays.fill(low, -1);
-        for (int root : virusIdx) {
-            if (timestamp[root] != -1) {
-                int dsuRoot = dsu.find(root);
-                dsuRootVirusSetMap.get(dsuRoot).add(root);
-                continue;
+
+    public int minMalwareSpread(int[][] graph, int[] virus) {
+        Arrays.sort(virus);
+        build(graph);
+        minSpreadCount = n;
+        for (int i : virus) {
+            boolean[] visited = new boolean[n];
+            int spreadCount = 0; // 删去i 后的感染数量
+            Deque<Integer> stack = new LinkedList<>();
+            for (int v : virus) {
+                if (v == i) continue;
+                stack.push(v);
             }
-            timing(root, 0, dsu);
-            int dsuRoot = dsu.find(root);
-            dsuRootVirusSetMap.putIfAbsent(dsuRoot, new HashSet<>());
-            dsuRootVirusSetMap.get(dsuRoot).add(root);
-            tarjan(root, root);
+            while (!stack.isEmpty()) {
+                int p = stack.pop();
+                if (p == i) continue;
+                if (visited[p]) continue;
+                visited[p] = true;
+                spreadCount++;
+                for (int next : mtx.get(p)) {
+                    if (!visited[next] && next != i) {
+                        stack.push(next);
+                    }
+                }
+            }
+            if (spreadCount < minSpreadCount) {
+                result = i;
+                minSpreadCount = spreadCount;
+            }
         }
+        return result;
+    }
 
-        int maxSpreadCount = 0, result = 0;
-        Map<Integer, Set<Integer>> allGroups = dsu.getAllGroups();
-
-        for (int dsuRoot : dsuRootVirusSetMap.keySet()) {
-            if (dsuRootVirusSetMap.get(dsuRoot).size() == 1) {
-                int virusLocate = dsuRootVirusSetMap.get(dsuRoot).iterator().next();
-                int gs = allGroups.get(dsuRoot).size();
-                if (gs > maxSpreadCount) {
-                    result = virusLocate;
-                    maxSpreadCount = gs;
-                } else if (gs == maxSpreadCount && virusLocate < result) {
-                    result = virusLocate;
+    private void build(int[][] graph) {
+        n = graph.length;
+        mtx = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j && graph[i][j] == 1) {
+                    mtx.get(i).add(j);
                 }
             }
         }
-        if (cutVertex.size() == 0) return result;
-        for (int cv : cutVertex) {
-            if (groupSize[cv] > maxSpreadCount) {
-                result = cv;
-                maxSpreadCount = groupSize[cv];
-            } else if (groupSize[cv] == maxSpreadCount && cv < result) {
-                result = cv;
-            }
-        }
-        return result;
-    }
-
-
-    private void tarjan(int cur, int parent) {
-        int childCount = 0;
-        low[cur] = timestamp[cur];
-        for (int next = 0; next < n; next++) {
-            if (next == parent || next == cur) continue;
-            if (mtx[cur][next] != 1) continue;
-            if (low[next] == -1) {
-                childCount++;
-                tarjan(next, cur);
-            }
-            low[cur] = Math.min(low[cur], low[next]);
-            if (cur != parent && low[next] >= timestamp[cur]) {
-                cutVertex.add(cur);
-            }
-        }
-        if (cur == parent && childCount >= 2) {
-            cutVertex.add(cur);
-        }
-    }
-
-    private int timing(int root, int time, DSUArray dsu) {
-        dsu.add(root);
-        int count = 1;
-        timestamp[root] = time;
-        for (int next = 0; next < n; next++) {
-            if (mtx[root][next] != 1) continue;
-            if (timestamp[next] != -1) continue;
-            dsu.add(next);
-            dsu.merge(root, next);
-            count += timing(next, time + count, dsu);
-        }
-        return groupSize[root] = count;
-    }
-}
-
-class DSUArray {
-    int[] father;
-    int[] rank;
-    int size;
-
-    public DSUArray(int size) {
-        this.size = size;
-        father = new int[size];
-        rank = new int[size];
-        Arrays.fill(father, -1);
-        Arrays.fill(rank, -1);
-    }
-
-    public DSUArray() {
-        this.size = 1 << 16;
-        father = new int[1 << 16];
-        rank = new int[1 << 16];
-        Arrays.fill(father, -1);
-        Arrays.fill(rank, -1);
-    }
-
-    public void add(int i) {
-        if (i >= this.size || i < 0) return;
-        if (father[i] == -1) {
-            father[i] = i;
-        }
-        if (rank[i] == -1) {
-            rank[i] = 1;
-        }
-    }
-
-    public boolean contains(int i) {
-        if (i >= this.size || i < 0) return false;
-        return father[i] != -1;
-    }
-
-    public int find(int i) {
-        if (i >= this.size || i < 0) return -1;
-        int root = i;
-        while (root < size && root >= 0 && father[root] != root) {
-            root = father[root];
-        }
-        if (root == -1) return -1;
-        while (father[i] != root) {
-            int origFather = father[i];
-            father[i] = root;
-            i = origFather;
-        }
-        return root;
-    }
-
-    public boolean merge(int i, int j) {
-        if (i >= this.size || i < 0) return false;
-        if (j >= this.size || j < 0) return false;
-        int iFather = find(i);
-        int jFather = find(j);
-        if (iFather == -1 || jFather == -1) return false;
-        if (iFather == jFather) return false;
-
-        if (rank[iFather] >= rank[jFather]) {
-            father[jFather] = iFather;
-            rank[iFather] += rank[jFather];
-        } else {
-            father[iFather] = jFather;
-            rank[jFather] += rank[iFather];
-        }
-        return true;
-    }
-
-    public boolean isConnected(int i, int j) {
-        if (i >= this.size || i < 0) return false;
-        if (i >= this.size || i < 0) return false;
-        return find(i) == find(j);
-    }
-
-    public Map<Integer, Set<Integer>> getAllGroups() {
-        Map<Integer, Set<Integer>> result = new HashMap<>();
-        // 找出所有根
-        for (int i = 0; i < size; i++) {
-            if (father[i] != -1) {
-                int f = find(i);
-                result.putIfAbsent(f, new HashSet<>());
-                result.get(f).add(i);
-            }
-        }
-        return result;
-    }
-
-    public int getNumOfGroups() {
-        return getAllGroups().size();
-    }
-
-    public int getSelfGroupSize(int x) {
-        return rank[find(x)];
     }
 
 }
+
