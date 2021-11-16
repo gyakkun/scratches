@@ -14,13 +14,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1456
+    public int maxVowels(String s, int k) {
+        char[] vowel = {'a', 'e', 'i', 'o', 'u'}, cs = s.toCharArray();
+        Set<Character> vowelSet = new HashSet<>();
+        for (char c : vowel) vowelSet.add(c);
+        int ctr = 0;
+        int result = 0;
+        for (int i = 0; i < k; i++) if (vowelSet.contains(cs[i])) ctr++;
+        result = Math.max(result, ctr);
+        for (int i = k; i < cs.length; i++) {
+            if (vowelSet.contains(cs[i - k])) ctr--;
+            if (vowelSet.contains(cs[i])) ctr++;
+            result = Math.max(result, ctr);
+        }
+        return result;
+    }
+
     // LC1935
     public int canBeTypedWords(String text, String brokenLetters) {
         int result = 0;
         Set<Character> set = new HashSet<>();
-        for(char c:brokenLetters.toCharArray()) set.add(c);
-        outer: for (String w : text.split(" ")) {
-            for(char c:w.toCharArray()) if(set.contains(c)) continue outer;
+        for (char c : brokenLetters.toCharArray()) set.add(c);
+        outer:
+        for (String w : text.split(" ")) {
+            for (char c : w.toCharArray()) if (set.contains(c)) continue outer;
             result++;
         }
         return result;
