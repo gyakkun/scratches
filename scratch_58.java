@@ -14,6 +14,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1324
+    public List<String> printVertically(String s) {
+        String[] words = s.split(" ");
+        int maxLen = Arrays.stream(words).mapToInt(String::length).max().getAsInt();
+        List<String> result = new ArrayList<>(maxLen);
+        for (int i = 0; i < maxLen; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < words.length; j++) {
+                if (words[j].length() < (i + 1)) {
+                    sb.append(" ");
+                } else {
+                    sb.append(words[j].charAt(i));
+                }
+            }
+            while (sb.charAt(sb.length() - 1) == ' ') sb.deleteCharAt(sb.length() - 1);
+            result.add(sb.toString());
+        }
+        return result;
+    }
+
     // Interview 10.03 **
     public int search(int[] arr, int target) {
         if (arr[0] == target) return 0;
