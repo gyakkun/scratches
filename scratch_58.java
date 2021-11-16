@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -12,6 +14,29 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC2001
+    public long interchangeableRectangles(int[][] rectangles) {
+        Map<Pair<Integer, Integer>, Integer> freq = new HashMap<>();
+        for (int[] r : rectangles) {
+            int w = r[0], h = r[1];
+            int gcd = gcd(w, h);
+            w /= gcd;
+            h /= gcd;
+            Pair<Integer, Integer> p = new Pair<>(w, h);
+            freq.put(p, freq.getOrDefault(p, 0) + 1);
+        }
+        long result = 0;
+        for (Map.Entry<Pair<Integer, Integer>, Integer> e : freq.entrySet()) {
+            long f = e.getValue();
+            result += f * (f - 1l) / 2l;
+        }
+        return result;
+    }
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
     }
 
     // LC1324
