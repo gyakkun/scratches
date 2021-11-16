@@ -2044,20 +2044,18 @@ class Tarjan {
         return result;
     }
 
-    private int tarjan(int cur, int parent) {
+    private void tarjan(int cur, int parent) {
         low[cur] = timestamp[cur] = timing++;
         for (int next : mtx.get(cur)) {
             if (next == parent) continue;
             if (timestamp[next] == -1) { // timestamp==-1 表示未访问
-                low[cur] = Math.min(tarjan(next, cur), low[cur]); // 不断取最小值
-            } else {
-                low[cur] = Math.min(low[next], low[cur]);
+                tarjan(next, cur); // 不断取最小值
             }
+            low[cur] = Math.min(low[next], low[cur]);
         }
         if (cur != parent && low[cur] > timestamp[parent]) {
             result.add(Arrays.asList(parent, cur));
         }
-        return low[cur];
     }
 
     private void buildMap(int n, List<List<Integer>> connections) {
@@ -2067,6 +2065,59 @@ class Tarjan {
         Arrays.fill(timestamp, -1);
         mtx = new ArrayList<>();
         result = new ArrayList<>();
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        for (List<Integer> c : connections) {
+            int u = c.get(0), v = c.get(1);
+            mtx.get(u).add(v);
+            mtx.get(v).add(u);
+        }
+    }
+}
+
+class TarjanVertex {
+    List<List<Integer>> mtx;
+    Set<Integer> result;
+    int[] low;
+    int[] timestamp;
+    int timing;
+
+    public List<Integer> criticalConnections(int n, List<List<Integer>> connections) {
+        buildMap(n, connections);
+        for (int i = 0; i < n; i++) { // 无向图不一定连通, 所以遍历所有搜索根
+            if (low[i] == -1) {
+                timing = 0;
+                tarjan(i, i);
+            }
+        }
+        return new ArrayList<>(result);
+    }
+
+    private void tarjan(int cur, int parent) {
+        low[cur] = timestamp[cur] = timing++;
+        int childCount = 0;
+        for (int next : mtx.get(cur)) {
+            if (next == parent) continue;
+            if (timestamp[next] == -1) { // timestamp==-1 表示未访问
+                childCount++;
+                tarjan(next, cur);
+            }
+            low[cur] = Math.min(low[next], low[cur]);
+            if (parent != cur && low[next] >= timestamp[cur]) { // 大于等于(取到cur)是因为, 如果cur消失, next 就回不来了 cur 了 (因为消失了), 也更不可能到cur的祖先, 所以cur是割点
+                result.add(cur);
+            }
+        }
+        if (parent == cur && childCount >= 2) { // 是根, 且有超过两个孩子, 那把根删去, 连通分量就会增加, 根也是割点
+            result.add(cur);
+        }
+    }
+
+    private void buildMap(int n, List<List<Integer>> connections) {
+        low = new int[n];
+        timestamp = new int[n];
+        Arrays.fill(low, -1);
+        Arrays.fill(timestamp, -1);
+        mtx = new ArrayList<>();
+        result = new HashSet<>();
         for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
         for (List<Integer> c : connections) {
             int u = c.get(0), v = c.get(1);
