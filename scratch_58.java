@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import javafx.util.converter.NumberStringConverter;
 
 import java.util.*;
 
@@ -9,11 +10,53 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.longestCommonSubpath(10, new int[][]
-                {{1, 7, 0, 6, 9, 0, 7, 4, 3, 9, 1, 5, 0, 8, 0, 6, 3, 6, 0, 8, 3, 7, 8, 3, 5, 3, 7, 4, 0, 6, 8, 1, 4}, {1, 7, 0, 6, 9, 0, 7, 4, 3, 9, 1, 5, 0, 8, 0, 6, 3, 6, 0, 8, 3, 7, 8, 3, 5, 3, 7, 4, 0, 6, 8, 1, 5}, {8, 1, 7, 0, 6, 9, 0, 7, 4, 3, 9, 1, 5, 0, 8, 0, 6, 3, 6, 0, 8, 3, 7, 8, 3, 5, 3, 7, 4, 0, 6, 8, 1}}));
+        System.out.println(s.rearrangeArray(new int[]{1, 2, 3, 4, 5}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1968
+    public int[] rearrangeArray(int[] nums) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        BitSet visited = new BitSet(n);
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            visited.set(i);
+            result[0] = nums[i];
+            if (helper(1, result, nums, visited)) return result;
+            visited.set(i, false);
+        }
+        return null;
+    }
+
+    private boolean helper(int curIdx, int[] result, int[] nums, BitSet visited) {
+        if (curIdx == result.length) return true;
+        if (curIdx == 1) {
+            for (int i = 0; i < nums.length; i++) {
+                int idx = (curIdx - 1 + i + nums.length) % nums.length;
+                if (!visited.get(idx)) {
+                    result[1] = nums[idx];
+                    visited.set(idx);
+                    if (helper(2, result, nums, visited)) return true;
+                    visited.set(idx, false);
+                }
+            }
+        } else {
+            int delta = result[curIdx - 1] - result[curIdx - 2];
+            int notExpect = result[curIdx - 1] + delta;
+            for (int i = 0; i < nums.length; i++) {
+                int idx = (curIdx - 1 + i + nums.length) % nums.length;
+                if (nums[idx] != notExpect && !visited.get(idx)) {
+                    result[curIdx] = nums[idx];
+                    visited.set(idx);
+                    if (helper(curIdx + 1, result, nums, visited)) return true;
+                    visited.set(idx, false);
+                }
+            }
+        }
+        return false;
     }
 
     // LC1196
@@ -142,42 +185,42 @@ class Scratch {
     }
 
     // LC1192 ** Tarjan 算法 求无向图中的桥
-    List<List<Integer>> mtx, result;
-    int[] low;
+    List<List<Integer>> lc1192Mtx, lc1192Result;
+    int[] lc1192Low;
 
     public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
-        low = new int[n];
-        Arrays.fill(low, -1);
-        mtx = new ArrayList<>();
-        result = new ArrayList<>();
-        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        lc1192Low = new int[n];
+        Arrays.fill(lc1192Low, -1);
+        lc1192Mtx = new ArrayList<>();
+        lc1192Result = new ArrayList<>();
+        for (int i = 0; i < n; i++) lc1192Mtx.add(new ArrayList<>());
         for (List<Integer> c : connections) {
             int u = c.get(0), v = c.get(1);
-            mtx.get(u).add(v);
-            mtx.get(v).add(u);
+            lc1192Mtx.get(u).add(v);
+            lc1192Mtx.get(v).add(u);
         }
         for (int i = 0; i < n; i++) { // 无向图不一定连通, 所以遍历所有搜索根
-            if (low[i] == -1) {
+            if (lc1192Low[i] == -1) {
                 tarjan(i, 0, -1, i);
             }
         }
-        return result;
+        return lc1192Result;
     }
 
     private int tarjan(int cur, int timestamp, int parent, int root) {
-        low[cur] = cur;
-        for (int next : mtx.get(cur)) {
+        lc1192Low[cur] = cur;
+        for (int next : lc1192Mtx.get(cur)) {
             if (next == parent) continue; // 不经过父亲节点DFS
-            if (low[next] == -1) {
-                low[cur] = Math.min(low[cur], tarjan(next, timestamp + 1, cur, root));
+            if (lc1192Low[next] == -1) {
+                lc1192Low[cur] = Math.min(lc1192Low[cur], tarjan(next, timestamp + 1, cur, root));
                 continue;
             }
-            low[cur] = Math.min(low[cur], low[next]);
+            lc1192Low[cur] = Math.min(lc1192Low[cur], lc1192Low[next]);
         }
-        if (low[cur] == cur && cur != root) { // 0 - 即搜索根
-            result.add(Arrays.asList(cur, parent));
+        if (lc1192Low[cur] == cur && cur != root) { // 0 - 即搜索根
+            lc1192Result.add(Arrays.asList(cur, parent));
         }
-        return low[cur];
+        return lc1192Low[cur];
     }
 
     // LC1923 ** 滚动哈希 哈希碰撞 (emm)
@@ -242,10 +285,10 @@ class Scratch {
                 prefix[i + 1][j + 1] = (mtx[i][j] == 'A' ? 1 : 0) + prefix[i + 1][j] + prefix[i][j + 1] - prefix[i][j];
             }
         }
-        return helper(0, 0, 0, k, prefix[m][n], prefix);
+        return lc1444Helper(0, 0, 0, k, prefix[m][n], prefix);
     }
 
-    private int helper(int fromRow, int fromCol, int cuts, int peopleLeft, int applesRemain, int[][] prefix) {
+    private int lc1444Helper(int fromRow, int fromCol, int cuts, int peopleLeft, int applesRemain, int[][] prefix) {
         if (applesRemain < peopleLeft) return 0;
         int m = prefix.length - 1, n = prefix[0].length - 1;
         if (peopleLeft == 1 && applesRemain >= 1) {
@@ -264,13 +307,13 @@ class Scratch {
             if (applesRemain - appleCount < peopleLeft - 1) break;
 
             // 都没问题才进入下一步
-            result += helper(i + 1, fromCol, cuts + 1, peopleLeft - 1, applesRemain - appleCount, prefix);
+            result += lc1444Helper(i + 1, fromCol, cuts + 1, peopleLeft - 1, applesRemain - appleCount, prefix);
         }
         for (int j = fromCol; j < n; j++) {
             int appleCount = prefix[m][j + 1] - prefix[fromRow][j + 1] - prefix[m][fromCol] + prefix[fromRow][fromCol];
             if (appleCount < 1) continue;
             if (applesRemain - appleCount < peopleLeft - 1) break;
-            result += helper(fromRow, j + 1, cuts + 1, peopleLeft - 1, applesRemain - appleCount, prefix);
+            result += lc1444Helper(fromRow, j + 1, cuts + 1, peopleLeft - 1, applesRemain - appleCount, prefix);
         }
         return memo[fromRow][fromCol][cuts] = (int) (result % mod);
     }
