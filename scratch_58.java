@@ -16,6 +16,13 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1196
+    public int maxNumberOfApples(int[] weight) {
+        Arrays.sort(weight);
+        for (int i = 0, total = 0; i < weight.length; i++) if ((total += weight[i]) > 5000) return i;
+        return weight.length;
+    }
+
     // LC2001
     public long interchangeableRectangles(int[][] rectangles) {
         Map<Pair<Integer, Integer>, Integer> freq = new HashMap<>();
