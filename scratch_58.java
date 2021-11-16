@@ -20,27 +20,27 @@ class Scratch {
     public int[] rearrangeArray(int[] nums) {
         Arrays.sort(nums);
         int n = nums.length;
-        BitSet visited = new BitSet(n);
+        boolean[] visited = new boolean[n];
         int[] result = new int[n];
         for (int i = 0; i < n; i++) {
-            visited.set(i);
+            visited[i] = true;
             result[0] = nums[i];
             if (helper(1, result, nums, visited)) return result;
-            visited.set(i, false);
+            visited[i] = false;
         }
         return null;
     }
 
-    private boolean helper(int curIdx, int[] result, int[] nums, BitSet visited) {
+    private boolean helper(int curIdx, int[] result, int[] nums, boolean[] visited) {
         if (curIdx == result.length) return true;
         if (curIdx == 1) {
             for (int i = 0; i < nums.length; i++) {
                 int idx = (curIdx - 1 + i + nums.length) % nums.length;
-                if (!visited.get(idx)) {
+                if (!visited[idx]) {
                     result[1] = nums[idx];
-                    visited.set(idx);
+                    visited[idx] = true;
                     if (helper(2, result, nums, visited)) return true;
-                    visited.set(idx, false);
+                    visited[idx] = false;
                 }
             }
         } else {
@@ -48,11 +48,11 @@ class Scratch {
             int notExpect = result[curIdx - 1] + delta;
             for (int i = 0; i < nums.length; i++) {
                 int idx = (curIdx - 1 + i + nums.length) % nums.length;
-                if (nums[idx] != notExpect && !visited.get(idx)) {
+                if (nums[idx] != notExpect && !visited[idx]) {
                     result[curIdx] = nums[idx];
-                    visited.set(idx);
+                    visited[idx] = true;
                     if (helper(curIdx + 1, result, nums, visited)) return true;
-                    visited.set(idx, false);
+                    visited[idx] = false;
                 }
             }
         }
