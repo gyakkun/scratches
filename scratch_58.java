@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.apache.activemq.broker.region.policy.LastImageSubscriptionRecoveryPolicy;
 
 import java.util.*;
 
@@ -14,6 +15,23 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZOF II 016 LC3
+    public int lengthOfLongestSubstring(String s) {
+        char[] ca = s.toCharArray();
+        int n = ca.length, result = 0;
+        int[] lastAppear = new int[256];
+        Arrays.fill(lastAppear, -1);
+        for (int left = 0, right = 0; right < n; ) {
+            while (right < n && lastAppear[ca[right]] < left) {
+                lastAppear[ca[right]] = right;
+                right++;
+            }
+            result = Math.max(result, right - left);
+            left++;
+        }
+        return result;
     }
 
     // LC1968
