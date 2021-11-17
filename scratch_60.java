@@ -20,7 +20,7 @@ class Scratch {
         char[] ca = expression.toCharArray();
         int idx = 0, n = ca.length;
         while (idx < n) {
-            int sign = ca[idx] == '+' ? 1 : -1;
+            long sign = ca[idx] == '+' ? 1l : -1l;
             idx++;
             int numLeft = idx;
             while ((idx + 1) < n && ca[idx + 1] != '/') idx++;
