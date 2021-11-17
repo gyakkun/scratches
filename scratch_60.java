@@ -13,6 +13,36 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC624
+    public int maxDistance(List<List<Integer>> arrays) {
+        int result = -1;
+        TreeMap<Integer, Integer> maxFreqMap = new TreeMap<>(Comparator.reverseOrder());
+        TreeMap<Integer, Integer> minFreqMap = new TreeMap<>();
+        for (List<Integer> a : arrays) {
+            int min = a.get(0), max = a.get(a.size() - 1);
+            maxFreqMap.put(max, maxFreqMap.getOrDefault(max, 0) + 1);
+            minFreqMap.put(min, maxFreqMap.getOrDefault(min, 0) + 1);
+        }
+        for (List<Integer> a : arrays) {
+            int min = a.get(0), max = a.get(a.size() - 1);
+            Iterator<Map.Entry<Integer, Integer>> maxIterator = maxFreqMap.entrySet().iterator();
+            Iterator<Map.Entry<Integer, Integer>> minIterator = minFreqMap.entrySet().iterator();
+            while (maxIterator.hasNext()) {
+                Map.Entry<Integer, Integer> e = maxIterator.next();
+                if (e.getKey() == max && e.getValue() == 1) continue;
+                result = Math.max(result, Math.abs(min - e.getKey()));
+                break;
+            }
+            while (minIterator.hasNext()) {
+                Map.Entry<Integer, Integer> e = minIterator.next();
+                if (e.getKey() == min && e.getValue() == 1) continue;
+                result = Math.max(result, Math.abs(max - e.getKey()));
+                break;
+            }
+        }
+        return result;
+    }
+
     // LC841
     public boolean canVisitAllRooms(List<List<Integer>> rooms) {
         int n = rooms.size(), ctr = 0;
