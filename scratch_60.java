@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import java.util.*;
 
 class Scratch {
@@ -11,6 +9,33 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC508
+    public int[] findFrequentTreeSum(TreeNode root) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        lc508Helper(root, freq);
+        List<Integer> result = new ArrayList<>();
+        int maxFreq = 0;
+        for (Map.Entry<Integer, Integer> e : freq.entrySet()) {
+            if (e.getValue() > maxFreq) {
+                maxFreq = e.getValue();
+                result.clear();
+                result.add(e.getKey());
+            } else if (e.getValue() == maxFreq) {
+                result.add(e.getKey());
+            }
+        }
+        return result.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
+    private int lc508Helper(TreeNode root, Map<Integer, Integer> freq) {
+        if (root == null) return 0;
+        int left = lc508Helper(root.left, freq);
+        int right = lc508Helper(root.right, freq);
+        int sum = root.val + left + right;
+        freq.put(sum, freq.getOrDefault(sum, 0) + 1);
+        return sum;
     }
 
     // LC624
@@ -203,5 +228,15 @@ class Lc928Tarjan {
                 }
             }
         }
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(int x) {
+        val = x;
     }
 }
