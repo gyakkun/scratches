@@ -11,6 +11,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC113
+    List<List<Integer>> lc113Result;
+
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        lc113Result = new ArrayList<>();
+        lc113Helper(root, targetSum, new ArrayList<>());
+        return lc113Result;
+    }
+
+    private void lc113Helper(TreeNode root, int target, List<Integer> path) {
+        if (root == null) return;
+        path.add(root.val);
+        if (root.left == null && root.right == null && target - root.val == 0) {
+            lc113Result.add(new ArrayList<>(path));
+        }
+        lc113Helper(root.left, target - root.val, path);
+        lc113Helper(root.right, target - root.val, path);
+        path.remove(path.size() - 1);
+    }
+
     // LC666
     int lc666Result = 0;
     Integer[] lc666Vals = new Integer[1 << 5];
