@@ -13,6 +13,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC841
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        int n = rooms.size();
+        Deque<Integer> stack = new LinkedList<>();
+        stack.push(0);
+        boolean[] visited = new boolean[n];
+        while (!stack.isEmpty()) {
+            int p = stack.pop();
+            if (visited[p]) continue;
+            visited[p] = true;
+            for (int next : rooms.get(p)) {
+                if (!visited[next]) stack.push(next);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) return false;
+        }
+        return true;
+    }
+
     // LC592
     public String fractionAddition(String expression) {
         long num = 0l, den = 1l; // 初始化 0/1
