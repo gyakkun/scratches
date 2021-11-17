@@ -15,22 +15,20 @@ class Scratch {
 
     // LC841
     public boolean canVisitAllRooms(List<List<Integer>> rooms) {
-        int n = rooms.size();
+        int n = rooms.size(), ctr = 0;
         Deque<Integer> stack = new LinkedList<>();
         stack.push(0);
         boolean[] visited = new boolean[n];
         while (!stack.isEmpty()) {
             int p = stack.pop();
             if (visited[p]) continue;
+            ctr++;
             visited[p] = true;
             for (int next : rooms.get(p)) {
                 if (!visited[next]) stack.push(next);
             }
         }
-        for (int i = 0; i < n; i++) {
-            if (!visited[i]) return false;
-        }
-        return true;
+        return ctr == n;
     }
 
     // LC592
