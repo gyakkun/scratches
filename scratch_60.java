@@ -11,6 +11,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC124
+    int lc124Result = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        lc124Helper(root);
+        return lc124Result;
+    }
+
+    private int lc124Helper(TreeNode root) {
+        if (root == null) return 0;
+        int left = lc124Helper(root.left);
+        int right = lc124Helper(root.right);
+        int val = root.val;
+        int thisNode = val + Math.max(0, left) + Math.max(0, right);
+        lc124Result = Math.max(lc124Result, thisNode);
+        return Math.max(val, Math.max(val + left, val + right));
+    }
+
     // LC113
     List<List<Integer>> lc113Result;
 
