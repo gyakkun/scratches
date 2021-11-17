@@ -5,11 +5,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println();
+        System.out.println(s.pathSum(new int[]{113, 215, 221}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC666
+    int lc666Result = 0;
+    Integer[] lc666Vals = new Integer[1 << 5];
+
+    public int pathSum(int[] nums) {
+        for (int i : nums) {
+            int level = ((i / 100) % 10) - 1; // zero-based
+            int ith = ((i / 10) % 10) - 1; // zero-based
+            int id = (1 << level) - 1 + ith;
+            lc666Vals[id] = i % 10;
+        }
+        lc666Helper(0, 0);
+        return lc666Result;
+    }
+
+    private void lc666Helper(int id, int sum) {
+        if (id >= (1 << 5)) return;
+        if (lc666Vals[id] == null) return;
+        sum += lc666Vals[id];
+        if (lc666Vals[id * 2 + 1] == null && lc666Vals[id * 2 + 2] == null) {
+            lc666Result += lc666Vals[id];
+        } else {
+            lc666Helper(id * 2 + 1, sum);
+            lc666Helper(id * 2 + 2, sum);
+        }
+    }
+
 
     // LC508
     public int[] findFrequentTreeSum(TreeNode root) {
