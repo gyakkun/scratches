@@ -5,10 +5,25 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.pathSum(new int[]{113, 215, 221}));
+        System.out.println(s.minimumSwap(
+                "xxyyxyxyxx",
+                "xyyxyxxxyx"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1247 **
+    public int minimumSwap(String s1, String s2) {
+        char[] ca1 = s1.toCharArray(), ca2 = s2.toCharArray();
+        int x = 0, y = 0;
+        for (int i = 0; i < ca1.length; i++) {
+            if (ca1[i] == ca2[i]) continue;
+            if (ca1[i] == 'x') x++;
+            else y++;
+        }
+        if ((x + y) % 2 == 1) return -1;
+        return x / 2 + y / 2 + x % 2 + y % 2;
     }
 
     // LC1409 ** 树状数组解法
