@@ -15,30 +15,15 @@ class Scratch {
 
     // LC624
     public int maxDistance(List<List<Integer>> arrays) {
-        int result = -1;
-        TreeMap<Integer, Integer> maxFreqMap = new TreeMap<>(Comparator.reverseOrder());
-        TreeMap<Integer, Integer> minFreqMap = new TreeMap<>();
-        for (List<Integer> a : arrays) {
-            int min = a.get(0), max = a.get(a.size() - 1);
-            maxFreqMap.put(max, maxFreqMap.getOrDefault(max, 0) + 1);
-            minFreqMap.put(min, maxFreqMap.getOrDefault(min, 0) + 1);
-        }
-        for (List<Integer> a : arrays) {
-            int min = a.get(0), max = a.get(a.size() - 1);
-            Iterator<Map.Entry<Integer, Integer>> maxIterator = maxFreqMap.entrySet().iterator();
-            Iterator<Map.Entry<Integer, Integer>> minIterator = minFreqMap.entrySet().iterator();
-            while (maxIterator.hasNext()) {
-                Map.Entry<Integer, Integer> e = maxIterator.next();
-                if (e.getKey() == max && e.getValue() == 1) continue;
-                result = Math.max(result, Math.abs(min - e.getKey()));
-                break;
-            }
-            while (minIterator.hasNext()) {
-                Map.Entry<Integer, Integer> e = minIterator.next();
-                if (e.getKey() == min && e.getValue() == 1) continue;
-                result = Math.max(result, Math.abs(max - e.getKey()));
-                break;
-            }
+        int n = arrays.size(), result = -1;
+        int min = arrays.get(0).get(0), max = arrays.get(0).get(arrays.get(0).size() - 1);
+        for (int i = 1; i < n; i++) {
+            List<Integer> a = arrays.get(i);
+            int curMin = a.get(0), curMax = a.get(a.size() - 1);
+            result = Math.max(result, Math.abs(curMax - min));
+            result = Math.max(result, Math.abs(max - curMin));
+            min = Math.min(min, curMin);
+            max = Math.max(max, curMax);
         }
         return result;
     }
