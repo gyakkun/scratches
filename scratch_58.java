@@ -2142,18 +2142,16 @@ class TarjanVertex {
     }
 }
 
-// LC928 DFS^2
+// LC928 DFS^2 , LC924
 class Lc928 {
     List<List<Integer>> mtx;
     int n;
-    int minSpreadCount;
+    int minSpreadCount = Integer.MAX_VALUE;
     int result = -1;
-
 
     public int minMalwareSpread(int[][] graph, int[] virus) {
         Arrays.sort(virus);
         build(graph);
-        minSpreadCount = n;
         for (int i : virus) {
             boolean[] visited = new boolean[n];
             int spreadCount = 0; // 删去i 后的感染数量
@@ -2164,67 +2162,12 @@ class Lc928 {
             }
             while (!stack.isEmpty()) {
                 int p = stack.pop();
-                if (p == i) continue;
+                if (p == i) continue; // LC924 删掉这行
                 if (visited[p]) continue;
                 visited[p] = true;
                 spreadCount++;
                 for (int next : mtx.get(p)) {
-                    if (!visited[next] && next != i) {
-                        stack.push(next);
-                    }
-                }
-            }
-            if (spreadCount < minSpreadCount) {
-                result = i;
-                minSpreadCount = spreadCount;
-            }
-        }
-        return result;
-    }
-
-    private void build(int[][] graph) {
-        n = graph.length;
-        mtx = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i != j && graph[i][j] == 1) {
-                    mtx.get(i).add(j);
-                }
-            }
-        }
-    }
-
-}
-
-// LC928 Try Tarjan
-class Lc928Tarjan {
-    int[] low, timestamp, groupSize, spreadSize;
-    List<List<Integer>> mtx;
-    int n;
-    int minSpreadCount;
-    int result = -1;
-
-    public int minMalwareSpread(int[][] graph, int[] virus) {
-        Arrays.sort(virus);
-        build(graph);
-        minSpreadCount = n;
-        for (int i : virus) {
-            boolean[] visited = new boolean[n];
-            int spreadCount = 0; // 删去i 后的感染数量
-            Deque<Integer> stack = new LinkedList<>();
-            for (int v : virus) {
-                if (v == i) continue;
-                stack.push(v);
-            }
-            while (!stack.isEmpty()) {
-                int p = stack.pop();
-                if (p == i) continue;
-                if (visited[p]) continue;
-                visited[p] = true;
-                spreadCount++;
-                for (int next : mtx.get(p)) {
-                    if (!visited[next] && next != i) {
+                    if (!visited[next] && next != i) {  // LC924 去掉&&后面的条件
                         stack.push(next);
                     }
                 }
