@@ -11,6 +11,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC437 **
+    Map<Integer, Integer> lc437Prefix;
+
+    public int pathSumIii(TreeNode root, int targetSum) {
+        lc437Prefix = new HashMap<>();
+        lc437Prefix.put(0, 1); // root, sum=0
+        return lc437Helper(root, 0, targetSum);
+    }
+
+    private int lc437Helper(TreeNode root, int cur, int target) {
+        if (root == null) return 0;
+        cur += root.val;
+        int result = lc437Prefix.getOrDefault(cur - target, 0);
+        lc437Prefix.put(cur, lc437Prefix.getOrDefault(cur, 0) + 1);
+        result += lc437Helper(root.left, cur, target);
+        result += lc437Helper(root.right, cur, target);
+        lc437Prefix.put(cur, lc437Prefix.get(cur) - 1);
+        return result;
+    }
+
     // LC124
     int lc124Result = Integer.MIN_VALUE;
 
