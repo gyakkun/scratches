@@ -11,6 +11,47 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1666 ** 理解翻转规则
+    class Lc1666 {
+        // 你可以按照下列步骤修改从 leaf到 root的路径中除 root 外的每个节点 cur：
+        // 如果cur有左子节点，则该子节点变为cur的右子节点。
+        // cur的原父节点变为cur的左子节点。
+        //
+        public Node flipBinaryTree(Node root, Node leaf) {
+            return helper(leaf);
+        }
+
+        private Node helper(Node cur) {
+            if (cur == null) return null;
+            Node parent = cur.parent;
+            //断开当前节点和父节点的联系
+            if (parent != null) {
+                if (cur == parent.left) {
+                    parent.left = null;
+                } else {
+                    parent.right = null;
+                }
+                cur.parent = null;
+            }
+            helper(parent);
+            if (parent != null) {
+                if (cur.left != null) {
+                    cur.right = cur.left;
+                }
+                cur.left = parent;
+                parent.parent = cur;
+            }
+            return cur;
+        }
+
+        class Node {
+            public int val;
+            public Node left;
+            public Node right;
+            public Node parent;
+        }
+    }
+
     // LC437 **
     Map<Integer, Integer> lc437Prefix;
 
