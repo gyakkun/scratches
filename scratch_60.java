@@ -11,6 +11,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1409 ** 树状数组解法
+    public int[] processQueries(int[] queries, int m) {
+        int n = queries.length;
+        BIT bit = new BIT(m + n + 1);
+        int[] pos = new int[m + 1];
+        for (int i = 1; i <= m; i++) {
+            pos[i] = n + i;
+            bit.set(n + i, 1);
+        }
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            int cur = pos[queries[i]];
+            bit.set(cur, 0);
+            result[i] = bit.sumRange(0, cur - 1);
+            cur = n - i;
+            pos[queries[i]] = cur;
+            bit.set(cur, 1);
+        }
+        return result;
+    }
+
     // LC1666 ** 理解翻转规则
     class Lc1666 {
         // 你可以按照下列步骤修改从 leaf到 root的路径中除 root 外的每个节点 cur：
@@ -365,5 +386,64 @@ class TreeNode {
 
     TreeNode(int x) {
         val = x;
+    }
+}
+
+class BIT {
+    int len;
+    int[] tree;
+
+    public BIT(int n) {
+        len = n;
+        tree = new int[n + 1];
+    }
+
+    public BIT(int[] arr) {
+        len = arr.length;
+        tree = new int[len + 1];
+
+        for (int i = 0; i < len; i++) {
+            int one = i + 1;
+            tree[one] += arr[i];
+            int nextOne = one + lowbit(one);
+            if (nextOne <= len) tree[nextOne] += tree[one];
+        }
+    }
+
+    public void set(int zero, int val) {
+        int delta = val - get(zero);
+        update(zero, delta);
+    }
+
+    public void update(int zero, int delta) {
+        updateOne(zero + 1, delta);
+    }
+
+    public int sumRange(int left, int right) {
+        return sumOne(right + 1) - sumOne(left);
+    }
+
+    public int get(int zero) {
+        return sumOne(zero + 1) - sumOne(zero);
+    }
+
+    public int sumOne(int one) {
+        int result = 0;
+        while (one > 0) {
+            result += tree[one];
+            one -= lowbit(one);
+        }
+        return result;
+    }
+
+    public void updateOne(int one, int delta) {
+        while (one <= len) {
+            tree[one] += delta;
+            one += lowbit(one);
+        }
+    }
+
+    private int lowbit(int x) {
+        return x & (-x);
     }
 }
