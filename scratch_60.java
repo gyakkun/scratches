@@ -13,6 +13,23 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC563
+    int lc563Result = 0;
+
+    public int findTilt(TreeNode root) {
+        lc563Helper(root);
+        return lc563Result;
+    }
+
+    public int lc563Helper(TreeNode root) {
+        if (root == null) return 0;
+        int left = lc563Helper(root.left);
+        int right = lc563Helper(root.right);
+        int sum = root.val + left + right;
+        lc563Result += Math.abs(left - right);
+        return sum;
+    }
+
     // LC1247 **
     public int minimumSwap(String s1, String s2) {
         char[] ca1 = s1.toCharArray(), ca2 = s2.toCharArray();
