@@ -13,6 +13,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1826
+    public int badSensor(int[] sensor1, int[] sensor2) {
+        int idx = 0, n = sensor1.length;
+        while (idx < n && sensor1[idx] == sensor2[idx]) idx++;
+        if (idx == n || idx == n - 1) return -1;
+        // 考虑是sensor1 异常还是sensor2异常
+
+        // 如果sensor1 异常
+        int tmpIdx1 = idx;
+        while (tmpIdx1 + 1 < n && sensor1[tmpIdx1] == sensor2[tmpIdx1 + 1]) tmpIdx1++;
+
+
+        // 如果sensor2 异常
+        int tmpIdx2 = idx;
+        while (tmpIdx2 + 1 < n && sensor1[tmpIdx2 + 1] == sensor2[tmpIdx2]) tmpIdx2++;
+
+        if (tmpIdx1 == n - 1 && tmpIdx2 == n - 1) return -1;
+        if (tmpIdx1 == n - 1) return 1;
+        return 2;
+    }
+
     // LC1542 ** 非常巧妙
     public int longestAwesome(String s) {
         Integer[] memo = new Integer[1 << 10];
