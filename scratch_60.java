@@ -13,6 +13,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1971
+    public boolean validPath(int n, int[][] edges, int start, int end) {
+        List<List<Integer>> mtx = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        for (int[] e : edges) {
+            mtx.get(e[0]).add(e[1]);
+            mtx.get(e[1]).add(e[0]);
+        }
+        boolean[] visited = new boolean[n];
+        Deque<Integer> stack = new LinkedList<>();
+        stack.push(start);
+        while (!stack.isEmpty()) {
+            int p = stack.pop();
+            if (visited[p]) continue;
+            if (p == end) return true;
+            visited[p] = true;
+            for (int next : mtx.get(p)) {
+                if (!visited[next]) stack.push(next);
+            }
+        }
+        return false;
+    }
+
     // LC1433
     public boolean checkIfCanBreak(String s1, String s2) {
         int[] freq1 = new int[26], freq2 = new int[26];
