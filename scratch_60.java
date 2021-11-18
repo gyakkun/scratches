@@ -13,6 +13,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1313
+    public int[] decompressRLElist(int[] nums) {
+        List<Integer> result = new ArrayList<>();
+        int n = nums.length;
+        int limit = n / 2;
+        for (int i = 0; i < limit; i++) {
+            int freq = nums[2 * i], val = nums[2 * i + 1];
+            for (int j = 0; j < freq; j++) {
+                result.add(val);
+            }
+        }
+        return result.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
     // LC1971
     public boolean validPath(int n, int[][] edges, int start, int end) {
         List<List<Integer>> mtx = new ArrayList<>(n);
