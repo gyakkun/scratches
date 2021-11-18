@@ -13,30 +13,58 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1542 ** 非常巧妙
+    public int longestAwesome(String s) {
+        Integer[] memo = new Integer[1 << 10];
+        memo[0] = -1;
+        char[] ca = s.toCharArray();
+        int result = 1;
+        int n = ca.length;
+        int mask = 0;
+        for (int i = 0; i < n; i++) {
+            mask ^= (1 << (ca[i] - '0'));
+            // 上一次出现的同频状态 (同频: 指的是各数字频率奇偶性相同)
+            if (memo[mask] != null) {
+                result = Math.max(result, i - memo[mask]);
+            } else {
+                memo[mask] = i;
+            }
+
+            // 允许有其中一个数字的频率奇偶性与上次不一样
+            for (int j = 0; j < 10; j++) {
+                int oddMask = mask ^ (1 << j);
+                if (memo[oddMask] != null) {
+                    result = Math.max(result, i - memo[oddMask]);
+                }
+            }
+        }
+        return result;
+    }
+
     // LC1986
-    Integer[][] memo = new Integer[1 << 15][16];
+    Integer[][] lc1986Memo = new Integer[1 << 15][16];
 
     public int minSessions(int[] tasks, int sessionTime) {
         int n = tasks.length;
         int fullMask = (1 << n) - 1;
 
-        return helper(0, tasks, sessionTime, sessionTime, fullMask);
+        return lc1986Helper(0, tasks, sessionTime, sessionTime, fullMask);
     }
 
     // 返回最小任务格数
-    private int helper(int mask, int[] tasks, int remainTime, int sessionTime, int fullMask) {
+    private int lc1986Helper(int mask, int[] tasks, int remainTime, int sessionTime, int fullMask) {
         if (mask == fullMask) return 1;
-        if (memo[mask][remainTime] != null) return memo[mask][remainTime];
+        if (lc1986Memo[mask][remainTime] != null) return lc1986Memo[mask][remainTime];
         int result = Integer.MAX_VALUE;
         for (int i = 0; i < tasks.length; i++) {
             if (((mask >> i) & 1) == 1) continue; // 当前任务已经完成
             if (remainTime - tasks[i] >= 0) {
-                result = Math.min(result, helper(mask | (1 << i), tasks, remainTime - tasks[i], sessionTime, fullMask));
+                result = Math.min(result, lc1986Helper(mask | (1 << i), tasks, remainTime - tasks[i], sessionTime, fullMask));
             } else {
-                result = Math.min(result, 1 + helper(mask, tasks, sessionTime, sessionTime, fullMask));
+                result = Math.min(result, 1 + lc1986Helper(mask, tasks, sessionTime, sessionTime, fullMask));
             }
         }
-        return memo[mask][remainTime] = result;
+        return lc1986Memo[mask][remainTime] = result;
     }
 
     // LC563
