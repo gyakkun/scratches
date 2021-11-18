@@ -13,6 +13,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1986
+    Integer[][] memo = new Integer[1 << 15][16];
+
+    public int minSessions(int[] tasks, int sessionTime) {
+        int n = tasks.length;
+        int fullMask = (1 << n) - 1;
+
+        return helper(0, tasks, sessionTime, sessionTime, fullMask);
+    }
+
+    // 返回最小任务格数
+    private int helper(int mask, int[] tasks, int remainTime, int sessionTime, int fullMask) {
+        if (mask == fullMask) return 1;
+        if (memo[mask][remainTime] != null) return memo[mask][remainTime];
+        int result = Integer.MAX_VALUE;
+        for (int i = 0; i < tasks.length; i++) {
+            if (((mask >> i) & 1) == 1) continue; // 当前任务已经完成
+            if (remainTime - tasks[i] >= 0) {
+                result = Math.min(result, helper(mask | (1 << i), tasks, remainTime - tasks[i], sessionTime, fullMask));
+            } else {
+                result = Math.min(result, 1 + helper(mask, tasks, sessionTime, sessionTime, fullMask));
+            }
+        }
+        return memo[mask][remainTime] = result;
+    }
+
     // LC563
     int lc563Result = 0;
 
