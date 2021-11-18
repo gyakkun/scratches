@@ -13,6 +13,78 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1433
+    public boolean checkIfCanBreak(String s1, String s2) {
+        int[] freq1 = new int[26], freq2 = new int[26];
+        char[] ca1 = s1.toCharArray(), ca2 = s2.toCharArray();
+        int n = ca1.length;
+        for (int i = 0; i < n; i++) {
+            freq1[ca1[i] - 'a']++;
+            freq2[ca2[i] - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            int min = Math.min(freq1[i], freq2[i]);
+            freq1[i] -= min;
+            freq2[i] -= min;
+        }
+        int[] origFreq1 = Arrays.copyOf(freq1, 26);
+        int[] origFreq2 = Arrays.copyOf(freq2, 26);
+
+        // 预处理完之后, freq 的同一个位置只能是一正 一零, 或者两个0
+        // 对于正数的位置, 如freq2[b] 的位置为正, 现在假设s1压制s2, 则从freq1[c....z] 的位置借数, 贪心地从小开始借, 直到能够把freq2[b]的正对冲掉
+        // 如果对冲不掉, 则s1压制s2失败
+
+        // 如果s1压制s2
+        boolean s1BreakS2 = true;
+        for (int i = 0; i < 26; i++) {
+            if (freq1[i] == 0 && freq2[i] == 0) continue;
+
+            if (freq2[i] > 0) {
+                int count = freq2[i];
+                for (int j = i + 1; j < 26; j++) {
+                    if (freq1[j] > 0) {
+                        int min = Math.min(count, freq1[j]);
+                        count -= min;
+                        freq1[j] -= min;
+                        if (count == 0) break;
+                    }
+                }
+                if (count > 0) {
+                    s1BreakS2 = false;
+                    break;
+                }
+            }
+        }
+        if (s1BreakS2) return true;
+
+        freq1 = Arrays.copyOf(origFreq1, 26);
+        freq2 = Arrays.copyOf(origFreq2, 26);
+
+        boolean s2BreakS1 = true;
+        for (int i = 0; i < 26; i++) {
+            if (freq1[i] == 0 && freq2[i] == 0) continue;
+
+            if (freq1[i] > 0) {
+                int count = freq1[i];
+                for (int j = i + 1; j < 26; j++) {
+                    if (freq2[j] > 0) {
+                        int min = Math.min(count, freq2[j]);
+                        count -= min;
+                        freq2[j] -= min;
+                        if (count == 0) break;
+                    }
+                }
+                if (count > 0) {
+                    s2BreakS1 = false;
+                    break;
+                }
+            }
+        }
+        if (s2BreakS1) return true;
+
+        return false;
+    }
+
     // LC910 ** 学习贪心思路
     public int smallestRangeII(int[] nums, int k) {
         int n = nums.length;
