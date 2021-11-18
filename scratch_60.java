@@ -13,6 +13,20 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC910 ** 学习贪心思路
+    public int smallestRangeII(int[] nums, int k) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        int result = nums[n - 1] - nums[0];
+        for (int i = 0; i < n - 1; i++) {
+            int a = nums[i], b = nums[i + 1];
+            int hi = Math.max(a + k, nums[n - 1] - k);
+            int lo = Math.min(nums[0] + k, b - k);
+            result = Math.min(result, hi - lo);
+        }
+        return result;
+    }
+
     // LC1826
     public int badSensor(int[] sensor1, int[] sensor2) {
         int idx = 0, n = sensor1.length;
