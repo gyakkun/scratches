@@ -11,6 +11,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC366
+    public List<List<Integer>> findLeaves(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        while (!(root.left == null && root.right == null)) {
+            List<Integer> tmp = new ArrayList<>();
+            helper(root, tmp);
+            result.add(tmp);
+        }
+        result.add(Arrays.asList(root.val));
+        return result;
+    }
+
+    private void helper(TreeNode node, List<Integer> tmp) {
+        if (node == null) return;
+        if (node.left != null) {
+            if (node.left.left == null && node.left.right == null) {
+                tmp.add(node.left.val);
+                node.left = null;
+            } else {
+                helper(node.left, tmp);
+            }
+        }
+        if (node.right != null) {
+            if (node.right.left == null && node.right.right == null) {
+                tmp.add(node.right.val);
+                node.right = null;
+            } else {
+                helper(node.right, tmp);
+            }
+        }
+    }
+
     // LC796
     public boolean rotateString(String s, String goal) {
         if (s.length() != goal.length()) return false;
