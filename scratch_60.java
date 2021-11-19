@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import java.util.*;
 
 class Scratch {
@@ -11,6 +9,16 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC796
+    public boolean rotateString(String s, String goal) {
+        if (s.length() != goal.length()) return false;
+        if (s.equals(goal)) return true;
+        for (int i = 1; i < s.length(); i++) {
+            if ((s.substring(i) + s.substring(0, i)).equals(goal)) return true;
+        }
+        return false;
     }
 
     // LC1945
@@ -32,35 +40,35 @@ class Scratch {
     }
 
     // LC964 **
-    Map<Integer, Integer> memo;
+    Map<Integer, Integer> lc964Memo;
 
     public int leastOpsExpressTarget(int x, int target) {
         if (x == target) return 0;
-        memo = new HashMap<>();
-        return helper(target, 1, x);
+        lc964Memo = new HashMap<>();
+        return lc964Helper(target, 1, x);
     }
 
-    private int helper(int target, int power, int x) {
+    private int lc964Helper(int target, int power, int x) {
         if (target < x) {
             return Math.min(2 * target - 1, 2 * (x - target));
             // t:2, x:3 :   3/3 + 3/3   or  3 - 3/3
             // t:1, x:3 :   3/3         or  3 - 3/3 - 3/3
         }
-        if (memo.containsKey(target)) return memo.get(target);
+        if (lc964Memo.containsKey(target)) return lc964Memo.get(target);
         int result = Integer.MAX_VALUE / 2;
         long nextSum = (long) Math.pow(x, power + 1);
         if (nextSum == target) {
-            memo.put(target, 1);
+            lc964Memo.put(target, 1);
             return 1; // 多一个乘号
         }
         if (nextSum < target) {
-            result = Math.min(result, 1 + helper(target, power + 1, x)); // 加这个乘号, 继续往下递归
+            result = Math.min(result, 1 + lc964Helper(target, power + 1, x)); // 加这个乘号, 继续往下递归
         } else if (nextSum > target) {
             // 是正着取还是反着取
             // 如target=90, x=10, power=1, nextSum = 100, nextSum>target
             // 正着取: next target = 90 - 10 = 80, power reset to 1
             // 即 + 10,加一个加号, 然后剩下的80交给递归
-            result = Math.min(result, 1 + helper(target - (int) Math.pow(x, power), 1, x)); // 加一个加号
+            result = Math.min(result, 1 + lc964Helper(target - (int) Math.pow(x, power), 1, x)); // 加一个加号
 
             // next target: 100 - 90 = 10, 变成 + 100 - 10 , power reset to 1
             // 即 ... * 10 - (...), 后面括号部分交给递归
@@ -71,10 +79,10 @@ class Scratch {
                 // 所以这里先行判断, 避免爆栈
                 // 又比如 x=10, power=1, target = 50,此时正取+10...+10 共消耗5个符号, 反取 *10 - 10 -10 -10... 共消耗 6个符号
                 // 所以边界使 nextSum - target < target, 取不到等号
-                result = Math.min(result, 2 + helper((int) (nextSum - target), 1, x)); // 加一个乘号, 一个减号
+                result = Math.min(result, 2 + lc964Helper((int) (nextSum - target), 1, x)); // 加一个乘号, 一个减号
             }
         }
-        memo.put(target, result);
+        lc964Memo.put(target, result);
         return result;
     }
 
