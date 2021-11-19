@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 class Scratch {
@@ -11,50 +13,50 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC964 TLE 相当于穷举
-    final int PLUS = 0, MINUS = 1, MULTIPLY = 2, DIVIDE = 3;
+    // LC964 **
+    Map<Integer, Integer> memo;
 
     public int leastOpsExpressTarget(int x, int target) {
         if (x == target) return 0;
-        if (target == 0) return 1;
-        int result = target * 2 - 1;
-        for (int i = 0; i < 4; i++) {
-            result = Math.min(result, helper(x, x, i, target, 0, result));
-        }
-        return result;
+        memo = new HashMap<>();
+        return helper(target, 1, x);
     }
 
-    private int helper(int x, int currentBlock, int op, int remain, int cur, int bound) {
-        if (cur > bound) return Integer.MAX_VALUE / 2;
-        if (remain - currentBlock == 0) return 0;
-        if (remain == 1) return 2;
-        if (remain == x) return 1;
-        if (remain < 0) return Integer.MAX_VALUE / 2;
-        if (currentBlock > 1e6) return Integer.MAX_VALUE / 2;
-        if (currentBlock < -1e6) return Integer.MAX_VALUE / 2;
-        int result = bound;
-        // 加号和减号会断块, 乘号和除号不会
-        switch (op) {
-            case PLUS:
-                remain -= currentBlock;
-                currentBlock = x;
-                break;
-            case MINUS:
-                remain -= currentBlock;
-                currentBlock = -x;
-                break;
-            case MULTIPLY:
-                currentBlock *= x;
-                break;
-            case DIVIDE:
-                currentBlock /= x;
-                break;
+    private int helper(int target, int power, int x) {
+        if (target < x) {
+            return Math.min(2 * target - 1, 2 * (x - target));
+            // t:2, x:3 :   3/3 + 3/3   or  3 - 3/3
+            // t:1, x:3 :   3/3         or  3 - 3/3 - 3/3
         }
+        if (memo.containsKey(target)) return memo.get(target);
+        int result = Integer.MAX_VALUE / 2;
+        long nextSum = (long) Math.pow(x, power + 1);
+        if (nextSum == target) {
+            memo.put(target, 1);
+            return 1; // 多一个乘号
+        }
+        if (nextSum < target) {
+            result = Math.min(result, 1 + helper(target, power + 1, x)); // 加这个乘号, 继续往下递归
+        } else if (nextSum > target) {
+            // 是正着取还是反着取
+            // 如target=90, x=10, power=1, nextSum = 100, nextSum>target
+            // 正着取: next target = 90 - 10 = 80, power reset to 1
+            // 即 + 10,加一个加号, 然后剩下的80交给递归
+            result = Math.min(result, 1 + helper(target - (int) Math.pow(x, power), 1, x)); // 加一个加号
 
-        if (remain == 0) return 0;
-        for (int i = 0; i < 4; i++) {
-            result = Math.min(result, 1 + helper(x, currentBlock, i, remain, cur + 1, result));
+            // next target: 100 - 90 = 10, 变成 + 100 - 10 , power reset to 1
+            // 即 ... * 10 - (...), 后面括号部分交给递归
+            if (nextSum - target < target) {
+                // 反着取: 100 - 90 < 90, 为什么这样判断? 防只爆栈的依据是?
+                // 考虑 x=10, power = 1, target = 40, 100 - 40 > 40, 这时候反着取需要100-6*10, 即 * 10 - 10 - 10..., 共消耗7个符号
+                // 而正着取显然只消耗4个符号。 正着取总是可行的, 然而反着取可能会使递归规模无限扩大
+                // 所以这里先行判断, 避免爆栈
+                // 又比如 x=10, power=1, target = 50,此时正取+10...+10 共消耗5个符号, 反取 *10 - 10 -10 -10... 共消耗 6个符号
+                // 所以边界使 nextSum - target < target, 取不到等号
+                result = Math.min(result, 2 + helper((int) (nextSum - target), 1, x)); // 加一个乘号, 一个减号
+            }
         }
+        memo.put(target, result);
         return result;
     }
 
