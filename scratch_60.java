@@ -5,10 +5,38 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.getLucky("iiii", 1));
+        System.out.println(s.maxSum(new int[]{2, 4, 5, 8, 10}, new int[]{4, 6, 8, 9}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1537
+    Long[][] memo;
+    int[][] nums;
+    Map<Integer, Integer>[] rm;
+
+    public int maxSum(int[] nums0, int[] nums1) {
+        rm = new Map[2];
+        rm[0] = new HashMap<>();
+        rm[1] = new HashMap<>();
+        for (int i = 0; i < nums0.length; i++) rm[0].put(nums0[i], i);
+        for (int i = 0; i < nums1.length; i++) rm[1].put(nums1[i], i);
+        nums = new int[][]{nums0, nums1};
+        memo = new Long[2][Math.max(nums0.length, nums1.length) + 1];
+        return (int) (Math.max(helper(0, 0), helper(1, 0)) % 1000000007l);
+    }
+
+    private long helper(int whichArr, int curIdx) {
+        int[] arr = nums[whichArr];
+        if (curIdx == arr.length) return 0;
+        if (memo[whichArr][curIdx] != null) return memo[whichArr][curIdx];
+        long result = Integer.MIN_VALUE / 2;
+        result = Math.max(result, (long) arr[curIdx] + helper(whichArr, curIdx + 1));
+        if (rm[1 - whichArr].containsKey(arr[curIdx])) {
+            result = Math.max(result, (long) arr[curIdx] + helper(1 - whichArr, rm[1 - whichArr].get(arr[curIdx]) + 1));
+        }
+        return memo[whichArr][curIdx] = result;
     }
 
     // LC1541 **
@@ -520,6 +548,7 @@ class Scratch {
             public Node right;
             public Node parent;
         }
+
     }
 
     // LC437 **
