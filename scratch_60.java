@@ -7,10 +7,28 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.leastOpsExpressTarget(15, 8));
+        System.out.println(s.getLucky("iiii", 1));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1945
+    public int getLucky(String s, int k) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            sb.append((int) (1 + c - 'a'));
+        }
+        String digitStr = sb.toString();
+        int sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum = 0;
+            for (char c : digitStr.toCharArray()) {
+                sum += (c - '0');
+            }
+            digitStr = String.valueOf(sum);
+        }
+        return sum;
     }
 
     // LC964 **
@@ -47,7 +65,7 @@ class Scratch {
             // next target: 100 - 90 = 10, 变成 + 100 - 10 , power reset to 1
             // 即 ... * 10 - (...), 后面括号部分交给递归
             if (nextSum - target < target) {
-                // 反着取: 100 - 90 < 90, 为什么这样判断? 防只爆栈的依据是?
+                // 反着取: 100 - 90 < 90, 为什么这样判断? 防止爆栈的依据是?
                 // 考虑 x=10, power = 1, target = 40, 100 - 40 > 40, 这时候反着取需要100-6*10, 即 * 10 - 10 - 10..., 共消耗7个符号
                 // 而正着取显然只消耗4个符号。 正着取总是可行的, 然而反着取可能会使递归规模无限扩大
                 // 所以这里先行判断, 避免爆栈
