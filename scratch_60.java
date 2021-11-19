@@ -5,10 +5,57 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.integerReplacement(Integer.MAX_VALUE));
+        System.out.println(s.leastOpsExpressTarget(15, 8));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC964 TLE 相当于穷举
+    final int PLUS = 0, MINUS = 1, MULTIPLY = 2, DIVIDE = 3;
+
+    public int leastOpsExpressTarget(int x, int target) {
+        if (x == target) return 0;
+        if (target == 0) return 1;
+        int result = target * 2 - 1;
+        for (int i = 0; i < 4; i++) {
+            result = Math.min(result, helper(x, x, i, target, 0, result));
+        }
+        return result;
+    }
+
+    private int helper(int x, int currentBlock, int op, int remain, int cur, int bound) {
+        if (cur > bound) return Integer.MAX_VALUE / 2;
+        if (remain - currentBlock == 0) return 0;
+        if (remain == 1) return 2;
+        if (remain == x) return 1;
+        if (remain < 0) return Integer.MAX_VALUE / 2;
+        if (currentBlock > 1e6) return Integer.MAX_VALUE / 2;
+        if (currentBlock < -1e6) return Integer.MAX_VALUE / 2;
+        int result = bound;
+        // 加号和减号会断块, 乘号和除号不会
+        switch (op) {
+            case PLUS:
+                remain -= currentBlock;
+                currentBlock = x;
+                break;
+            case MINUS:
+                remain -= currentBlock;
+                currentBlock = -x;
+                break;
+            case MULTIPLY:
+                currentBlock *= x;
+                break;
+            case DIVIDE:
+                currentBlock /= x;
+                break;
+        }
+
+        if (remain == 0) return 0;
+        for (int i = 0; i < 4; i++) {
+            result = Math.min(result, 1 + helper(x, currentBlock, i, remain, cur + 1, result));
+        }
+        return result;
     }
 
     // LC1612
