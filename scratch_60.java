@@ -5,12 +5,19 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minimumSwap(
-                "xxyyxyxyxx",
-                "xyyxyxxxyx"));
+        System.out.println(s.integerReplacement(Integer.MAX_VALUE));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC397
+    public int integerReplacement(int n) {
+        if (n == Integer.MAX_VALUE) return 32; // 下面奇数那一步会溢出, 为了不升精度, 干脆特判
+        if (n == 0) return Integer.MAX_VALUE / 2;
+        if (n == 1) return 0;
+        if (n % 2 == 1) return 1 + Math.min(integerReplacement(n + 1), integerReplacement(n - 1));
+        return 1 + integerReplacement(n / 2);
     }
 
     // LC1313
