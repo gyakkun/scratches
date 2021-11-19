@@ -11,6 +11,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1171
+    ListNode victim = null;
+
+    public ListNode removeZeroSumSublists(ListNode head) {
+        victim = head;
+        while (handle(victim)) {
+            ;
+        }
+        return victim;
+    }
+
+    private boolean handle(ListNode head) {
+        ListNode dummy = new ListNode(0);
+        Map<Integer, ListNode> prefixSumNodeMap = new HashMap<>();
+        dummy.next = head;
+        ListNode it = dummy;
+        int sum = 0;
+        while (it != null) {
+            sum += it.val;
+            if (prefixSumNodeMap.containsKey(sum)) {
+                ListNode prev = prefixSumNodeMap.get(sum);
+                prev.next = it.next;
+                victim = dummy.next;
+                return true;
+            }
+            prefixSumNodeMap.put(sum, it);
+            it = it.next;
+        }
+        victim = dummy.next;
+        return false;
+    }
+
     // LC397
     public int integerReplacement(int n) {
         if (n == Integer.MAX_VALUE) return 32; // 下面奇数那一步会溢出, 为了不升精度, 干脆特判
@@ -682,5 +714,22 @@ class BIT {
 
     private int lowbit(int x) {
         return x & (-x);
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
