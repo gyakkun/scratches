@@ -11,6 +11,49 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1612
+    class Lc1612 {
+        public boolean checkEquivalence(Node root1, Node root2) {
+            int[] freq1 = new int[26], freq2 = new int[26];
+            eval(root1, freq1);
+            eval(root2, freq2);
+            for (int i = 0; i < 26; i++) {
+                if (freq1[i] != freq2[i]) return false;
+            }
+            return true;
+        }
+
+        private void eval(Node root, int[] freq) {
+            if (root == null) return;
+            if (root.val == '+') {
+                eval(root.left, freq);
+                eval(root.right, freq);
+                return;
+            }
+            freq[root.val - 'a']++;
+        }
+
+        class Node {
+            char val;
+            Node left;
+            Node right;
+
+            Node() {
+                this.val = ' ';
+            }
+
+            Node(char val) {
+                this.val = val;
+            }
+
+            Node(char val, Node left, Node right) {
+                this.val = val;
+                this.left = left;
+                this.right = right;
+            }
+        }
+    }
+
     // LC1171
     ListNode victim = null;
 
