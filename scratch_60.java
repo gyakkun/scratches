@@ -11,26 +11,56 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1541 **
+    public int minInsertions(String s) {
+        // 平衡条件:
+        //   一个'('配两个')'
+        //   '(' 配的两个')' 必须在对应的'(' 后面
+        // 插入任意'(',')' 使得s平衡
+        // 返回最少插入次数
+        int left = 0, result = 0, idx = 0, n = s.length();
+        while (idx < n) {
+            if (s.charAt(idx) == '(') {
+                left++;
+                idx++;
+            } else if (s.charAt(idx) == ')') {
+                if (left > 0) {
+                    left--;
+                } else {
+                    result++;
+                }
+                if (idx + 1 < n && s.charAt(idx + 1) == ')') {
+                    idx += 2;
+                } else {
+                    result++;
+                    idx++;
+                }
+            }
+        }
+        result += left * 2;
+        return result;
+    }
+
     // LC366
     public List<List<Integer>> findLeaves(TreeNode root) {
         List<List<Integer>> result = new ArrayList<>();
         while (!(root.left == null && root.right == null)) {
             List<Integer> tmp = new ArrayList<>();
-            helper(root, tmp);
+            lc366Helper(root, tmp);
             result.add(tmp);
         }
         result.add(Arrays.asList(root.val));
         return result;
     }
 
-    private void helper(TreeNode node, List<Integer> tmp) {
+    private void lc366Helper(TreeNode node, List<Integer> tmp) {
         if (node == null) return;
         if (node.left != null) {
             if (node.left.left == null && node.left.right == null) {
                 tmp.add(node.left.val);
                 node.left = null;
             } else {
-                helper(node.left, tmp);
+                lc366Helper(node.left, tmp);
             }
         }
         if (node.right != null) {
@@ -38,7 +68,7 @@ class Scratch {
                 tmp.add(node.right.val);
                 node.right = null;
             } else {
-                helper(node.right, tmp);
+                lc366Helper(node.right, tmp);
             }
         }
     }
