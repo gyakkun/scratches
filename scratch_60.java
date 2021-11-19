@@ -5,38 +5,71 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxSum(new int[]{2, 4, 5, 8, 10}, new int[]{4, 6, 8, 9}));
+        System.out.println(s.minOperations(new int[][]{{2, 4}, {6, 8}}, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2033
+    public int minOperations(int[][] grid, int x) {
+        int mod = grid[0][0] % x, m = grid.length, n = grid[0].length, max = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] % x != mod) return -1;
+                max = Math.max(grid[i][j], max);
+            }
+        }
+        int[] freq = new int[max + 1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                freq[grid[i][j]]++;
+            }
+        }
+        int result = Integer.MAX_VALUE / 2;
+        for (int i = 1; i <= max; i++) {
+            if (freq[i] != 0) {
+                int tmp = 0;
+                // 以 i 为基准
+                // 左边要加多少次
+                for (int j = 1; j < i; j++) {
+                    tmp += freq[j] * ((i - j) / x);
+                }
+                for (int j = i + 1; j <= max; j++) {
+                    tmp += freq[j] * ((j - i) / x);
+                }
+                result = Math.min(result, tmp);
+            }
+        }
+        return result;
+    }
+
     // LC1537
-    Long[][] memo;
-    int[][] nums;
-    Map<Integer, Integer>[] rm;
+    Long[][] lc1537Memo;
+    int[][] lc1537Nums;
+    Map<Integer, Integer>[] lc1537Rm;
 
     public int maxSum(int[] nums0, int[] nums1) {
-        rm = new Map[2];
-        rm[0] = new HashMap<>();
-        rm[1] = new HashMap<>();
-        for (int i = 0; i < nums0.length; i++) rm[0].put(nums0[i], i);
-        for (int i = 0; i < nums1.length; i++) rm[1].put(nums1[i], i);
-        nums = new int[][]{nums0, nums1};
-        memo = new Long[2][Math.max(nums0.length, nums1.length) + 1];
+        lc1537Rm = new Map[2];
+        lc1537Rm[0] = new HashMap<>();
+        lc1537Rm[1] = new HashMap<>();
+        for (int i = 0; i < nums0.length; i++) lc1537Rm[0].put(nums0[i], i);
+        for (int i = 0; i < nums1.length; i++) lc1537Rm[1].put(nums1[i], i);
+        lc1537Nums = new int[][]{nums0, nums1};
+        lc1537Memo = new Long[2][Math.max(nums0.length, nums1.length) + 1];
         return (int) (Math.max(helper(0, 0), helper(1, 0)) % 1000000007l);
     }
 
     private long helper(int whichArr, int curIdx) {
-        int[] arr = nums[whichArr];
+        int[] arr = lc1537Nums[whichArr];
         if (curIdx == arr.length) return 0;
-        if (memo[whichArr][curIdx] != null) return memo[whichArr][curIdx];
+        if (lc1537Memo[whichArr][curIdx] != null) return lc1537Memo[whichArr][curIdx];
         long result = Integer.MIN_VALUE / 2;
         result = Math.max(result, (long) arr[curIdx] + helper(whichArr, curIdx + 1));
-        if (rm[1 - whichArr].containsKey(arr[curIdx])) {
-            result = Math.max(result, (long) arr[curIdx] + helper(1 - whichArr, rm[1 - whichArr].get(arr[curIdx]) + 1));
+        if (lc1537Rm[1 - whichArr].containsKey(arr[curIdx])) {
+            result = Math.max(result, (long) arr[curIdx] + helper(1 - whichArr, lc1537Rm[1 - whichArr].get(arr[curIdx]) + 1));
         }
-        return memo[whichArr][curIdx] = result;
+        return lc1537Memo[whichArr][curIdx] = result;
     }
 
     // LC1541 **
