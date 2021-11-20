@@ -11,6 +11,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC594
+    public int findLHS(int[] nums) {
+        Arrays.sort(nums);
+        int prevLen = 0, prev = -1, result = 0, idx = 0, n = nums.length;
+        boolean init = false;
+        while (idx < n) {
+            int cur = nums[idx];
+            int left = idx;
+            while (idx + 1 < n && nums[idx + 1] == nums[idx]) idx++;
+            int right = idx;
+            int len = right - left + 1;
+            if (init && cur - prev == 1) result = Math.max(result, len + prevLen);
+            init = true;
+            prevLen = len;
+            prev = cur;
+            idx++;
+        }
+        return result;
+    }
+
     // LC2033
     public int minOperations(int[][] grid, int x) {
         int mod = grid[0][0] % x, m = grid.length, n = grid[0].length, max = 0;
