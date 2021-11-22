@@ -13,6 +13,26 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1852
+    public int[] distinctNumbers(int[] nums, int k) {
+        int[] result = new int[nums.length - k + 1];
+        int[] freq = new int[100001];
+        int typeCount = 0;
+        for (int i = 0; i < k; i++) {
+            if (freq[nums[i]] == 0) typeCount++;
+            freq[nums[i]]++;
+        }
+        result[0] = typeCount;
+        for (int i = k; i < nums.length; i++) {
+            if (freq[nums[i - k]] == 1) typeCount--;
+            freq[nums[i - k]]--;
+            if (freq[nums[i]] == 0) typeCount++;
+            freq[nums[i]]++;
+            result[i - k + 1] = typeCount;
+        }
+        return result;
+    }
+
     // LC1183 **
     public int maximumNumberOfOnes(int width, int height, int sideLength, int maxOnes) {
         PriorityQueue<Integer> pq = new PriorityQueue<>(); // pq存的是 如果 左上角sideLen x sideLen 区域的某一个点放'1'后, 其在整个矩阵的相应不冲突位置可以放1的总个数
