@@ -11,6 +11,32 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1474
+    public ListNode deleteNodes(ListNode head, int m, int n) {
+        if (head == null) return null;
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode cur = dummy;
+        int idx = 0;
+        while (idx < m && cur != null) {
+            cur = cur.next;
+            idx++;
+        }
+        if (cur == null) return dummy.next;
+        ListNode partOneLast = cur;
+        idx = 0;
+        while (idx < n && cur != null) {
+            cur = cur.next;
+            idx++;
+        }
+        if (cur == null) {
+            partOneLast.next = null;
+            return dummy.next;
+        }
+        partOneLast.next = deleteNodes(cur.next, m, n);
+        return dummy.next;
+    }
+
     // LCP29 **
     public int orchestraLayout(int num, int xPos, int yPos) {
         // 找[x,y]是第几个位置 (mod9意义下)
