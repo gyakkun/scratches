@@ -11,6 +11,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2065 TBD
+    int maxValue = 0;
+
+    public int maximalPathQuality(int[] values, int[][] edges, int maxTime) {
+        int n = values.length;
+        List<List<int[]>> mtx = new ArrayList<>();
+        int[] freq = new int[n];
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        for (int[] e : edges) {
+            mtx.get(e[0]).add(new int[]{e[1], e[2]});
+            mtx.get(e[1]).add(new int[]{e[0], e[2]});
+        }
+        if (mtx.get(0).size() == 0) return values[0];
+
+        return -1;
+    }
+
+    private void helper(){}
+
     // LC1474
     public ListNode deleteNodes(ListNode head, int m, int n) {
         if (head == null) return null;
