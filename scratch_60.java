@@ -5,13 +5,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maxStudents(
-                new char[][]{{'.', '.', '.', '.', '#', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '#', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '#', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '#', '.', '.', '#', '.'}}
-        ));
+        System.out.println(s.orchestraLayout(3, 0, 2));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LCP29 **
+    public int orchestraLayout(int num, int xPos, int yPos) {
+        // 找[x,y]是第几个位置 (mod9意义下)
+        // 找第几圈
+        long round = Math.min(Math.min(xPos, num - 1 - xPos), Math.min(yPos, num - 1 - yPos));
+        long seq = 4 * (num - round) * round;
+        long sideLen = num - 2 * round - 1, xInit = round, yInit = round;
+
+        if (xPos == xInit && yPos < yInit + sideLen) {
+            seq += ((long) yPos + 1 - yInit);
+        } else {
+            seq += sideLen;
+            if (yPos == yInit + sideLen && xPos < xInit + sideLen) {
+                seq += ((long) xPos + 1 - xInit);
+            } else {
+                seq += sideLen;
+                if (xPos == xInit + sideLen && yPos > yInit) {
+                    seq += (yInit + sideLen + 1 - yPos);
+                } else {
+                    seq += (sideLen + xInit + sideLen + 1 - xPos);
+                }
+            }
+        }
+        seq %= 9;
+        return (int) (seq == 0 ? 9 : seq);
+    }
+
 
     // LC1852
     public int[] distinctNumbers(int[] nums, int k) {
