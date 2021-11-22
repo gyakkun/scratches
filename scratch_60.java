@@ -13,8 +13,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1130 ** 区间DP
+    Integer[][] memo = new Integer[41][41];
+
+    public int mctFromLeafValues(int[] arr) {
+        return helper(0, arr.length - 1, arr);
+    }
+
+    private int helper(int start, int end, int[] arr) {
+        if (start == end) return 0;
+        if (memo[start][end] != null) return memo[start][end];
+        int result = Integer.MAX_VALUE;
+        for (int i = start; i < end; i++) {
+            // first max
+            int firstMax = arr[start];
+            for (int j = start; j <= i; j++) {
+                firstMax = Math.max(arr[j], firstMax);
+            }
+            int secondMax = arr[i + 1];
+            for (int j = i + 1; j <= end; j++) {
+                secondMax = Math.max(arr[j], secondMax);
+            }
+            result = Math.min(result, firstMax * secondMax + helper(start, i, arr) + helper(i + 1, end, arr));
+        }
+        return memo[start][end] = result;
+    }
+
     // LC1349
-    Integer[][] memo = new Integer[9][1 << 8];
+    Integer[][] lc1349Memo = new Integer[9][1 << 8];
 
     public int maxStudents(char[][] seats) {
         int m = seats.length, n = seats[0].length;
@@ -28,40 +54,41 @@ class Scratch {
             }
             availMask[i] = tmpMask;
         }
-        return helper(0, 0, availMask, m, n);
+        return lc1349Helper(0, 0, availMask, m, n);
     }
 
+
     // 当前行i能填的最大学生mask 只和当前行可填的mask(availMask[i]) 与 前一行 prevRowMask有关
-    private int helper(int curRow, int prevRowMask, int[] availMask, int m, int n) {
+    private int lc1349Helper(int curRow, int prevRowMask, int[] availMask, int m, int n) {
         if (curRow == m) return 0;
-        if (memo[curRow][prevRowMask] != null) return memo[curRow][prevRowMask];
+        if (lc1349Memo[curRow][prevRowMask] != null) return lc1349Memo[curRow][prevRowMask];
         int fullSet = availMask[curRow];
         int result = -1;
-        // 构造当前行的所有可用子集
+        // 构造当前行可坐学生位置的所有非空子集
         outer:
         for (int subset = fullSet; subset > 0; subset = (subset - 1) & fullSet) {
             for (int i = 0; i < n; i++) {
-                if (((subset >> i) & 1) == 0) continue; // 这个位置不坐人 直接下一个子集
-                // 校验左右, 左前方, 右前方
-                // 左前方
+                if (((subset >> i) & 1) == 0) continue; // 这个位置不能坐人 跳过
+                // 校验左, 右, 左前方, 右前方
+                // 左、左前方
                 if (i > 0) {
                     int left = i - 1;
                     if (((subset >> left) & 1) == 1) continue outer;
                     if (((prevRowMask >> left) & 1) == 1) continue outer;
                 }
-                // 右前方
+                // 右, 右前方
                 if (i < n - 1) {
                     int right = i + 1;
                     if (((subset >> right) & 1) == 1) continue outer;
                     if (((prevRowMask >> right) & 1) == 1) continue outer;
                 }
             }
-            // 校验没问题了, 进入下一层
-            result = Math.max(result, Integer.bitCount(subset) + helper(curRow + 1, subset, availMask, m, n));
+            // 校验没问题了, 进入下一行
+            result = Math.max(result, Integer.bitCount(subset) + lc1349Helper(curRow + 1, subset, availMask, m, n));
         }
-        // 这一行不坐人
-        result = Math.max(result, helper(curRow + 1, 0, availMask, m, n));
-        return memo[curRow][prevRowMask] = result;
+        // 这一行不坐人(空集)
+        result = Math.max(result, lc1349Helper(curRow + 1, 0, availMask, m, n));
+        return lc1349Memo[curRow][prevRowMask] = result;
     }
 
     // LC1874
