@@ -13,13 +13,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1349 暴力穷举 TLE
-    int result = 0;
-    // Integer[][] memo = new Integer[1 << 8][1 << 8];
+    // LC1349
+    Integer[][] memo = new Integer[9][1 << 8];
 
     public int maxStudents(char[][] seats) {
         int m = seats.length, n = seats[0].length;
-        int fullMask = (1 << n) - 1;
         int[] availMask = new int[m];
         for (int i = 0; i < m; i++) {
             int tmpMask = 0;
@@ -30,22 +28,15 @@ class Scratch {
             }
             availMask[i] = tmpMask;
         }
-        helper(0, 0, availMask, new int[m], m, n);
-        return result;
+        return helper(0, 0, availMask, m, n);
     }
 
-
     // 当前行i能填的最大学生mask 只和当前行可填的mask(availMask[i]) 与 前一行 prevRowMask有关
-    private void helper(int curRow, int prevRowMask, int[] availMask, int[] curMask, int m, int n) {
-        if (curRow == m) {
-            int stuCount = 0;
-            for (int i = 0; i < m; i++) {
-                stuCount += Integer.bitCount(curMask[i]);
-            }
-            result = Math.max(result, stuCount);
-            return;
-        }
+    private int helper(int curRow, int prevRowMask, int[] availMask, int m, int n) {
+        if (curRow == m) return 0;
+        if (memo[curRow][prevRowMask] != null) return memo[curRow][prevRowMask];
         int fullSet = availMask[curRow];
+        int result = -1;
         // 构造当前行的所有可用子集
         outer:
         for (int subset = fullSet; subset > 0; subset = (subset - 1) & fullSet) {
@@ -66,11 +57,11 @@ class Scratch {
                 }
             }
             // 校验没问题了, 进入下一层
-            curMask[curRow] = subset;
-            helper(curRow + 1, subset, availMask, curMask, m, n);
+            result = Math.max(result, Integer.bitCount(subset) + helper(curRow + 1, subset, availMask, m, n));
         }
-        curMask[curRow] = 0;
-        helper(curRow + 1, 0, availMask, curMask, m, n);
+        // 这一行不坐人
+        result = Math.max(result, helper(curRow + 1, 0, availMask, m, n));
+        return memo[curRow][prevRowMask] = result;
     }
 
     // LC1874
