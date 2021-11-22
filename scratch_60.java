@@ -11,6 +11,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1874
+    public int minProductSum(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int result = 0, n = nums1.length;
+        for (int i = 0; i < n; i++) {
+            result += nums1[i] * nums2[n - 1 - i];
+        }
+        return result;
+    }
+
     // LC594
     public int findLHS(int[] nums) {
         Arrays.sort(nums);
