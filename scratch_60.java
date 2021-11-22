@@ -13,16 +13,36 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1130 ** 区间DP
-    Integer[][] memo = new Integer[41][41];
-
-    public int mctFromLeafValues(int[] arr) {
-        return helper(0, arr.length - 1, arr);
+    // LC1183 **
+    public int maximumNumberOfOnes(int width, int height, int sideLength, int maxOnes) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>(); // pq存的是 如果 左上角sideLen x sideLen 区域的某一个点放'1'后, 其在整个矩阵的相应不冲突位置可以放1的总个数
+        // ** 遇到小的就出队
+        for (int i = 0; i < sideLength; i++) {
+            for (int j = 0; j < sideLength; j++) {
+                // 考虑11 x 11 的矩阵, 小正方形大小是5 x 5, 里面最多放1个'1',
+                // 如果[0,0]的位置放一个, 则[0,5] [0,10] 可以放, 且row 0放满
+                // 如果[0,1]放一个, [0,6]再放一个就放满
+                // 可放列的个数为 (width - i - 1) / sideLen + 1
+                // 然后乘上可放的行数(个数计算方法一样)
+                pq.offer((((width - i - 1) / sideLength) + 1) * (((height - j - 1) / sideLength) + 1));
+                while (pq.size() > maxOnes) pq.poll();
+            }
+        }
+        int result = 0;
+        while (!pq.isEmpty()) result += pq.poll();
+        return result;
     }
 
-    private int helper(int start, int end, int[] arr) {
+    // LC1130 ** 区间DP
+    Integer[][] lc1130Memo = new Integer[41][41];
+
+    public int mctFromLeafValues(int[] arr) {
+        return lc1130Helper(0, arr.length - 1, arr);
+    }
+
+    private int lc1130Helper(int start, int end, int[] arr) {
         if (start == end) return 0;
-        if (memo[start][end] != null) return memo[start][end];
+        if (lc1130Memo[start][end] != null) return lc1130Memo[start][end];
         int result = Integer.MAX_VALUE;
         for (int i = start; i < end; i++) {
             // first max
@@ -34,9 +54,9 @@ class Scratch {
             for (int j = i + 1; j <= end; j++) {
                 secondMax = Math.max(arr[j], secondMax);
             }
-            result = Math.min(result, firstMax * secondMax + helper(start, i, arr) + helper(i + 1, end, arr));
+            result = Math.min(result, firstMax * secondMax + lc1130Helper(start, i, arr) + lc1130Helper(i + 1, end, arr));
         }
-        return memo[start][end] = result;
+        return lc1130Memo[start][end] = result;
     }
 
     // LC1349
