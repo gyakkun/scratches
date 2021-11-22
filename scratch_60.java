@@ -5,10 +5,72 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minOperations(new int[][]{{2, 4}, {6, 8}}, 2));
+        System.out.println(s.maxStudents(
+                new char[][]{{'.', '.', '.', '.', '#', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '#', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '#', '.', '.', '.', '.', '.'}, {'.', '.', '.', '.', '.', '.', '.', '.'}, {'.', '.', '.', '#', '.', '.', '#', '.'}}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1349 暴力穷举 TLE
+    int result = 0;
+    // Integer[][] memo = new Integer[1 << 8][1 << 8];
+
+    public int maxStudents(char[][] seats) {
+        int m = seats.length, n = seats[0].length;
+        int fullMask = (1 << n) - 1;
+        int[] availMask = new int[m];
+        for (int i = 0; i < m; i++) {
+            int tmpMask = 0;
+            for (int j = 0; j < n; j++) {
+                if (seats[i][j] == '.') {
+                    tmpMask |= (1 << j);
+                }
+            }
+            availMask[i] = tmpMask;
+        }
+        helper(0, 0, availMask, new int[m], m, n);
+        return result;
+    }
+
+
+    // 当前行i能填的最大学生mask 只和当前行可填的mask(availMask[i]) 与 前一行 prevRowMask有关
+    private void helper(int curRow, int prevRowMask, int[] availMask, int[] curMask, int m, int n) {
+        if (curRow == m) {
+            int stuCount = 0;
+            for (int i = 0; i < m; i++) {
+                stuCount += Integer.bitCount(curMask[i]);
+            }
+            result = Math.max(result, stuCount);
+            return;
+        }
+        int fullSet = availMask[curRow];
+        // 构造当前行的所有可用子集
+        outer:
+        for (int subset = fullSet; subset > 0; subset = (subset - 1) & fullSet) {
+            for (int i = 0; i < n; i++) {
+                if (((subset >> i) & 1) == 0) continue; // 这个位置不坐人 直接下一个子集
+                // 校验左右, 左前方, 右前方
+                // 左前方
+                if (i > 0) {
+                    int left = i - 1;
+                    if (((subset >> left) & 1) == 1) continue outer;
+                    if (((prevRowMask >> left) & 1) == 1) continue outer;
+                }
+                // 右前方
+                if (i < n - 1) {
+                    int right = i + 1;
+                    if (((subset >> right) & 1) == 1) continue outer;
+                    if (((prevRowMask >> right) & 1) == 1) continue outer;
+                }
+            }
+            // 校验没问题了, 进入下一层
+            curMask[curRow] = subset;
+            helper(curRow + 1, subset, availMask, curMask, m, n);
+        }
+        curMask[curRow] = 0;
+        helper(curRow + 1, 0, availMask, curMask, m, n);
     }
 
     // LC1874
@@ -88,17 +150,17 @@ class Scratch {
         for (int i = 0; i < nums1.length; i++) lc1537Rm[1].put(nums1[i], i);
         lc1537Nums = new int[][]{nums0, nums1};
         lc1537Memo = new Long[2][Math.max(nums0.length, nums1.length) + 1];
-        return (int) (Math.max(helper(0, 0), helper(1, 0)) % 1000000007l);
+        return (int) (Math.max(lc1537Helper(0, 0), lc1537Helper(1, 0)) % 1000000007l);
     }
 
-    private long helper(int whichArr, int curIdx) {
+    private long lc1537Helper(int whichArr, int curIdx) {
         int[] arr = lc1537Nums[whichArr];
         if (curIdx == arr.length) return 0;
         if (lc1537Memo[whichArr][curIdx] != null) return lc1537Memo[whichArr][curIdx];
         long result = Integer.MIN_VALUE / 2;
-        result = Math.max(result, (long) arr[curIdx] + helper(whichArr, curIdx + 1));
+        result = Math.max(result, (long) arr[curIdx] + lc1537Helper(whichArr, curIdx + 1));
         if (lc1537Rm[1 - whichArr].containsKey(arr[curIdx])) {
-            result = Math.max(result, (long) arr[curIdx] + helper(1 - whichArr, lc1537Rm[1 - whichArr].get(arr[curIdx]) + 1));
+            result = Math.max(result, (long) arr[curIdx] + lc1537Helper(1 - whichArr, lc1537Rm[1 - whichArr].get(arr[curIdx]) + 1));
         }
         return lc1537Memo[whichArr][curIdx] = result;
     }
