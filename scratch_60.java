@@ -5,10 +5,46 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println();
+        System.out.println(s.respace(
+                new String[]{"looked", "just", "like", "her", "brother"},
+                "jesslookedjustliketimherbrother"
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 17.13 TLE
+    Integer[][] memo = new Integer[1001][1001];
+    Trie trie;
+    String sentence;
+
+    public int respace(String[] dictionary, String sentence) {
+        // 状态: curIdx, cutLen
+        // 表示在当前下标为curIdx的地方, 截取[curIdx, curIdx+cutLen-1]作为单词
+        // 如果这个词未识别, 则返回 cutLen + helper(cutIdx+cutLen, 1...MAXLEN) 取Min
+        // 如果这个词识别, 则返回 helper(cutIdx+cutLen, 1...MAXLEN) 取min
+        this.sentence = sentence;
+        trie = new Trie();
+        for (String w : dictionary) trie.addWord(w);
+        int result = sentence.length();
+        for (int i = 1; i <= sentence.length(); i++) {
+            result = Math.min(result, helper(0, i));
+        }
+        return result;
+    }
+
+    private int helper(int idx, int cutLen) {
+        if (idx >= sentence.length()) return 0;
+        if (memo[idx][cutLen] != null) return memo[idx][cutLen];
+        int unknown = 0, result = sentence.length() - idx - cutLen;
+        if (!trie.search(sentence.substring(idx, idx + cutLen))) unknown = cutLen;
+        result += unknown;
+        int remain = sentence.length() - idx - cutLen;
+        for (int i = 1; i <= remain; i++) {
+            result = Math.min(result, unknown + helper(idx + cutLen, i));
+        }
+        return memo[idx][cutLen] = result;
     }
 
     // LC1413
@@ -1395,4 +1431,77 @@ class ListNode {
         this.val = val;
         this.next = next;
     }
+}
+
+class Trie {
+    TrieNode root = new TrieNode();
+
+    public void addWord(String word) {
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (!cur.children.containsKey(c)) cur.children.put(c, new TrieNode());
+            cur = cur.children.get(c);
+            cur.path++;
+        }
+        cur.end++;
+    }
+
+    public boolean removeWord(String word) {
+        TrieNode target = getNode(word);
+        if (target == null) return false;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children.get(c).path-- == 1) {
+                cur.children.remove(c);
+                return true;
+            }
+            cur = cur.children.get(c);
+        }
+        cur.end--;
+        return true;
+    }
+
+    public boolean search(String word) {
+        TrieNode target = getNode(word);
+        return target != null && target.end > 0;
+    }
+
+    public boolean startsWith(String word) {
+        return getNode(word) != null;
+    }
+
+    public void insert(String word) {
+        addWord(word);
+    }
+
+    public int countWordsStartingWith(String prefix) {
+        TrieNode target = getNode(prefix);
+        if (target == null) return 0;
+        return target.path;
+    }
+
+    public int countWordsEqualTo(String word) {
+        TrieNode target = getNode(word);
+        if (target == null) return 0;
+        return target.end;
+    }
+
+    public void erase(String word) {
+        removeWord(word);
+    }
+
+    public TrieNode getNode(String prefix) {
+        TrieNode cur = root;
+        for (char c : prefix.toCharArray()) {
+            if (!cur.children.containsKey(c)) return null;
+            cur = cur.children.get(c);
+        }
+        return cur;
+    }
+}
+
+class TrieNode {
+    Map<Character, TrieNode> children = new HashMap<>();
+    int end = 0;
+    int path = 0;
 }
