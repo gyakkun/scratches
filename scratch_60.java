@@ -11,6 +11,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2079
+    public int wateringPlants(int[] plants, int capacity) {
+        int result = 0, cur = capacity;
+        for (int i = 0; i < plants.length; i++) {
+            if (cur < plants[i]) {
+                result += 2 * i + 1;
+                cur = capacity - plants[i];
+            } else {
+                result += 1;
+                cur -= plants[i];
+            }
+        }
+        return result;
+    }
+
     // LC396 推公式
     public int maxRotateFunction(int[] nums) {
         int sum = Arrays.stream(nums).sum();
