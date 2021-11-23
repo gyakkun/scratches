@@ -5,17 +5,21 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.orchestraLayout(3, 0, 2));
+        System.out.println(s.maximalPathQuality(new int[]{39, 73, 63, 17},
+                new int[][]{{0, 1, 61}, {1, 2, 13}, {2, 3, 44}, {0, 3, 11}},
+                10));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC2065 TBD
-    int maxValue = 0;
+    // LC2065
+    int max = 0;
 
+    // 限时在图中行走并回到出发城市, 每个城市可以经过不止一次, 路径耗时, 城市有值, 值只取一次, 选值最高的路径
     public int maximalPathQuality(int[] values, int[][] edges, int maxTime) {
         int n = values.length;
+        // 构造邻接表
         List<List<int[]>> mtx = new ArrayList<>();
         int[] freq = new int[n];
         for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
@@ -25,10 +29,40 @@ class Scratch {
         }
         if (mtx.get(0).size() == 0) return values[0];
 
-        return -1;
+        // 先用Dijkstra预处理各个城市到 0 的最短时间, 方便剪枝
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[1])); //[城市, 距离]
+        int[] shortest = new int[n];
+        Arrays.fill(shortest, -1);
+        pq.offer(new int[]{0, 0});
+        while (!pq.isEmpty()) {
+            int[] p = pq.poll();
+            int idx = p[0], distance = p[1];
+            if (shortest[idx] != -1) continue;
+            shortest[idx] = distance;
+            for (int[] next : mtx.get(idx)) {
+                if (shortest[next[0]] != -1) continue;
+                pq.offer(new int[]{next[0], distance + next[1]});
+            }
+        }
+
+        freq[0] = 1;
+        helper(0, values[0], maxTime, freq, mtx, shortest, values);
+        return max;
     }
 
-    private void helper(){}
+    private void helper(int cur, int gain, int remainTime, int[] freq, List<List<int[]>> mtx, int[] shortest, int[] values) {
+        if (cur == 0) {
+            max = Math.max(max, gain);
+        }
+        if (freq[cur] == 0) gain += values[cur];
+        freq[cur]++;
+        for (int[] next : mtx.get(cur)) {
+            if (remainTime < next[1]) continue;
+            if (remainTime - next[1] < shortest[next[0]]) continue;
+            helper(next[0], gain, remainTime - next[1], freq, mtx, shortest, values);
+        }
+        freq[cur]--; // 记得复位
+    }
 
     // LC1474
     public ListNode deleteNodes(ListNode head, int m, int n) {
