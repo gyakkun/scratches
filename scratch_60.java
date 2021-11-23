@@ -11,6 +11,19 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1413
+    public int minStartValue(int[] nums) {
+        int result = 0, prefix = 0;
+        for (int i = 0; i < nums.length; i++) {
+            prefix += nums[i];
+            if (prefix < 1) {
+                result += 1 - prefix;
+                prefix += 1 - prefix;
+            }
+        }
+        return Math.max(1, result);
+    }
+
     // LC2079
     public int wateringPlants(int[] plants, int capacity) {
         int result = 0, cur = capacity;
