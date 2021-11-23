@@ -13,6 +13,25 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC156
+    public TreeNode upsideDownBinaryTree(TreeNode root) {
+        // 原来的左子节点变成新的根节点
+        // 原来的根节点变成新的右子节点
+        // 原来的右子节点变成新的左子节点
+        // 题目保证如果存在右节点就存在左节点
+        // 逆否: 如果不存在左节点, 就不存在右节点, 即如果左节点为空, 则一定是叶子
+        if (root == null) return null;
+        if (root.left == null) return root; // 叶子
+        TreeNode origLeft = root.left, origRight = root.right;
+        TreeNode newRoot = upsideDownBinaryTree(root.left);
+        upsideDownBinaryTree(root.right);
+        root.left = null;
+        root.right = null;
+        origLeft.right = root;
+        origLeft.left = origRight;
+        return newRoot;
+    }
+
     // LC915
     public int partitionDisjoint(int[] nums) {
         // 左侧的最大值小于右侧的最小值
