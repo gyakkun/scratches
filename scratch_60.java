@@ -16,15 +16,14 @@ class Scratch {
     // LC915
     public int partitionDisjoint(int[] nums) {
         // 左侧的最大值小于右侧的最小值
-        TreeMap<Integer, Integer> rightMap = new TreeMap<>();
-        TreeSet<Integer> left = new TreeSet<>();
-        for (int i : nums) rightMap.put(i, rightMap.getOrDefault(i, 0) + 1);
-        for (int i = 0; i < nums.length; i++) {
-            int victim = nums[i];
-            left.add(victim);
-            rightMap.put(victim, rightMap.get(victim) - 1);
-            if (rightMap.get(victim) == 0) rightMap.remove(victim);
-            if (left.last() <= rightMap.firstKey()) return i + 1;
+        int n = nums.length;
+        int[] maxLeft = new int[n], minRight = new int[n];
+        maxLeft[0] = nums[0];
+        for (int i = 1; i < n; i++) maxLeft[i] = Math.max(nums[i], maxLeft[i - 1]);
+        minRight[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; i--) minRight[i] = Math.min(nums[i], minRight[i + 1]);
+        for (int i = 0; i <= n - 2; i++) {
+            if (maxLeft[i] <= minRight[i + 1]) return i + 1;
         }
         return -1;
     }
