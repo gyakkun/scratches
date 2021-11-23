@@ -5,12 +5,100 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.maximalPathQuality(new int[]{39, 73, 63, 17},
-                new int[][]{{0, 1, 61}, {1, 2, 13}, {2, 3, 44}, {0, 3, 11}},
-                10));
+        System.out.println();
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1728 花式TLE 判题有问题???
+    class Lc1728 {
+        final int TIE = 0, MOUSE_WIN = 1, CAT_WIN = 2;
+        char[][] mtx;
+        int catJump, mouseJump, foodR, foodC;
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        Integer[][][][][] memo = new Integer[8][8][8][8][505];
+
+        public boolean canMouseWin(String[] grid, int catJump, int mouseJump) {
+            int m = grid.length, n = grid[0].length();
+            this.catJump = catJump;
+            this.mouseJump = mouseJump;
+            mtx = new char[m][];
+            for (int i = 0; i < m; i++) mtx[i] = grid[i].toCharArray();
+            int[] foodIdx = {-1, -1}, catIdx = {-1, -1}, mouseIdx = {-1, -1};
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (mtx[i][j] == 'C') catIdx = new int[]{i, j};
+                    if (mtx[i][j] == 'M') mouseIdx = new int[]{i, j};
+                    if (mtx[i][j] == 'F') foodIdx = new int[]{i, j};
+                }
+            }
+            foodR = foodIdx[0];
+            foodC = foodIdx[1];
+            return helper(mouseIdx[0], mouseIdx[1], catIdx[0], catIdx[1], 0) == MOUSE_WIN;
+        }
+
+        private int helper(int mouseR, int mouseC, int catR, int catC, int globalSteps) {
+            boolean isMouse = globalSteps % 2 == 0;
+            if (isMouse && globalSteps >= 500) {
+                return TIE;
+            }
+            if (catR == foodR && catC == foodC) {
+                return CAT_WIN;
+            }
+            if (mouseR == catR && mouseC == catC) {
+                return CAT_WIN;
+            }
+            if (mouseR == foodR && mouseC == foodC) {
+                return MOUSE_WIN;
+            }
+            if (memo[mouseR][mouseC][catR][catC][globalSteps] != null)
+                return memo[mouseR][mouseC][catR][catC][globalSteps];
+
+            if (isMouse) {
+                boolean catCanWin = true;
+                for (int[] d : directions) {
+                    int nr = mouseR - d[0], nc = mouseC - d[1];
+                    int steps = -1;
+                    while (nr + d[0] >= 0 && nr + d[0] < mtx.length && nc + d[1] >= 0 && nc + d[1] < mtx[0].length
+                            && mtx[nr + d[0]][nc + d[1]] != '#'
+                            && steps + 1 <= mouseJump) {
+                        nr += d[0];
+                        nc += d[1];
+                        steps++;
+                        int nextStepResult = helper(nr, nc, catR, catC, globalSteps + 1);
+                        if (nextStepResult == MOUSE_WIN) {
+                            return memo[mouseR][mouseC][catR][catC][globalSteps] = MOUSE_WIN;
+                        } else if (nextStepResult != CAT_WIN) {
+                            catCanWin = false;
+                        }
+                    }
+                }
+                if (catCanWin) memo[mouseR][mouseC][catR][catC][globalSteps] = CAT_WIN;
+                return memo[mouseR][mouseC][catR][catC][globalSteps] = TIE;
+            } else {
+                boolean mouseCanWin = true;
+                for (int[] d : directions) {
+                    int nr = catR - d[0], nc = catC - d[1];
+                    int steps = -1;
+                    while (nr + d[0] >= 0 && nr + d[0] < mtx.length && nc + d[1] >= 0 && nc + d[1] < mtx[0].length
+                            && mtx[nr + d[0]][nc + d[1]] != '#'
+                            && steps + 1 <= catJump) {
+                        nr += d[0];
+                        nc += d[1];
+                        steps++;
+                        int nextStepResult = helper(mouseR, mouseC, nr, nc, globalSteps + 1);
+                        if (nextStepResult == CAT_WIN) {
+                            return memo[mouseR][mouseC][catR][catC][globalSteps] = CAT_WIN;
+                        } else if (nextStepResult != MOUSE_WIN) {
+                            mouseCanWin = false;
+                        }
+                    }
+                }
+                if (mouseCanWin) return memo[mouseR][mouseC][catR][catC][globalSteps] = MOUSE_WIN;
+                return memo[mouseR][mouseC][catR][catC][globalSteps] = TIE;
+            }
+        }
     }
 
     // LC156
