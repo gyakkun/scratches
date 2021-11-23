@@ -11,6 +11,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC396 推公式
+    public int maxRotateFunction(int[] nums) {
+        int sum = Arrays.stream(nums).sum();
+        int init = 0, n = nums.length;
+        for (int i = 0; i < n; i++) init += i * nums[i];
+        int max = init;
+        int cur = init;
+        for (int i = 1; i < n; i++) {
+            int next = cur + sum - n * nums[n - i];
+            max = Math.max(next, max);
+            cur = next;
+        }
+        return max;
+    }
+
     // LC1728 花式TLE 判题有问题???
     class Lc1728 {
         final int TIE = 0, MOUSE_WIN = 1, CAT_WIN = 2;
