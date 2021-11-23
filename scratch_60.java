@@ -13,8 +13,24 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC915
+    public int partitionDisjoint(int[] nums) {
+        // 左侧的最大值小于右侧的最小值
+        TreeMap<Integer, Integer> rightMap = new TreeMap<>();
+        TreeSet<Integer> left = new TreeSet<>();
+        for (int i : nums) rightMap.put(i, rightMap.getOrDefault(i, 0) + 1);
+        for (int i = 0; i < nums.length; i++) {
+            int victim = nums[i];
+            left.add(victim);
+            rightMap.put(victim, rightMap.get(victim) - 1);
+            if (rightMap.get(victim) == 0) rightMap.remove(victim);
+            if (left.last() <= rightMap.firstKey()) return i + 1;
+        }
+        return -1;
+    }
+
     // LC2065
-    int max = 0;
+    int lc2065Result = 0;
 
     // 限时在图中行走并回到出发城市, 每个城市可以经过不止一次, 路径耗时, 城市有值, 值只取一次, 选值最高的路径
     public int maximalPathQuality(int[] values, int[][] edges, int maxTime) {
@@ -46,20 +62,20 @@ class Scratch {
         }
 
         freq[0] = 1;
-        helper(0, values[0], maxTime, freq, mtx, shortest, values);
-        return max;
+        lc2065Helper(0, values[0], maxTime, freq, mtx, shortest, values);
+        return lc2065Result;
     }
 
-    private void helper(int cur, int gain, int remainTime, int[] freq, List<List<int[]>> mtx, int[] shortest, int[] values) {
+    private void lc2065Helper(int cur, int gain, int remainTime, int[] freq, List<List<int[]>> mtx, int[] shortest, int[] values) {
         if (cur == 0) {
-            max = Math.max(max, gain);
+            lc2065Result = Math.max(lc2065Result, gain);
         }
         if (freq[cur] == 0) gain += values[cur];
         freq[cur]++;
         for (int[] next : mtx.get(cur)) {
             if (remainTime < next[1]) continue;
             if (remainTime - next[1] < shortest[next[0]]) continue;
-            helper(next[0], gain, remainTime - next[1], freq, mtx, shortest, values);
+            lc2065Helper(next[0], gain, remainTime - next[1], freq, mtx, shortest, values);
         }
         freq[cur]--; // 记得复位
     }
