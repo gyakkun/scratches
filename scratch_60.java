@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.beans.Customizer;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -7,11 +9,46 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minCost(7,
-                new int[]{1, 3, 4, 5}));
+        System.out.println(s.minAreaRect(new int[][]
+                {{1, 1}, {1, 3}, {3, 1}, {3, 3}, {2, 2}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC939
+    public int minAreaRect(int[][] points) {
+        int result = Integer.MAX_VALUE / 2;
+        Map<Pair<Integer, Integer>, TreeSet<Integer>> pairXPointsHeightSetMap = new HashMap<>();
+        Arrays.sort(points, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[1] == o2[1] ? o1[0] - o2[0] : o1[1] - o2[1];
+            }
+        }); // 根据y轴从小到大, 从下往上扫
+        for (int i = 0; i < points.length; ) {
+            // 找同高的 构造点对
+            int y = points[i][1];
+            int start = i;
+            while (i + 1 < points.length && points[i + 1][1] == y) i++;
+            int end = i;
+            for (int j = start; j <= end; j++) {
+                for (int k = start + 1; k <= end; k++) {
+                    if (j == k) continue;
+                    int width = Math.abs(points[k][0] - points[j][0]);
+                    Pair<Integer, Integer> pair = new Pair<>(points[j][0], points[k][0]);
+                    pairXPointsHeightSetMap.putIfAbsent(pair, new TreeSet<>());
+                    TreeSet<Integer> ts = pairXPointsHeightSetMap.get(pair);
+                    Integer lower = ts.lower(y);
+                    if (lower != null) {
+                        result = Math.min(result, width * (y - lower));
+                    }
+                    ts.add(y);
+                }
+            }
+            i++;
+        }
+        return result == Integer.MAX_VALUE / 2 ? 0 : result;
     }
 
     // LC1547 ** 另一种切绳子 注意边界处理
