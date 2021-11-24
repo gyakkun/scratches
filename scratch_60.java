@@ -1,58 +1,230 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println();
+        System.out.println(s.numDistinctIslands2(new int[][]{{1, 1, 0, 0, 0}, {1, 0, 0, 0, 0}, {0, 0, 0, 0, 1}, {0, 0, 0, 1, 1}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC980
-    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-    int[][] grid;
-    int result = 0;
-    int start, end;
-
-    public int uniquePathsIII(int[][] grid) {
-        this.grid = grid;
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[0].length; j++) {
-                if (grid[i][j] == 1) {
-                    start = i * grid[0].length + j;
-                }
-                if (grid[i][j] == 2) {
-                    end = i * grid[0].length + j;
+    // LC711
+    public int numDistinctIslands2(int[][] grid) {
+        int result = 0;
+        Map<Integer, Set<String>> countHashMap = new HashMap<>();
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int m = grid.length, n = grid[0].length;
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) continue;
+                List<Integer> area = new ArrayList<>();
+                if (!visited[i][j]) {
+                    Deque<Integer> q = new LinkedList<>();
+                    q.offer(i * 50 + j);
+                    while (!q.isEmpty()) {
+                        int p = q.pop();
+                        int r = p / 50, c = p % 50;
+                        if (visited[r][c]) continue;
+                        visited[r][c] = true;
+                        area.add(p);
+                        for (int[] d : directions) {
+                            int nr = r + d[0], nc = c + d[1];
+                            if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc] && grid[nr][nc] == 1) {
+                                q.push(nr * 50 + nc);
+                            }
+                        }
+                    }
+                    countHashMap.putIfAbsent(area.size(), new HashSet<>());
+                    Set<String> allHash = getHash(area);
+                    boolean count = true;
+                    for (String s : allHash) {
+                        if (countHashMap.get(area.size()).contains(s)) {
+                            count = false;
+                            break;
+                        }
+                    }
+                    if (count) {
+                        countHashMap.get(area.size()).addAll(allHash);
+                        result++;
+                    }
                 }
             }
         }
-        backtrack(start / grid[0].length, start % grid[0].length);
         return result;
     }
 
-    private void backtrack(int r, int c) {
-        if (r == end / grid[0].length && c == end % grid[0].length) {
-            int zeroCount = 0;
-            for (int i = 0; i < grid.length; i++) {
-                for (int j = 0; j < grid[0].length; j++) {
-                    if (grid[i][j] == 0) zeroCount++;
-                    if (zeroCount > 0) return;
+    private Set<String> getHash(List<Integer> area) {
+        Set<String> result = new HashSet<>(4);
+        int[][] origArea = new int[50][50];
+        Collections.sort(area);
+        // 取得极左点, 极右点坐标, 归一化到左上角
+        int leftMost = 50, upMost = 50;
+        for (int p : area) {
+            int r = p / 50, c = p % 50;
+            origArea[r][c] = 1;
+        }
+
+        // 然后旋转四次取哈希
+        for (int i = 0; i < 4; i++) {
+            rotate(origArea);
+            int[][] normalized = normalize(origArea);
+            List<Integer> l = new ArrayList<>();
+            for (int j = 0; j < 50; j++) {
+                for (int k = 0; k < 50; k++) {
+                    if (normalized[j][k] == 0) continue;
+                    l.add(j * 50 + k);
                 }
             }
-            result++;
-            return;
+            result.add(String.join(",", l.stream().map(String::valueOf).collect(Collectors.toList())));
         }
-        grid[r][c] = -1;
-        for (int[] d : directions) {
-            int nr = r + d[0], nc = c + d[1];
-            if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && grid[nr][nc] != -1) {
-                backtrack(nr, nc);
+
+        {
+            // 左右翻转
+            int[][] leftRight = foldLeft(origArea);
+            int[][] normalized = normalize(leftRight);
+            List<Integer> l = new ArrayList<>();
+            for (int j = 0; j < 50; j++) {
+                for (int k = 0; k < 50; k++) {
+                    if (normalized[j][k] == 0) continue;
+                    l.add(j * 50 + k);
+                }
+            }
+            result.add(String.join(",", l.stream().map(String::valueOf).collect(Collectors.toList())));
+        }
+
+        {
+            // 上下
+            int[][] leftRight = foldUp(origArea);
+            int[][] normalized = normalize(leftRight);
+            List<Integer> l = new ArrayList<>();
+            for (int j = 0; j < 50; j++) {
+                for (int k = 0; k < 50; k++) {
+                    if (normalized[j][k] == 0) continue;
+                    l.add(j * 50 + k);
+                }
+            }
+            result.add(String.join(",", l.stream().map(String::valueOf).collect(Collectors.toList())));
+        }
+
+        return result;
+    }
+
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        for (int i = 0; i < n / 2; i++) { // 先上下 再斜对角线(左上, 右下)
+            for (int j = 0; j < n; j++) {
+                int tmp = matrix[i][j];
+                matrix[i][j] = matrix[n - 1 - i][j];
+                matrix[n - 1 - i][j] = tmp;
             }
         }
-        grid[r][c] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                int tmp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = tmp;
+            }
+        }
+    }
+
+    public int[][] foldLeft(int[][] matrix) {
+        int n = matrix.length;
+        int[][] result = new int[n][n];
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) result[i][j] = matrix[i][j];
+        for (int i = 0; i < n / 2; i++) { // 先上下 再斜对角线(左上, 右下)
+            for (int j = 0; j < n; j++) {
+                int tmp = result[i][j];
+                result[i][j] = result[n - 1 - i][j];
+                result[n - 1 - i][j] = tmp;
+            }
+        }
+        return result;
+    }
+
+    public int[][] foldUp(int[][] matrix) {
+        int n = matrix.length;
+        int[][] result = new int[n][n];
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) result[i][j] = matrix[i][j];
+        for (int i = 0; i < n; i++) { // 先上下 再斜对角线(左上, 右下)
+            for (int j = 0; j < n / 2; j++) {
+                int tmp = result[i][j];
+                result[i][j] = result[i][n - 1 - j];
+                result[i][n - 1 - j] = tmp;
+            }
+        }
+        return result;
+    }
+
+    private int[][] normalize(int[][] mtx) {
+        int m = mtx.length;
+        int left = m, up = m;
+        int[][] result = new int[m][m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
+                if (mtx[i][j] == 0) continue;
+                left = Math.min(left, j);
+                up = Math.min(up, i);
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
+                if (mtx[i][j] == 0) continue;
+                result[i - up][j - left] = 1;
+            }
+        }
+        return result;
+    }
+
+
+    // LC980
+    class Lc980 {
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int[][] grid;
+        int result = 0;
+        int start, end;
+
+        public int uniquePathsIII(int[][] grid) {
+            this.grid = grid;
+            for (int i = 0; i < grid.length; i++) {
+                for (int j = 0; j < grid[0].length; j++) {
+                    if (grid[i][j] == 1) {
+                        start = i * grid[0].length + j;
+                    }
+                    if (grid[i][j] == 2) {
+                        end = i * grid[0].length + j;
+                    }
+                }
+            }
+            backtrack(start / grid[0].length, start % grid[0].length);
+            return result;
+        }
+
+        private void backtrack(int r, int c) {
+            if (r == end / grid[0].length && c == end % grid[0].length) {
+                int zeroCount = 0;
+                for (int i = 0; i < grid.length; i++) {
+                    for (int j = 0; j < grid[0].length; j++) {
+                        if (grid[i][j] == 0) zeroCount++;
+                        if (zeroCount > 0) return;
+                    }
+                }
+                result++;
+                return;
+            }
+            grid[r][c] = -1;
+            for (int[] d : directions) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && grid[nr][nc] != -1) {
+                    backtrack(nr, nc);
+                }
+            }
+            grid[r][c] = 0;
+        }
     }
 
     // LC423
