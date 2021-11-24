@@ -11,6 +11,50 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC980
+    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    int[][] grid;
+    int result = 0;
+    int start, end;
+
+    public int uniquePathsIII(int[][] grid) {
+        this.grid = grid;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1) {
+                    start = i * grid[0].length + j;
+                }
+                if (grid[i][j] == 2) {
+                    end = i * grid[0].length + j;
+                }
+            }
+        }
+        backtrack(start / grid[0].length, start % grid[0].length);
+        return result;
+    }
+
+    private void backtrack(int r, int c) {
+        if (r == end / grid[0].length && c == end % grid[0].length) {
+            int zeroCount = 0;
+            for (int i = 0; i < grid.length; i++) {
+                for (int j = 0; j < grid[0].length; j++) {
+                    if (grid[i][j] == 0) zeroCount++;
+                    if (zeroCount > 0) return;
+                }
+            }
+            result++;
+            return;
+        }
+        grid[r][c] = -1;
+        for (int[] d : directions) {
+            int nr = r + d[0], nc = c + d[1];
+            if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && grid[nr][nc] != -1) {
+                backtrack(nr, nc);
+            }
+        }
+        grid[r][c] = 0;
+    }
+
     // LC423
     // characteristic letter:
     // x: six
@@ -32,13 +76,9 @@ class Scratch {
         int[] freq = new int[128], number = new int[10];
         for (char c : s.toCharArray()) freq[c]++;
         for (int[] pair : seq) {
-            if (freq[pair[0]] != 0) {
-                int f = freq[pair[0]];
-                for (int i = 0; i < f; i++) {
-                    for (char j : digitBet[pair[1]]) freq[j]--;
-                }
-                number[pair[1]] += f;
-            }
+            int f = freq[pair[0]];
+            for (char j : digitBet[pair[1]]) freq[j] -= f;
+            number[pair[1]] += f;
         }
 
         StringBuilder sb = new StringBuilder();
@@ -49,7 +89,6 @@ class Scratch {
         }
         return sb.toString();
     }
-
 
     // Interview 17.13
     class Interview17_13 {
