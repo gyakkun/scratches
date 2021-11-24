@@ -26,7 +26,7 @@ class Scratch {
     // t: three
     public String originalDigits(String s) {
         String[] digitString = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
-        int[][] seq = {{'x', 6}, {'w', 2}, {'z', 0}, {'g', 8}, {'u', 4}, {'s', 7}, {'v', 5}, {'o', 1}, {'i', 9}, {'t', 3}};
+        int[][] seq = {{'z', 0}, {'w', 2}, {'u', 4}, {'x', 6}, {'g', 8}, {'o', 1}, {'t', 3}, {'s', 7}, {'v', 5}, {'i', 9},};
         char[][] digitBet = new char[10][];
         for (int i = 0; i < 10; i++) digitBet[i] = digitString[i].toCharArray();
         int[] freq = new int[128], number = new int[10];
@@ -44,7 +44,7 @@ class Scratch {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < number[i]; j++) {
-                sb.append("" + i);
+                sb.append(i);
             }
         }
         return sb.toString();
