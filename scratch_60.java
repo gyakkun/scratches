@@ -1,3 +1,4 @@
+import java.beans.Customizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -6,10 +7,39 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.numDistinctIslands2(new int[][]{{1, 1, 0, 0, 0}, {1, 0, 0, 0, 0}, {0, 0, 0, 0, 1}, {0, 0, 0, 1, 1}}));
+        System.out.println(s.minCost(7,
+                new int[]{1, 3, 4, 5}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1547 ** 另一种切绳子 注意边界处理
+    Integer[][] memo = new Integer[105][105];
+    int[] cuts;
+    int ropeLen;
+
+    public int minCost(int n, int[] cuts) {
+        this.ropeLen = n;
+        Arrays.sort(cuts);
+        this.cuts = cuts;
+        int result = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < cuts.length; i++) {
+            result = Math.min(result, helper(0, i - 1) + helper(i + 1, cuts.length - 1));
+        }
+        result += n;
+        return result;
+    }
+
+    private int helper(int start, int end) {
+        if (start > end) return 0;
+        if (memo[start][end] != null) return memo[start][end];
+        int result = Integer.MAX_VALUE / 2;
+        for (int i = start; i <= end; i++) {
+            result = Math.min(result, helper(start, i - 1) + helper(i + 1, end));
+        }
+        result += (end == cuts.length - 1 ? ropeLen : cuts[end + 1]) - (start == 0 ? 0 : cuts[start - 1]);
+        return memo[start][end] = result;
     }
 
     // LC711
