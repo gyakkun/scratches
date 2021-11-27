@@ -9,8 +9,14 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minAreaRect(new int[][]
-                {{1, 1}, {1, 3}, {3, 1}, {3, 3}, {2, 2}}));
+        Lc519 lc519 = new Lc519(3, 1);
+
+        System.out.println(lc519.flip());
+        System.out.println(lc519.flip());
+        System.out.println(lc519.flip());
+        lc519.reset();
+        System.out.println(lc519.flip());
+
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -1741,5 +1747,47 @@ class ListNode {
     ListNode(int val, ListNode next) {
         this.val = val;
         this.next = next;
+    }
+}
+
+// LC519
+class Lc519 {
+
+    Random r = new Random();
+    int m, n, total;
+    int[] randomIdx = new int[1000];
+    int cur = -1;
+
+    {
+        Arrays.fill(randomIdx, -1);
+    }
+
+    public Lc519(int m, int n) {
+        this.m = m;
+        this.n = n;
+        total = m * n;
+
+        // init first choice
+        Set<Integer> s = new HashSet<>();
+        for (int i = 0; i < Math.min(1000, total); i++) {
+            int rand;
+            while (!s.add((rand = r.nextInt(total)))) ;
+            randomIdx[i] = rand;
+        }
+    }
+
+    public int[] flip() {
+        int next = randomIdx[++cur];
+        return new int[]{next / n, next % n};
+    }
+
+    public void reset() {
+        Set<Integer> s = new HashSet<>();
+        for (int i = 0; i < Math.min(1000, total); i++) {
+            int rand;
+            while (!s.add((rand = r.nextInt(total)))) ;
+            randomIdx[i] = rand;
+        }
+        cur = -1;
     }
 }
