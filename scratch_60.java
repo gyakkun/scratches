@@ -9,17 +9,61 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        Lc519 lc519 = new Lc519(3, 1);
-
-        System.out.println(lc519.flip());
-        System.out.println(lc519.flip());
-        System.out.println(lc519.flip());
-        lc519.reset();
-        System.out.println(lc519.flip());
+        System.out.println(s.findNthDigit(Integer.MAX_VALUE));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC400
+    public int findNthDigit(int n) {
+        // 找出是几位数
+        int lo = 1, hi = 10;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            long sum = calSum(mid);
+            if (sum >= n) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        // 然后需要知道是第几个N位数, 直接减 (n - 1eN-1) / N
+        long nThN = (n - calSum(lo - 1) - 1) / lo;
+        if (lo == 1) {
+            return (int) (1 + nThN);
+        }
+        long base = (long) Math.pow(10, lo - 1);
+        long target = base + nThN;
+        int result = getNthDigitFromLeft(target, (n - (int) calSum(lo - 1) - 1) % lo);
+        return result;
+    }
+
+    private long calSum(int n) {
+        long result = 0;
+        for (int i = 1; i <= n; i++) {
+            result += i * 9 * (long) Math.pow(10, i - 1);
+        }
+        return result;
+    }
+
+    private int getNthDigitFromLeft(long num, int nthZeroBased) {
+        int total = getNumDigit(num);
+        for (int i = 0; i < (total - nthZeroBased - 1); i++) {
+            num /= 10l;
+        }
+        return (int) (num % 10l);
+    }
+
+    private int getNumDigit(long num) {
+        if (num == 0l) return 1;
+        int result = 0;
+        while (num != 0l) {
+            result++;
+            num /= 10l;
+        }
+        return result;
     }
 
     // LC939
