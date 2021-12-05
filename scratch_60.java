@@ -1,6 +1,5 @@
 import javafx.util.Pair;
 
-import java.beans.Customizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,11 +8,36 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findNthDigit(Integer.MAX_VALUE));
+        System.out.println(s.superPow(2, new int[]{1, 0}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC372
+    public int superPow(int a, int[] b) {
+        return helper(a, b, b.length - 1);
+    }
+
+    private int helper(int num, int[] expArr, int idx) {
+        if (idx == -1) return 1;
+        return quickPowMod(helper(num, expArr, idx - 1), 10, 1337) * quickPowMod(num, expArr[idx], 1337) % 1337;
+    }
+
+
+    private int quickPowMod(int base, int exp, int mod) {
+        int accu = base % mod, result = 1;
+        while (exp != 0) {
+            if ((exp & 1) == 1) {
+                result *= accu;
+                result %= mod;
+            }
+            accu *= accu;
+            accu %= mod;
+            exp >>= 1;
+        }
+        return result;
     }
 
     // LC400
@@ -112,18 +136,18 @@ class Scratch {
         this.cuts = cuts;
         int result = Integer.MAX_VALUE / 2;
         for (int i = 0; i < cuts.length; i++) {
-            result = Math.min(result, helper(0, i - 1) + helper(i + 1, cuts.length - 1));
+            result = Math.min(result, lc1547Helper(0, i - 1) + lc1547Helper(i + 1, cuts.length - 1));
         }
         result += n;
         return result;
     }
 
-    private int helper(int start, int end) {
+    private int lc1547Helper(int start, int end) {
         if (start > end) return 0;
         if (memo[start][end] != null) return memo[start][end];
         int result = Integer.MAX_VALUE / 2;
         for (int i = start; i <= end; i++) {
-            result = Math.min(result, helper(start, i - 1) + helper(i + 1, end));
+            result = Math.min(result, lc1547Helper(start, i - 1) + lc1547Helper(i + 1, end));
         }
         result += (end == cuts.length - 1 ? ropeLen : cuts[end + 1]) - (start == 0 ? 0 : cuts[start - 1]);
         return memo[start][end] = result;
