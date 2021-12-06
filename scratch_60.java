@@ -15,6 +15,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1816
+    public String TruncateSentence(String s, int k) {
+        return Arrays.stream(s.split(" ")).collect(Collectors.toList()).subList(0, k).stream().collect(Collectors.joining(" "));
+    }
+
     // LC372
     public int superPow(int a, int[] b) {
         return helper(a, b, b.length - 1);
