@@ -15,6 +15,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1034 BFS
+    public int[][] colorBorder(int[][] grid, int row, int col, int color) {
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int m = grid.length, n = grid[0].length;
+        boolean[][] visited = new boolean[m][n];
+        List<Integer> result = new ArrayList<>(m * n); // 重复的不会很多 直接用list了
+        Deque<Integer> q = new LinkedList<>();
+        q.offer(row * n + col);
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            int r = p / n, c = p % n;
+            if (visited[r][c]) continue;
+            visited[r][c] = true;
+            int diffColorCount = 0;
+            for (int[] d : directions) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                    result.add(p);
+                    continue;
+                }
+                if (grid[nr][nc] != grid[r][c]) diffColorCount++;
+                if (grid[nr][nc] == grid[r][c]) q.offer(nr * n + nc);
+            }
+            if (diffColorCount != 0) result.add(p);
+        }
+        for (int i : result) {
+            int r = i / n, c = i % n;
+            grid[r][c] = color;
+        }
+        return grid;
+    }
+
     // LC1816
     public String TruncateSentence(String s, int k) {
         return Arrays.stream(s.split(" ")).collect(Collectors.toList()).subList(0, k).stream().collect(Collectors.joining(" "));
@@ -22,12 +54,12 @@ class Scratch {
 
     // LC372
     public int superPow(int a, int[] b) {
-        return helper(a, b, b.length - 1);
+        return lc372Helper(a, b, b.length - 1);
     }
 
-    private int helper(int num, int[] expArr, int idx) {
+    private int lc372Helper(int num, int[] expArr, int idx) {
         if (idx == -1) return 1;
-        return quickPowMod(helper(num, expArr, idx - 1), 10, 1337) * quickPowMod(num, expArr[idx], 1337) % 1337;
+        return quickPowMod(lc372Helper(num, expArr, idx - 1), 10, 1337) * quickPowMod(num, expArr[idx], 1337) % 1337;
     }
 
 
