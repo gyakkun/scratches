@@ -15,6 +15,37 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1034 DFS
+    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    public int[][] colorBorderDfs(int[][] grid, int row, int col, int color) {
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        helper(row, col, grid, grid.length, grid[0].length, visited, color);
+        return grid;
+    }
+
+    private void helper(int r, int c, int[][] mtx, int m, int n, boolean[][] visited, int color) {
+        if (visited[r][c]) return;
+        visited[r][c] = true;
+        boolean isBorder = false;
+        int diffColorCount = 0;
+        for (int[] d : directions) {
+            int nr = r + d[0], nc = c + d[1];
+            if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                isBorder = true;
+                continue;
+            }
+            if (!visited[nr][nc] && mtx[nr][nc] != mtx[r][c]) {
+                diffColorCount++;
+            } else {
+                helper(nr, nc, mtx, m, n, visited, color);
+            }
+        }
+        if (diffColorCount != 0 || isBorder) {
+            mtx[r][c] = color;
+        }
+    }
+
     // LC1034 BFS
     public int[][] colorBorder(int[][] grid, int row, int col, int color) {
         int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
