@@ -15,62 +15,52 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC689 TLE O(n^2)
-    int[][][] memo = new int[3][20001][];
-    int[] lc689Result = new int[]{99999, 99999, 99999};
-    int max = Integer.MIN_VALUE / 2;
-
+    // LC689 **  Mostly from solution, adapt for my convention
     public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
         int n = nums.length;
-        int[] sum = new int[n - k + 1];
-        int slipping = 0;
-        for (int i = 0; i < k; i++) slipping += nums[i];
-        sum[0] = slipping;
-        for (int i = k; i < n; i++) {
-            slipping -= nums[i - k];
-            slipping += nums[i];
-            sum[i - k + 1] = slipping;
+        int[] result = new int[]{0, k, 2 * k};
+        int sum1 = 0, sum2 = 0, sum3 = 0;
+        int maxSum1 = 0, maxSum1Idx = 0;
+        int maxSum12 = 0, maxSum12Idx1 = 0, maxSum12Idx2 = 0;
+        int maxTotal = 0;
+        for (int i = 0; i < k; i++) {
+            sum1 += nums[i];
+            sum2 += nums[k + i];
+            sum3 += nums[2 * k + i];
         }
-        for (int i = 0; i < n - 2 * k; i++) {
-            helper(0, i, k, sum);
-        }
-        return lc689Result;
-    }
+        maxSum1 = sum1;
+        maxSum12 = sum2 + sum1;
+        maxSum1Idx = maxSum12Idx1 = 0;
+        maxSum12Idx2 = k;
+        maxTotal = sum1 + sum2 + sum3;
 
-    // 你在idx, 返回你能拿到的[最大值,下一个值的下标]
-    private int[] helper(int nth, int idx, int k, int[] prefix) {
-        if (nth >= 3) return new int[]{0, idx};
-        if (memo[nth][idx] != null) return memo[nth][idx];
-        int maxSum = 0, maxNextSumIdx = -1;
-        for (int i = idx + k; i < prefix.length - (1 - nth) * k; i++) {
-            int[] next = helper(nth + 1, i, k, prefix);
-            int sum = prefix[idx] + next[0], nextSumIdx = next[1];
-            if (sum > maxSum) {
-                maxSum = sum;
-                maxNextSumIdx = i;
+        for (int i = k; i < n - 2 * k; i++) {
+            sum1 -= nums[i - k];
+            sum1 += nums[i];
+
+            sum2 -= nums[i];
+            sum2 += nums[i + k];
+
+            sum3 -= nums[i + k];
+            sum3 += nums[i + 2 * k];
+
+            if (sum1 > maxSum1) {
+                maxSum1 = sum1;
+                maxSum1Idx = i - k + 1;
+            }
+            if (maxSum1 + sum2 > maxSum12) {
+                maxSum12 = maxSum1 + sum2;
+                maxSum12Idx1 = maxSum1Idx;
+                maxSum12Idx2 = i + 1;
+            }
+            if (maxSum12 + sum3 > maxTotal) {
+                maxTotal = maxSum12 + sum3;
+                result[0] = maxSum12Idx1;
+                result[1] = maxSum12Idx2;
+                result[2] = i + k + 1;
             }
         }
-        if (nth == 0 && maxNextSumIdx != -1) {
-            int[] possibleAnswer = new int[]{idx, maxNextSumIdx, memo[1][maxNextSumIdx][1]};
-            if (maxSum > max) {
-                lc689Result = possibleAnswer;
-                max = maxSum;
-            } else if (maxSum == max) {
-                if (intArrCompareTo(possibleAnswer, lc689Result) < 0) {
-                    lc689Result = possibleAnswer;
-                }
-            }
-        }
-        return memo[nth][idx] = new int[]{maxSum, maxNextSumIdx};
-    }
-
-    private int intArrCompareTo(int[] a, int[] b) {
-        for (int i = 0; i < 3; i++) {
-            if (a[i] == b[i]) continue;
-            if (a[i] < b[i]) return -1;
-            if (a[i] > b[i]) return 1;
-        }
-        return 0;
+        return result;
     }
 
     // LC1034 DFS
