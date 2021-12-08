@@ -8,11 +8,69 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.superPow(2, new int[]{1, 0}));
+        System.out.println(s.maxSumOfThreeSubarrays(new int[]{1, 2, 1, 2, 6, 7, 5, 1}, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC689 TLE O(n^2)
+    int[][][] memo = new int[3][20001][];
+    int[] lc689Result = new int[]{99999, 99999, 99999};
+    int max = Integer.MIN_VALUE / 2;
+
+    public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+        int n = nums.length;
+        int[] sum = new int[n - k + 1];
+        int slipping = 0;
+        for (int i = 0; i < k; i++) slipping += nums[i];
+        sum[0] = slipping;
+        for (int i = k; i < n; i++) {
+            slipping -= nums[i - k];
+            slipping += nums[i];
+            sum[i - k + 1] = slipping;
+        }
+        for (int i = 0; i < n - 2 * k; i++) {
+            helper(0, i, k, sum);
+        }
+        return lc689Result;
+    }
+
+    // 你在idx, 返回你能拿到的[最大值,下一个值的下标]
+    private int[] helper(int nth, int idx, int k, int[] prefix) {
+        if (nth >= 3) return new int[]{0, idx};
+        if (memo[nth][idx] != null) return memo[nth][idx];
+        int maxSum = 0, maxNextSumIdx = -1;
+        for (int i = idx + k; i < prefix.length - (1 - nth) * k; i++) {
+            int[] next = helper(nth + 1, i, k, prefix);
+            int sum = prefix[idx] + next[0], nextSumIdx = next[1];
+            if (sum > maxSum) {
+                maxSum = sum;
+                maxNextSumIdx = i;
+            }
+        }
+        if (nth == 0 && maxNextSumIdx != -1) {
+            int[] possibleAnswer = new int[]{idx, maxNextSumIdx, memo[1][maxNextSumIdx][1]};
+            if (maxSum > max) {
+                lc689Result = possibleAnswer;
+                max = maxSum;
+            } else if (maxSum == max) {
+                if (intArrCompareTo(possibleAnswer, lc689Result) < 0) {
+                    lc689Result = possibleAnswer;
+                }
+            }
+        }
+        return memo[nth][idx] = new int[]{maxSum, maxNextSumIdx};
+    }
+
+    private int intArrCompareTo(int[] a, int[] b) {
+        for (int i = 0; i < 3; i++) {
+            if (a[i] == b[i]) continue;
+            if (a[i] < b[i]) return -1;
+            if (a[i] > b[i]) return 1;
+        }
+        return 0;
     }
 
     // LC1034 DFS
@@ -20,11 +78,11 @@ class Scratch {
 
     public int[][] colorBorderDfs(int[][] grid, int row, int col, int color) {
         boolean[][] visited = new boolean[grid.length][grid[0].length];
-        helper(row, col, grid, grid.length, grid[0].length, visited, color);
+        lc1034Helper(row, col, grid, grid.length, grid[0].length, visited, color);
         return grid;
     }
 
-    private void helper(int r, int c, int[][] mtx, int m, int n, boolean[][] visited, int color) {
+    private void lc1034Helper(int r, int c, int[][] mtx, int m, int n, boolean[][] visited, int color) {
         if (visited[r][c]) return;
         visited[r][c] = true;
         boolean isBorder = false;
@@ -38,7 +96,7 @@ class Scratch {
             if (!visited[nr][nc] && mtx[nr][nc] != mtx[r][c]) {
                 diffColorCount++;
             } else {
-                helper(nr, nc, mtx, m, n, visited, color);
+                lc1034Helper(nr, nc, mtx, m, n, visited, color);
             }
         }
         if (diffColorCount != 0 || isBorder) {
@@ -194,7 +252,7 @@ class Scratch {
     }
 
     // LC1547 ** 另一种切绳子 注意边界处理
-    Integer[][] memo = new Integer[105][105];
+    Integer[][] lc1547Memo = new Integer[105][105];
     int[] cuts;
     int ropeLen;
 
@@ -212,13 +270,13 @@ class Scratch {
 
     private int lc1547Helper(int start, int end) {
         if (start > end) return 0;
-        if (memo[start][end] != null) return memo[start][end];
+        if (lc1547Memo[start][end] != null) return lc1547Memo[start][end];
         int result = Integer.MAX_VALUE / 2;
         for (int i = start; i <= end; i++) {
             result = Math.min(result, lc1547Helper(start, i - 1) + lc1547Helper(i + 1, end));
         }
         result += (end == cuts.length - 1 ? ropeLen : cuts[end + 1]) - (start == 0 ? 0 : cuts[start - 1]);
-        return memo[start][end] = result;
+        return lc1547Memo[start][end] = result;
     }
 
     // LC711
