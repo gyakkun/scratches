@@ -15,6 +15,53 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC794
+    public boolean validTicTacToe(String[] board) {
+        char[][] mtx = Arrays.stream(board).map(String::toCharArray).collect(Collectors.toList()).toArray(new char[board.length][]);
+        // check count, X should equal or 1 more than O
+        int xCount = 0, oCount = 0;
+        for (char[] row : mtx) {
+            for (char c : row) {
+                if (c == 'X') xCount++;
+                if (c == 'O') oCount++;
+            }
+        }
+        if (oCount > xCount) return false;
+        if (xCount - oCount > 1) return false;
+
+        // check if x or o has meet line requirement
+        // if x meet req, than x should 1 more than o
+        // if o meet req, than x should equals to o
+        boolean xMeet = helper(mtx, 'X'), oMeet = helper(mtx, 'O');
+        if (xMeet && oMeet) return false; // no way to meet simultaneously
+        if (xMeet && xCount == oCount) return false;
+        if (oMeet && xCount > oCount) return false;
+        return true;
+    }
+
+    private boolean helper(char[][] mtx, char c) {
+        // boolean isRow = false;
+        for (int i = 0; i < 3; i++) {
+            int count = 0;
+            for (int j = 0; j < 3; j++) {
+                if (mtx[i][j] == c) count++;
+            }
+            if (count == 3) return true;
+        }
+        // boolean isCol = false;
+        for (int i = 0; i < 3; i++) {
+            int count = 0;
+            for (int j = 0; j < 3; j++) {
+                if (mtx[j][i] == c) count++;
+            }
+            if (count == 3) return true;
+        }
+        // boolean isCross = false;
+        if (mtx[0][0] == c && mtx[1][1] == c && mtx[2][2] == c) return true;
+        if (mtx[0][2] == c && mtx[1][1] == c && mtx[2][0] == c) return true;
+        return false;
+    }
+
     // LC689 **  Mostly from solution, adapt for my convention
     public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
         int n = nums.length;
