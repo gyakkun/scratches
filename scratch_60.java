@@ -15,6 +15,31 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC748
+    public String shortestCompletingWord(String licensePlate, String[] words) {
+        int[] freq = new int[128];
+        for (char c : licensePlate.toCharArray()) {
+            if (Character.isLetter(c)) {
+                freq[Character.toLowerCase(c)]++;
+            }
+        }
+        String result = null;
+        outer:
+        for (String w : words) {
+            int[] wFreq = new int[128];
+            for (char c : w.toCharArray()) {
+                wFreq[c]++;
+            }
+            for (int i = 'a'; i <= 'z'; i++) {
+                if (wFreq[i] < freq[i]) continue outer;
+            }
+            if (result == null || w.length() < result.length()) {
+                result = w;
+            }
+        }
+        return result;
+    }
+
     // LC794
     public boolean validTicTacToe(String[] board) {
         char[][] mtx = Arrays.stream(board).map(String::toCharArray).collect(Collectors.toList()).toArray(new char[board.length][]);
