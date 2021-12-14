@@ -8,7 +8,29 @@ class Scratch {
 
     }
 
-
+    // LC630 ** Hard
+    public int scheduleCourse(int[][] courses) {
+        // [duration, lastDay]
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o[0]));
+        Arrays.sort(courses, Comparator.comparingInt(o -> o[1]));
+        int totalTime = 0;
+        for (int[] i : courses) {
+            if (totalTime + i[0] <= i[1]) {
+                pq.offer(i);
+                totalTime += i[0];
+            } else {
+                if (pq.isEmpty()) continue;
+                int[] p = pq.peek();
+                if (p[0] > i[0]) {
+                    int delta = p[0] - i[0];
+                    pq.poll();
+                    pq.offer(i);
+                    totalTime -= delta;
+                }
+            }
+        }
+        return pq.size();
+    }
 }
 
 // LC911
