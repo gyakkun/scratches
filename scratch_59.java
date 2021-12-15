@@ -8,6 +8,35 @@ class Scratch {
 
     }
 
+    // LC851 **
+    public int[] loudAndRich(int[][] richer, int[] quiet) {
+        int n = quiet.length;
+        int[] result = new int[n], indegree = new int[n];
+        List<List<Integer>> mtx = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) mtx.add(new ArrayList<>());
+        for (int i = 0; i < n; i++) result[i] = i;
+        for (int[] r : richer) { // r: [a,b] a is richer than b
+            mtx.get(r[0]).add(r[1]); // a->b, first a (richer) then b
+            indegree[r[1]]++;
+        }
+        Deque<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) if (indegree[i] == 0) q.offer(i);
+        // result[x] = y, means that among people who are equal or richer than x, y is the quietest one
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            for (int next : mtx.get(p)) {
+                if (quiet[result[p]] < quiet[result[next]]) {
+                    result[next] = result[p];
+                }
+                indegree[next]--;
+                if (indegree[next] == 0) {
+                    q.offer(next);
+                }
+            }
+        }
+        return result;
+    }
+
     // LC630 ** Hard
     public int scheduleCourse(int[][] courses) {
         // [duration, lastDay]
