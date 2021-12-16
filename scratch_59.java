@@ -8,6 +8,51 @@ class Scratch {
 
     }
 
+    // LC1610 Two Pass Sliding Window
+    public int visiblePoints(List<List<Integer>> points, int angle, List<Integer> location) {
+        int x = location.get(0), y = location.get(1);
+        double rAngle = ((double) angle / 360d) * 2;
+        List<Double> radians = new ArrayList<>();
+        int count = 0, result = 0;
+        for (List<Integer> p : points) {
+            int dx = p.get(0) - x, dy = p.get(1) - y;
+            if (dx == 0 && dy == 0) count++;
+            else {
+                radians.add(Math.atan2(dy, dx) / Math.PI);
+                radians.add(Math.atan2(dy, dx) / Math.PI + 2);
+            }
+        }
+        if (radians.size() == 0) return count;
+        Collections.sort(radians);
+        double left = radians.get(0);
+        double right = left + rAngle;
+        int leftIdx = 0, rightIdx = 0;
+        for (int i = 0; i < radians.size(); i++) {
+            if (radians.get(i) > right) break;
+            count++;
+            rightIdx++;
+        }
+        result = Math.max(count, result);
+        while (rightIdx < radians.size()) {
+            int sameLeftCount = 1;
+            while (leftIdx + 1 < radians.size() && radians.get(leftIdx) == radians.get(leftIdx + 1)) {
+                leftIdx++;
+                sameLeftCount++;
+            }
+            count -= sameLeftCount;
+            leftIdx++;
+            left = radians.get(leftIdx);
+            right = left + rAngle;
+            while (rightIdx < radians.size()) {
+                if (radians.get(rightIdx) > right) break;
+                count++;
+                rightIdx++;
+            }
+            result = Math.max(result, count);
+        }
+        return result;
+    }
+
     // LC851 **
     public int[] loudAndRich(int[][] richer, int[] quiet) {
         int n = quiet.length;
