@@ -1,11 +1,14 @@
-import javafx.util.Pair;
-
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
-
+        Scratch s = new Scratch();
+        Instant before = Instant.now();
+        System.out.println(s.visiblePoints(List.of(List.of(2, 1), List.of(2, 2), List.of(3, 3)), 90, List.of(1, 1)));
+        Instant after = Instant.now();
+        System.err.println("TIMING: " + Duration.between(before, after).toMillis() + "ms");
     }
 
     // LC1610 Two Pass Sliding Window
