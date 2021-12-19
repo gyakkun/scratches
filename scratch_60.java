@@ -1,4 +1,4 @@
-import javafx.util.Pair;
+import kotlin.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;

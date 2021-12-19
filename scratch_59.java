@@ -11,6 +11,37 @@ class Scratch {
         System.err.println("TIMING: " + Duration.between(before, after).toMillis() + "ms");
     }
 
+    // LC419
+    class Lc419 {
+        public int countBattleships(char[][] board) {
+            int[][] direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+            boolean[][] visited;
+            int result = 0;
+            int m = board.length, n = board[0].length;
+            visited = new boolean[m][n];
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (board[i][j] == 'X' && !visited[i][j]) {
+                        helper(i, j, board, direction, visited);
+                        result++;
+                    }
+                }
+            }
+            return result;
+        }
+
+        private void helper(int r, int c, char[][] board, int[][] direction, boolean[][] visited) {
+            if (visited[r][c]) return;
+            visited[r][c] = true;
+            for (int[] d : direction) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr >= 0 && nr < board.length && nc >= 0 && nc < board[0].length && board[nr][nc] == 'X') {
+                    helper(nr, nc, board, direction, visited);
+                }
+            }
+        }
+    }
+
     // LC1610 Two Pass Sliding Window
     public int visiblePoints(List<List<Integer>> points, int angle, List<Integer> location) {
         int x = location.get(0), y = location.get(1);

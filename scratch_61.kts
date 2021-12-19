@@ -4,6 +4,22 @@ import kotlin.math.PI
 import kotlin.math.atan2
 
 class Solution {
+
+    // LC997
+    fun findJudge(n: Int, trust: Array<IntArray>): Int {
+        val trustFrom = IntArray(n + 1)
+        val trustTo = IntArray(n + 1)
+        for (i in trust) {
+            trustFrom[i[0]]++
+            trustTo[i[1]]++
+        }
+        for (i in 1..n) {
+            if (trustFrom[i] == 0 && trustTo[i] == n-1) return i
+        }
+        return -1
+    }
+
+    // LC1610
     fun visiblePoints(points: List<List<Int>>, angle: Int, location: List<Int>): Int {
         var count = 0
         var result = 0
