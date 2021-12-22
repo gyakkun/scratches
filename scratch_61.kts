@@ -1,11 +1,48 @@
 import java.time.Duration
 import java.time.Instant
+import java.util.*
 import kotlin.math.PI
 import kotlin.math.atan2
-import java.util.Arrays
 
 
 class Solution {
+
+    // LC686
+    fun repeatedStringMatch(a: String, b: String): Int {
+        if (a == b) return 1
+
+        // 1 查频
+        val aBool = BooleanArray(26)
+        val bBool = BooleanArray(26)
+        for (c in a) {
+            aBool[c - 'a'] = true
+        }
+        for (c in b) {
+            bBool[c - 'a'] = true
+        }
+        for (i in 0..25) {
+            if (bBool[i] && !aBool[i]) {
+                return -1
+            }
+        }
+
+        val sb: StringBuilder = StringBuilder(b.length * 2)
+        var ctr = 0
+        // 2.补长
+        do {
+            sb.append(a)
+            ctr++
+        } while (sb.length < b.length)
+        if (sb.indexOf(b) != -1) return ctr
+
+        while (sb.length < b.length * 2 || ctr <= 2) {
+            ctr++
+            sb.append(a)
+            if (sb.indexOf(b) != -1) return ctr
+        }
+
+        return -1
+    }
 
     // LC1154
     fun dayOfYear(date: String): Int {
