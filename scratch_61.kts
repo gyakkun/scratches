@@ -11,18 +11,17 @@ class Solution {
     val mod = 1000000007L
     val base1: Long = 29
     val base2: Long = 31
-    var s: String? = null
+    var s: String = ""
 
-    fun longestDupSubstring(s: String): String? {
+    fun longestDupSubstring(s: String): String {
         this.s = s
-        val ca = s.toCharArray()
         var lo = 0
         var hi = s.length - 1
-        var result: String? = ""
-        var tmp: String? = null
+        var result = ""
+        var tmp = ""
         while (lo < hi) { // 找最大值
             val mid = lo + (hi - lo + 1) / 2
-            if (helper(ca, mid).also { tmp = it } != null) {
+            if (helper(mid).also { tmp = it } != "") {
                 result = tmp
                 lo = mid
             } else {
@@ -32,7 +31,7 @@ class Solution {
         return result
     }
 
-    private fun helper(ca: CharArray, len: Int): String? {
+    private fun helper(len: Int): String {
         val m1: MutableSet<Int> = HashSet()
         val m2: MutableSet<Int> = HashSet()
         var hash1: Long = 0
@@ -44,9 +43,9 @@ class Solution {
             hash1 %= mod
             hash2 *= base2
             hash2 %= mod
-            hash1 += (ca[i] - 'a').toLong()
+            hash1 += (s[i] - 'a').toLong()
             hash1 %= mod
-            hash2 += (ca[i] - 'a').toLong()
+            hash2 += (s[i] - 'a').toLong()
             hash2 %= mod
             accu1 *= base1
             accu1 %= mod
@@ -55,12 +54,12 @@ class Solution {
         }
         m1.add(hash1.toInt())
         m2.add(hash2.toInt())
-        for (i in len until ca.size) {
+        for (i in len until s.length) {
             val victim = s!!.substring(i - len + 1, i + 1)
             hash1 =
-                ((hash1 * base1 - accu1 * (ca[i - len] - 'a')) % mod + mod + ca[i].toLong() - 'a'.toLong()) % mod
+                ((hash1 * base1 - accu1 * (s[i - len] - 'a')) % mod + mod + s[i].toLong() - 'a'.toLong()) % mod
             hash2 =
-                ((hash2 * base2 - accu2 * (ca[i - len] - 'a')) % mod + mod + ca[i].toLong() - 'a'.toLong()) % mod
+                ((hash2 * base2 - accu2 * (s[i - len] - 'a')) % mod + mod + s[i].toLong() - 'a'.toLong()) % mod
             if (m1.contains(hash1.toInt())
                 && m2.contains(hash2.toInt())
             ) {
@@ -69,7 +68,7 @@ class Solution {
             m1.add(hash1.toInt())
             m2.add(hash2.toInt())
         }
-        return null
+        return ""
     }
 
     // LC686
