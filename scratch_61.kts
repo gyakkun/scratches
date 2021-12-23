@@ -7,6 +7,71 @@ import kotlin.math.atan2
 
 class Solution {
 
+    // LC1044
+    val mod = 1000000007L
+    val base1: Long = 29
+    val base2: Long = 31
+    var s: String? = null
+
+    fun longestDupSubstring(s: String): String? {
+        this.s = s
+        val ca = s.toCharArray()
+        var lo = 0
+        var hi = s.length - 1
+        var result: String? = ""
+        var tmp: String? = null
+        while (lo < hi) { // 找最大值
+            val mid = lo + (hi - lo + 1) / 2
+            if (helper(ca, mid).also { tmp = it } != null) {
+                result = tmp
+                lo = mid
+            } else {
+                hi = mid - 1
+            }
+        }
+        return result
+    }
+
+    private fun helper(ca: CharArray, len: Int): String? {
+        val m1: MutableSet<Int> = HashSet()
+        val m2: MutableSet<Int> = HashSet()
+        var hash1: Long = 0
+        var hash2: Long = 0
+        var accu1: Long = 1
+        var accu2: Long = 1
+        for (i in 0 until len) {
+            hash1 *= base1
+            hash1 %= mod
+            hash2 *= base2
+            hash2 %= mod
+            hash1 += (ca[i] - 'a').toLong()
+            hash1 %= mod
+            hash2 += (ca[i] - 'a').toLong()
+            hash2 %= mod
+            accu1 *= base1
+            accu1 %= mod
+            accu2 *= base2
+            accu2 %= mod
+        }
+        m1.add(hash1.toInt())
+        m2.add(hash2.toInt())
+        for (i in len until ca.size) {
+            val victim = s!!.substring(i - len + 1, i + 1)
+            hash1 =
+                ((hash1 * base1 - accu1 * (ca[i - len] - 'a')) % mod + mod + ca[i].toLong() - 'a'.toLong()) % mod
+            hash2 =
+                ((hash2 * base2 - accu2 * (ca[i - len] - 'a')) % mod + mod + ca[i].toLong() - 'a'.toLong()) % mod
+            if (m1.contains(hash1.toInt())
+                && m2.contains(hash2.toInt())
+            ) {
+                return victim
+            }
+            m1.add(hash1.toInt())
+            m2.add(hash2.toInt())
+        }
+        return null
+    }
+
     // LC686
     fun repeatedStringMatch(a: String, b: String): Int {
         if (a == b) return 1
