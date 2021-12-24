@@ -6,19 +6,63 @@ import kotlin.math.atan2
 
 
 class Solution {
+    // LC1705
+    fun eatenApples(apples: IntArray, days: IntArray): Int {
+        val pq = PriorityQueue<IntArray>(compareBy { i -> i[1] })
+        val n: Int = apples.size
+        var result = 0
+        for (whichDay in apples.indices) {
+            if (apples[whichDay] == 0 && days[whichDay] == 0) {
+                // skip
+            } else if (apples[whichDay] != 0) {
+                pq.offer(intArrayOf(apples[whichDay], days[whichDay] + whichDay))
+            }
+            if (!pq.isEmpty()) {
+                var entry: IntArray? = null
+                do {
+                    val p = pq.poll()
+                    if (whichDay >= p[1]) continue
+                    entry = p
+                    break
+                } while (!pq.isEmpty())
+                if (entry != null) {
+                    entry[0]--
+                    result++
+                    if (entry[0] > 0) pq.offer(entry)
+                }
+            }
+        }
+        var whichDay = n
+        while (!pq.isEmpty()) {
+            var entry: IntArray? = null
+            do {
+                val p = pq.poll()
+                if (whichDay >= p[1]) continue
+                entry = p
+                break
+            } while (!pq.isEmpty())
+            if (entry != null) {
+                entry[0]--
+                result++
+                if (entry[0] > 0) pq.offer(entry)
+            }
+            whichDay++
+        }
+        return result
+    }
 
     // LC1044
     val mod = 1000000007L
     val base1: Long = 29
     val base2: Long = 31
-    var s: String = ""
+    var lc1044Str: String = ""
 
     fun longestDupSubstring(s: String): String {
-        this.s = s
+        this.lc1044Str = s
         var lo = 0
         var hi = s.length - 1
         var result = ""
-        var tmp = ""
+        var tmp: String
         while (lo < hi) { // 找最大值
             val mid = lo + (hi - lo + 1) / 2
             if (helper(mid).also { tmp = it } != "") {
@@ -43,9 +87,9 @@ class Solution {
             hash1 %= mod
             hash2 *= base2
             hash2 %= mod
-            hash1 += (s[i] - 'a').toLong()
+            hash1 += (lc1044Str[i] - 'a').toLong()
             hash1 %= mod
-            hash2 += (s[i] - 'a').toLong()
+            hash2 += (lc1044Str[i] - 'a').toLong()
             hash2 %= mod
             accu1 *= base1
             accu1 %= mod
@@ -54,12 +98,12 @@ class Solution {
         }
         m1.add(hash1.toInt())
         m2.add(hash2.toInt())
-        for (i in len until s.length) {
-            val victim = s!!.substring(i - len + 1, i + 1)
+        for (i in len until lc1044Str.length) {
+            val victim = lc1044Str.substring(i - len + 1, i + 1)
             hash1 =
-                ((hash1 * base1 - accu1 * (s[i - len] - 'a')) % mod + mod + s[i].toLong() - 'a'.toLong()) % mod
+                ((hash1 * base1 - accu1 * (lc1044Str[i - len] - 'a')) % mod + mod + lc1044Str[i].code.toLong() - 'a'.code.toLong()) % mod
             hash2 =
-                ((hash2 * base2 - accu2 * (s[i - len] - 'a')) % mod + mod + s[i].toLong() - 'a'.toLong()) % mod
+                ((hash2 * base2 - accu2 * (lc1044Str[i - len] - 'a')) % mod + mod + lc1044Str[i].code.toLong() - 'a'.code.toLong()) % mod
             if (m1.contains(hash1.toInt())
                 && m2.contains(hash2.toInt())
             ) {
@@ -149,13 +193,11 @@ class Solution {
         var maxRight = -1
         var prevEndIdx = -1
         for (heaterIdx in heaters) {
-            var left = -1
-            var right = -1
-            left = if (radius > heaterIdx) 0 else (heaterIdx - radius).toInt()
+            var left: Int = if (radius > heaterIdx) 0 else (heaterIdx - radius).toInt()
             if (left > houses[houses.size - 1]) {
                 return maxRight >= houses[houses.size - 1]
             }
-            right =
+            var right: Int =
                 if (radius + heaterIdx.toLong() > houses[houses.size - 1]) houses[houses.size - 1] else (heaterIdx + radius).toInt()
             maxRight = Math.max(maxRight, right)
             // 然后找覆盖范围内的两个端点坐标的下标, 如果这个区间的左侧坐标的下标比原来的极右侧坐标下标大超过1, 则中间有房屋没有被覆盖, 直接返回false
@@ -281,6 +323,11 @@ class Solution {
 
 var before = Instant.now()
 var s = Solution()
-println(s.visiblePoints(listOf(listOf(2, 1), listOf(2, 2), listOf(3, 3)), 90, listOf(1, 1)))
+println(
+    s.eatenApples(
+        intArrayOf(3, 0, 0, 0, 0, 2),
+        intArrayOf(3, 0, 0, 0, 0, 2)
+    )
+)
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
