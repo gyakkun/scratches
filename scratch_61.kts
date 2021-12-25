@@ -6,6 +6,9 @@ import kotlin.math.atan2
 
 
 class Solution {
+
+
+
     // LC1705
     fun eatenApples(apples: IntArray, days: IntArray): Int {
         val pq = PriorityQueue<IntArray>(compareBy { i -> i[1] })

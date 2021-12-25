@@ -12,6 +12,45 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1609
+    public boolean isEvenOddTree(TreeNode root) {
+        int layer = -1;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            layer++;
+            int qs = q.size();
+            if (layer % 2 == 0) { // 偶数层
+                int prev = -1;
+                for (int i = 0; i < qs; i++) {
+                    TreeNode p = q.poll();
+                    int v = p.val;
+                    if (v % 2 == 0) return false;
+                    if (i > 0) {
+                        if (v <= prev) return false;
+                    }
+                    prev = v;
+                    if (p.left != null) q.offer(p.left);
+                    if (p.right != null) q.offer(p.right);
+                }
+            } else { // 奇数层
+                int prev = -1;
+                for (int i = 0; i < qs; i++) {
+                    TreeNode p = q.poll();
+                    int v = p.val;
+                    if (v % 2 == 1) return false;
+                    if (i > 0) {
+                        if (v >= prev) return false;
+                    }
+                    prev = v;
+                    if (p.left != null) q.offer(p.left);
+                    if (p.right != null) q.offer(p.right);
+                }
+            }
+        }
+        return true;
+    }
+
 
     // LC1044
     final long mod = 1000000007l;
@@ -70,5 +109,24 @@ class Scratch {
             m2.add((int) hash2);
         }
         return null;
+    }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
