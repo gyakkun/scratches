@@ -7,7 +7,19 @@ import kotlin.math.atan2
 
 class Solution {
 
-
+    // LC1078
+    fun findOcurrences(text: String, first: String, second: String): Array<String> {
+        val s = text.split(" ");
+        var i = 0
+        val result = ArrayList<String>()
+        while (i + 2 < s.size) {
+            if (s[i] == first && s[i + 1] == second) {
+                result.add(s[i + 2])
+            }
+            i++
+        }
+        return result.toTypedArray()
+    }
 
     // LC1705
     fun eatenApples(apples: IntArray, days: IntArray): Int {
