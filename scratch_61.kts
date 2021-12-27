@@ -1,11 +1,21 @@
-import java.time.Duration
-import java.time.Instant
 import java.util.*
-import kotlin.math.PI
-import kotlin.math.atan2
-
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class Solution {
+
+    // JZOFF II 057 LC220 **
+    fun containsNearbyAlmostDuplicate(nums: IntArray, k: Int, t: Int): Boolean {
+        val ts = TreeSet<Long>()
+        for (i in nums.indices) {
+            ts.ceiling((nums[i].toLong() - t.toLong()))?.let { if (it <= nums[i].toLong() + t.toLong()) return true }
+            ts.add(nums[i].toLong())
+            if (i >= k) {
+                ts.remove((nums[i - k].toLong()))
+            }
+        }
+        return false
+    }
 
     // LC902 **
     fun atMostNGivenDigitSet(digits: Array<String?>, n: Int): Int {
@@ -183,9 +193,7 @@ class Solution {
                 ((hash1 * base1 - accu1 * (lc1044Str[i - len] - 'a')) % mod + mod + lc1044Str[i].code.toLong() - 'a'.code.toLong()) % mod
             hash2 =
                 ((hash2 * base2 - accu2 * (lc1044Str[i - len] - 'a')) % mod + mod + lc1044Str[i].code.toLong() - 'a'.code.toLong()) % mod
-            if (m1.contains(hash1.toInt())
-                && m2.contains(hash2.toInt())
-            ) {
+            if (m1.contains(hash1.toInt()) && m2.contains(hash2.toInt())) {
                 return victim
             }
             m1.add(hash1.toInt())
@@ -404,8 +412,7 @@ var before = Instant.now()
 var s = Solution()
 println(
     s.eatenApples(
-        intArrayOf(3, 0, 0, 0, 0, 2),
-        intArrayOf(3, 0, 0, 0, 0, 2)
+        intArrayOf(3, 0, 0, 0, 0, 2), intArrayOf(3, 0, 0, 0, 0, 2)
     )
 )
 var after = Instant.now()
