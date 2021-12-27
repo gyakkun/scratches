@@ -1,8 +1,60 @@
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 
+
+var before = Instant.now()
+var s = Solution()
+println(
+    s.eatenApples(
+        intArrayOf(3, 0, 0, 0, 0, 2), intArrayOf(3, 0, 0, 0, 0, 2)
+    )
+)
+var after = Instant.now()
+System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
+
 class Solution {
+
+    internal class MyQueue() {
+
+        /** Initialize your data structure here. */
+        val s: Deque<Int> = LinkedList()
+        val tmp: Deque<Int> = LinkedList()
+
+        /** Push element x to the back of queue. */
+        fun push(x: Int) {
+            s.push(x)
+        }
+
+        /** Removes the element from in front of queue and returns that element. */
+        fun pop(): Int {
+            while (s.size > 1) {
+                tmp.push(s.pop())
+            }
+            val result = s.pop()
+            while (!tmp.isEmpty()) s.push(tmp.pop())
+            return result
+        }
+
+        /** Get the front element. */
+        fun peek(): Int {
+            while (s.size > 1) {
+                tmp.push(s.pop())
+            }
+            val result = s.pop()
+            tmp.push(result)
+            while (!tmp.isEmpty()) s.push(tmp.pop())
+            return result
+        }
+
+        /** Returns whether the queue is empty. */
+        fun empty(): Boolean {
+            return s.isEmpty()
+        }
+
+    }
 
     // JZOFF II 057 LC220 **
     fun containsNearbyAlmostDuplicate(nums: IntArray, k: Int, t: Int): Boolean {
@@ -407,13 +459,3 @@ class Solution {
         return count
     }
 }
-
-var before = Instant.now()
-var s = Solution()
-println(
-    s.eatenApples(
-        intArrayOf(3, 0, 0, 0, 0, 2), intArrayOf(3, 0, 0, 0, 0, 2)
-    )
-)
-var after = Instant.now()
-System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
