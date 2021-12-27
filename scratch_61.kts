@@ -7,6 +7,46 @@ import kotlin.math.atan2
 
 class Solution {
 
+    // LC825
+    fun numFriendRequests(ages: IntArray): Int {
+        // 以下情况 X 不会向 Y 发送好友请求
+        // age[y] <= 0.5 * age[x] + 7
+        // age[y] > age[x]
+        // age[y] > 100 && age[x] < 100
+        var result: Int = 0;
+        Arrays.sort(ages);
+        var idx: Int = 0;
+        var n: Int = ages.size;
+        while (idx < n) {
+            var age = ages[idx]
+            var same: Int = 1;
+            while (idx + 1 < n && ages[idx + 1] == ages[idx]) {
+                same++;
+                idx++;
+            }
+
+            // 找到 大于 0.5 * age + 7 的最小下标
+            var lo: Int = 0
+            var hi: Int = idx - 1
+            var target: Int = (0.5 * age + 7).toInt();
+            while (lo < hi) {
+                val mid = lo + (hi - lo) / 2;
+                if (ages[mid] > target) {
+                    hi = mid;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+            var count: Int = 0;
+            if (ages[lo] > target) {
+                count = idx - lo;
+            }
+            result += same * count;
+            idx++;
+        }
+        return result;
+    }
+
     // LC1078
     fun findOcurrences(text: String, first: String, second: String): Array<String> {
         val s = text.split(" ");

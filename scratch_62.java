@@ -5,11 +5,47 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.longestDupSubstring("asdfdsafdsaqwuieroudsajkasdaisdufoiueqoiurioqwjfojndsaknadhfjkahgkjhfgskjhfasd"));
+        System.out.println(s.numFriendRequests(new int[]{20, 30, 100, 110, 120}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC825
+    public int numFriendRequests(int[] ages) {
+        // 以下情况 X 不会向 Y 发送好友请求
+        // age[y] <= 0.5 * age[x] + 7
+        // age[y] > age[x]
+        // age[y] > 100 && age[x] < 100
+        int result = 0;
+        Arrays.sort(ages);
+        int idx = 0, n = ages.length;
+        while (idx < n) {
+            int age = ages[idx], same = 1;
+            while (idx + 1 < n && ages[idx + 1] == ages[idx]) {
+                same++;
+                idx++;
+            }
+
+            // 找到 大于 0.5 * age + 7 的最小下标
+            int lo = 0, hi = idx - 1, target = (int) (0.5 * age + 7);
+            while (lo < hi) {
+                int mid = lo + (hi - lo) / 2;
+                if (ages[mid] > target) {
+                    hi = mid;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+            int count = 0;
+            if (ages[lo] > target) {
+                count = idx - lo;
+            }
+            result += same * count;
+            idx++;
+        }
+        return result;
     }
 
     // LC1609
