@@ -5,11 +5,40 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.numFriendRequests(new int[]{20, 30, 100, 110, 120}));
+        System.out.println(s.atMostNGivenDigitSet(
+                new String[]{"1", "3", "5", "7"},
+                100
+        ));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC902 **
+    public int atMostNGivenDigitSet(String[] digits, int n) {
+        String nStr = String.valueOf(n);
+        char[] ca = nStr.toCharArray();
+        int k = ca.length;
+        int[] dp = new int[k + 1];
+        dp[k] = 1;
+
+        for (int i = k - 1; i >= 0; i--) {
+            int digit = ca[i] - '0';
+            for (String dStr : digits) {
+                int d = Integer.valueOf(dStr);
+                if (d < digit) {
+                    dp[i] += Math.pow(digits.length, /*剩下的位数可以随便选*/ k - i - 1);
+                } else if (d == digit) {
+                    dp[i] += dp[i + 1];
+                }
+            }
+        }
+
+        for (int i = 1; i < k; i++) {
+            dp[0] += Math.pow(digits.length, i);
+        }
+        return dp[0];
     }
 
     // LC825

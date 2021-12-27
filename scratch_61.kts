@@ -7,6 +7,30 @@ import kotlin.math.atan2
 
 class Solution {
 
+    // LC902 **
+    fun atMostNGivenDigitSet(digits: Array<String?>, n: Int): Int {
+        val nStr = n.toString()
+        val ca = nStr.toCharArray()
+        val k = ca.size
+        val dp = IntArray(k + 1)
+        dp[k] = 1
+        for (i in k - 1 downTo 0) {
+            val digit = ca[i] - '0'
+            for (dStr in digits) {
+                val d = Integer.valueOf(dStr)
+                if (d < digit) {
+                    dp[i] += Math.pow(digits.size.toDouble(), ( /*剩下的位数可以随便选*/k - i - 1).toDouble()).toInt()
+                } else if (d == digit) {
+                    dp[i] += dp[i + 1]
+                }
+            }
+        }
+        for (i in 1 until k) {
+            dp[0] += Math.pow(digits.size.toDouble(), i.toDouble()).toInt()
+        }
+        return dp[0]
+    }
+
     // LC825
     fun numFriendRequests(ages: IntArray): Int {
         // 以下情况 X 不会向 Y 发送好友请求
