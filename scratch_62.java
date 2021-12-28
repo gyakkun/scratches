@@ -1,3 +1,4 @@
+import javax.swing.text.AsyncBoxView;
 import java.util.*;
 
 class Scratch {
@@ -5,14 +6,42 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.atMostNGivenDigitSet(
-                new String[]{"1", "3", "5", "7"},
-                100
-        ));
+        System.out.println(s.findAllConcatenatedWordsInADict(new String[]{"cat", "cats", "catsdogcats", "dog", "dogcatsdog", "hippopotamuses", "rat", "ratcatdogcat"}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC472
+    Trie trie = new Trie();
+
+    public List<String> findAllConcatenatedWordsInADict(String[] words) {
+        Arrays.sort(words, Comparator.comparingInt(o -> o.length()));
+        List<String> result = new ArrayList<>();
+        for (String w : words) {
+            if (w.length() == 0) continue;
+            if (helper(w, 0)) {
+                result.add(w);
+            } else {
+                trie.addWord(w);
+            }
+        }
+        return result;
+    }
+
+    private boolean helper(String word, int startIdx) {
+        if (word.length() == startIdx) return true;
+        Trie.TrieNode cur = trie.root;
+        for (int i = startIdx; i < word.length(); i++) {
+            char c = word.charAt(i);
+            if (cur.children[c] == null) return false;
+            cur = cur.children[c];
+            if (cur.end > 0) {
+                if (helper(word, i + 1)) return true;
+            }
+        }
+        return false;
     }
 
     // LC902 **
@@ -150,9 +179,9 @@ class Scratch {
             hash1 %= mod;
             hash2 *= base2;
             hash2 %= mod;
-            hash1 += ca[i] - 'a';
+            hash1 += ca[i];
             hash1 %= mod;
-            hash2 += ca[i] - 'a';
+            hash2 += ca[i];
             hash2 %= mod;
             accu1 *= base1;
             accu1 %= mod;
@@ -163,11 +192,9 @@ class Scratch {
         m2.add((int) hash2);
         for (int i = len; i < ca.length; i++) {
             String victim = s.substring(i - len + 1, i + 1);
-            hash1 = (((hash1 * base1 - accu1 * (ca[i - len] - 'a')) % mod) + mod + ca[i] - 'a') % mod;
-            hash2 = (((hash2 * base2 - accu2 * (ca[i - len] - 'a')) % mod) + mod + ca[i] - 'a') % mod;
-            if (m1.contains((int) hash1)
-                    && m2.contains((int) hash2)
-            ) {
+            hash1 = (((hash1 * base1 - accu1 * (ca[i - len])) % mod) + mod + ca[i]) % mod;
+            hash2 = (((hash2 * base2 - accu2 * (ca[i - len])) % mod) + mod + ca[i]) % mod;
+            if (m1.contains((int) hash1) && m2.contains((int) hash2)) {
                 return victim;
             }
             m1.add((int) hash1);
@@ -193,5 +220,62 @@ class TreeNode {
         this.val = val;
         this.left = left;
         this.right = right;
+    }
+}
+
+class Trie {
+    TrieNode root = new TrieNode();
+
+    public boolean search(String query) {
+        TrieNode result = getNode(query);
+        return result != null && result.end > 0;
+    }
+
+    public boolean beginWith(String query) {
+        return getNode(query) != null;
+    }
+
+    public void addWord(String word) {
+        // if (getNode(word) != null) return;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children[c] == null) {
+                cur.children[c] = new TrieNode();
+            }
+            cur = cur.children[c];
+            cur.path++;
+        }
+        cur.end++;
+    }
+
+    public boolean removeWord(String word) {
+        if (getNode(word) == null) return false;
+        TrieNode cur = root;
+        for (char c : word.toCharArray()) {
+            if (cur.children[c].path-- == 1) {
+                cur.children[c] = null;
+                return true;
+            }
+            cur = cur.children[c];
+        }
+        cur.end--;
+        return true;
+    }
+
+
+    private TrieNode getNode(String query) {
+        TrieNode cur = root;
+        for (char c : query.toCharArray()) {
+            if (cur.children[c] == null) return null;
+            cur = cur.children[c];
+        }
+        return cur;
+    }
+
+
+    class TrieNode {
+        TrieNode[] children = new TrieNode[128];
+        int end = 0;
+        int path = 0;
     }
 }

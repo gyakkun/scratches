@@ -1,8 +1,8 @@
+import java.lang.Math.PI
+import java.lang.Math.atan2
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 
 var before = Instant.now()
@@ -16,6 +16,38 @@ var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC472
+    var trie = Trie()
+
+    fun findAllConcatenatedWordsInADict(words: Array<String>): List<String>? {
+        Arrays.sort(words, compareBy { it.length })
+        val result: MutableList<String> = ArrayList()
+        for (w in words) {
+            if (w.isEmpty()) continue
+            if (helper(w, 0)) {
+                result.add(w)
+            } else {
+                trie.addWord(w)
+            }
+        }
+        return result
+    }
+
+    private fun helper(word: String, startIdx: Int): Boolean {
+        if (word.length == startIdx) return true
+        var cur = trie.root
+        for (i in startIdx until word.length) {
+            val c = word[i]
+            if (cur.children[c.code] == null) return false
+            cur = cur.children[c.code]!!
+            if (cur.end > 0) {
+                if (helper(word, i + 1)) return true
+            }
+        }
+        return false
+    }
+
 
     internal class MyQueue() {
 
@@ -457,5 +489,59 @@ class Solution {
             empty += ex
         }
         return count
+    }
+}
+
+class Trie {
+    var root: TrieNode = TrieNode()
+    fun search(query: String): Boolean {
+        val result = getNode(query)
+        return result != null && result.end > 0
+    }
+
+    fun beginWith(query: String): Boolean {
+        return getNode(query) != null
+    }
+
+    fun addWord(word: String) {
+        // if (getNode(word) != null) return;
+        var cur: TrieNode = root
+        for (c in word.toCharArray()) {
+            if (cur.children[c.toInt()] == null) {
+                cur.children[c.toInt()] = TrieNode()
+            }
+            cur = cur.children[c.toInt()]!!
+            cur!!.path++
+        }
+        cur!!.end++
+    }
+
+    fun removeWord(word: String): Boolean {
+        if (getNode(word) == null) return false
+        var cur: TrieNode? = root
+        for (c in word.toCharArray()) {
+            if (cur!!.children[c.toInt()]!!.path-- == 1) {
+                cur!!.children[c.toInt()] = null
+                return true
+            }
+            cur = cur!!.children[c.toInt()]
+        }
+        cur!!.end--
+        return true
+    }
+
+    private fun getNode(query: String): TrieNode? {
+        var cur: TrieNode? = root
+        for (c in query.toCharArray()) {
+            if (cur!!.children[c.toInt()] == null) return null
+            cur = cur!!.children[c.toInt()]
+        }
+        return cur
+    }
+
+    inner class TrieNode {
+        var children = arrayOfNulls<TrieNode>(128)
+        var end = 0
+        var path = 0
     }
 }
