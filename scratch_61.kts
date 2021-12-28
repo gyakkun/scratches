@@ -3,46 +3,70 @@ import java.lang.Math.atan2
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 var before = Instant.now()
 var s = Solution()
 println(
-    s.eatenApples(
-        intArrayOf(3, 0, 0, 0, 0, 2), intArrayOf(3, 0, 0, 0, 0, 2)
-    )
+    s.generateParenthesis(3)
 )
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // JZOF II 085
+    var result = java.util.ArrayList<String>()
+    fun generateParenthesis(n: Int): List<String> {
+        helper(StringBuilder(), 0, 0, n)
+        return result
+    }
+
+    fun helper(sb: StringBuilder, l: Int, r: Int, target: Int) {
+        if (sb.length == 2 * target) {
+            result.add(sb.toString())
+            return
+        }
+        if (l < target) {
+            sb.append('(')
+            helper(sb, l + 1, r, target)
+            sb.deleteCharAt(sb.length - 1)
+        }
+        if (r < l) {
+            sb.append(')')
+            helper(sb, l, r + 1, target)
+            sb.deleteCharAt(sb.length - 1)
+        }
+    }
+
+
     // LC472
-    var trie = Trie()
+    var lc472Trie = Trie()
 
     fun findAllConcatenatedWordsInADict(words: Array<String>): List<String>? {
         Arrays.sort(words, compareBy { it.length })
         val result: MutableList<String> = ArrayList()
         for (w in words) {
             if (w.isEmpty()) continue
-            if (helper(w, 0)) {
+            if (lc472Helper(w, 0)) {
                 result.add(w)
             } else {
-                trie.addWord(w)
+                lc472Trie.addWord(w)
             }
         }
         return result
     }
 
-    private fun helper(word: String, startIdx: Int): Boolean {
+    private fun lc472Helper(word: String, startIdx: Int): Boolean {
         if (word.length == startIdx) return true
-        var cur = trie.root
+        var cur = lc472Trie.root
         for (i in startIdx until word.length) {
             val c = word[i]
             if (cur.children[c.code] == null) return false
             cur = cur.children[c.code]!!
             if (cur.end > 0) {
-                if (helper(word, i + 1)) return true
+                if (lc472Helper(word, i + 1)) return true
             }
         }
         return false
@@ -238,7 +262,7 @@ class Solution {
         var tmp: String
         while (lo < hi) { // 找最大值
             val mid = lo + (hi - lo + 1) / 2
-            if (helper(mid).also { tmp = it } != "") {
+            if (lc1044Helper(mid).also { tmp = it } != "") {
                 result = tmp
                 lo = mid
             } else {
@@ -248,7 +272,7 @@ class Solution {
         return result
     }
 
-    private fun helper(len: Int): String {
+    private fun lc1044Helper(len: Int): String {
         val m1: MutableSet<Int> = HashSet()
         val m2: MutableSet<Int> = HashSet()
         var hash1: Long = 0
