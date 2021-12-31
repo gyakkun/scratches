@@ -1,34 +1,57 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import kotlin.collections.HashMap
 
 var before = Instant.now()
 var s = Solution()
 println(
-        s.eatenApples(
-                intArrayOf(3, 0, 0, 0, 0, 2),
-                intArrayOf(3, 0, 0, 0, 0, 2)
-        )
+    s.eatenApples(
+        intArrayOf(3, 0, 0, 0, 0, 2),
+        intArrayOf(3, 0, 0, 0, 0, 2)
+    )
 )
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC507
+    fun checkPerfectNumber(num: Int): Boolean {
+        if (num === 1) return false
+        val sqrt = Math.sqrt(num.toDouble()).toInt()
+        var sum = 1
+        for (i in 2..sqrt) {
+            if (num % i === 0) {
+                sum += i
+                if (num / i !== i) {
+                    sum += num / i
+                }
+            }
+            if (sum > num) return false
+        }
+        return sum == num
+    }
+
     // LC846
     fun isNStraightHand(hand: IntArray, groupSize: Int): Boolean {
         if (hand.size % groupSize != 0) return false
         val m = TreeMap<Int, Int>()
         for (i in hand) {
-            m[i] = m.getOrDefault(i, 0) + 1
+            m[i] = if (m[i] == null) 1 else m[i]!! + 1
+            // m[i] = m.getOrDefault(i, 0) + 1
         }
-        while(!m.isEmpty()){
+        while (!m.isEmpty()) {
             val firstKey = m.firstKey()
             for (i in 0 until groupSize) {
-                if(!m.containsKey(firstKey+i)) return false
-                m[firstKey + i] = m[firstKey + i]!! - 1
-                if(m[firstKey+i]==0) m.remove(firstKey+i)
+                val targetKey = firstKey + i
+                m[targetKey]?.let {
+                    m[targetKey] = it - 1
+                    if (m[targetKey] == 0) m.remove(targetKey)
+                } ?: return false;
+
+                // if (!m.containsKey(targetKey)) return false
+                // m[targetKey] = m[targetKey]!! - 1
+                // if (m[targetKey] == 0) m.remove(targetKey)
             }
         }
         return true
