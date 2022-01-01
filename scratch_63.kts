@@ -2,6 +2,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.*
 
+
 var before = Instant.now()
 var s = Solution()
 println(
@@ -14,6 +15,17 @@ var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC2022
+    fun construct2DArray(original: IntArray, m: Int, n: Int): Array<IntArray> {
+        val len: Int = original.size
+        if (len != m * n) return arrayOf()
+        val result = Array(m) { IntArray(n) }
+        for (i in 0 until m) {
+            System.arraycopy(original, i * n, result[i], 0, n)
+        }
+        return result
+    }
 
     // LC507
     fun checkPerfectNumber(num: Int): Boolean {

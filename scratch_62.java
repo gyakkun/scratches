@@ -1,4 +1,4 @@
-import javax.swing.text.AsyncBoxView;
+import javax.management.OperationsException;
 import java.util.*;
 
 class Scratch {
@@ -13,32 +13,43 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2022
+    public int[][] construct2DArray(int[] original, int m, int n) {
+        int len = original.length;
+        if (len != m * n) return new int[][]{};
+        int[][] result = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            System.arraycopy(original, i * n, result[i], 0, n);
+        }
+        return result;
+    }
+
     // LC472
-    Trie trie = new Trie();
+    Trie lc472Trie = new Trie();
 
     public List<String> findAllConcatenatedWordsInADict(String[] words) {
         Arrays.sort(words, Comparator.comparingInt(o -> o.length()));
         List<String> result = new ArrayList<>();
         for (String w : words) {
             if (w.length() == 0) continue;
-            if (helper(w, 0)) {
+            if (lc472Helper(w, 0)) {
                 result.add(w);
             } else {
-                trie.addWord(w);
+                lc472Trie.addWord(w);
             }
         }
         return result;
     }
 
-    private boolean helper(String word, int startIdx) {
+    private boolean lc472Helper(String word, int startIdx) {
         if (word.length() == startIdx) return true;
-        Trie.TrieNode cur = trie.root;
+        Trie.TrieNode cur = lc472Trie.root;
         for (int i = startIdx; i < word.length(); i++) {
             char c = word.charAt(i);
             if (cur.children[c] == null) return false;
             cur = cur.children[c];
             if (cur.end > 0) {
-                if (helper(word, i + 1)) return true;
+                if (lc472Helper(word, i + 1)) return true;
             }
         }
         return false;
@@ -147,20 +158,20 @@ class Scratch {
 
 
     // LC1044
-    final long mod = 1000000007l;
-    final long base1 = 29;
-    final long base2 = 31;
-    String s;
+    final long lc1044Mod = 1000000007l;
+    final long lc1044Base1 = 29;
+    final long lc1044Base2 = 31;
+    String lc1044S;
 
     public String longestDupSubstring(String s) {
-        this.s = s;
+        this.lc1044S = s;
         char[] ca = s.toCharArray();
         int lo = 0, hi = s.length() - 1;
         String result = "";
         String tmp = null;
         while (lo < hi) { // 找最大值
             int mid = lo + (hi - lo + 1) / 2;
-            if ((tmp = helper(ca, mid)) != null) {
+            if ((tmp = lc1044Helper(ca, mid)) != null) {
                 result = tmp;
                 lo = mid;
             } else {
@@ -170,30 +181,30 @@ class Scratch {
         return result;
     }
 
-    private String helper(char[] ca, int len) {
+    private String lc1044Helper(char[] ca, int len) {
         Set<Integer> m1 = new HashSet<>();
         Set<Integer> m2 = new HashSet<>();
         long hash1 = 0, hash2 = 0, accu1 = 1, accu2 = 1;
         for (int i = 0; i < len; i++) {
-            hash1 *= base1;
-            hash1 %= mod;
-            hash2 *= base2;
-            hash2 %= mod;
+            hash1 *= lc1044Base1;
+            hash1 %= lc1044Mod;
+            hash2 *= lc1044Base2;
+            hash2 %= lc1044Mod;
             hash1 += ca[i];
-            hash1 %= mod;
+            hash1 %= lc1044Mod;
             hash2 += ca[i];
-            hash2 %= mod;
-            accu1 *= base1;
-            accu1 %= mod;
-            accu2 *= base2;
-            accu2 %= mod;
+            hash2 %= lc1044Mod;
+            accu1 *= lc1044Base1;
+            accu1 %= lc1044Mod;
+            accu2 *= lc1044Base2;
+            accu2 %= lc1044Mod;
         }
         m1.add((int) hash1);
         m2.add((int) hash2);
         for (int i = len; i < ca.length; i++) {
-            String victim = s.substring(i - len + 1, i + 1);
-            hash1 = (((hash1 * base1 - accu1 * (ca[i - len])) % mod) + mod + ca[i]) % mod;
-            hash2 = (((hash2 * base2 - accu2 * (ca[i - len])) % mod) + mod + ca[i]) % mod;
+            String victim = lc1044S.substring(i - len + 1, i + 1);
+            hash1 = (((hash1 * lc1044Base1 - accu1 * (ca[i - len])) % lc1044Mod) + lc1044Mod + ca[i]) % lc1044Mod;
+            hash2 = (((hash2 * lc1044Base2 - accu2 * (ca[i - len])) % lc1044Mod) + lc1044Mod + ca[i]) % lc1044Mod;
             if (m1.contains((int) hash1) && m2.contains((int) hash2)) {
                 return victim;
             }
