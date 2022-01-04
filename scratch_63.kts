@@ -16,6 +16,59 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC913 Minmax
+    val TIE = 0
+    val CAT_WIN = 2
+    val MOUSE_WIN = 1
+    lateinit var lc913Memo: Array<Array<Array<Int?>>>
+
+    fun catMouseGame(graph: Array<IntArray>): Int? {
+        lc913Memo = Array(graph.size * 2 + 1) {
+            Array<Array<Int?>>(graph.size + 1) {
+                arrayOfNulls(
+                    graph.size + 1
+                )
+            }
+        }
+        return lc913Helper(0, graph, 1, 2)
+    }
+
+    private fun lc913Helper(steps: Int, graph: Array<IntArray>, mousePoint: Int, catPoint: Int): Int? {
+        if (steps >= 2 * graph.size) return TIE
+        if (lc913Memo[steps][mousePoint][catPoint] != null) return lc913Memo[steps][mousePoint][catPoint]
+        if (mousePoint == catPoint) return CAT_WIN.also { lc913Memo[steps][mousePoint][catPoint] = it }
+        if (mousePoint == 0) return MOUSE_WIN.also { lc913Memo[steps][mousePoint][catPoint] = it }
+        val isMouse = steps % 2 == 0
+        return if (isMouse) {
+            var catCanWin = true
+            for (i in graph[mousePoint]) {
+                val nextResult = lc913Helper(steps + 1, graph, i, catPoint)
+                if (nextResult == MOUSE_WIN) {
+                    return MOUSE_WIN.also { lc913Memo[steps][mousePoint][catPoint] = it }
+                } else if (nextResult == TIE) {   /// 极小化极大: 猫嬴是一个极大值, 如果nextResult == CAT_WIN, 但是nextWin存在极小值TIE, 则选TIE不选CAT_WIN
+                    catCanWin = false
+                }
+            }
+            if (catCanWin) CAT_WIN.also {
+                lc913Memo[steps][mousePoint][catPoint] = it
+            } else TIE.also { lc913Memo[steps][mousePoint][catPoint] = it }
+        } else {
+            var mouseCanWin = true
+            for (i in graph[catPoint]) {
+                if (i == 0) continue
+                val nextResult = lc913Helper(steps + 1, graph, mousePoint, i)
+                if (nextResult == CAT_WIN) {
+                    return CAT_WIN.also { lc913Memo[steps][mousePoint][catPoint] = it }
+                } else if (nextResult == TIE) {
+                    mouseCanWin = false
+                }
+            }
+            if (mouseCanWin) MOUSE_WIN.also {
+                lc913Memo[steps][mousePoint][catPoint] = it
+            } else TIE.also { lc913Memo[steps][mousePoint][catPoint] = it }
+        }
+    }
+
     // LC2022
     fun construct2DArray(original: IntArray, m: Int, n: Int): Array<IntArray> {
         val len: Int = original.size
