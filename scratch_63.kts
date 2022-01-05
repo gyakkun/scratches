@@ -1,6 +1,8 @@
+import java.lang.StringBuilder
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import kotlin.collections.HashSet
 
 
 var before = Instant.now()
@@ -15,6 +17,33 @@ var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC1756
+    fun modifyString(s: String): String {
+        val sb = StringBuilder(s.length)
+        outer@ for (i in s.indices) {
+            val c = s[i]
+            if (c.isLetter()) {
+                sb.append(c)
+                continue@outer
+            }
+            val hs = HashSet<Char>(3)
+            if (i > 0) {
+                hs.add(sb[sb.length - 1])
+            }
+            if (i + 1 < s.length && s[i + 1].isLetter()) {
+                hs.add(s[i + 1])
+            }
+            for (j in 0 until 26) {
+                val alt: Char = 'a' + j
+                if (!hs.contains(alt)) {
+                    sb.append(alt)
+                    continue@outer
+                }
+            }
+        }
+        return sb.toString()
+    }
 
     // LC913 Minmax
     val TIE = 0
