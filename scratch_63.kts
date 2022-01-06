@@ -18,6 +18,28 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC71
+    fun simplifyPath(path: String): String {
+        val escape = setOf(".", "..", "")
+        val list = path.split("/")
+        val stack = LinkedList<String>()
+        val result = StringBuilder("/")
+        for (i in list) {
+            if (!escape.contains(i)) {
+                stack.push(i)
+            } else if (i == "..") {
+                if (!stack.isEmpty()) {
+                    stack.pop()
+                }
+            }
+        }
+        while (!stack.isEmpty()) {
+            result.append(stack.pollLast() + "/")
+        }
+        result.deleteCharAt(result.length - 1)
+        return if (result.toString() == "") "/" else result.toString()
+    }
+
     // LC1756
     fun modifyString(s: String): String {
         val sb = StringBuilder(s.length)
