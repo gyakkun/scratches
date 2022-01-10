@@ -18,6 +18,28 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC306
+    fun isAdditiveNumber(num: String): Boolean {
+        val n = num.length
+        for (i in 1..n / 2) {
+            val first = num.substring(0, i).toLong()
+            if (first.toString().length != i) continue
+            for (j in i + 1 until n) {
+                val second = num.substring(i, j).toLong()
+                if (second.toString().length != j - i) continue
+                if (judge(first, second, j, num)) return true
+            }
+        }
+        return false
+    }
+
+    private fun judge(first: Long, second: Long, idx: Int, num: String): Boolean {
+        if (idx == num.length) return true
+        val sum = first + second
+        if (num.indexOf(sum.toString()) != idx) return false
+        return judge(second, sum, idx + sum.toString().length, num)
+    }
+
     // LC71
     fun simplifyPath(path: String): String {
         val escape = setOf(".", "..", "")
