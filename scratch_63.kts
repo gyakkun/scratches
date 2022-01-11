@@ -1,8 +1,9 @@
-import java.lang.StringBuilder
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import kotlin.collections.HashSet
+import java.util.stream.Collectors
+import kotlin.collections.ArrayList
+import kotlin.reflect.jvm.internal.impl.builtins.StandardNames.FqNames.target
 
 
 var before = Instant.now()
@@ -17,6 +18,77 @@ var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC1036
+    fun isEscapePossible(blocked: Array<IntArray>, source: IntArray, target: IntArray): Boolean {
+        if (blocked.size < 2) return true
+        val bound = 1000000
+        val dir = arrayOf(intArrayOf(0, 1), intArrayOf(0, -1), intArrayOf(1, 0), intArrayOf(-1, 0))
+        val rowSet = TreeSet<Int>()
+        val colSet = TreeSet<Int>()
+        val allPoints = ArrayList<IntArray>(blocked.toList())
+        allPoints.add(source)
+        allPoints.add(target)
+        for (b in allPoints) {
+            rowSet.add(b[0])
+            colSet.add(b[1])
+        }
+
+        var rid = if (rowSet.first() == 0) 0 else 1
+        var cid = if (colSet.first() == 0) 0 else 1 // bound it from 0 to 999999
+
+        val rit: Iterator<Int> = rowSet.iterator()
+        val cit: Iterator<Int> = colSet.iterator()
+        val rowMap: MutableMap<Int, Int> = HashMap()
+        val colMap: MutableMap<Int, Int> = HashMap()
+        var pr = -1
+        var pc = -1
+        if (rit.hasNext()) rowMap[rit.next().also { pr = it }] = rid
+        if (cit.hasNext()) colMap[cit.next().also { pc = it }] = cid
+        while (rit.hasNext()) {
+            val nr = rit.next()
+            rid += if (nr == pr + 1) 1 else 2
+            rowMap[nr] = rid
+            pr = nr
+        }
+        while (cit.hasNext()) {
+            val nc = cit.next()
+            cid += if (nc == pc + 1) 1 else 2
+            colMap[nc] = cid
+            pc = nc
+        }
+        val rBound = if (pr == bound - 1) rid else rid + 1
+        val cBound = if (pc == bound - 1) cid else cid + 1
+        val mtx = Array(rBound + 1) {
+            BooleanArray(
+                cBound + 1
+            )
+        } // use as visited[][] too
+
+        for (b in blocked) {
+            mtx[rowMap[b[0]]!!][colMap[b[1]]!!] = true
+        }
+        val sr = rowMap[source[0]]!!
+        val sc = colMap[source[1]]!!
+        val tr = rowMap[target[0]]!!
+        val tc = colMap[target[1]]!!
+        val q: Deque<IntArray> = LinkedList()
+        q.offer(intArrayOf(sr, sc))
+        while (!q.isEmpty()) {
+            val p = q.poll()
+            if (p[0] == tr && p[1] == tc) return true
+            if (mtx[p[0]][p[1]]) continue
+            mtx[p[0]][p[1]] = true
+            for (d in dir) {
+                val inr = p[0] + d[0]
+                val inc = p[1] + d[1]
+                if (inr in 0..rBound && inc in 0..cBound && !mtx[inr][inc]) {
+                    q.offer(intArrayOf(inr, inc))
+                }
+            }
+        }
+        return false
+    }
 
     // LC306
     fun isAdditiveNumber(num: String): Boolean {

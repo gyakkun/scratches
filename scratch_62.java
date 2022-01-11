@@ -1,16 +1,79 @@
 import javax.management.OperationsException;
+import javax.swing.tree.RowMapper;
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.findAllConcatenatedWordsInADict(new String[]{"cat", "cats", "catsdogcats", "dog", "dogcatsdog", "hippopotamuses", "rat", "ratcatdogcat"}));
+        System.out.println(s.isEscapePossible(
+                new int[][]{{691938, 300406}, {710196, 624190}, {858790, 609485}, {268029, 225806}, {200010, 188664}, {132599, 612099}, {329444, 633495}, {196657, 757958}, {628509, 883388}},
+                new int[]{655988, 180910},
+                new int[]{267728, 840949}
+        ));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1036
+    public boolean isEscapePossible(int[][] blocked, int[] source, int[] target) {
+        if (blocked.length < 2) return true;
+        final int bound = 1000000;
+        final int[][] dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        TreeSet<Integer> rowSet = new TreeSet<>(), colSet = new TreeSet<>();
+        List<int[]> allPoints = new ArrayList<>(Arrays.stream(blocked).collect(Collectors.toList())) {{
+            add(source);
+            add(target);
+        }};
+        for (int[] b : allPoints) {
+            rowSet.add(b[0]);
+            colSet.add(b[1]);
+        }
+
+        int rid = rowSet.first() == 0 ? 0 : 1, cid = colSet.first() == 0 ? 0 : 1; // bound it from 0 to 999999
+        Iterator<Integer> rit = rowSet.iterator(), cit = colSet.iterator();
+        Map<Integer, Integer> rowMap = new HashMap<>(), colMap = new HashMap<>();
+        int pr = -1, pc = -1;
+        if (rit.hasNext()) rowMap.put((pr = rit.next()), rid);
+        if (cit.hasNext()) colMap.put((pc = cit.next()), cid);
+        while (rit.hasNext()) {
+            int nr = rit.next();
+            rid += (nr == pr + 1) ? 1 : 2;
+            rowMap.put(nr, rid);
+            pr = nr;
+        }
+        while (cit.hasNext()) {
+            int nc = cit.next();
+            cid += (nc == pc + 1) ? 1 : 2;
+            colMap.put(nc, cid);
+            pc = nc;
+        }
+        int rBound = (pr == bound - 1) ? rid : rid + 1;
+        int cBound = (pc == bound - 1) ? cid : cid + 1;
+        boolean[][] mtx = new boolean[rBound + 1][cBound + 1]; // use as visited[][] too
+        for (int[] b : blocked) {
+            mtx[rowMap.get(b[0])][colMap.get(b[1])] = true;
+        }
+        int sr = rowMap.get(source[0]), sc = colMap.get(source[1]), tr = rowMap.get(target[0]), tc = colMap.get(target[1]);
+        Deque<int[]> q = new LinkedList<>();
+        q.offer(new int[]{sr, sc});
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            if (p[0] == tr && p[1] == tc) return true;
+            if (mtx[p[0]][p[1]]) continue;
+            mtx[p[0]][p[1]] = true;
+            for (int[] d : dir) {
+                int inr = p[0] + d[0], inc = p[1] + d[1];
+                if (inr >= 0 && inr <= rBound && inc >= 0 && inc <= cBound && !mtx[inr][inc]) {
+                    q.offer(new int[]{inr, inc});
+                }
+            }
+        }
+        return false;
     }
 
     // LC2022
