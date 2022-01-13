@@ -3,6 +3,7 @@ import java.time.Instant
 import java.util.*
 import java.util.stream.Collectors
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.reflect.jvm.internal.impl.builtins.StandardNames.FqNames.target
 
 
@@ -18,6 +19,19 @@ var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC747
+    fun dominantIndex(nums: IntArray): Int {
+        val n = nums.size
+        if (n == 1) return 0
+        val idxMap = HashMap<Int, Int>()
+        for (idx in nums.indices) {
+            idxMap[nums[idx]] = idx
+        }
+        nums.sort()
+        if (nums[n - 1] >= nums[n - 2] * 2) return idxMap[nums[n - 1]]!!
+        return -1
+    }
 
     // LC1036
     fun isEscapePossible(blocked: Array<IntArray>, source: IntArray, target: IntArray): Boolean {
