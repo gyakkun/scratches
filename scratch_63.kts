@@ -20,6 +20,28 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC373
+    fun kSmallestPairs(nums1: IntArray, nums2: IntArray, k: Int): List<List<Int>> {
+        val pq = PriorityQueue<Pair<Int, List<Int>>>(compareByDescending { it.first })
+        outer@ for (i in nums1) {
+            for (j in nums2) {
+                if (pq.size < k) {
+                    pq.offer(Pair(i + j, listOf(i, j)))
+                } else {
+                    if (i + j < pq.peek().first) {
+                        pq.poll()
+                        pq.offer(Pair(i + j, listOf(i, j)))
+                    } else {
+                        continue@outer
+                    }
+                }
+            }
+        }
+        val result = ArrayList<List<Int>>(k)
+        while (!pq.isEmpty()) result.add(pq.poll().second)
+        return result
+    }
+
     // LC747
     fun dominantIndex(nums: IntArray): Int {
         val n = nums.size
