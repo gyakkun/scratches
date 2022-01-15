@@ -11,14 +11,20 @@ var before = Instant.now()
 var s = Solution()
 println(
     s.eatenApples(
-        intArrayOf(3, 0, 0, 0, 0, 2),
-        intArrayOf(3, 0, 0, 0, 0, 2)
+        intArrayOf(3, 0, 0, 0, 0, 2), intArrayOf(3, 0, 0, 0, 0, 2)
     )
 )
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC1716
+    fun totalMoney(n: Int): Int {
+        val week: Int = n / 7
+        val remain = n % 7
+        return (week * 28) + ((7 * (week - 1) * week) / 2) + (((1 + remain) * remain) / 2) + (remain * week)
+    }
 
     // LC373
     fun kSmallestPairs(nums1: IntArray, nums2: IntArray, k: Int): List<List<Int>> {
