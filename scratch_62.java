@@ -19,6 +19,52 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1220
+    Long[][] memo;
+    final long mod = 1000000007;
+
+    public int countVowelPermutation(int n) {
+        memo = new Long[n + 1][6];
+        long result = 0;
+        for (int i = 0; i < 5; i++) {
+            result = (result + helper(n - 1, i)) % mod;
+        }
+        return (int) result;
+    }
+
+    private long helper(int remainLetters, int currentLetterIdx) {
+        // 每个元音 'a' 后面都只能跟着 'e'
+        // 每个元音 'e' 后面只能跟着 'a' 或者是 'i'
+        // 每个元音 'i' 后面 不能 再跟着另一个 'i'
+        // 每个元音 'o' 后面只能跟着 'i' 或者是 'u'
+        // 每个元音 'u' 后面只能跟着 'a'
+        if (remainLetters == 0) return 1;
+        if (memo[remainLetters][currentLetterIdx] != null) return memo[remainLetters][currentLetterIdx] % mod;
+        switch (currentLetterIdx) {
+            case 0: // a
+                return memo[remainLetters][currentLetterIdx]
+                        = helper(remainLetters - 1, 1);
+            case 1: // e
+                return memo[remainLetters][currentLetterIdx]
+                        = (helper(remainLetters - 1, 0)
+                        + helper(remainLetters - 1, 2)) % mod;
+            case 2:
+                return memo[remainLetters][currentLetterIdx]
+                        = (helper(remainLetters - 1, 0)
+                        + helper(remainLetters - 1, 1)
+                        + helper(remainLetters - 1, 3)
+                        + helper(remainLetters - 1, 4)) % mod;
+            case 3:
+                return memo[remainLetters][currentLetterIdx]
+                        = (helper(remainLetters - 1, 2)
+                        + helper(remainLetters - 1, 4));
+            case 4:
+                return memo[remainLetters][currentLetterIdx]
+                        = helper(remainLetters - 1, 0) % mod;
+        }
+        return 0;
+    }
+
     // LC1036
     public boolean isEscapePossible(int[][] blocked, int[] source, int[] target) {
         if (blocked.length < 2) return true;

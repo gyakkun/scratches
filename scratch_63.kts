@@ -1,10 +1,6 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import java.util.stream.Collectors
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.reflect.jvm.internal.impl.builtins.StandardNames.FqNames.target
 
 
 var before = Instant.now()
@@ -18,6 +14,44 @@ var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC1220
+    lateinit var memo: Array<Array<Long?>>
+    val mod: Long = 1000000007
+
+    fun countVowelPermutation(n: Int): Int {
+        memo = Array(n + 1) { arrayOfNulls<Long?>(6) }
+        var result: Long = 0
+        for (i in 0..4) {
+            result = (result + helper(n - 1, i)) % mod
+        }
+        return result.toInt()
+    }
+
+    private fun helper(remainLetters: Int, currentLetterIdx: Int): Long {
+        // 每个元音 'a' 后面都只能跟着 'e'
+        // 每个元音 'e' 后面只能跟着 'a' 或者是 'i'
+        // 每个元音 'i' 后面 不能 再跟着另一个 'i'
+        // 每个元音 'o' 后面只能跟着 'i' 或者是 'u'
+        // 每个元音 'u' 后面只能跟着 'a'
+        if (remainLetters == 0) return 1
+        if (memo[remainLetters][currentLetterIdx] != null) return memo[remainLetters][currentLetterIdx]!! % mod
+        when (currentLetterIdx) {
+            0 -> return (helper(remainLetters - 1, 1) % mod).also {
+                memo[remainLetters][currentLetterIdx] = it
+            }
+            1 -> return ((helper(remainLetters - 1, 0)
+                    + helper(remainLetters - 1, 2)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+            2 -> return ((helper(remainLetters - 1, 0)
+                    + helper(remainLetters - 1, 1)
+                    + helper(remainLetters - 1, 3)
+                    + helper(remainLetters - 1, 4)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+            3 -> return ((helper(remainLetters - 1, 2)
+                    + helper(remainLetters - 1, 4)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+            4 -> return (helper(remainLetters - 1, 0) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+        }
+        return 0
+    }
 
     // LC1716
     fun totalMoney(n: Int): Int {
