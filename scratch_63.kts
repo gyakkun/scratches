@@ -16,6 +16,19 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC1332
+    fun removePalindromeSub(s: String): Int {
+        var flag = true
+        for (i in 0 until s.length / 2) {
+            if (s[i] != s[s.length - 1 - i]) {
+                flag = false
+                break
+            }
+        }
+        if(flag) return 1
+        return 2
+    }
+
     // LC1345
     fun minJumps(arr: IntArray): Int {
         val m: MutableMap<Int, MutableSet<Int>> = HashMap()
