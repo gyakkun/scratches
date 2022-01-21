@@ -1,6 +1,7 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import kotlin.collections.HashSet
 
 
 var before = Instant.now()
@@ -14,6 +15,72 @@ var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC1345
+    fun minJumps(arr: IntArray): Int {
+        val m: MutableMap<Int, MutableSet<Int>> = HashMap()
+        for (i in arr.indices) {
+            m[arr[i]]?.let { it.add(i) } ?: let { m[arr[i]] = HashSet<Int>().also { it.add(i) } }
+        }
+        val q: Deque<Int> = LinkedList<Int>().also { it.offer(0) }
+        val visited = BitSet(arr.size)
+        var layer = -1
+        while (!q.isEmpty()) {
+            layer++
+            val qs = q.size
+            for (i in 0 until qs) {
+                val p = q.poll()
+                val v = arr[p]
+                if (visited[p]) continue
+                visited.set(p)
+                if (p == arr.size - 1) return layer
+
+                // i + 1
+                if (p + 1 < arr.size && !visited[p + 1]) {
+                    q.add(p + 1)
+                }
+
+                // i-1
+                if (p - 1 >= 0 && !visited[p - 1]) {
+                    q.add(p - 1)
+                }
+
+                // same value
+                m[v]?.let {
+                    for (smi in it) {
+                        if (!visited[smi]) {
+                            q.add(smi)
+                        }
+                    }
+                }
+                m.remove(v)
+            }
+        }
+        return -1
+    }
+
+    // LC219
+    fun containsNearbyDuplicate(nums: IntArray, k: Int): Boolean {
+        val m: MutableMap<Int, TreeSet<Int>> = HashMap()
+        for (i in nums.indices) {
+            m.putIfAbsent(nums[i], TreeSet())
+            val ts = m[nums[i]]!!
+            val lb = i - k
+            val hb = i + k
+            val hr = ts.higher(lb)
+            val lw = ts.lower(hb)
+            if (hr != null && Math.abs(i - hr) <= k) {
+                System.err.println(ts.ceiling(hr))
+                return true
+            }
+            if (lw != null && Math.abs(i - lw) <= k) {
+                System.err.println(ts.floor(lw))
+                return true
+            }
+            ts.add(i)
+        }
+        return false
+    }
 
     // LC1220
     lateinit var memo: Array<Array<Long?>>

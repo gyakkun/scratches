@@ -1,5 +1,5 @@
-import javax.management.OperationsException;
-import javax.swing.tree.RowMapper;
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -8,15 +8,79 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.isEscapePossible(
-                new int[][]{{691938, 300406}, {710196, 624190}, {858790, 609485}, {268029, 225806}, {200010, 188664}, {132599, 612099}, {329444, 633495}, {196657, 757958}, {628509, 883388}},
-                new int[]{655988, 180910},
-                new int[]{267728, 840949}
-        ));
+        System.out.println(s.containsNearbyDuplicate(new int[]{1, 2, 3, 1, 2, 3}, 2));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1345
+    public int minJumps(int[] arr) {
+        Map<Integer, Set<Integer>> m = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            m.putIfAbsent(arr[i], new HashSet<>());
+            Set<Integer> ts = m.get(arr[i]);
+            ts.add(i);
+        }
+        Deque<Integer> q = new LinkedList<>();
+        q.offer(0);
+        BitSet visited = new BitSet(arr.length);
+        int layer = -1;
+        while (!q.isEmpty()) {
+            layer++;
+            int qs = q.size();
+            for (int i = 0; i < qs; i++) {
+                int p = q.poll();
+                int val = arr[p], idx = p;
+                if (visited.get(idx)) continue;
+                visited.set(idx);
+
+                if (idx == arr.length - 1) return layer;
+
+                // i + 1
+                if (idx + 1 < arr.length && !visited.get(idx + 1)) {
+                    q.add(idx + 1);
+                }
+
+                // i-1
+                if (idx - 1 >= 0 && !visited.get(idx - 1)) {
+                    q.add(idx - 1);
+                }
+
+                // same value
+                for (int smi : m.getOrDefault(val, new HashSet<>())) {
+                    if (!visited.get(smi)) {
+                        q.add(smi);
+                    }
+                }
+                m.remove(val);
+            }
+        }
+        return -1;
+    }
+
+    // LC219
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        Map<Integer, TreeSet<Integer>> m = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            m.putIfAbsent(nums[i], new TreeSet<>());
+            TreeSet<Integer> ts = m.get(nums[i]);
+            int lb = i - k;
+            int hb = i + k;
+            Integer hr = ts.higher(lb);
+            Integer lw = ts.lower(hb);
+            if (hr != null && Math.abs(i - hr) <= k) {
+                System.err.println(ts.ceiling(hr));
+                return true;
+            }
+            if (lw != null && Math.abs(i - lw) <= k) {
+                System.err.println(ts.floor(lw));
+                return true;
+            }
+            ts.add(i);
+        }
+        return false;
     }
 
     // LC1220
