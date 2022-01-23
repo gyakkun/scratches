@@ -1,7 +1,6 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import kotlin.collections.HashSet
 
 
 var before = Instant.now()
@@ -14,6 +13,37 @@ println(
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
+// LC2034
+internal class StockPrice {
+    var timePriceMap = TreeMap<Int, Int>()
+    var priceTimeMap = TreeMap<Int, MutableSet<Int>>()
+    fun update(timestamp: Int, price: Int) {
+        timePriceMap[timestamp]?.let { priceToCorrect ->
+            priceTimeMap[priceToCorrect]?.let { timeSet ->
+                timeSet.remove(timestamp)
+                if (timeSet.size == 0) {
+                    priceTimeMap.remove(priceToCorrect)
+                }
+            }
+        }
+        timePriceMap[timestamp] = price
+        priceTimeMap.putIfAbsent(price, HashSet())
+        priceTimeMap[price]!!.add(timestamp)
+    }
+
+    fun current(): Int {
+        return timePriceMap.lastEntry().value
+    }
+
+    fun maximum(): Int {
+        return priceTimeMap.lastKey()
+    }
+
+    fun minimum(): Int {
+        return priceTimeMap.firstKey()
+    }
+}
+
 class Solution {
 
     // LC1332
@@ -25,7 +55,7 @@ class Solution {
                 break
             }
         }
-        if(flag) return 1
+        if (flag) return 1
         return 2
     }
 

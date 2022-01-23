@@ -463,3 +463,38 @@ class Trie {
         int path = 0;
     }
 }
+
+// LC2034
+class StockPrice {
+    TreeMap<Integer, Integer> timePriceMap = new TreeMap<>();
+    TreeMap<Integer, Set<Integer>> priceTimeMap = new TreeMap<>();
+
+    public StockPrice() {
+
+    }
+
+    public void update(int timestamp, int price) {
+        if (timePriceMap.containsKey(timestamp)) {
+            int priceToCorrect = timePriceMap.get(timestamp);
+            priceTimeMap.get(priceToCorrect).remove(timestamp);
+            if (priceTimeMap.get(priceToCorrect).size() == 0) {
+                priceTimeMap.remove(priceToCorrect);
+            }
+        }
+        timePriceMap.put(timestamp, price);
+        priceTimeMap.putIfAbsent(price, new HashSet<>());
+        priceTimeMap.get(price).add(timestamp);
+    }
+
+    public int current() {
+        return timePriceMap.lastEntry().getValue();
+    }
+
+    public int maximum() {
+        return priceTimeMap.lastKey();
+    }
+
+    public int minimum() {
+        return priceTimeMap.firstKey();
+    }
+}
