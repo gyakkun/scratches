@@ -13,6 +13,69 @@ println(
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
+
+// LC2045 **
+internal class Solution {
+    fun add(a: Int, b: Int) {
+        e[idx] = b
+        ne[idx] = he[a]
+        he[a] = idx
+        idx++
+    }
+
+    fun secondMinimum(n: Int, edges: Array<IntArray>, time: Int, change: Int): Int {
+        Arrays.fill(dist1, INF)
+        Arrays.fill(dist2, INF)
+        Arrays.fill(he, -1)
+        idx = 0
+        for (e in edges) {
+            val u = e[0]
+            val v = e[1]
+            add(u, v)
+            add(v, u)
+        }
+        val q = PriorityQueue<IntArray>(compareBy { i -> i[1] })
+        q.add(intArrayOf(1, 0))
+        dist1[1] = 0
+        while (!q.isEmpty()) {
+            val poll = q.poll()
+            val u = poll[0]
+            val step = poll[1]
+            var i = he[u]
+            while (i != -1) {
+                val j = e[i]
+                val a = step / change
+                val b = step % change
+                val wait = if (a % 2 == 0) 0 else change - b
+                val dist = step + time + wait
+                if (dist1[j] > dist) {
+                    dist2[j] = dist1[j]
+                    dist1[j] = dist
+                    q.add(intArrayOf(j, dist1[j]))
+                    q.add(intArrayOf(j, dist2[j]))
+                } else if (dist1[j] < dist && dist < dist2[j]) {
+                    dist2[j] = dist
+                    q.add(intArrayOf(j, dist2[j]))
+                }
+                i = ne[i]
+            }
+        }
+        return dist2[n]
+    }
+
+    companion object {
+        var N = 10010
+        var M = 4 * N
+        var INF = 0x3f3f3f3f
+        var idx = 0
+        var he = IntArray(N)
+        var e = IntArray(M)
+        var ne = IntArray(M)
+        var dist1 = IntArray(N)
+        var dist2 = IntArray(N)
+    }
+}
+
 // LC2034
 internal class StockPrice {
     var timePriceMap = TreeMap<Int, Int>()
