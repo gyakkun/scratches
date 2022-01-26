@@ -1,5 +1,6 @@
-import javafx.util.Pair;
+import kotlin.OptIn;
 
+import java.nio.channels.Pipe;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -496,5 +497,78 @@ class StockPrice {
 
     public int minimum() {
         return priceTimeMap.firstKey();
+    }
+}
+
+// LC2013
+class DetectSquares {
+
+    Map<Integer, TreeMap<Integer, Integer>> xyMap = new HashMap<>(), yxMap = new HashMap<>();
+
+    public DetectSquares() {
+
+    }
+
+    public void add(int[] point) {
+        xyMap.putIfAbsent(point[0], new TreeMap<>());
+        TreeMap<Integer, Integer> yPointsCount = xyMap.get(point[0]);
+        yPointsCount.put(point[1], yPointsCount.getOrDefault(point[1], 0) + 1);
+
+        yxMap.putIfAbsent(point[1], new TreeMap<>());
+        TreeMap<Integer, Integer> xPointsCount = yxMap.get(point[1]);
+        xPointsCount.put(point[0], xPointsCount.getOrDefault(point[0], 0) + 1);
+
+    }
+
+    public int count(int[] point) {
+        // 比较同一x坐标/y坐标上 [独特点(指重复位置的点算一个)] 的个数, 挑选少的集合来进行遍历
+        int x = point[0], y = point[1], result = 0;
+        TreeMap<Integer, Integer> sameXAxis = xyMap.get(x);
+        TreeMap<Integer, Integer> sameYAxis = yxMap.get(y);
+        if (sameXAxis == null || sameYAxis == null) return 0;
+        if (!sameXAxis.containsKey(y) || !sameYAxis.containsKey(x)) return 0;
+        int countZero = sameXAxis.get(y);
+        // if (sameXAxis.size() < sameYAxis.size()) {
+        // 从下往上遍历这个x坐标上的所有点
+        for (Map.Entry<Integer, Integer> e : sameXAxis.entrySet()) {
+            int thisY = e.getKey(), countOne = e.getValue();
+            // 如果和入参是同一个点 跳过
+            if (thisY == y) continue;
+
+            // 计算距离
+            int distance = y - thisY;
+            int absDistance = Math.abs(distance);
+            // 找同一y坐标是否有这样一个距离上的x点, 注意方向
+
+            // 往左, 即减法
+            int leftSideX = x - absDistance;
+            if (sameYAxis.containsKey(leftSideX)) {
+                int countTwo = sameYAxis.get(leftSideX);
+                // 然后找左下角
+                if (xyMap.containsKey(leftSideX)) {
+                    TreeMap<Integer, Integer> t1 = xyMap.get(leftSideX);
+                    if (t1.containsKey(thisY)) {
+                        int countThree = t1.get(thisY);
+                        result += countZero * countOne * countTwo * countThree;
+                    }
+                }
+            }
+
+            int rightSideX = x + absDistance;
+            if (sameYAxis.containsKey(rightSideX)) {
+                int countTwo = sameYAxis.get(rightSideX);
+                // 然后找左下角
+                if (xyMap.containsKey(rightSideX)) {
+                    TreeMap<Integer, Integer> t1 = xyMap.get(rightSideX);
+                    if (t1.containsKey(thisY)) {
+                        int countThree = t1.get(thisY);
+                        result += countZero * countOne * countTwo * countThree;
+                    }
+                }
+            }
+
+            // }
+        }
+        return result;
     }
 }
