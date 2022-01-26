@@ -13,6 +13,41 @@ println(
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
+// LC2013
+internal class DetectSquares {
+    var xyMap: MutableMap<Int, MutableMap<Int, Int>> = HashMap()
+    fun add(point: IntArray) {
+        xyMap.putIfAbsent(point[0], HashMap())
+        val yPointsCount = xyMap[point[0]]!!
+        yPointsCount[point[1]] = yPointsCount.getOrDefault(point[1], 0) + 1
+    }
+
+    fun count(point: IntArray): Int {
+        // 比较同一x坐标/y坐标上 [独特点(指重复位置的点算一个)] 的个数, 挑选少的集合来进行遍历
+        val x = point[0]
+        val y = point[1]
+        var result = 0
+        if (!xyMap.containsKey(x)) return 0
+        val yPoints: Map<Int, Int> = xyMap[x]!!
+        val c0 = 1
+        for ((thisY, c1) in yPoints) {
+            if (thisY == y) continue
+            val distance = y - thisY
+            val absDistance = Math.abs(distance)
+            for (sideX in intArrayOf(x - absDistance, x + absDistance)) {
+                if (xyMap.containsKey(sideX) && xyMap[sideX]!!.containsKey(y)) {
+                    val c2 = xyMap[sideX]!![y]!!
+                    // 找左下角
+                    if (xyMap.containsKey(sideX) && xyMap[sideX]!!.containsKey(thisY)) {
+                        val c3 = xyMap[sideX]!![thisY]!!
+                        result += c0 * c1 * c2 * c3
+                    }
+                }
+            }
+        }
+        return result
+    }
+}
 
 // LC2045 **
 internal class Solution {
