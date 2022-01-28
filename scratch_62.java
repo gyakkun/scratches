@@ -1,5 +1,7 @@
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class Scratch {
     public static void main(String[] args) {
@@ -7,21 +9,58 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        DetectSquares detectSquares = new DetectSquares();
-        detectSquares.add(new int[]{3, 10});
-        detectSquares.add(new int[]{11, 2});
-        detectSquares.add(new int[]{3, 2});
-        System.out.println(detectSquares.count(new int[]{11, 10}));
-        System.out.println(detectSquares.count(new int[]{14, 8}));
-        detectSquares.add(new int[]{11, 2});
-        System.out.println(detectSquares.count(new int[]{11, 10}));
-
-
-        System.out.println(s.containsNearbyDuplicate(new int[]{1, 2, 3, 1, 2, 3}, 2));
+        System.out.println(s.countValidWords("q-o  x-p! g-l- q-n  f-o, m-u. m-i! y-k, i-j, d-p! e-t, h-u  j-j- d-z- v-w, r-a  i-h. d-a! z-o, v-l, "));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1996 ** Answer
+    public int numberOfWeakCharacters(int[][] properties) {
+        Arrays.sort(properties, (o1, o2) -> o1[0] == o2[0] ? (o1[1] - o2[1]) : (o2[0] - o1[0]));
+        int maxDef = 0;
+        int ans = 0;
+        for (int[] p : properties) {
+            if (p[1] < maxDef) {
+                ans++;
+            } else {
+                maxDef = p[1];
+            }
+        }
+        return ans;
+    }
+
+
+    // LC2047 WA
+    public int countValidWords(String sentence) {
+        int result = 0;
+        Set<Character> punc = Set.of('!', '.', ',');
+        Function<String, Boolean> isValid = new Function<String, Boolean>() {
+            @Override
+            public Boolean apply(String s) {
+                if (s.length() == 0) return false;
+                Stream<Character> cs = s.chars().mapToObj(i -> (char) i);
+                if (cs.anyMatch(Character::isDigit)) return false;
+                cs = s.chars().mapToObj(i -> (char) i);
+                long puncCount = cs.filter(punc::contains).count();
+                if (puncCount > 1l) return false;
+                if (puncCount == 1l && !punc.contains(s.charAt(s.length() - 1))) return false;
+                cs = s.chars().mapToObj(i -> (char) i);
+                long hyphenCount = cs.filter(i -> '-' == i).count();
+                if (hyphenCount > 1l) return false;
+
+                if (hyphenCount == 1) {
+                    String[] split = s.split("-");
+                    if (split.length != 2) return false;
+                }
+                return true;
+            }
+        };
+        for (String token : sentence.split(" ")) {
+            if (isValid.apply(token)) result++;
+        }
+        return result;
     }
 
     // LC1345
