@@ -16,6 +16,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1765
+    public int[][] highestPeak(int[][] isWater) {
+        int m = isWater.length, n = isWater[0].length;
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}}, result = new int[m][n];
+        boolean[][] visited = new boolean[m][n];
+        Deque<int[]> q = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (isWater[i][j] == 1) {
+                    q.offer(new int[]{i, j, 0});
+                }
+            }
+        }
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            int r = p[0], c = p[1], h = p[2];
+            if (visited[r][c]) continue;
+            visited[r][c] = true;
+            if (isWater[r][c] == 1) {
+                h = 0;
+            }
+            result[r][c] = h;
+            for (int[] d : directions) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc]) {
+                    q.offer(new int[]{nr, nc, h + 1});
+                }
+            }
+        }
+        return result;
+    }
+
     // LC1996 ** Answer
     public int numberOfWeakCharacters(int[][] properties) {
         Arrays.sort(properties, (o1, o2) -> o1[0] == o2[0] ? (o1[1] - o2[1]) : (o2[0] - o1[0]));

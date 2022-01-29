@@ -13,6 +13,56 @@ println(
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
+fun highestPeak(isWater: Array<IntArray>): Array<IntArray>? {
+    val m = isWater.size
+    val n = isWater[0].size
+    val directions = arrayOf(intArrayOf(0, 1), intArrayOf(0, -1), intArrayOf(1, 0), intArrayOf(-1, 0))
+    val result = Array(m) { IntArray(n) }
+    val visited = Array(m) { BooleanArray(n) }
+    val q: Deque<IntArray> = LinkedList()
+    for (i in 0 until m) {
+        for (j in 0 until n) {
+            if (isWater[i][j] == 1) {
+                q.offer(intArrayOf(i, j, 0))
+            }
+        }
+    }
+    while (!q.isEmpty()) {
+        val p = q.poll()
+        val r = p[0]
+        val c = p[1]
+        var h = p[2]
+        if (visited[r][c]) continue
+        visited[r][c] = true
+        if (isWater[r][c] == 1) {
+            h = 0
+        }
+        result[r][c] = h
+        for (d in directions) {
+            val nr = r + d[0]
+            val nc = c + d[1]
+            if (nr in 0 until m && nc in 0 until n && !visited[nr][nc]) {
+                q.offer(intArrayOf(nr, nc, h + 1))
+            }
+        }
+    }
+    return result
+}
+
+fun numberOfWeakCharacters(properties: Array<IntArray>): Int {
+    Arrays.sort(properties) { o1: IntArray, o2: IntArray -> if (o1[0] == o2[0]) o1[1] - o2[1] else o2[0] - o1[0] }
+    var maxDef = 0
+    var ans = 0
+    for (p in properties) {
+        if (p[1] < maxDef) {
+            ans++
+        } else {
+            maxDef = p[1]
+        }
+    }
+    return ans
+}
+
 // LC2013
 internal class DetectSquares {
     var xyMap: MutableMap<Int, MutableMap<Int, Int>> = HashMap()
