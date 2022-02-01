@@ -9,11 +9,58 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.countValidWords("q-o  x-p! g-l- q-n  f-o, m-u. m-i! y-k, i-j, d-p! e-t, h-u  j-j- d-z- v-w, r-a  i-h. d-a! z-o, v-l, "));
+        System.out.println(s.longestNiceSubstring("dDzeE"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1763
+    public String longestNiceSubstring(String s) {
+        String result = "";
+        char[] ca = s.toCharArray();
+        for (int left = 0; left < ca.length; left++) {
+            inner:
+            for (int right = left + 1; right <= ca.length; right++) {
+                int[] freq = new int[128];
+                for (int i = left; i < right; i++) {
+                    freq[ca[i]]++;
+                }
+                for (int i = 0; i < 26; i++) {
+                    if ((freq['a' + i] > 0 && freq['A' + i] == 0) || (freq['a' + i] == 0 && freq['A' + i] > 0)) {
+                        continue inner;
+                    }
+                }
+                if (right - left > result.length()) {
+                    result = s.substring(left, right);
+                }
+            }
+        }
+        return result;
+    }
+
+    // LC884
+    public String[] uncommonFromSentences(String s1, String s2) {
+        List<String> result = new ArrayList<>();
+        Map<String, Integer> m1 = new HashMap<>(), m2 = new HashMap<>();
+        for (String w : s1.split(" ")) {
+            m1.put(w, m1.getOrDefault(w, 0) + 1);
+        }
+        for (String w : s2.split(" ")) {
+            m2.put(w, m2.getOrDefault(w, 0) + 1);
+        }
+        for (String w : m1.keySet()) {
+            if (m1.get(w) == 1 && !m2.containsKey(w)) {
+                result.add(w);
+            }
+        }
+        for (String w : m2.keySet()) {
+            if (m2.get(w) == 1 && !m1.containsKey(w)) {
+                result.add(w);
+            }
+        }
+        return result.toArray(new String[result.size()]);
     }
 
     // LC1765

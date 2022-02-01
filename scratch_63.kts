@@ -13,6 +13,10 @@ println(
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
+fun numberOfSteps(num: Int): Int {
+    return if (num == 0) 0 else Integer.SIZE - Integer.numberOfLeadingZeros(num) + Integer.bitCount(num) - 1
+}
+
 fun highestPeak(isWater: Array<IntArray>): Array<IntArray>? {
     val m = isWater.size
     val n = isWater[0].size
