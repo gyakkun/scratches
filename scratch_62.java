@@ -16,6 +16,12 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2000
+    public String reversePrefix(String word, char ch) {
+        if (!word.contains("" + ch)) return word;
+        return new StringBuffer(word.substring(0, word.indexOf(ch) + 1)).reverse() + word.substring(word.indexOf(ch) + 1);
+    }
+
     // LC1763
     public String longestNiceSubstring(String s) {
         String result = "";
