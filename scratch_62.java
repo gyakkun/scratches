@@ -9,11 +9,50 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.longestNiceSubstring("dDzeE"));
+        System.out.println(s.fib(46));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1414
+    public int findMinFibonacciNumbers(int k) {
+        int result = 0;
+        while (k != 0) {
+            int h = helper(k);
+            if (k != -1) {
+                result++;
+                k -= h;
+            }
+        }
+        return result;
+    }
+
+    // 二分 找小于等于的最大值
+    public int helper(int n) {
+        int l = 0, h = 46;
+        while (l < h) {
+            int mid = l + (h - l + 1) / 2;
+            if (fib(mid) <= n) {
+                l = mid;
+            } else {
+                h = mid - 1;
+            }
+        }
+        if (fib(l) > n) return -1;
+        return fib(l);
+    }
+
+    public int fib(int n) {
+        if (n == 0) return 0;
+        if (n == 1 || n == 2) return 1;
+        return fib(n, 2, 1, 1);
+    }
+
+    public int fib(int targetIdx, int curIdx, int curVal, int prevVal) {
+        if (targetIdx == curIdx) return curVal;
+        return fib(targetIdx, curIdx + 1, curVal + prevVal, curVal);
     }
 
     // LC2000

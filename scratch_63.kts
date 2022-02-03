@@ -6,9 +6,7 @@ import java.util.*
 var before = Instant.now()
 var s = Solution()
 println(
-    s.eatenApples(
-        intArrayOf(3, 0, 0, 0, 0, 2), intArrayOf(3, 0, 0, 0, 0, 2)
-    )
+    s
 )
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -104,7 +102,49 @@ internal class DetectSquares {
 }
 
 // LC2045 **
-internal class Solution {
+class Solution {
+
+
+    // LC1414
+    fun findMinFibonacciNumbers(k: Int): Int {
+        var k = k
+        var result = 0
+        while (k != 0) {
+            val h = helper(k)
+            if (k != -1) {
+                result++
+                k -= h
+            }
+        }
+        return result
+    }
+
+    // 二分 找小于等于的最大值
+    fun helper(n: Int): Int {
+        var l = 0
+        var h = 46
+        while (l < h) {
+            val mid = l + (h - l + 1) / 2
+            if (fib(mid) <= n) {
+                l = mid
+            } else {
+                h = mid - 1
+            }
+        }
+        return if (fib(l) > n) -1 else fib(l)
+    }
+
+    fun fib(n: Int): Int {
+        if (n == 0) return 0
+        return if (n == 1 || n == 2) 1 else fib(n, 2, 1, 1)
+    }
+
+    fun fib(targetIdx: Int, curIdx: Int, curVal: Int, prevVal: Int): Int {
+        return if (targetIdx == curIdx) curVal else fib(targetIdx, curIdx + 1, curVal + prevVal, curVal)
+    }
+
+
+
     fun add(a: Int, b: Int) {
         e[idx] = b
         ne[idx] = he[a]
