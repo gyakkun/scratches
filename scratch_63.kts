@@ -108,7 +108,7 @@ internal class DetectSquares {
 class Solution {
     // LC1725
     fun countGoodRectangles(rectangles: Array<IntArray>): Int {
-        return rectangles.groupingBy { Math.min(it[0], it[1]) }.eachCount().entries.maxWithOrNull(compareBy { it.key })!!.value
+        return rectangles.groupingBy { Math.min(it[0], it[1]) }.eachCount().entries.maxByOrNull { it.key }!!.value
     }
 
     // LC1414
