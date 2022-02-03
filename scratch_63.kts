@@ -1,12 +1,15 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import java.util.function.Function
+import java.util.stream.Collectors
+import kotlin.math.min
 
 
 var before = Instant.now()
 var s = Solution()
 println(
-    s
+        s
 )
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -103,7 +106,10 @@ internal class DetectSquares {
 
 // LC2045 **
 class Solution {
-
+    // LC1725
+    fun countGoodRectangles(rectangles: Array<IntArray>): Int {
+        return rectangles.groupingBy { min(it[0], it[1]) }.eachCount().entries.stream().max(compareBy { it.key }).get().value
+    }
 
     // LC1414
     fun findMinFibonacciNumbers(k: Int): Int {
@@ -142,7 +148,6 @@ class Solution {
     fun fib(targetIdx: Int, curIdx: Int, curVal: Int, prevVal: Int): Int {
         return if (targetIdx == curIdx) curVal else fib(targetIdx, curIdx + 1, curVal + prevVal, curVal)
     }
-
 
 
     fun add(a: Int, b: Int) {
@@ -439,7 +444,7 @@ class Solution {
         val cBound = if (pc == bound - 1) cid else cid + 1
         val mtx = Array(rBound + 1) {
             BooleanArray(
-                cBound + 1
+                    cBound + 1
             )
         } // use as visited[][] too
 
@@ -549,7 +554,7 @@ class Solution {
         lc913Memo = Array(graph.size * 2 + 1) {
             Array<Array<Int?>>(graph.size + 1) {
                 arrayOfNulls(
-                    graph.size + 1
+                        graph.size + 1
                 )
             }
         }
