@@ -16,6 +16,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1725
+    public int countGoodRectangles(int[][] rectangles) {
+        return Arrays.stream(rectangles).collect(Collectors.groupingBy(i -> Math.min(i[0], i[1]), Collectors.counting())).entrySet().stream().max(Comparator.comparingInt(i -> i.getKey())).get().getValue().intValue();
+    }
+
     // LC1414
     public int findMinFibonacciNumbers(int k) {
         int result = 0;
