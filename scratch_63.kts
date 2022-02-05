@@ -1,9 +1,6 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import java.util.function.Function
-import java.util.stream.Collectors
-import kotlin.math.min
 
 
 var before = Instant.now()
@@ -106,6 +103,45 @@ internal class DetectSquares {
 
 // LC2045 **
 class Solution {
+
+
+    // LC1219
+    var directions = arrayOf(intArrayOf(0, 1), intArrayOf(0, -1), intArrayOf(1, 0), intArrayOf(-1, 0))
+    lateinit var grid: Array<IntArray>
+    lateinit var visited: Array<BooleanArray>
+
+    fun getMaximumGold(grid: Array<IntArray>): Int {
+        this.grid = grid
+        val m = grid.size
+        val n = grid[0].size
+        var result = 0
+        for (i in 0 until m) {
+            for (j in 0 until n) {
+                if (grid[i][j] != 0) {
+                    visited = Array(m) { BooleanArray(n) }
+                    result = Math.max(result, helper(i, j))
+                }
+            }
+        }
+        return result
+    }
+
+    private fun helper(r: Int, c: Int): Int {
+        if (visited[r][c]) return 0
+        visited[r][c] = true
+        val cur = grid[r][c]
+        var next = 0
+        for (d in directions) {
+            val nr = r + d[0]
+            val nc = c + d[1]
+            if (nr >= 0 && nr < grid.size && nc >= 0 && nc < grid[0].size && grid[nr][nc] != 0 && !visited[nr][nc]) {
+                next = Math.max(next, helper(nr, nc))
+            }
+        }
+        visited[r][c] = false
+        return cur + next
+    }
+
     // LC1725
     fun countGoodRectangles(rectangles: Array<IntArray>): Int {
         return rectangles.groupingBy { Math.min(it[0], it[1]) }.eachCount().entries.maxByOrNull { it.key }!!.value

@@ -16,6 +16,40 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1219
+    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    int[][] grid;
+    boolean[][] visited;
+
+    public int getMaximumGold(int[][] grid) {
+        this.grid = grid;
+        int m = grid.length, n = grid[0].length, result = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] != 0) {
+                    visited = new boolean[m][n];
+                    result = Math.max(result, helper(i, j));
+                }
+            }
+        }
+        return result;
+    }
+
+    private int helper(int r, int c) {
+        if (visited[r][c]) return 0;
+        visited[r][c] = true;
+        int cur = grid[r][c];
+        int next = 0;
+        for (int[] d : directions) {
+            int nr = r + d[0], nc = c + d[1];
+            if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && grid[nr][nc] != 0 && !visited[nr][nc]) {
+                next = Math.max(next, helper(nr, nc));
+            }
+        }
+        visited[r][c] = false;
+        return cur + next;
+    }
+
     // LC1725
     public int countGoodRectangles(int[][] rectangles) {
         return Arrays.stream(rectangles).collect(Collectors.groupingBy(i -> Math.min(i[0], i[1]), Collectors.counting())).entrySet().stream().max(Comparator.comparingInt(i -> i.getKey())).get().getValue().intValue();
@@ -25,7 +59,7 @@ class Scratch {
     public int findMinFibonacciNumbers(int k) {
         int result = 0;
         while (k != 0) {
-            int h = helper(k);
+            int h = lc1414Helper(k);
             if (k != -1) {
                 result++;
                 k -= h;
@@ -35,7 +69,7 @@ class Scratch {
     }
 
     // 二分 找小于等于的最大值
-    public int helper(int n) {
+    public int lc1414Helper(int n) {
         int l = 0, h = 46;
         while (l < h) {
             int mid = l + (h - l + 1) / 2;
@@ -268,12 +302,12 @@ class Scratch {
         memo = new Long[n + 1][6];
         long result = 0;
         for (int i = 0; i < 5; i++) {
-            result = (result + helper(n - 1, i)) % mod;
+            result = (result + lc1220Helper(n - 1, i)) % mod;
         }
         return (int) result;
     }
 
-    private long helper(int remainLetters, int currentLetterIdx) {
+    private long lc1220Helper(int remainLetters, int currentLetterIdx) {
         // 每个元音 'a' 后面都只能跟着 'e'
         // 每个元音 'e' 后面只能跟着 'a' 或者是 'i'
         // 每个元音 'i' 后面 不能 再跟着另一个 'i'
@@ -284,24 +318,24 @@ class Scratch {
         switch (currentLetterIdx) {
             case 0: // a
                 return memo[remainLetters][currentLetterIdx]
-                        = helper(remainLetters - 1, 1);
+                        = lc1220Helper(remainLetters - 1, 1);
             case 1: // e
                 return memo[remainLetters][currentLetterIdx]
-                        = (helper(remainLetters - 1, 0)
-                        + helper(remainLetters - 1, 2)) % mod;
+                        = (lc1220Helper(remainLetters - 1, 0)
+                        + lc1220Helper(remainLetters - 1, 2)) % mod;
             case 2:
                 return memo[remainLetters][currentLetterIdx]
-                        = (helper(remainLetters - 1, 0)
-                        + helper(remainLetters - 1, 1)
-                        + helper(remainLetters - 1, 3)
-                        + helper(remainLetters - 1, 4)) % mod;
+                        = (lc1220Helper(remainLetters - 1, 0)
+                        + lc1220Helper(remainLetters - 1, 1)
+                        + lc1220Helper(remainLetters - 1, 3)
+                        + lc1220Helper(remainLetters - 1, 4)) % mod;
             case 3:
                 return memo[remainLetters][currentLetterIdx]
-                        = (helper(remainLetters - 1, 2)
-                        + helper(remainLetters - 1, 4));
+                        = (lc1220Helper(remainLetters - 1, 2)
+                        + lc1220Helper(remainLetters - 1, 4));
             case 4:
                 return memo[remainLetters][currentLetterIdx]
-                        = helper(remainLetters - 1, 0) % mod;
+                        = lc1220Helper(remainLetters - 1, 0) % mod;
         }
         return 0;
     }
