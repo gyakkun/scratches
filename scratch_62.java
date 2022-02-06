@@ -205,11 +205,6 @@ class Scratch {
         return allUnit - edgeUnit.cardinality();
     }
 
-    // LC1748
-    public int sumOfUnique(int[] nums) {
-        return Arrays.stream(nums).boxed().collect(Collectors.groupingBy(i -> i, Collectors.toList())).entrySet().stream().filter(i -> i.getValue().size() == 1).mapToInt(i -> i.getKey()).sum();
-    }
-
     // LC1984
     public int minimumDifference(int[] nums, int k) {
         int n = nums.length, result = Integer.MAX_VALUE;
@@ -290,6 +285,11 @@ class Scratch {
             }
         }
         return sb.toString();
+    }
+
+    // LC1748
+    public int sumOfUnique(int[] nums) {
+        return Arrays.stream(nums).boxed().collect(Collectors.groupingBy(i -> i, Collectors.counting())).entrySet().stream().filter(i -> i.getValue().equals(1l)).mapToInt(i -> i.getKey()).sum();
     }
 
     // LC1219

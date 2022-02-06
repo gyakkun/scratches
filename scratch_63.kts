@@ -11,6 +11,12 @@ println(
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
+
+// LC1748
+fun sumOfUnique(nums: IntArray): Int {
+    return nums.groupBy { it }.filter { it.value.size == 1 }.keys.sum()
+}
+
 fun numberOfSteps(num: Int): Int {
     return if (num == 0) 0 else Integer.SIZE - Integer.numberOfLeadingZeros(num) + Integer.bitCount(num) - 1
 }
