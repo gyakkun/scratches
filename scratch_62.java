@@ -9,11 +9,62 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.fib(46));
+        System.out.println(s.longestDiverseString(1, 1, 7));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC2006
+    public int countKDifference(int[] nums, int k) {
+        int result = 0;
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            result += m.getOrDefault(nums[i] - k, 0);
+            result += m.getOrDefault(nums[i] + k, 0);
+            m.put(nums[i], m.getOrDefault(nums[i], 0) + 1);
+        }
+        return result;
+    }
+
+    // LC1405
+    public String longestDiverseString(int a, int b, int c) {
+        StringBuffer sb = new StringBuffer();
+        char last = '\0';
+        int lastLen = 0;
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(i -> -i[1]));
+        pq.offer(new int[]{'a', a});
+        pq.offer(new int[]{'b', b});
+        pq.offer(new int[]{'c', c});
+        while (!pq.isEmpty()) {
+            int[] p = pq.poll();
+            if (last == p[0] && lastLen >= 2) {
+                if (pq.isEmpty()) {
+                    return "";
+                }
+                int[] sub = pq.poll();
+                sb.append((char) sub[0]);
+                lastLen = 1;
+                last = (char) sub[0];
+                if (sub[1] - 1 > 0) {
+                    pq.offer(new int[]{sub[0], sub[1] - 1});
+                }
+                pq.offer(p);
+            } else {
+                sb.append((char) p[0]);
+                last = (char) p[0];
+                if (sb.length() >= 2 && (char) p[1] != sb.charAt(sb.length() - 2)) {
+                    lastLen = 1;
+                } else {
+                    lastLen++;
+                }
+                if (p[1] - 1 > 0) {
+                    pq.offer(new int[]{p[0], p[1] - 1});
+                }
+            }
+        }
+        return sb.toString();
     }
 
     // LC1219
