@@ -16,6 +16,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1447
+    int[][] gcdCache = new int[101][101];
+
+    public List<String> simplifiedFractions(int n) {
+        List<String> result = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j < i; j++) {
+                if (gcd(j, i) == 1) {
+                    result.add("" + j + "/" + i);
+                }
+            }
+        }
+        return result;
+    }
+
+    private int gcd(int a, int b) {
+        if (gcdCache[a][b] != 0) return gcdCache[a][b];
+        if (gcdCache[b][a] != 0) return gcdCache[b][a];
+        return b == 0 ? (gcdCache[a][b] = (gcdCache[b][a] = a)) : gcd(b, a % b);
+    }
+
     // LC2006
     public int countKDifference(int[] nums, int k) {
         int result = 0;
