@@ -9,11 +9,21 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.longestDiverseString(1, 1, 7));
+        System.out.println(s.minimumDifference(new int[]{9, 4, 1, 7}, 4));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1984
+    public int minimumDifference(int[] nums, int k) {
+        int n = nums.length, result = Integer.MAX_VALUE;
+        Arrays.sort(nums);
+        for (int i = 0; i <= n - k; i++) {
+            result = Math.min(result, nums[i + k - 1] - nums[i]);
+        }
+        return result;
     }
 
     // LC1447
