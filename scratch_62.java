@@ -16,6 +16,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1748
+    public int sumOfUnique(int[] nums) {
+        return Arrays.stream(nums).boxed().collect(Collectors.groupingBy(i -> i, Collectors.toList())).entrySet().stream().filter(i -> i.getValue().size() == 1).mapToInt(i -> i.getKey()).sum();
+    }
+
     // LC1984
     public int minimumDifference(int[] nums, int k) {
         int n = nums.length, result = Integer.MAX_VALUE;
