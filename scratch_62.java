@@ -9,11 +9,42 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.minimumDifference(new int[]{9, 4, 1, 7}, 4));
+        System.out.println(s.numEnclaves(new int[][]{{0, 0, 0, 0}, {1, 0, 1, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1020
+    public int numEnclaves(int[][] grid) {
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int m = grid.length, n = grid[0].length, allUnit = 0;
+        BitSet edgeUnit = new BitSet(m * n);
+        Deque<Integer> q = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    allUnit++;
+                    if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
+                        q.offer(i * n + j);
+                    }
+                }
+            }
+        }
+        while (!q.isEmpty()) {
+            int p = q.poll();
+            if (edgeUnit.get(p)) continue;
+            edgeUnit.set(p);
+            int r = p / n, c = p % n;
+            for (int[] d : directions) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] == 1 && !edgeUnit.get(nr * n + nc)) {
+                    q.offer(nr * n + nc);
+                }
+            }
+        }
+        return allUnit - edgeUnit.cardinality();
     }
 
     // LC1748
