@@ -16,6 +16,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1380
+    public List<Integer> luckyNumbers(int[][] matrix) {
+        int m = matrix.length, n = matrix[0].length;
+        int[] rowMin = new int[m], colMax = new int[n];
+        List<Integer> result = new ArrayList<>();
+        Arrays.fill(rowMin, Integer.MAX_VALUE);
+        Arrays.fill(colMax, Integer.MIN_VALUE);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rowMin[i] = Math.min(rowMin[i], matrix[i][j]);
+                colMax[j] = Math.max(colMax[j], matrix[i][j]);
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (rowMin[i] == colMax[j]) {
+                    result.add(matrix[i][j]);
+                }
+            }
+        }
+        return result;
+    }
+
     // LC1020
     public int numEnclaves(int[][] grid) {
         int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
