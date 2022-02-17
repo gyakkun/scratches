@@ -1,5 +1,6 @@
 import java.util.*;
 import java.util.function.Function;
+import java.util.jar.JarEntry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,6 +16,43 @@ class Scratch {
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC688
+    Double[][][] memo;
+    int edgeLen = 0;
+    int[][] knightDirections = new int[][]{{1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {-1, -2}, {-2, -1}, {1, -2}, {2, -1}};
+
+    public double knightProbability(int n, int k, int row, int column) {
+        edgeLen = n;
+        memo = new Double[n][n][k + 1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                memo[i][j][0] = 0d;
+            }
+        }
+        memo[row][column][0] = 1d;
+        double ariRate = 0d;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                ariRate += helper(i, j, k);
+            }
+        }
+        return ariRate;
+    }
+
+    private double helper(int r, int c, int step) {
+        if (step < 0) return 0d;
+        if (memo[r][c][step] != null) return memo[r][c][step];
+        double result = 0d;
+        for (int[] d : knightDirections) {
+            int pr = r - d[0], pc = c - d[1];
+            if (pr >= 0 && pr < edgeLen && pc >= 0 && pc < edgeLen) {
+                result += 0.125d * helper(pr, pc, step - 1);
+            }
+        }
+        return memo[r][c][step] = result;
+    }
+
 
     // LC1380
     public List<Integer> luckyNumbers(int[][] matrix) {
@@ -169,22 +207,22 @@ class Scratch {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] != 0) {
                     visited = new boolean[m][n];
-                    result = Math.max(result, helper(i, j));
+                    result = Math.max(result, lc1219Helper(i, j));
                 }
             }
         }
         return result;
     }
 
-    private int helper(int r, int c) {
+    private int lc1219Helper(int r, int c) {
         if (visited[r][c]) return 0;
         visited[r][c] = true;
         int cur = grid[r][c];
         int next = 0;
-        for (int[] d : directions) {
+        for (int[] d : knightDirections) {
             int nr = r + d[0], nc = c + d[1];
             if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && grid[nr][nc] != 0 && !visited[nr][nc]) {
-                next = Math.max(next, helper(nr, nc));
+                next = Math.max(next, lc1219Helper(nr, nc));
             }
         }
         visited[r][c] = false;
