@@ -6,7 +6,7 @@ import java.util.*
 var before = Instant.now()
 var s = Solution()
 println(
-        s
+    s
 )
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -103,6 +103,10 @@ internal class DetectSquares {
 
 // LC2045 **
 class Solution {
+
+    // LC1791
+    fun findCenter(edges: Array<IntArray>): Int =
+        edges.flatMap { it.toList() }.groupingBy { it }.eachCount().filter { it.value != 1 }.entries.first().key
 
 
     // LC1219
@@ -480,7 +484,7 @@ class Solution {
         val cBound = if (pc == bound - 1) cid else cid + 1
         val mtx = Array(rBound + 1) {
             BooleanArray(
-                    cBound + 1
+                cBound + 1
             )
         } // use as visited[][] too
 
@@ -590,7 +594,7 @@ class Solution {
         lc913Memo = Array(graph.size * 2 + 1) {
             Array<Array<Int?>>(graph.size + 1) {
                 arrayOfNulls(
-                        graph.size + 1
+                    graph.size + 1
                 )
             }
         }

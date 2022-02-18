@@ -19,6 +19,7 @@ class Scratch {
 
     // LC1791
     public int findCenter(int[][] edges) {
+        // return Arrays.stream(edges).flatMap(intArr -> Arrays.stream(intArr).boxed()).collect(Collectors.groupingBy(i -> i, Collectors.counting())).entrySet().stream().filter(i -> i.getValue() != 1).collect(Collectors.toList()).get(0).getKey();
         Set<Integer> s = new HashSet<>();
         for (int[] i : edges) {
             for (int j : i) {
