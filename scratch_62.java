@@ -17,6 +17,47 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1791
+    public int findCenter(int[][] edges) {
+        Set<Integer> s = new HashSet<>();
+        for (int[] i : edges) {
+            for (int j : i) {
+                if (!s.add(j)) return j;
+            }
+        }
+        return -1;
+    }
+
+    // 220217 HuanFang: Rate TBD Digit DP
+    public double hfRate(long l, long r) {
+        // 123 32112233 {1,2,3}
+        // [0,100] 10,100, {0
+        long count = r - l + 1;
+        double total = (double) count * (double) count;
+        double pos = 0d;
+        for (int i = 0; i < 1024; i++) {
+            Set<Integer> digit = new HashSet<>(10);
+            for (int bit = 0; bit < 10; bit++) {
+                if (((i >> bit) & 1) == 1) {
+                    digit.add(bit);
+                }
+            }
+            // digit 就是数字集合, 开始构造
+            double tmp = 0d;
+            if (!digit.contains(0)) {
+                // 从 [R,L] 构造
+            } else {
+                // 避开前缀零
+            }
+
+            // 3321 123 A(3,3)
+            // C(3,1)
+
+        }
+
+        return pos / total;
+    }
+
     // LC688
     Double[][][] memo;
     int edgeLen = 0;
