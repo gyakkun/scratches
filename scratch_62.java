@@ -17,6 +17,40 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC969 **
+    public List<Integer> pancakeSort(int[] arr) {
+        int n = arr.length;
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int endIdx = n - i - 1;
+            if (endIdx == 0) break;
+            // 找出 [0,endIdx] 中最大数的下标, 然后放到endIdx
+            int max = Integer.MIN_VALUE;
+            int maxIdx = -1;
+            for (int j = 0; j <= endIdx; j++) {
+                if (arr[j] > max) {
+                    maxIdx = j;
+                    max = arr[j];
+                }
+            }
+            if (maxIdx == endIdx) continue;
+            reverse(arr, maxIdx + 1);
+            reverse(arr, endIdx + 1);
+            result.add(maxIdx + 1);
+            result.add(endIdx + 1);
+        }
+        return result;
+    }
+
+    private void reverse(int[] arr, int endExclusive) {
+        if (endExclusive > arr.length || endExclusive <= 1) return;
+        for (int i = 0; i < endExclusive / 2; i++) {
+            int tmp = arr[i];
+            arr[i] = arr[endExclusive - 1 - i];
+            arr[endExclusive - 1 - i] = tmp;
+        }
+    }
+
     // LC1791
     public int findCenter(int[][] edges) {
         // return Arrays.stream(edges).flatMap(intArr -> Arrays.stream(intArr).boxed()).collect(Collectors.groupingBy(i -> i, Collectors.counting())).entrySet().stream().filter(i -> i.getValue() != 1).collect(Collectors.toList()).get(0).getKey();
