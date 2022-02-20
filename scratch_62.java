@@ -1,6 +1,5 @@
 import java.util.*;
 import java.util.function.Function;
-import java.util.jar.JarEntry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,6 +14,28 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC717
+    public boolean isOneBitCharacter(int[] bits) {
+        if (bits.length == 1) return true; // ends with 0
+        return helper(bits, bits.length - 2);
+    }
+
+    public boolean helper(int[] arr, int endIdx) { // endIdx inclusive
+        if (endIdx < 0) return false;
+        if (endIdx == 0 && arr[0] == 0) return true;
+        if (endIdx == 0 && arr[0] == 1) return false;
+
+        if (arr[endIdx] == 0 && arr[endIdx - 1] == 0) { // 0,0
+            return helper(arr, endIdx - 1);
+        }
+        if (arr[endIdx] == 0 && arr[endIdx - 1] == 1) { // 1,0
+            return helper(arr, endIdx - 1) || helper(arr, endIdx - 2);
+        }
+        if (arr[endIdx] == 1 && arr[endIdx - 1] == 0) return false; // 0,1
+
+        return helper(arr, endIdx - 2); // 1,1
     }
 
     // LC969 **
@@ -94,39 +115,39 @@ class Scratch {
     }
 
     // LC688
-    Double[][][] memo;
+    Double[][][] lc688Memo;
     int edgeLen = 0;
     int[][] knightDirections = new int[][]{{1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {-1, -2}, {-2, -1}, {1, -2}, {2, -1}};
 
     public double knightProbability(int n, int k, int row, int column) {
         edgeLen = n;
-        memo = new Double[n][n][k + 1];
+        lc688Memo = new Double[n][n][k + 1];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                memo[i][j][0] = 0d;
+                lc688Memo[i][j][0] = 0d;
             }
         }
-        memo[row][column][0] = 1d;
+        lc688Memo[row][column][0] = 1d;
         double ariRate = 0d;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                ariRate += helper(i, j, k);
+                ariRate += lc688Helper(i, j, k);
             }
         }
         return ariRate;
     }
 
-    private double helper(int r, int c, int step) {
+    private double lc688Helper(int r, int c, int step) {
         if (step < 0) return 0d;
-        if (memo[r][c][step] != null) return memo[r][c][step];
+        if (lc688Memo[r][c][step] != null) return lc688Memo[r][c][step];
         double result = 0d;
         for (int[] d : knightDirections) {
             int pr = r - d[0], pc = c - d[1];
             if (pr >= 0 && pr < edgeLen && pc >= 0 && pc < edgeLen) {
-                result += 0.125d * helper(pr, pc, step - 1);
+                result += 0.125d * lc688Helper(pr, pc, step - 1);
             }
         }
-        return memo[r][c][step] = result;
+        return lc688Memo[r][c][step] = result;
     }
 
 
@@ -550,11 +571,11 @@ class Scratch {
     }
 
     // LC1220
-    Long[][] memo;
+    Long[][] lc1220Memo;
     final long mod = 1000000007;
 
     public int countVowelPermutation(int n) {
-        memo = new Long[n + 1][6];
+        lc1220Memo = new Long[n + 1][6];
         long result = 0;
         for (int i = 0; i < 5; i++) {
             result = (result + lc1220Helper(n - 1, i)) % mod;
@@ -569,27 +590,28 @@ class Scratch {
         // 每个元音 'o' 后面只能跟着 'i' 或者是 'u'
         // 每个元音 'u' 后面只能跟着 'a'
         if (remainLetters == 0) return 1;
-        if (memo[remainLetters][currentLetterIdx] != null) return memo[remainLetters][currentLetterIdx] % mod;
+        if (lc1220Memo[remainLetters][currentLetterIdx] != null)
+            return lc1220Memo[remainLetters][currentLetterIdx] % mod;
         switch (currentLetterIdx) {
             case 0: // a
-                return memo[remainLetters][currentLetterIdx]
+                return lc1220Memo[remainLetters][currentLetterIdx]
                         = lc1220Helper(remainLetters - 1, 1);
             case 1: // e
-                return memo[remainLetters][currentLetterIdx]
+                return lc1220Memo[remainLetters][currentLetterIdx]
                         = (lc1220Helper(remainLetters - 1, 0)
                         + lc1220Helper(remainLetters - 1, 2)) % mod;
             case 2:
-                return memo[remainLetters][currentLetterIdx]
+                return lc1220Memo[remainLetters][currentLetterIdx]
                         = (lc1220Helper(remainLetters - 1, 0)
                         + lc1220Helper(remainLetters - 1, 1)
                         + lc1220Helper(remainLetters - 1, 3)
                         + lc1220Helper(remainLetters - 1, 4)) % mod;
             case 3:
-                return memo[remainLetters][currentLetterIdx]
+                return lc1220Memo[remainLetters][currentLetterIdx]
                         = (lc1220Helper(remainLetters - 1, 2)
                         + lc1220Helper(remainLetters - 1, 4));
             case 4:
-                return memo[remainLetters][currentLetterIdx]
+                return lc1220Memo[remainLetters][currentLetterIdx]
                         = lc1220Helper(remainLetters - 1, 0) % mod;
         }
         return 0;
