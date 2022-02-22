@@ -12,78 +12,58 @@ class Scratch {
 //        System.out.println(s.numberOfGoodSubsets(new int[]{1, 2, 3, 4}));
 //        System.out.println(s.numberOfGoodSubsets(new int[]{4, 2, 3, 15}));
 //        System.out.println(s.numberOfGoodSubsets(new int[]{5, 6, 7, 10})); // 9
-        System.out.println(s.numberOfGoodSubsets(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})); // 46
+        System.out.println(s.numberOfGoodSubsets(new int[]{1, 2, 3, 5, 6, 7, 10})); // 46
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    // LC1994 WA
-    Map<Integer, Integer> memo = new HashMap<>();
-    Map<Integer, Integer> maskFreq = new HashMap<>();
-    int fullSet = 0;
+    // LC1994 **
+    Long[][] memo = new Long[31][1025];
+    Set<Integer> banSet = Set.of(4, 8, 9, 12, 16, 18, 20, 24, 25, 27, 28);
+    int[] primeUnder30 = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
+    Map<Integer, Integer> primeIdxMap;
+    Map<Integer, Integer> freq;
+    int[] maskToNum = new int[1024];
+    int[] numToMask = new int[31];
     long mod = 1000000007;
 
     public int numberOfGoodSubsets(int[] nums) {
-        int[] primeUnder30 = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
-        int[] ban = {4, 9, 16, 25, 8, 27, 12, 20, 24, 28, 18};
-        Set<Integer> banSet = Arrays.stream(ban).boxed().collect(Collectors.toSet());
-        Set<Integer> primeSet = Arrays.stream(primeUnder30).boxed().collect(Collectors.toSet());
-        Map<Integer, Integer> freq = Arrays.stream(nums).boxed().filter(i -> !banSet.contains(i)).collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(e -> 1)));
-        for (int i : freq.keySet()) {
-            if (banSet.contains(i)) continue;
-            if (primeSet.contains(i)) {
-                maskFreq.put(1 << i, freq.get(i));
-                continue;
-            }
+        primeIdxMap = new HashMap<>();
+        for (int i = 0; i < primeUnder30.length; i++) primeIdxMap.put(primeUnder30[i], i);
+        for (int i = 2; i <= 30; i++) {
             int mask = 0;
-            for (int j = 2; j <= (int) Math.sqrt(i); j++) {
-                if (i % j == 0) {
-                    int k = i / j;
-                    if (j != 1) mask |= (1 << j);
-                    if (k != 1) mask |= (1 << k);
+            if (banSet.contains(i)) continue;
+            for (int j = 0; j < 10; j++) {
+                if (i % primeUnder30[j] == 0) {
+                    mask |= 1 << j;
                 }
             }
-            maskFreq.put(mask, freq.get(i));
-        }
-        for (int i : maskFreq.keySet()) {
-            fullSet |= i;
+            numToMask[i] = mask;
+            maskToNum[mask] = i;
         }
 
+        freq = Arrays.stream(nums).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(e -> 1)));
 
-        long result = 0;
-        for (int subset = fullSet; subset >= 1; subset = (subset - 1) & fullSet) {
-            result += helper(subset);
-            result %= mod;
+        long one = 1;
+        for (int i = 0; i < freq.getOrDefault(1, 0); i++) {
+            one = (one * 2) % mod;
         }
-        result *= 1 << freq.getOrDefault(1, 0);
-        result %= mod;
-        return (int) result;
+        return (int) ((helper(2, 0) * one) % mod);
     }
 
-    private long helper(int requiredMask) {
-        if (requiredMask == 0) return 0;
-        if (memo.containsKey(requiredMask)) return memo.get(requiredMask);
+    private long helper(int cur, int mask) {
+        if (cur == 31) {
+            return mask == 0 ? 0 : 1;
+        }
+        if (memo[cur][mask] != null) return memo[cur][mask];
         long result = 0;
-        int subset = requiredMask;
-        subset = (subset - 1) & requiredMask; // 真子集
-        Set<Integer> visited = new HashSet<>();
-        for (; subset != 0; subset = (subset - 1) & requiredMask) {
-            // another half
-            int anotherHalfSet = requiredMask ^ subset;
-            if (visited.contains(subset) || visited.contains(anotherHalfSet)) continue;
-            visited.add(subset);
-            visited.add(anotherHalfSet);
-            result += helper(subset) * helper(anotherHalfSet);
-            result %= mod;
+        if (!banSet.contains(cur) && (numToMask[cur] & mask) == 0) {
+            result += helper(cur + 1, mask | numToMask[cur]) * freq.getOrDefault(cur, 0);
         }
-        if (maskFreq.containsKey(requiredMask)) {
-            result += maskFreq.get(requiredMask);
-            result %= mod;
-        }
-        memo.put(requiredMask, (int) result);
-        return result;
+        result += helper(cur + 1, mask);
+        return memo[cur][mask] = (result % mod);
     }
 
     // LC717
