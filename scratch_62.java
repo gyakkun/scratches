@@ -9,33 +9,103 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.numEnclaves(new int[][]{{0, 0, 0, 0}, {1, 0, 1, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}}));
+//        System.out.println(s.numberOfGoodSubsets(new int[]{1, 2, 3, 4}));
+//        System.out.println(s.numberOfGoodSubsets(new int[]{4, 2, 3, 15}));
+//        System.out.println(s.numberOfGoodSubsets(new int[]{5, 6, 7, 10})); // 9
+        System.out.println(s.numberOfGoodSubsets(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})); // 46
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1994 WA
+    Map<Integer, Integer> memo = new HashMap<>();
+    Map<Integer, Integer> maskFreq = new HashMap<>();
+    int fullSet = 0;
+    long mod = 1000000007;
+
+    public int numberOfGoodSubsets(int[] nums) {
+        int[] primeUnder30 = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
+        int[] ban = {4, 9, 16, 25, 8, 27, 12, 20, 24, 28, 18};
+        Set<Integer> banSet = Arrays.stream(ban).boxed().collect(Collectors.toSet());
+        Set<Integer> primeSet = Arrays.stream(primeUnder30).boxed().collect(Collectors.toSet());
+        Map<Integer, Integer> freq = Arrays.stream(nums).boxed().filter(i -> !banSet.contains(i)).collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(e -> 1)));
+        for (int i : freq.keySet()) {
+            if (banSet.contains(i)) continue;
+            if (primeSet.contains(i)) {
+                maskFreq.put(1 << i, freq.get(i));
+                continue;
+            }
+            int mask = 0;
+            for (int j = 2; j <= (int) Math.sqrt(i); j++) {
+                if (i % j == 0) {
+                    int k = i / j;
+                    if (j != 1) mask |= (1 << j);
+                    if (k != 1) mask |= (1 << k);
+                }
+            }
+            maskFreq.put(mask, freq.get(i));
+        }
+        for (int i : maskFreq.keySet()) {
+            fullSet |= i;
+        }
+
+
+        long result = 0;
+        for (int subset = fullSet; subset >= 1; subset = (subset - 1) & fullSet) {
+            result += helper(subset);
+            result %= mod;
+        }
+        result *= 1 << freq.getOrDefault(1, 0);
+        result %= mod;
+        return (int) result;
+    }
+
+    private long helper(int requiredMask) {
+        if (requiredMask == 0) return 0;
+        if (memo.containsKey(requiredMask)) return memo.get(requiredMask);
+        long result = 0;
+        int subset = requiredMask;
+        subset = (subset - 1) & requiredMask; // 真子集
+        Set<Integer> visited = new HashSet<>();
+        for (; subset != 0; subset = (subset - 1) & requiredMask) {
+            // another half
+            int anotherHalfSet = requiredMask ^ subset;
+            if (visited.contains(subset) || visited.contains(anotherHalfSet)) continue;
+            visited.add(subset);
+            visited.add(anotherHalfSet);
+            result += helper(subset) * helper(anotherHalfSet);
+            result %= mod;
+        }
+        if (maskFreq.containsKey(requiredMask)) {
+            result += maskFreq.get(requiredMask);
+            result %= mod;
+        }
+        memo.put(requiredMask, (int) result);
+        return result;
+    }
+
     // LC717
     public boolean isOneBitCharacter(int[] bits) {
         if (bits.length == 1) return true; // ends with 0
-        return helper(bits, bits.length - 2);
+        return lc717Helper(bits, bits.length - 2);
     }
 
-    public boolean helper(int[] arr, int endIdx) { // endIdx inclusive
+    public boolean lc717Helper(int[] arr, int endIdx) { // endIdx inclusive
         if (endIdx < 0) return false;
         if (endIdx == 0 && arr[0] == 0) return true;
         if (endIdx == 0 && arr[0] == 1) return false;
 
         if (arr[endIdx] == 0 && arr[endIdx - 1] == 0) { // 0,0
-            return helper(arr, endIdx - 1);
+            return lc717Helper(arr, endIdx - 1);
         }
         if (arr[endIdx] == 0 && arr[endIdx - 1] == 1) { // 1,0
-            return helper(arr, endIdx - 1) || helper(arr, endIdx - 2);
+            return lc717Helper(arr, endIdx - 1) || lc717Helper(arr, endIdx - 2);
         }
         if (arr[endIdx] == 1 && arr[endIdx - 1] == 0) return false; // 0,1
 
-        return helper(arr, endIdx - 2); // 1,1
+        return lc717Helper(arr, endIdx - 2); // 1,1
     }
 
     // LC969 **
@@ -572,7 +642,6 @@ class Scratch {
 
     // LC1220
     Long[][] lc1220Memo;
-    final long mod = 1000000007;
 
     public int countVowelPermutation(int n) {
         lc1220Memo = new Long[n + 1][6];
