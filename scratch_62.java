@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -9,14 +11,26 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-//        System.out.println(s.numberOfGoodSubsets(new int[]{1, 2, 3, 4}));
-//        System.out.println(s.numberOfGoodSubsets(new int[]{4, 2, 3, 15}));
-//        System.out.println(s.numberOfGoodSubsets(new int[]{5, 6, 7, 10})); // 9
-        System.out.println(s.numberOfGoodSubsets(new int[]{1, 2, 3, 5, 6, 7, 10})); // 46
+        System.out.println(s.complexNumberMultiply("1+1i", "1+1i"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    public String complexNumberMultiply(String num1, String num2) {
+        Pair<Integer, Integer> first = extract(num1), second = extract(num2);
+        int a = first.getKey(), b = first.getValue(), c = second.getKey(), d = second.getValue();
+        int real = a * c - b * d, unreal = a * d + b * c;
+        return "" + real + "+" + unreal + "i";
+
+    }
+
+    private Pair<Integer, Integer> extract(String cpx) {
+        String[] split1 = cpx.split("\\+");
+        String[] split2 = split1[1].split("i");
+        int a = Integer.valueOf(split1[0]), b = Integer.valueOf(split2[0]);
+        return new Pair<Integer, Integer>(a, b);
     }
 
     // LC1994 **
