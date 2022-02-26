@@ -11,13 +11,45 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.complexNumberMultiply("1+1i", "1+1i"));
+        System.out.println(s.maximumDifference(new int[]{7, 1, 5, 4}));
+        System.out.println(s.maximumDifference(new int[]{9, 4, 3, 2}));
+        System.out.println(s.maximumDifference(new int[]{1, 5, 2, 10}));
+        System.out.println(s.maximumDifference(new int[]{1, 5, 114, 325, 6236, 42331, 565, 34, 12, 2, 10}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2016
+    public int maximumDifference(int[] nums) {
+        int n = nums.length, result = -1;
+        int[] minFromLeft = new int[n], maxFromRight = new int[n];
+
+        int mflIdx = 0, mfrIdx = n - 1;
+        for (int i = 0; i < n; i++) {
+            int ri = n - i - 1;
+            if (nums[i] < nums[mflIdx]) {
+                mflIdx = i;
+            }
+            minFromLeft[i] = mflIdx;
+
+            if (nums[ri] > nums[mfrIdx]) {
+                mfrIdx = ri;
+            }
+            maxFromRight[ri] = mfrIdx;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (maxFromRight[i] > minFromLeft[i] && nums[maxFromRight[i]] > nums[minFromLeft[i]]) {
+                result = Math.max(result, nums[maxFromRight[i]] - nums[minFromLeft[i]]);
+            }
+        }
+
+        return result;
+    }
+
+    // LC537
     public String complexNumberMultiply(String num1, String num2) {
         Pair<Integer, Integer> first = extract(num1), second = extract(num2);
         int a = first.getKey(), b = first.getValue(), c = second.getKey(), d = second.getValue();
