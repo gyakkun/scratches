@@ -21,6 +21,11 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC553
+    public String optimalDivision(int[] nums) {
+        return nums.length == 1 ? "" + nums[0] : (nums.length == 2 ? "" + nums[0] + "/" + nums[1] : "" + nums[0] + "/(" + String.join("/", Arrays.stream(Arrays.copyOfRange(nums, 1, nums.length)).boxed().map(String::valueOf).collect(Collectors.toList())) + ")");
+    }
+
     // LC2016
     public int maximumDifference(int[] nums) {
         int n = nums.length, result = -1;
