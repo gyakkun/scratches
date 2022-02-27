@@ -11,15 +11,44 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maximumDifference(new int[]{7, 1, 5, 4}));
-        System.out.println(s.maximumDifference(new int[]{9, 4, 3, 2}));
-        System.out.println(s.maximumDifference(new int[]{1, 5, 2, 10}));
-        System.out.println(s.maximumDifference(new int[]{1, 5, 114, 325, 6236, 42331, 565, 34, 12, 2, 10}));
+        System.out.println(s.maximumRequests(5, new int[][]{{0, 1}, {1, 0}, {0, 1}, {1, 2}, {2, 0}, {3, 4}, {0, 1}, {1, 0}, {0, 1}, {1, 2}, {2, 0}, {3, 4}, {0, 1}, {1, 0}, {0, 1}, {1, 2}}));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC1601
+    int maxAccept = 0;
+    int acceptCount = 0;
+    int[] status;
+
+    public int maximumRequests(int n, int[][] requests) {
+        status = new int[n];
+        helper(requests, 0);
+        return maxAccept;
+    }
+
+    private void helper(int[][] requests, int cur) {
+        if (cur == requests.length) {
+            for (int i : status) {
+                if (i != 0) return;
+            }
+            maxAccept = Math.max(maxAccept, acceptCount);
+            return;
+        }
+        // 选
+        status[requests[cur][0]]++;
+        status[requests[cur][1]]--;
+        acceptCount++;
+        helper(requests, cur + 1);
+        // 不选
+        acceptCount--;
+        status[requests[cur][0]]--;
+        status[requests[cur][1]]++;
+        helper(requests, cur + 1);
+    }
+
 
     // LC553
     public String optimalDivision(int[] nums) {
@@ -101,19 +130,19 @@ class Scratch {
         for (int i = 0; i < freq.getOrDefault(1, 0); i++) {
             one = (one * 2) % mod;
         }
-        return (int) ((helper(2, 0) * one) % mod);
+        return (int) ((lc1994Helper(2, 0) * one) % mod);
     }
 
-    private long helper(int cur, int mask) {
+    private long lc1994Helper(int cur, int mask) {
         if (cur == 31) {
             return mask == 0 ? 0 : 1;
         }
         if (memo[cur][mask] != null) return memo[cur][mask];
         long result = 0;
         if (!banSet.contains(cur) && (numToMask[cur] & mask) == 0) {
-            result += helper(cur + 1, mask | numToMask[cur]) * freq.getOrDefault(cur, 0);
+            result += lc1994Helper(cur + 1, mask | numToMask[cur]) * freq.getOrDefault(cur, 0);
         }
-        result += helper(cur + 1, mask);
+        result += lc1994Helper(cur + 1, mask);
         return memo[cur][mask] = (result % mod);
     }
 
