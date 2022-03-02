@@ -11,11 +11,35 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 
-        System.out.println(s.maximumRequests(5, new int[][]{{0, 1}, {1, 0}, {0, 1}, {1, 2}, {2, 0}, {3, 4}, {0, 1}, {1, 0}, {0, 1}, {1, 2}, {2, 0}, {3, 4}, {0, 1}, {1, 0}, {0, 1}, {1, 2}}));
+        System.out.println(s.nearestPalindromic("10"));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC564
+    public String nearestPalindromicMy(String n) {
+        long result = -1, num = Long.valueOf(n);
+        List<Long> candidates = new ArrayList<>();
+        int len = n.length();
+        long prefix = Long.valueOf(n.substring(0, (len + 1) / 2));
+        candidates.add((long) (Math.pow(10, len - 1) + 1));
+        candidates.add((long) (Math.pow(10, len) - 1));
+        for (long i = prefix - 1; i <= prefix + 1; i++) {
+            String suffix = new StringBuilder("" + i).reverse().toString();
+            suffix = suffix.substring(len & 1); // 奇偶判断
+            candidates.add(Long.valueOf("" + i + suffix));
+        }
+        for (Long candidate : candidates) {
+            if (candidate.toString().equals(n)) continue;
+            if (result == -1 || Math.abs(candidate - num) < Math.abs(result - num) ||
+                    (Math.abs(candidate - num) == Math.abs(result - num) && candidate < result)) {
+                result = candidate;
+            }
+        }
+
+        return "" + result;
     }
 
     // LC1601
