@@ -10,16 +10,33 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
+        int[] arr = new int[1000];
+        Arrays.fill(arr, 1024);
 
-        System.out.println(s.nearestPalindromic("10"));
+        System.out.println(s.subArrayRanges(arr));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2104 O(n*n)
+    public long subArrayRanges(int[] nums) {
+        int n = nums.length;
+        long result = 0l;
+        for (int i = 0; i < n; i++) {
+            int max = nums[i], min = nums[i];
+            for (int j = i + 1; j < n; j++) {
+                max = Math.max(nums[j], max);
+                min = Math.min(nums[j], min);
+                result += max - min;
+            }
+        }
+        return result;
+    }
+
     // LC564
-    public String nearestPalindromicMy(String n) {
+    public String nearestPalindromic(String n) {
         long result = -1, num = Long.valueOf(n);
         List<Long> candidates = new ArrayList<>();
         int len = n.length();
