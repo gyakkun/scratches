@@ -13,11 +13,30 @@ class Scratch {
         int[] arr = new int[1000];
         Arrays.fill(arr, 1024);
 
-        System.out.println(s.subArrayRanges(arr));
+        System.out.println(s.goodDaysToRobBank(new int[]{5, 3, 3, 3, 5, 6, 2}, 2));
+        System.out.println(s.goodDaysToRobBank(new int[]{1, 2, 3, 4, 5, 6}, 2));
+        System.out.println(s.goodDaysToRobBank(new int[]{1, 1, 1, 1, 1}, 0));
+        System.out.println(s.goodDaysToRobBank(new int[]{1}, 5));
 
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC2100
+    public List<Integer> goodDaysToRobBank(int[] security, int time) {
+        List<Integer> result = new ArrayList<>();
+        int n = security.length;
+        int[] left = new int[n], right = new int[n];
+        for (int i = 1; i < n; i++) {
+            int ri = n - i - 1;
+            if (security[i] <= security[i - 1]) left[i] = left[i - 1] + 1;
+            if (security[ri] <= security[ri + 1]) right[ri] = right[ri + 1] + 1;
+        }
+        for (int i = 0; i < n; i++) {
+            if (left[i] >= time && right[i] >= time) result.add(i);
+        }
+        return result;
     }
 
     // LC2104 O(n*n)
