@@ -17,6 +17,7 @@ class Scratch {
         System.out.println(s.goodDaysToRobBank(new int[]{1, 2, 3, 4, 5, 6}, 2));
         System.out.println(s.goodDaysToRobBank(new int[]{1, 1, 1, 1, 1}, 0));
         System.out.println(s.goodDaysToRobBank(new int[]{1}, 5));
+        System.out.println(s.platesBetweenCandles("***|**|*****|**||**|*", new int[][]{{1, 17}, {4, 5}, {14, 17}, {5, 11}, {15, 16}}));
 
 
         timing = System.currentTimeMillis() - timing;
@@ -24,39 +25,31 @@ class Scratch {
     }
 
 
-    // LC2055 TLE
+    // LC2055
     public int[] platesBetweenCandles(String s, int[][] queries) {
         int len = queries.length, n = s.length();
-        TreeSet<Integer> candleIdxTs = new TreeSet<>(), plateIdxTs = new TreeSet<>();
+        TreeSet<Integer> candleIdxTs = new TreeSet<>();
         char[] ca = s.toCharArray();
-        int[] result = new int[len];
+        int[] result = new int[len], prefix = new int[n + 1];
         for (int i = 0; i < n; i++) {
             switch (ca[i]) {
-                case '*':
-                    plateIdxTs.add(i);
-                    break;
                 case '|':
                     candleIdxTs.add(i);
+                    prefix[i + 1] = prefix[i];
+                    break;
+                case '*':
+                    prefix[i + 1] = prefix[i] + 1;
                     break;
             }
         }
 
         for (int i = 0; i < len; i++) {
             int[] q = queries[i];
-            int left = q[0], right = q[1], qResult = 0;
-            NavigableSet<Integer> candleSubset = candleIdxTs.subSet(left, true, right, true);
-            if (candleSubset.isEmpty()) continue;
-            NavigableSet<Integer> plateSubset = plateIdxTs.subSet(left, true, right, true);
-            Integer candleIdx = candleSubset.first();
-            while (candleIdx != null) {
-                Integer nextPlateIdx = plateSubset.higher(candleIdx);
-                if (nextPlateIdx == null) break;
-                Integer nextCandleIdx = candleSubset.higher(nextPlateIdx);
-                if (nextCandleIdx == null) break;
-                qResult += nextCandleIdx - nextPlateIdx;
-                candleIdx = nextCandleIdx;
-            }
-            result[i] = qResult;
+            int left = q[0], right = q[1];
+            Integer leftMostCandle = candleIdxTs.ceiling(left), rightMostCandle = candleIdxTs.floor(right);
+            if (leftMostCandle == null || rightMostCandle == null || leftMostCandle > right || rightMostCandle < left || leftMostCandle > rightMostCandle)
+                continue;
+            result[i] = prefix[rightMostCandle + 1] - prefix[leftMostCandle];
         }
         return result;
     }
