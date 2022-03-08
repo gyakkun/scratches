@@ -23,6 +23,44 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
+    // LC2055 TLE
+    public int[] platesBetweenCandles(String s, int[][] queries) {
+        int len = queries.length, n = s.length();
+        TreeSet<Integer> candleIdxTs = new TreeSet<>(), plateIdxTs = new TreeSet<>();
+        char[] ca = s.toCharArray();
+        int[] result = new int[len];
+        for (int i = 0; i < n; i++) {
+            switch (ca[i]) {
+                case '*':
+                    plateIdxTs.add(i);
+                    break;
+                case '|':
+                    candleIdxTs.add(i);
+                    break;
+            }
+        }
+
+        for (int i = 0; i < len; i++) {
+            int[] q = queries[i];
+            int left = q[0], right = q[1], qResult = 0;
+            NavigableSet<Integer> candleSubset = candleIdxTs.subSet(left, true, right, true);
+            if (candleSubset.isEmpty()) continue;
+            NavigableSet<Integer> plateSubset = plateIdxTs.subSet(left, true, right, true);
+            Integer candleIdx = candleSubset.first();
+            while (candleIdx != null) {
+                Integer nextPlateIdx = plateSubset.higher(candleIdx);
+                if (nextPlateIdx == null) break;
+                Integer nextCandleIdx = candleSubset.higher(nextPlateIdx);
+                if (nextCandleIdx == null) break;
+                qResult += nextCandleIdx - nextPlateIdx;
+                candleIdx = nextCandleIdx;
+            }
+            result[i] = qResult;
+        }
+        return result;
+    }
+
     // LC2100
     public List<Integer> goodDaysToRobBank(int[] security, int time) {
         List<Integer> result = new ArrayList<>();
