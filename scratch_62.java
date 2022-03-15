@@ -10,11 +10,7 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.out.println(s.validUtf8(new int[]{197, 130, 1}));
-//        System.out.println(s.validUtf8(new int[]{235, 140, 4}));
-//        System.out.println(s.validUtf8(new int[]{230, 136, 145}));
-//        System.out.println(s.validUtf8(new int[]{145}));
-        System.out.println(s.validUtf8(new int[]{250, 145, 145, 145, 145}));
+
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
