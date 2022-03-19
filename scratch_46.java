@@ -960,7 +960,7 @@ class Scratch {
     public String removeKdigits(String num, int k) {
         Deque<Character> deque = new LinkedList<>();
         int length = num.length();
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; i++) {
             char digit = num.charAt(i);
             while (!deque.isEmpty() && k > 0 && deque.peek() > digit) {
                 deque.pop();
@@ -968,18 +968,18 @@ class Scratch {
             }
             deque.push(digit);
         }
-        for (int i = 0; i < k; ++i) {
+        for (int i = 0; i < k; i++) {
             deque.pop();
         }
 
-        StringBuilder ret = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         while (!deque.isEmpty() && deque.peekLast() == '0') {
             deque.pollLast();
         }
         while (!deque.isEmpty()) {
-            ret.append(deque.pollLast());
+            result.append(deque.pollLast());
         }
-        return ret.length() == 0 ? "0" : ret.toString();
+        return result.length() == 0 ? "0" : result.toString();
     }
 
     // LC773
