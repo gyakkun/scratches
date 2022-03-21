@@ -10,11 +10,113 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
+//        System.out.println(s.helperAcc(0, -1, 0, 1, new int[]{1, 0, 2, 4}, true));
+        System.out.println(s.hfRate(13,1024));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+
+    Integer[][] memo = new Integer[13][1024];
+    Long[] facMemo = new Long[14];
+    // long mod = 1000000007;
+
+    // 220217 HuanFang: Rate TBD Digit DP WA
+    public double hfRate(long l, long r) {
+        // 123 32112233 {1,2,3}
+        // [0,100] 10,100, {0
+        long n = r - l + 1;
+        int[] freq = new int[1024];
+        double result = 0d;
+        for (int i = 0; i < 1024; i++) {
+            freq[i] = helperAcc(0, -1, 0, i, numToDigitArr(r), true)
+                    - helperAcc(0, -1, 0, i, numToDigitArr(l - 1), true);
+        }
+        int sum = 0;
+        for (int i : freq) sum += i;
+        System.out.println(sum);
+
+        for (int i : freq) {
+            if (i <= 1) continue;
+            result += ((double) i / (double) n) * ((double) (i - 1) / (double) (n - 1));
+        }
+        return result;
+    }
+
+    public int helperAcc(int curIdx, int previousDigit, int previousMask, int targetMask, int[] upperBoundDigitArr, boolean isBounding) { // isBounding 表示前面的位数是否压线通过, 比如 上届是12345, 那么(当前位位置, 前一个数, 贴地) 符合的情况比如(5,-1,1), (4,1,1) 就是贴地
+        if (curIdx >= upperBoundDigitArr.length || targetMask == 0) {
+            return 0;
+        }
+
+        if (curIdx > 0 && previousMask == 0 && previousDigit == -1) {
+            int first = helperAcc(curIdx + 1, -1, 0, targetMask, upperBoundDigitArr, false);
+            int second = helper(upperBoundDigitArr.length - curIdx, targetMask);
+
+            return first + second;
+        }
+        long result = 0l;
+        // 考虑在这一位上填数字
+        for (int i = 0; i <= 9; i++) {
+            if (((targetMask >> i) & 1) != 1) continue;
+            if (isBounding && i > upperBoundDigitArr[curIdx]) continue;
+            if (isBounding && i == upperBoundDigitArr[curIdx]) {
+                result += helperAcc(curIdx + 1, i, previousMask | (1 << i), targetMask, upperBoundDigitArr, true);
+                result %= mod;
+                continue;
+            }
+            int nextMask = targetMask ^ (1 << i);
+            result += helper(upperBoundDigitArr.length - curIdx - 1, nextMask);
+            result += helper(upperBoundDigitArr.length - curIdx - 1, targetMask);
+            result %= mod;
+        }
+        // 考虑不在这一位上填数字
+        result += helperAcc(curIdx + 1, -1, 0, targetMask, upperBoundDigitArr, false);
+        result %= mod;
+        return (int) result;
+    }
+
+    private int[] numToDigitArr(long num) {
+        List<Integer> l = new ArrayList<>();
+        while (num != 0l) {
+            l.add((int) (num % 10l));
+            num /= 10l;
+        }
+        Collections.reverse(l);
+        return l.stream().mapToInt(Integer::valueOf).toArray();
+    }
+
+    private int helper(int targetLen, int targetMask) {
+        if (targetLen == 0 || targetMask == 0) {
+            return 0;
+        }
+        if (targetMask == 1) {
+            return 1;
+        }
+        if (Integer.bitCount(targetMask) > targetLen) {
+            return 0;
+        }
+        if (Integer.bitCount(targetMask) == targetLen) {
+            return (int) fac(targetLen);
+        }
+        if (memo[targetLen][targetMask] != null) {
+            return memo[targetLen][targetMask];
+        }
+        long result = 0;
+        for (int i = 0; i <= 9; i++) {
+            if (((targetMask >> i) & 1) != 1) continue;
+            int nextMask = targetMask ^ (1 << i);
+            result += helper(targetLen - 1, nextMask);
+            result += helper(targetLen - 1, targetMask);
+        }
+        return memo[targetLen][targetMask] = (int) (result % mod);
+    }
+
+    private long fac(int len) {
+        if (facMemo[len] != null) return facMemo[len];
+        return facMemo[len] = (len == 1 ? 1l : len * fac(len - 1)) % mod;
+    }
+
 
     // LC393
     public boolean validUtf8(int[] data) {
@@ -253,7 +355,7 @@ class Scratch {
     }
 
     // LC1994 **
-    Long[][] memo = new Long[31][1025];
+    Long[][] lc1994Memo = new Long[31][1025];
     Set<Integer> banSet = Set.of(4, 8, 9, 12, 16, 18, 20, 24, 25, 27, 28);
     int[] primeUnder30 = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
     Map<Integer, Integer> primeIdxMap;
@@ -290,13 +392,13 @@ class Scratch {
         if (cur == 31) {
             return mask == 0 ? 0 : 1;
         }
-        if (memo[cur][mask] != null) return memo[cur][mask];
+        if (lc1994Memo[cur][mask] != null) return lc1994Memo[cur][mask];
         long result = 0;
         if (!banSet.contains(cur) && (numToMask[cur] & mask) == 0) {
             result += lc1994Helper(cur + 1, mask | numToMask[cur]) * freq.getOrDefault(cur, 0);
         }
         result += lc1994Helper(cur + 1, mask);
-        return memo[cur][mask] = (result % mod);
+        return lc1994Memo[cur][mask] = (result % mod);
     }
 
     // LC717
@@ -365,36 +467,6 @@ class Scratch {
             }
         }
         return -1;
-    }
-
-    // 220217 HuanFang: Rate TBD Digit DP
-    public double hfRate(long l, long r) {
-        // 123 32112233 {1,2,3}
-        // [0,100] 10,100, {0
-        long count = r - l + 1;
-        double total = (double) count * (double) count;
-        double pos = 0d;
-        for (int i = 0; i < 1024; i++) {
-            Set<Integer> digit = new HashSet<>(10);
-            for (int bit = 0; bit < 10; bit++) {
-                if (((i >> bit) & 1) == 1) {
-                    digit.add(bit);
-                }
-            }
-            // digit 就是数字集合, 开始构造
-            double tmp = 0d;
-            if (!digit.contains(0)) {
-                // 从 [R,L] 构造
-            } else {
-                // 避开前缀零
-            }
-
-            // 3321 123 A(3,3)
-            // C(3,1)
-
-        }
-
-        return pos / total;
     }
 
     // LC688
