@@ -10,15 +10,14 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.out.println(s.helperAcc(0, -1, 0, 1, new int[]{1, 0, 2, 4}, true));
-        System.out.println(s.hfRate(13,1024));
+        System.out.println(s.hfRate(1, 20));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
 
-    Integer[][] memo = new Integer[13][1024];
+    Integer[][][] memo = new Integer[2][13][1024];
     Long[] facMemo = new Long[14];
     // long mod = 1000000007;
 
@@ -29,9 +28,13 @@ class Scratch {
         long n = r - l + 1;
         int[] freq = new int[1024];
         double result = 0d;
-        for (int i = 0; i < 1024; i++) {
-            freq[i] = helperAcc(0, -1, 0, i, numToDigitArr(r), true)
-                    - helperAcc(0, -1, 0, i, numToDigitArr(l - 1), true);
+        for (int mask = 0; mask < 1024; mask++) {
+            int first = helperAcc(0, -1, 0, mask, numToDigitArr(r), true),
+                    second = helperAcc(0, -1, 0, mask, numToDigitArr(l - 1), true);
+            freq[mask] = first - second;
+            if (freq[mask] != 0) {
+                System.out.println(freq[mask]);
+            }
         }
         int sum = 0;
         for (int i : freq) sum += i;
@@ -48,10 +51,13 @@ class Scratch {
         if (curIdx >= upperBoundDigitArr.length || targetMask == 0) {
             return 0;
         }
+        if (previousMask == 0 && targetMask == 1 && curIdx == upperBoundDigitArr.length - 1) {
+            return 1;
+        }
 
         if (curIdx > 0 && previousMask == 0 && previousDigit == -1) {
             int first = helperAcc(curIdx + 1, -1, 0, targetMask, upperBoundDigitArr, false);
-            int second = helper(upperBoundDigitArr.length - curIdx, targetMask);
+            int second = helper(1, upperBoundDigitArr.length - curIdx, targetMask);
 
             return first + second;
         }
@@ -66,8 +72,8 @@ class Scratch {
                 continue;
             }
             int nextMask = targetMask ^ (1 << i);
-            result += helper(upperBoundDigitArr.length - curIdx - 1, nextMask);
-            result += helper(upperBoundDigitArr.length - curIdx - 1, targetMask);
+            result += helper(0, upperBoundDigitArr.length - curIdx - 1, nextMask);
+            result += helper(0, upperBoundDigitArr.length - curIdx - 1, targetMask);
             result %= mod;
         }
         // 考虑不在这一位上填数字
@@ -86,30 +92,36 @@ class Scratch {
         return l.stream().mapToInt(Integer::valueOf).toArray();
     }
 
-    private int helper(int targetLen, int targetMask) {
+    public int helper(int isFirst, int targetLen, int targetMask) {
         if (targetLen == 0 || targetMask == 0) {
             return 0;
         }
-        if (targetMask == 1) {
+        if (targetLen == 1 && targetMask == 1) {
             return 1;
         }
         if (Integer.bitCount(targetMask) > targetLen) {
             return 0;
         }
-        if (Integer.bitCount(targetMask) == targetLen) {
+        if (Integer.bitCount(targetMask) == targetLen && (targetMask & 1) != 1) {
             return (int) fac(targetLen);
         }
-        if (memo[targetLen][targetMask] != null) {
-            return memo[targetLen][targetMask];
+        if (memo[isFirst][targetLen][targetMask] != null) {
+            return memo[isFirst][targetLen][targetMask];
         }
         long result = 0;
         for (int i = 0; i <= 9; i++) {
             if (((targetMask >> i) & 1) != 1) continue;
+            if (isFirst == 1 && i == 0) {
+                if (targetLen == 1) {
+                    return 1;
+                }
+                continue;
+            }
             int nextMask = targetMask ^ (1 << i);
-            result += helper(targetLen - 1, nextMask);
-            result += helper(targetLen - 1, targetMask);
+            result += helper(0, targetLen - 1, nextMask);
+            result += helper(0, targetLen - 1, targetMask);
         }
-        return memo[targetLen][targetMask] = (int) (result % mod);
+        return memo[isFirst][targetLen][targetMask] = (int) (result % mod);
     }
 
     private long fac(int len) {
