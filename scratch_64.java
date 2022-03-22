@@ -1,3 +1,4 @@
+import javax.sound.midi.Soundbank;
 import java.util.*;
 
 class Scratch {
@@ -5,13 +6,41 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.networkBecomesIdle(
-                new int[][]{{5, 7}, {15, 18}, {12, 6}, {5, 1}, {11, 17}, {3, 9}, {6, 11}, {14, 7}, {19, 13}, {13, 3}, {4, 12}, {9, 15}, {2, 10}, {18, 4}, {5, 14}, {17, 5}, {16, 2}, {7, 1}, {0, 16}, {10, 19}, {1, 8}},
-                new int[]{0, 2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1}
-        ));
+
+        int a = (int) (Math.random() * 1024);
+        StringBuilder sb = new StringBuilder(a);
+        Random r = new Random();
+        for (int i = 0; i < a; i++) {
+            if (r.nextBoolean()) {
+                sb.append('A');
+            } else {
+                sb.append('B');
+            }
+        }
+        System.out.println(sb);
+        System.out.println(s.winnerOfGame(sb.toString()));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC2038
+    public boolean winnerOfGame(String colors) {
+        int a = 0, b = 0, n = colors.length();
+        char[] ca = colors.toCharArray();
+        for (int i = 0; i < n; i++) {
+            if (i - 1 >= 0 && i + 1 < n && ca[i - 1] == ca[i] && ca[i + 1] == ca[i]) {
+                switch (ca[i]) {
+                    case 'A':
+                        a++;
+                        continue;
+                    case 'B':
+                        b++;
+                        continue;
+                }
+            }
+        }
+        return a > b;
     }
 
     // LC2039

@@ -11,7 +11,7 @@ class Scratch {
         long timing = System.currentTimeMillis();
 
 //        System.out.println(s.hfRate(1, 1000000000000l));
-        System.out.println(s.hfRate(1, 10000000));
+        System.out.println(s.hfRate(1, 100000000));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
