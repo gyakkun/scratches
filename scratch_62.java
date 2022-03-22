@@ -10,79 +10,85 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.hfRate(1, 20));
+//        System.out.println(s.hfRate(1, 1000000000000l));
+        System.out.println(s.hfRate(1, 10000000));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
 
-    Integer[][][] memo = new Integer[2][13][1024];
+    Long[][][] memo = new Long[2][13][1024];
     Long[] facMemo = new Long[14];
     // long mod = 1000000007;
 
-    // 220217 HuanFang: Rate TBD Digit DP WA
+    // 220217 HuanFang: Rate
+    // Digit DP **
     public double hfRate(long l, long r) {
         // 123 32112233 {1,2,3}
-        // [0,100] 10,100, {0
         long n = r - l + 1;
-        int[] freq = new int[1024];
+        long[] freq = new long[1024];
         double result = 0d;
         for (int mask = 0; mask < 1024; mask++) {
-            int first = helperAcc(0, -1, 0, mask, numToDigitArr(r), true),
-                    second = helperAcc(0, -1, 0, mask, numToDigitArr(l - 1), true);
+            long first = helperAcc(0, mask, numToDigitArr(r), true, true);
+            long second = helperAcc(0, mask, numToDigitArr(l - 1), true, true);
             freq[mask] = first - second;
             if (freq[mask] != 0) {
-                System.out.println(freq[mask]);
+                // System.out.println(mask + " " + freq[mask]);
             }
         }
-        int sum = 0;
-        for (int i : freq) sum += i;
-        System.out.println(sum);
+        long sum = 0;
+        for (long i : freq) sum += i;
+        // System.out.println(sum);
 
-        for (int i : freq) {
+        for (long i : freq) {
             if (i <= 1) continue;
             result += ((double) i / (double) n) * ((double) (i - 1) / (double) (n - 1));
         }
         return result;
     }
 
-    public int helperAcc(int curIdx, int previousDigit, int previousMask, int targetMask, int[] upperBoundDigitArr, boolean isBounding) { // isBounding 表示前面的位数是否压线通过, 比如 上届是12345, 那么(当前位位置, 前一个数, 贴地) 符合的情况比如(5,-1,1), (4,1,1) 就是贴地
-        if (curIdx >= upperBoundDigitArr.length || targetMask == 0) {
+    public long helperAcc(int curIdx, int targetMask, int[] digitArr, boolean isBounding, boolean isPreviousAllZero) {
+        if (curIdx >= digitArr.length || targetMask == 0 || digitArr.length - curIdx < Integer.bitCount(targetMask)) {
             return 0;
         }
-        if (previousMask == 0 && targetMask == 1 && curIdx == upperBoundDigitArr.length - 1) {
+        if (curIdx == digitArr.length - 1 && Integer.bitCount(targetMask) == 1) {
+            // 找出唯一可以填的是哪个数
+            int victim = -1;
+            for (int i = 0; i <= 9; i++) {
+                if (((targetMask >> i) & 1) == 1) {
+                    victim = i;
+                    break;
+                }
+            }
+            if (isBounding && digitArr[curIdx] < victim) {
+                return 0;
+            }
             return 1;
         }
-
-        if (curIdx > 0 && previousMask == 0 && previousDigit == -1) {
-            int first = helperAcc(curIdx + 1, -1, 0, targetMask, upperBoundDigitArr, false);
-            int second = helper(1, upperBoundDigitArr.length - curIdx, targetMask);
-
-            return first + second;
-        }
         long result = 0l;
-        // 考虑在这一位上填数字
         for (int i = 0; i <= 9; i++) {
             if (((targetMask >> i) & 1) != 1) continue;
-            if (isBounding && i > upperBoundDigitArr[curIdx]) continue;
-            if (isBounding && i == upperBoundDigitArr[curIdx]) {
-                result += helperAcc(curIdx + 1, i, previousMask | (1 << i), targetMask, upperBoundDigitArr, true);
-                result %= mod;
+            if (isBounding && i > digitArr[curIdx]) continue;
+            if (i == 0 && isPreviousAllZero) continue;
+            int nextMask = targetMask ^ (1 << i);
+            if (isBounding && digitArr[curIdx] == i) {
+                result += helperAcc(curIdx + 1, nextMask, digitArr, true, (i == 0 && isPreviousAllZero));
+                result += helperAcc(curIdx + 1, targetMask, digitArr, true, (i == 0 && isPreviousAllZero));
                 continue;
             }
-            int nextMask = targetMask ^ (1 << i);
-            result += helper(0, upperBoundDigitArr.length - curIdx - 1, nextMask);
-            result += helper(0, upperBoundDigitArr.length - curIdx - 1, targetMask);
-            result %= mod;
+            result += helper(0, digitArr.length - curIdx - 1, targetMask);
+            result += helper(0, digitArr.length - curIdx - 1, nextMask);
         }
-        // 考虑不在这一位上填数字
-        result += helperAcc(curIdx + 1, -1, 0, targetMask, upperBoundDigitArr, false);
-        result %= mod;
-        return (int) result;
+        // 考虑这一位填一个前导0
+        if (isPreviousAllZero) {
+            result += helperAcc(curIdx + 1, targetMask, digitArr, false, true);
+        }
+        return result;
     }
 
     private int[] numToDigitArr(long num) {
+        if (num == 0) return new int[]{0};
         List<Integer> l = new ArrayList<>();
         while (num != 0l) {
             l.add((int) (num % 10l));
@@ -92,7 +98,7 @@ class Scratch {
         return l.stream().mapToInt(Integer::valueOf).toArray();
     }
 
-    public int helper(int isFirst, int targetLen, int targetMask) {
+    public long helper(int isFirst, int targetLen, int targetMask) {
         if (targetLen == 0 || targetMask == 0) {
             return 0;
         }
@@ -103,7 +109,7 @@ class Scratch {
             return 0;
         }
         if (Integer.bitCount(targetMask) == targetLen && (targetMask & 1) != 1) {
-            return (int) fac(targetLen);
+            return fac(targetLen);
         }
         if (memo[isFirst][targetLen][targetMask] != null) {
             return memo[isFirst][targetLen][targetMask];
@@ -121,14 +127,13 @@ class Scratch {
             result += helper(0, targetLen - 1, nextMask);
             result += helper(0, targetLen - 1, targetMask);
         }
-        return memo[isFirst][targetLen][targetMask] = (int) (result % mod);
+        return memo[isFirst][targetLen][targetMask] = result;
     }
 
     private long fac(int len) {
         if (facMemo[len] != null) return facMemo[len];
-        return facMemo[len] = (len == 1 ? 1l : len * fac(len - 1)) % mod;
+        return facMemo[len] = len == 1 ? 1l : len * fac(len - 1);
     }
-
 
     // LC393
     public boolean validUtf8(int[] data) {
@@ -276,8 +281,7 @@ class Scratch {
         }
         for (Long candidate : candidates) {
             if (candidate.toString().equals(n)) continue;
-            if (result == -1 || Math.abs(candidate - num) < Math.abs(result - num) ||
-                    (Math.abs(candidate - num) == Math.abs(result - num) && candidate < result)) {
+            if (result == -1 || Math.abs(candidate - num) < Math.abs(result - num) || (Math.abs(candidate - num) == Math.abs(result - num) && candidate < result)) {
                 result = candidate;
             }
         }
@@ -960,25 +964,15 @@ class Scratch {
             return lc1220Memo[remainLetters][currentLetterIdx] % mod;
         switch (currentLetterIdx) {
             case 0: // a
-                return lc1220Memo[remainLetters][currentLetterIdx]
-                        = lc1220Helper(remainLetters - 1, 1);
+                return lc1220Memo[remainLetters][currentLetterIdx] = lc1220Helper(remainLetters - 1, 1);
             case 1: // e
-                return lc1220Memo[remainLetters][currentLetterIdx]
-                        = (lc1220Helper(remainLetters - 1, 0)
-                        + lc1220Helper(remainLetters - 1, 2)) % mod;
+                return lc1220Memo[remainLetters][currentLetterIdx] = (lc1220Helper(remainLetters - 1, 0) + lc1220Helper(remainLetters - 1, 2)) % mod;
             case 2:
-                return lc1220Memo[remainLetters][currentLetterIdx]
-                        = (lc1220Helper(remainLetters - 1, 0)
-                        + lc1220Helper(remainLetters - 1, 1)
-                        + lc1220Helper(remainLetters - 1, 3)
-                        + lc1220Helper(remainLetters - 1, 4)) % mod;
+                return lc1220Memo[remainLetters][currentLetterIdx] = (lc1220Helper(remainLetters - 1, 0) + lc1220Helper(remainLetters - 1, 1) + lc1220Helper(remainLetters - 1, 3) + lc1220Helper(remainLetters - 1, 4)) % mod;
             case 3:
-                return lc1220Memo[remainLetters][currentLetterIdx]
-                        = (lc1220Helper(remainLetters - 1, 2)
-                        + lc1220Helper(remainLetters - 1, 4));
+                return lc1220Memo[remainLetters][currentLetterIdx] = (lc1220Helper(remainLetters - 1, 2) + lc1220Helper(remainLetters - 1, 4));
             case 4:
-                return lc1220Memo[remainLetters][currentLetterIdx]
-                        = lc1220Helper(remainLetters - 1, 0) % mod;
+                return lc1220Memo[remainLetters][currentLetterIdx] = lc1220Helper(remainLetters - 1, 0) % mod;
         }
         return 0;
     }
