@@ -10,8 +10,12 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-//        System.out.println(s.hfRate(1, 1000000000000l));
-        System.out.println(s.hfRate(1, 100000000));
+        System.out.println(s.hfRate(1, 1000000000000l));
+        System.out.println(s.hfRate(1, 100000000l));
+        System.out.println(s.hfRate(1024, 8192));
+        System.out.println(s.hfRate(142857, 428671));
+//        System.out.println(s.hfRate(1, 14285714));
+//        System.out.println(s.hfRate(1, 1024));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -25,6 +29,7 @@ class Scratch {
     // 220217 HuanFang: Rate
     // Digit DP **
     public double hfRate(long l, long r) {
+        memo = new Long[2][13][1024];
         // 123 32112233 {1,2,3}
         long n = r - l + 1;
         long[] freq = new long[1024];
@@ -33,13 +38,13 @@ class Scratch {
             long first = helperAcc(0, mask, numToDigitArr(r), true, true);
             long second = helperAcc(0, mask, numToDigitArr(l - 1), true, true);
             freq[mask] = first - second;
-            if (freq[mask] != 0) {
-                // System.out.println(mask + " " + freq[mask]);
-            }
+//            if (freq[mask] != 0) {
+//                 System.out.println(mask + " " + freq[mask]);
+//            }
         }
-        long sum = 0;
-        for (long i : freq) sum += i;
-        // System.out.println(sum);
+//        long sum = 0;
+//        for (long i : freq) sum += i;
+//         System.out.println(sum);
 
         for (long i : freq) {
             if (i <= 1) continue;
@@ -99,14 +104,11 @@ class Scratch {
     }
 
     public long helper(int isFirst, int targetLen, int targetMask) {
-        if (targetLen == 0 || targetMask == 0) {
+        if (targetLen == 0 || targetMask == 0 || Integer.bitCount(targetMask) > targetLen) {
             return 0;
         }
         if (targetLen == 1 && targetMask == 1) {
             return 1;
-        }
-        if (Integer.bitCount(targetMask) > targetLen) {
-            return 0;
         }
         if (Integer.bitCount(targetMask) == targetLen && (targetMask & 1) != 1) {
             return fac(targetLen);
@@ -117,12 +119,6 @@ class Scratch {
         long result = 0;
         for (int i = 0; i <= 9; i++) {
             if (((targetMask >> i) & 1) != 1) continue;
-            if (isFirst == 1 && i == 0) {
-                if (targetLen == 1) {
-                    return 1;
-                }
-                continue;
-            }
             int nextMask = targetMask ^ (1 << i);
             result += helper(0, targetLen - 1, nextMask);
             result += helper(0, targetLen - 1, targetMask);

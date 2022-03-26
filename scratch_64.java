@@ -1,4 +1,3 @@
-import javax.sound.midi.Soundbank;
 import java.util.*;
 
 class Scratch {
@@ -6,22 +5,34 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-
-        int a = (int) (Math.random() * 1024);
-        StringBuilder sb = new StringBuilder(a);
-        Random r = new Random();
-        for (int i = 0; i < a; i++) {
-            if (r.nextBoolean()) {
-                sb.append('A');
-            } else {
-                sb.append('B');
-            }
-        }
-        System.out.println(sb);
-        System.out.println(s.winnerOfGame(sb.toString()));
+        System.out.println(s.calPoints(new String[]{"5", "-2", "4", "C", "D", "9", "+", "+"}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC682
+    public int calPoints(String[] ops) {
+        List<Integer> points = new ArrayList<>(ops.length);
+        for (String o : ops) {
+            char op = o.charAt(0);
+            if (Character.isDigit(op) || op == '-') {
+                points.add(Integer.parseInt(o));
+            } else {
+                switch (op) {
+                    case '+':
+                        points.add(points.get(points.size() - 1) + points.get(points.size() - 2));
+                        break;
+                    case 'D':
+                        points.add(points.get(points.size() - 1) * 2);
+                        break;
+                    case 'C':
+                        points.remove(points.size() - 1);
+                        break;
+                }
+            }
+        }
+        return points.stream().reduce(0, Integer::sum);
     }
 
     // LC2038
