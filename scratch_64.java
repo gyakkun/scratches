@@ -5,10 +5,27 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.minOnes(new int[]{0, 0, 0, 1, 0, 0}, 3));
+        System.out.println(s.missingRolls(new int[]{1, 5, 6}, 3, 4));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC2028
+    public int[] missingRolls(int[] rolls, int mean, int n) {
+        int m = rolls.length;
+        int curSum = Arrays.stream(rolls).sum();
+        int totalCount = m + n;
+        int remain = mean * totalCount - curSum;
+        if (remain > 6 * n || remain < n) return new int[]{};
+        int avg = remain / n;
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            result[i] = avg;
+            remain -= avg;
+            if (i != n - 1) avg = remain / (n - i - 1);
+        }
+        return result;
     }
 
     // 220327 LYJJ
