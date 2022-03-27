@@ -4,8 +4,7 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.out.println(s.missingRolls(new int[]{1, 5, 6}, 3, 4));
+        System.out.println(s.minOnes(new int[]{0, 0, 0, 1, 0, 0}, 3));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
@@ -78,9 +77,9 @@ class Scratch {
                     result = Math.min(
                             Math.min(
                                     0 + helper(0, numIdx - 1, newMaskWithZero),
-                                    0 + helper(1, numIdx - 1, newMaskWithOne)
+                                    0 + helper(1, numIdx - 1, newMaskWithZero)
                             ),
-                            1 + helper(0, numIdx - 1, newMaskWithZero)
+                            1 + helper(0, numIdx - 1, newMaskWithOne)
                     );
                 }
                 break;
