@@ -10,6 +10,35 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC2024 ** Sliding Window 滑动窗口
+    public int maxConsecutiveAnswers(String answerKey, int k) {
+        int n = answerKey.length(), result = 0;
+        char[] ca = answerKey.toCharArray();
+        int[] zeroOne = new int[n];
+        for (int i = 0; i < n; i++) zeroOne[i] = ca[i] == 'T' ? 1 : 0;
+        // Check 0 among 1
+        int sum = 0;
+        for (int left = 0, right = 0; right < n; right++) {
+            sum += 1 - zeroOne[right];
+            while (sum > k) {
+                sum -= 1 - zeroOne[left];
+                left++;
+            }
+            result = Math.max(result, right - left + 1);
+        }
+        sum = 0;
+        for (int left = 0, right = 0; right < n; right++) {
+            sum += zeroOne[right];
+            while (sum > k) {
+                sum -= zeroOne[left];
+                left++;
+            }
+            result = Math.max(result, right - left + 1);
+        }
+        return result;
+    }
+
+
     // LC2028
     public int[] missingRolls(int[] rolls, int mean, int n) {
         int m = rolls.length;
