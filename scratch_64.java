@@ -1,13 +1,65 @@
+import javafx.util.Pair;
+
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        System.out.println(s.minOnes(new int[]{0, 0, 0, 1, 0, 0}, 3));
+//        System.out.println(s.busiestServers(
+//                3,
+//                new int[]{1, 2, 3, 4, 5},
+//                new int[]{5, 2, 3, 3, 3}
+//        ));
+        System.out.println(s.busiestServers(
+                3,
+                new int[]{1, 2, 3, 4, 8, 9, 10},
+                new int[]{5, 2, 10, 3, 1, 2, 2}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+
+    // LC1606
+    public List<Integer> busiestServers(int k, int[] arrival, int[] load) {
+        if (arrival.length <= k) {
+            return IntStream.range(0, arrival.length).boxed().collect(Collectors.toList());
+        }
+        PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(i -> i.getKey())); // <在什么时刻重新空闲, 是第几个服务器>
+        TreeSet<Integer> ts = new TreeSet<>(); // 空闲服务器列表
+        int[] count = new int[k];
+        final Integer[] max = {Integer.MIN_VALUE / 2};
+        List<Integer> result = new ArrayList<>();
+        IntStream.range(0, k).forEachOrdered(ts::add);
+        IntStream.range(0, arrival.length).forEachOrdered(i -> {
+            while (!pq.isEmpty() && pq.peek().getKey() <= arrival[i]) {
+                Pair<Integer, Integer> p = pq.poll();
+                ts.add(p.getValue());
+            }
+            if (ts.isEmpty()) {
+                return;
+            }
+            Integer nextServer = ts.ceiling(i % k);
+            if (nextServer == null)
+                nextServer = ts.first(); // 如果没有比这个i%k大的编号的服务器, 则说明已经只能从头开始找了, 而ts不为空, 所以总能找到编号最小的服务器响应请求
+            ts.remove(nextServer);
+            pq.offer(new Pair<>(arrival[i] + load[i], nextServer));
+            count[nextServer]++;
+
+            if (count[nextServer] > max[0]) {
+                max[0] = count[nextServer];
+                result.clear();
+                result.add(nextServer);
+            } else if (count[nextServer] == max[0]) {
+                result.add(nextServer);
+            }
+        });
+
+        return result;
     }
 
     // LC2024 ** Sliding Window 滑动窗口

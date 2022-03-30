@@ -1,12 +1,15 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import java.util.function.ToIntFunction
+import java.util.stream.Collectors
+import java.util.stream.IntStream
 
 
 var before = Instant.now()
 var s = Solution()
 println(
-    s
+        s
 )
 var after = Instant.now()
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -110,9 +113,44 @@ internal class DetectSquares {
 // LC2045 **
 class Solution {
 
+    // LC1606
+    fun busiestServers(k: Int, arrival: IntArray, load: IntArray): List<Int?>? {
+        if (arrival.size <= k) {
+            return IntRange(0, k - 1).toList()
+        }
+        val pq: PriorityQueue<Pair<Int, Int>> = PriorityQueue<Pair<Int, Int>> { o1, o2 -> o1.first - o2.first } // <在什么时刻重新空闲, 是第几个服务器>
+        val ts = TreeSet<Int>() // 空闲服务器列表
+        val count = IntArray(k)
+        val max = arrayOf(Int.MIN_VALUE / 2)
+        val result: MutableList<Int> = ArrayList()
+        IntRange(0, k - 1).forEach { ts.add(it) }
+        arrival.indices.forEach {
+            while (!pq.isEmpty() && pq.peek().first <= arrival[it]) {
+                val p = pq.poll()
+                ts.add(p.second)
+            }
+            if (ts.isEmpty()) {
+                return@forEach
+            }
+            var nextServer = ts.ceiling(it % k)
+            if (nextServer == null) nextServer = ts.first() // 如果没有比这个i%k大的编号的服务器, 则说明已经只能从头开始找了, 而ts不为空, 所以总能找到编号最小的服务器响应请求
+            ts.remove(nextServer)
+            pq.offer(Pair(arrival[it] + load[it], nextServer))
+            count[nextServer!!]++
+            if (count[nextServer] > max[0]) {
+                max[0] = count[nextServer]
+                result.clear()
+                result.add(nextServer)
+            } else if (count[nextServer] == max[0]) {
+                result.add(nextServer)
+            }
+        }
+        return result
+    }
+
     // LC1791
     fun findCenter(edges: Array<IntArray>): Int =
-        edges.flatMap { it.toList() }.groupingBy { it }.eachCount().filter { it.value != 1 }.entries.first().key
+            edges.flatMap { it.toList() }.groupingBy { it }.eachCount().filter { it.value != 1 }.entries.first().key
 
 
     // LC1219
@@ -490,7 +528,7 @@ class Solution {
         val cBound = if (pc == bound - 1) cid else cid + 1
         val mtx = Array(rBound + 1) {
             BooleanArray(
-                cBound + 1
+                    cBound + 1
             )
         } // use as visited[][] too
 
@@ -600,7 +638,7 @@ class Solution {
         lc913Memo = Array(graph.size * 2 + 1) {
             Array<Array<Int?>>(graph.size + 1) {
                 arrayOfNulls(
-                    graph.size + 1
+                        graph.size + 1
                 )
             }
         }
