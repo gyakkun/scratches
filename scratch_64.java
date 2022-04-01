@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -8,19 +9,49 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-//        System.out.println(s.busiestServers(
-//                3,
-//                new int[]{1, 2, 3, 4, 5},
-//                new int[]{5, 2, 3, 3, 3}
-//        ));
-        System.out.println(s.busiestServers(
-                3,
-                new int[]{1, 2, 3, 4, 8, 9, 10},
-                new int[]{5, 2, 10, 3, 1, 2, 2}
-        ));
+
+        System.out.println(s.canReorderDoubled(new int[]{1, 2, 1, -8, 8, -4, 4, -4, 2, -2}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC954
+    public boolean canReorderDoubled(int[] arr) {
+        long zeroCount = Arrays.stream(arr).boxed().filter(i -> i == 0).count();
+        if (zeroCount % 2 == 1) return false;
+        TreeMap<Integer, Integer> posCollect = new TreeMap<>() {{
+            putAll(Arrays.stream(arr).boxed().filter(i -> i > 0).collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1))));
+        }};
+        TreeMap<Integer, Integer> negCollect = new TreeMap<>() {{
+            putAll(Arrays.stream(arr).boxed().filter(i -> i < 0).map(i -> -i).collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1))));
+        }};
+        if (posCollect.values().stream().mapToInt(Integer::valueOf).sum() % 2 == 1
+                || negCollect.values().stream().mapToInt(Integer::valueOf).sum() % 2 == 1) {
+            return false;
+        }
+        if (!helper(posCollect)) return false;
+        if (!helper(negCollect)) return false;
+
+        return true;
+    }
+
+    private boolean helper(TreeMap<Integer, Integer> posCollect) {
+        while (!posCollect.isEmpty()) {
+            int largestKey = posCollect.descendingKeySet().first();
+            if (largestKey % 2 == 1) return false;
+            int largestValue = posCollect.get(largestKey);
+            int halfKey = largestKey / 2;
+            int halfValue = posCollect.getOrDefault(halfKey, Integer.MAX_VALUE);
+            if (halfValue == Integer.MAX_VALUE || halfValue < largestValue) return false;
+            posCollect.remove(largestKey);
+            if (halfValue == largestValue) {
+                posCollect.remove(halfKey);
+            } else {
+                posCollect.put(halfKey, halfValue - largestValue);
+            }
+        }
+        return true;
     }
 
 
@@ -118,10 +149,10 @@ class Scratch {
         backwardOne = m;
         op = arr;
         memo = new Integer[2][n][1 << m];
-        return helper(1, n - 1, 0);
+        return Ly220327Helper(1, n - 1, 0);
     }
 
-    private int helper(int target, int numIdx, int mask) {
+    private int Ly220327Helper(int target, int numIdx, int mask) {
         boolean isBackwardMOne = ((mask >> (backwardOne - 1)) & 1) == 1;
         boolean isBackwardMMinusOneOne = ((mask >> (backwardOne - 2)) & 1) == 1;
         if (numIdx == 1) { // 边界条件, 轮到正数第二个数(numIdx==1), 此时只剩下一个运算符
@@ -153,51 +184,51 @@ class Scratch {
             case 0:
                 if (target == 1) { // 此时两侧都要填1, 只要第前m个数是1, 就返回极大值
                     if (isBackwardMOne) return Integer.MAX_VALUE / 2;
-                    result = 1 + helper(1, numIdx - 1, newMaskWithOne);
+                    result = 1 + Ly220327Helper(1, numIdx - 1, newMaskWithOne);
                 } else if (target == 0) { // (0,0),(0,1),(1,0) 中最小的
                     result = Math.min(
                             Math.min(
-                                    0 + helper(0, numIdx - 1, newMaskWithZero),
-                                    0 + helper(1, numIdx - 1, newMaskWithZero)
+                                    0 + Ly220327Helper(0, numIdx - 1, newMaskWithZero),
+                                    0 + Ly220327Helper(1, numIdx - 1, newMaskWithZero)
                             ),
-                            1 + helper(0, numIdx - 1, newMaskWithOne)
+                            1 + Ly220327Helper(0, numIdx - 1, newMaskWithOne)
                     );
                 }
                 break;
             case 1:
                 if (target == 1) {
                     if (isBackwardMOne) { // 意味着该位不能填1
-                        result = 0 + helper(1, numIdx - 1, newMaskWithZero);
+                        result = 0 + Ly220327Helper(1, numIdx - 1, newMaskWithZero);
                     } else { // (0,1),(1,0),(1,1) 中最小的
                         result = Math.min(
                                 Math.min(
-                                        0 + helper(1, numIdx - 1, newMaskWithZero),
-                                        1 + helper(0, numIdx - 1, newMaskWithOne)),
-                                1 + helper(1, numIdx - 1, newMaskWithOne)
+                                        0 + Ly220327Helper(1, numIdx - 1, newMaskWithZero),
+                                        1 + Ly220327Helper(0, numIdx - 1, newMaskWithOne)),
+                                1 + Ly220327Helper(1, numIdx - 1, newMaskWithOne)
                         );
                     }
                 } else if (target == 0) { // 意味着两侧都要填0
-                    result = 0 + helper(0, numIdx - 1, newMaskWithZero);
+                    result = 0 + Ly220327Helper(0, numIdx - 1, newMaskWithZero);
                 }
                 break;
             case 2:
                 if (target == 1) {
                     if (isBackwardMOne) { // 意味着该位不能填1
-                        result = 0 + helper(1, numIdx - 1, newMaskWithZero);
+                        result = 0 + Ly220327Helper(1, numIdx - 1, newMaskWithZero);
                     } else { // (0,1),(1,0)中最小的
                         result = Math.min(
-                                0 + helper(1, numIdx - 1, newMaskWithZero),
-                                1 + helper(0, numIdx - 1, newMaskWithOne)
+                                0 + Ly220327Helper(1, numIdx - 1, newMaskWithZero),
+                                1 + Ly220327Helper(0, numIdx - 1, newMaskWithOne)
                         );
 
                     }
                 } else if (target == 0) { // (0,0), (1,1)
                     if (isBackwardMOne) {
-                        result = 0 + helper(0, numIdx - 1, newMaskWithZero);
+                        result = 0 + Ly220327Helper(0, numIdx - 1, newMaskWithZero);
                     } else {
                         result = Math.min(
-                                0 + helper(0, numIdx - 1, newMaskWithZero),
-                                1 + helper(1, numIdx - 1, newMaskWithOne)
+                                0 + Ly220327Helper(0, numIdx - 1, newMaskWithZero),
+                                1 + Ly220327Helper(1, numIdx - 1, newMaskWithOne)
                         );
                     }
                 }
