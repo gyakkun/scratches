@@ -10,9 +10,18 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 class Solution {
     // LC744
     fun nextGreatestLetter(letters: CharArray, target: Char): Char {
-        letters.iterator().forEach { c ->
-            if (c.code > target.code) return c
+        return if (target >= letters.last()) letters.first() else {
+            var l = 0
+            var r = letters.size - 1
+            while (l < r) {
+                (l + (r - l) / 2).let { mid ->
+                    when {
+                        letters[mid] > target -> r = mid
+                        else -> l = mid + 1
+                    }
+                }
+            }
+            letters[l]
         }
-        return letters[0]
     }
 }
