@@ -1,117 +1,76 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import java.util.function.ToIntFunction
-import java.util.stream.Collectors
-import java.util.stream.IntStream
 
-
-var before = Instant.now()
+var before = Instant.now()!!
 var s = Solution()
-println(
-        s
-)
-var after = Instant.now()
+println(s)
+var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
+class Solution {
 
-// LC1748
-fun sumOfUnique(nums: IntArray): Int {
-    return nums.groupBy { it }.filter { it.value.size == 1 }.keys.sum()
-}
+    // LC1748
+    fun sumOfUnique(nums: IntArray): Int {
+        return nums.groupBy { it }.filter { it.value.size == 1 }.keys.sum()
+    }
 
-fun numberOfSteps(num: Int): Int {
-    return if (num == 0) 0 else Integer.SIZE - Integer.numberOfLeadingZeros(num) + Integer.bitCount(num) - 1
-}
+    // LC1342
+    fun numberOfSteps(num: Int): Int {
+        return if (num == 0) 0 else Integer.SIZE - Integer.numberOfLeadingZeros(num) + Integer.bitCount(num) - 1
+    }
 
-fun highestPeak(isWater: Array<IntArray>): Array<IntArray>? {
-    val m = isWater.size
-    val n = isWater[0].size
-    val directions = arrayOf(intArrayOf(0, 1), intArrayOf(0, -1), intArrayOf(1, 0), intArrayOf(-1, 0))
-    val result = Array(m) { IntArray(n) }
-    val visited = Array(m) { BooleanArray(n) }
-    val q: Deque<IntArray> = LinkedList()
-    for (i in 0 until m) {
-        for (j in 0 until n) {
-            if (isWater[i][j] == 1) {
-                q.offer(intArrayOf(i, j, 0))
+    // LC1765
+    fun highestPeak(isWater: Array<IntArray>): Array<IntArray>? {
+        val m = isWater.size
+        val n = isWater[0].size
+        val directions = arrayOf(intArrayOf(0, 1), intArrayOf(0, -1), intArrayOf(1, 0), intArrayOf(-1, 0))
+        val result = Array(m) { IntArray(n) }
+        val visited = Array(m) { BooleanArray(n) }
+        val q: Deque<IntArray> = LinkedList()
+        for (i in 0 until m) {
+            for (j in 0 until n) {
+                if (isWater[i][j] == 1) {
+                    q.offer(intArrayOf(i, j, 0))
+                }
             }
         }
-    }
-    while (!q.isEmpty()) {
-        val p = q.poll()
-        val r = p[0]
-        val c = p[1]
-        var h = p[2]
-        if (visited[r][c]) continue
-        visited[r][c] = true
-        if (isWater[r][c] == 1) {
-            h = 0
-        }
-        result[r][c] = h
-        for (d in directions) {
-            val nr = r + d[0]
-            val nc = c + d[1]
-            if (nr in 0 until m && nc in 0 until n && !visited[nr][nc]) {
-                q.offer(intArrayOf(nr, nc, h + 1))
+        while (!q.isEmpty()) {
+            val p = q.poll()
+            val r = p[0]
+            val c = p[1]
+            var h = p[2]
+            if (visited[r][c]) continue
+            visited[r][c] = true
+            if (isWater[r][c] == 1) {
+                h = 0
             }
-        }
-    }
-    return result
-}
-
-fun numberOfWeakCharacters(properties: Array<IntArray>): Int {
-    Arrays.sort(properties) { o1: IntArray, o2: IntArray -> if (o1[0] == o2[0]) o1[1] - o2[1] else o2[0] - o1[0] }
-    var maxDef = 0
-    var ans = 0
-    for (p in properties) {
-        if (p[1] < maxDef) {
-            ans++
-        } else {
-            maxDef = p[1]
-        }
-    }
-    return ans
-}
-
-// LC2013
-internal class DetectSquares {
-    var xyMap: MutableMap<Int, MutableMap<Int, Int>> = HashMap()
-    fun add(point: IntArray) {
-        xyMap.putIfAbsent(point[0], HashMap())
-        val yPointsCount = xyMap[point[0]]!!
-        yPointsCount[point[1]] = yPointsCount.getOrDefault(point[1], 0) + 1
-    }
-
-    fun count(point: IntArray): Int {
-        // 比较同一x坐标/y坐标上 [独特点(指重复位置的点算一个)] 的个数, 挑选少的集合来进行遍历
-        val x = point[0]
-        val y = point[1]
-        var result = 0
-        if (!xyMap.containsKey(x)) return 0
-        val yPoints: Map<Int, Int> = xyMap[x]!!
-        val c0 = 1
-        for ((thisY, c1) in yPoints) {
-            if (thisY == y) continue
-            val distance = y - thisY
-            val absDistance = Math.abs(distance)
-            for (sideX in intArrayOf(x - absDistance, x + absDistance)) {
-                if (xyMap.containsKey(sideX) && xyMap[sideX]!!.containsKey(y)) {
-                    val c2 = xyMap[sideX]!![y]!!
-                    // 找左下角
-                    if (xyMap.containsKey(sideX) && xyMap[sideX]!!.containsKey(thisY)) {
-                        val c3 = xyMap[sideX]!![thisY]!!
-                        result += c0 * c1 * c2 * c3
-                    }
+            result[r][c] = h
+            for (d in directions) {
+                val nr = r + d[0]
+                val nc = c + d[1]
+                if (nr in 0 until m && nc in 0 until n && !visited[nr][nc]) {
+                    q.offer(intArrayOf(nr, nc, h + 1))
                 }
             }
         }
         return result
     }
-}
 
-// LC2045 **
-class Solution {
+    // LC1996
+    fun numberOfWeakCharacters(properties: Array<IntArray>): Int {
+        Arrays.sort(properties) { o1: IntArray, o2: IntArray -> if (o1[0] == o2[0]) o1[1] - o2[1] else o2[0] - o1[0] }
+        var maxDef = 0
+        var ans = 0
+        for (p in properties) {
+            if (p[1] < maxDef) {
+                ans++
+            } else {
+                maxDef = p[1]
+            }
+        }
+        return ans
+    }
 
     // LC1606
     fun busiestServers(k: Int, arrival: IntArray, load: IntArray): List<Int?>? {
@@ -167,14 +126,14 @@ class Solution {
             for (j in 0 until n) {
                 if (grid[i][j] != 0) {
                     visited = Array(m) { BooleanArray(n) }
-                    result = Math.max(result, helper(i, j))
+                    result = Math.max(result, lc1219Helper(i, j))
                 }
             }
         }
         return result
     }
 
-    private fun helper(r: Int, c: Int): Int {
+    private fun lc1219Helper(r: Int, c: Int): Int {
         if (visited[r][c]) return 0
         visited[r][c] = true
         val cur = grid[r][c]
@@ -183,7 +142,7 @@ class Solution {
             val nr = r + d[0]
             val nc = c + d[1]
             if (nr >= 0 && nr < grid.size && nc >= 0 && nc < grid[0].size && grid[nr][nc] != 0 && !visited[nr][nc]) {
-                next = Math.max(next, helper(nr, nc))
+                next = Math.max(next, lc1219Helper(nr, nc))
             }
         }
         visited[r][c] = false
@@ -200,7 +159,7 @@ class Solution {
         var k = k
         var result = 0
         while (k != 0) {
-            val h = helper(k)
+            val h = lc1414Helper(k)
             if (k != -1) {
                 result++
                 k -= h
@@ -210,7 +169,7 @@ class Solution {
     }
 
     // 二分 找小于等于的最大值
-    fun helper(n: Int): Int {
+    fun lc1414Helper(n: Int): Int {
         var l = 0
         var h = 46
         while (l < h) {
@@ -241,6 +200,7 @@ class Solution {
         idx++
     }
 
+    // LC2045 **
     fun secondMinimum(n: Int, edges: Array<IntArray>, time: Int, change: Int): Int {
         Arrays.fill(dist1, INF)
         Arrays.fill(dist2, INF)
@@ -292,40 +252,7 @@ class Solution {
         var dist1 = IntArray(N)
         var dist2 = IntArray(N)
     }
-}
 
-// LC2034
-internal class StockPrice {
-    var timePriceMap = TreeMap<Int, Int>()
-    var priceTimeMap = TreeMap<Int, MutableSet<Int>>()
-    fun update(timestamp: Int, price: Int) {
-        timePriceMap[timestamp]?.let { priceToCorrect ->
-            priceTimeMap[priceToCorrect]?.let { timeSet ->
-                timeSet.remove(timestamp)
-                if (timeSet.size == 0) {
-                    priceTimeMap.remove(priceToCorrect)
-                }
-            }
-        }
-        timePriceMap[timestamp] = price
-        priceTimeMap.putIfAbsent(price, HashSet())
-        priceTimeMap[price]!!.add(timestamp)
-    }
-
-    fun current(): Int {
-        return timePriceMap.lastEntry().value
-    }
-
-    fun maximum(): Int {
-        return priceTimeMap.lastKey()
-    }
-
-    fun minimum(): Int {
-        return priceTimeMap.firstKey()
-    }
-}
-
-class Solution {
 
     // LC1332
     fun removePalindromeSub(s: String): Int {
@@ -414,12 +341,12 @@ class Solution {
         memo = Array(n + 1) { arrayOfNulls<Long?>(6) }
         var result: Long = 0
         for (i in 0..4) {
-            result = (result + helper(n - 1, i)) % mod
+            result = (result + lc1220Helper(n - 1, i)) % mod
         }
         return result.toInt()
     }
 
-    private fun helper(remainLetters: Int, currentLetterIdx: Int): Long {
+    private fun lc1220Helper(remainLetters: Int, currentLetterIdx: Int): Long {
         // 每个元音 'a' 后面都只能跟着 'e'
         // 每个元音 'e' 后面只能跟着 'a' 或者是 'i'
         // 每个元音 'i' 后面 不能 再跟着另一个 'i'
@@ -428,18 +355,18 @@ class Solution {
         if (remainLetters == 0) return 1
         if (memo[remainLetters][currentLetterIdx] != null) return memo[remainLetters][currentLetterIdx]!! % mod
         when (currentLetterIdx) {
-            0 -> return (helper(remainLetters - 1, 1) % mod).also {
+            0 -> return (lc1220Helper(remainLetters - 1, 1) % mod).also {
                 memo[remainLetters][currentLetterIdx] = it
             }
-            1 -> return ((helper(remainLetters - 1, 0)
-                    + helper(remainLetters - 1, 2)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
-            2 -> return ((helper(remainLetters - 1, 0)
-                    + helper(remainLetters - 1, 1)
-                    + helper(remainLetters - 1, 3)
-                    + helper(remainLetters - 1, 4)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
-            3 -> return ((helper(remainLetters - 1, 2)
-                    + helper(remainLetters - 1, 4)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
-            4 -> return (helper(remainLetters - 1, 0) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+            1 -> return ((lc1220Helper(remainLetters - 1, 0)
+                    + lc1220Helper(remainLetters - 1, 2)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+            2 -> return ((lc1220Helper(remainLetters - 1, 0)
+                    + lc1220Helper(remainLetters - 1, 1)
+                    + lc1220Helper(remainLetters - 1, 3)
+                    + lc1220Helper(remainLetters - 1, 4)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+            3 -> return ((lc1220Helper(remainLetters - 1, 2)
+                    + lc1220Helper(remainLetters - 1, 4)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+            4 -> return (lc1220Helper(remainLetters - 1, 0) % mod).also { memo[remainLetters][currentLetterIdx] = it }
         }
         return 0
     }
@@ -780,4 +707,69 @@ class Solution {
     }
 }
 
+// LC2013
+internal class DetectSquares {
+    var xyMap: MutableMap<Int, MutableMap<Int, Int>> = HashMap()
+    fun add(point: IntArray) {
+        xyMap.putIfAbsent(point[0], HashMap())
+        val yPointsCount = xyMap[point[0]]!!
+        yPointsCount[point[1]] = yPointsCount.getOrDefault(point[1], 0) + 1
+    }
 
+    fun count(point: IntArray): Int {
+        // 比较同一x坐标/y坐标上 [独特点(指重复位置的点算一个)] 的个数, 挑选少的集合来进行遍历
+        val x = point[0]
+        val y = point[1]
+        var result = 0
+        if (!xyMap.containsKey(x)) return 0
+        val yPoints: Map<Int, Int> = xyMap[x]!!
+        val c0 = 1
+        for ((thisY, c1) in yPoints) {
+            if (thisY == y) continue
+            val distance = y - thisY
+            val absDistance = Math.abs(distance)
+            for (sideX in intArrayOf(x - absDistance, x + absDistance)) {
+                if (xyMap.containsKey(sideX) && xyMap[sideX]!!.containsKey(y)) {
+                    val c2 = xyMap[sideX]!![y]!!
+                    // 找左下角
+                    if (xyMap.containsKey(sideX) && xyMap[sideX]!!.containsKey(thisY)) {
+                        val c3 = xyMap[sideX]!![thisY]!!
+                        result += c0 * c1 * c2 * c3
+                    }
+                }
+            }
+        }
+        return result
+    }
+}
+
+// LC2034
+internal class StockPrice {
+    var timePriceMap = TreeMap<Int, Int>()
+    var priceTimeMap = TreeMap<Int, MutableSet<Int>>()
+    fun update(timestamp: Int, price: Int) {
+        timePriceMap[timestamp]?.let { priceToCorrect ->
+            priceTimeMap[priceToCorrect]?.let { timeSet ->
+                timeSet.remove(timestamp)
+                if (timeSet.size == 0) {
+                    priceTimeMap.remove(priceToCorrect)
+                }
+            }
+        }
+        timePriceMap[timestamp] = price
+        priceTimeMap.putIfAbsent(price, HashSet())
+        priceTimeMap[price]!!.add(timestamp)
+    }
+
+    fun current(): Int {
+        return timePriceMap.lastEntry().value
+    }
+
+    fun maximum(): Int {
+        return priceTimeMap.lastKey()
+    }
+
+    fun minimum(): Int {
+        return priceTimeMap.firstKey()
+    }
+}
