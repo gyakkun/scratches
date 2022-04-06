@@ -8,8 +8,65 @@ var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+    // LC310
+    fun findMinHeightTrees(n: Int, edges: Array<IntArray>): List<Int> {
+        if (n == 1) return listOf(0)
+        val edgeMtx = ArrayList<MutableList<Int>>(n).apply {
+            repeat(n) {
+                this.add(ArrayList())
+            }
+        }
+        edges.forEach { pointPair ->
+            edgeMtx[pointPair[0]].add(pointPair[1])
+            edgeMtx[pointPair[1]].add(pointPair[0])
+        }
+        val startPoint = edgeMtx.withIndex().first { it.value.size == 1 }.index
+        val depthArr = IntArray(n).apply { fill(-1) }
+        val parent = IntArray(n).apply { fill(-1) }
+        helper(startPoint, 0, edgeMtx, depthArr, parent)
+        val furthestPoint = depthArr.withIndex().maxByOrNull { it.value }!!.index
+        depthArr.fill(-1)
+        helper(furthestPoint, 0, edgeMtx, depthArr, parent)
+        var endPoint: Int
+        var longestDistance: Int
+        depthArr.withIndex().maxByOrNull { it.value }!!.let {
+            endPoint = it.index
+            longestDistance = it.value
+        }
+        var tmpParent = endPoint
+        var pathPointSet = HashSet<Int>()
+        while (tmpParent != -1) {
+            pathPointSet.add(tmpParent)
+            tmpParent = parent[tmpParent]
+        }
 
-    // LC762
+        return if (longestDistance % 2 == 0) {
+            depthArr.withIndex().filter { it.value == longestDistance / 2 && it.index in pathPointSet }.map { it.index }
+                .toList()
+        } else {
+            depthArr.withIndex()
+                .filter { (it.value == longestDistance / 2 || it.value == (longestDistance + 1) / 2) && it.index in pathPointSet }
+                .map { it.index }.toList()
+        }
+    }
+
+    private fun helper(
+        cur: Int,
+        depth: Int,
+        edgeMtx: MutableList<MutableList<Int>>,
+        depthArr: IntArray,
+        parent: IntArray
+    ): Unit {
+        if (depthArr[cur] != -1) return
+        depthArr[cur] = depth
+        for (next in edgeMtx[cur]) {
+            if (depthArr[next] != -1) continue
+            parent[next] = cur
+            helper(next, depth + 1, edgeMtx, depthArr, parent)
+        }
+    }
+
+
     private val prime = setOf(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31)
 
     fun countPrimeSetBits(left: Int, right: Int) = IntRange(left, right).count { it.countOneBits() in prime }
