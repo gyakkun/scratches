@@ -8,6 +8,22 @@ var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
+
+    // LC710
+    fun reachingPoints(ssx: Int, ssy: Int, ttx: Int, tty: Int): Boolean {
+        var sx = ssx
+        var sy = ssy
+        var tx = ttx
+        var ty = tty
+        while (tx > sx && ty > sy && tx != ty) {
+            if (tx > ty) tx %= ty else ty %= tx
+        }
+        return if (tx == sx && ty == sy) true
+        else if (tx == sx && ty != sy) ty > sy && (ty - sy) % sx == 0
+        else if (ty == sy && tx != sx) tx > sx && (tx - sx) % sy == 0
+        else false
+    }
+
     // LC310
     fun findMinHeightTrees(n: Int, edges: Array<IntArray>): List<Int> {
         if (n == 1) return listOf(0)
