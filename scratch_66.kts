@@ -1,13 +1,53 @@
 import java.time.Duration
 import java.time.Instant
 
+//class Main {
+//    companion object {
+//        @JvmStatic
+//        fun main(args: Array<String>) {
 var before = Instant.now()!!
 var s = Solution()
-println(s)
+println(s.uniqueMorseRepresentations(arrayOf("gin", "zen", "gig", "msg")))
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
+//        }
+//    }
+//}
 
 class Solution {
+    // LC804
+    private val morse = arrayOf(
+        ".-",
+        "-...",
+        "-.-.",
+        "-..",
+        ".",
+        "..-.",
+        "--.",
+        "....",
+        "..",
+        ".---",
+        "-.-",
+        ".-..",
+        "--",
+        "-.",
+        "---",
+        ".--.",
+        "--.-",
+        ".-.",
+        "...",
+        "-",
+        "..-",
+        "...-",
+        ".--",
+        "-..-",
+        "-.--",
+        "--.."
+    )
+
+    fun uniqueMorseRepresentations(words: Array<String>) = words.map { word ->
+        word.toCharArray().joinToString(separator = "") { morse[it - 'a'] }
+    }.distinct().count()
 
     // LC710
     fun reachingPoints(ssx: Int, ssy: Int, ttx: Int, tty: Int): Boolean {
