@@ -7,7 +7,7 @@ import java.time.Instant
 //        fun main(args: Array<String>) {
 var before = Instant.now()!!
 var s = Solution()
-println(s.uniqueMorseRepresentations(arrayOf("gin", "zen", "gig", "msg")))
+println(s.largestPalindrome(3))
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //        }
@@ -15,6 +15,38 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC479 **
+    fun largestPalindrome(n: Int): Long {
+        if (n == 1) {
+            return 9
+        }
+        val upper = Math.pow(10.0, n.toDouble()).toInt() - 1
+        var ans: Long = 0
+        var left = upper
+        while (ans == 0L) {
+            // 枚举回文数的左半部分
+            var p = left.toLong()
+            run {
+                var x = left
+                while (x > 0) {
+                    p = p * 10 + x % 10 // 翻转左半部分到其自身末尾，构造回文数 p
+                    x /= 10
+                }
+            }
+            var x = upper.toLong()
+            while (x * x >= p) {
+                if (p % x == 0L) { // x 是 p 的因子
+                    ans = p
+                    break
+                }
+                --x
+            }
+            --left
+        }
+        return ans % 1337L
+    }
+
     // LC804
     private val morse = arrayOf(
         ".-",
