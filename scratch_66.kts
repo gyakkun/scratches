@@ -1,5 +1,8 @@
 import java.time.Duration
 import java.time.Instant
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 import kotlin.math.pow
 
 //class Main {
@@ -8,7 +11,9 @@ import kotlin.math.pow
 //        fun main(args: Array<String>) {
 var before = Instant.now()!!
 var s = Solution()
-println(s.largestPalindrome(3))
+println(
+    s.mostCommonWord("Bob hit a ball, the hit BALL flew far after it was hit.", arrayOf("hit"))
+)
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //        }
@@ -16,6 +21,15 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC819
+    fun mostCommonWord(paragraph: String, banned: Array<String>) = paragraph
+        .lowercase(Locale.getDefault())
+        .split(Regex("[!?',;.]+"))
+        .groupBy { it }
+        .filter { it.key !in banned }
+        .maxByOrNull { it.value.size }!!
+        .key
 
     // LC479 **
     fun largestPalindrome(n: Int): Long {
