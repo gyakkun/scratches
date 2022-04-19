@@ -3,6 +3,7 @@ import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+import kotlin.math.abs
 import kotlin.math.pow
 
 //class Main {
@@ -12,7 +13,7 @@ import kotlin.math.pow
 var before = Instant.now()!!
 var s = Solution()
 println(
-    s.mostCommonWord("Bob hit a ball, the hit BALL flew far after it was hit.", arrayOf("hit"))
+    s.shortestToChar("loveleetcode",'e')
 )
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -21,6 +22,31 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC821
+    fun shortestToChar(s: String, c: Char): IntArray {
+        var prev: Int = Integer.MAX_VALUE
+        var result = IntArray(s.length)
+        s.forEachIndexed { idx, ch ->
+            if (ch == c) {
+                result[idx] = 0
+                prev = idx
+            } else {
+                result[idx] = abs(idx - prev)
+            }
+        }
+        prev = Integer.MAX_VALUE
+        s.reversed().forEachIndexed { idx, ch ->
+            val actualIdx = s.length - 1 - idx
+            if (ch == c) {
+                result[actualIdx] = 0
+                prev = actualIdx // 实际下标
+            } else {
+                result[actualIdx] = result[actualIdx].coerceAtMost(abs(actualIdx - prev))
+            }
+        }
+        return result
+    }
 
     // LC819
     fun mostCommonWord(paragraph: String, banned: Array<String>) = paragraph
