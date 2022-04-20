@@ -13,7 +13,12 @@ import kotlin.math.pow
 var before = Instant.now()!!
 var s = Solution()
 println(
-    s.shortestToChar("loveleetcode",'e')
+    s.lengthLongestPath(
+        "dir\n" +
+                "\tsubdir1\n" +
+                "\tsubdir2\n" +
+                "\t\tfile.ext"
+    )
 )
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -22,6 +27,73 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC388
+    var result: String = ""
+    fun lengthLongestPath(input: String): Int {
+        val root = Hierarchy("zwb", false)
+        var prevStartToken = 0
+        val pattern = Regex(".+\\..+")
+        var curTabCount = 0
+        var idx = 0;
+        val stack: Deque<Hierarchy> = LinkedList<Hierarchy>().apply { add(root) }
+        while (idx <= input.length) {
+            if (idx == input.length) {
+                val text = input.substring(prevStartToken, idx)
+                val curNode = Hierarchy(text, pattern.matches(text))
+                stack.peek().children.add(curNode)
+                break;
+            }
+            val c = input[idx]
+            if (c != '\n') {
+                idx++
+                continue
+            }
+            val text = input.substring(prevStartToken, idx)
+            // if(pattern.matches(text))
+            val curNode = Hierarchy(text, pattern.matches(text))
+            stack.peek().children.add(curNode)
+            var nextTabCount = 0
+            while (idx + 1 < input.length && input[idx + 1] == '\t') {
+                nextTabCount++
+                idx++
+            }
+            if (nextTabCount > curTabCount) {
+                assert(nextTabCount - curTabCount > 1)
+                //  throw java.lang.IllegalStateException("Should be only one more layer")
+                stack.push(curNode)
+            } else if (nextTabCount < curTabCount) {
+                repeat(curTabCount - nextTabCount) {
+                    stack.pop()
+                }
+            }
+            curTabCount = nextTabCount
+            prevStartToken = ++idx
+        }
+        helper(root, "")
+        return if (result.isEmpty()) 0 else {
+            result.length - 2 - root.name.length
+        }
+    }
+
+    fun helper(root: Hierarchy, curPrefix: String) {
+        val curPath = curPrefix + "/" + root.name
+        if (root.isFile) {
+            if (result.length < curPath.length) {
+                result = curPath
+            }
+        }
+        root.children.forEach {
+            helper(it, curPath)
+        }
+    }
+
+    data class Hierarchy(
+        val name: String,
+        val isFile: Boolean,
+        val children: MutableList<Hierarchy> = arrayListOf()
+    )
+
 
     // LC821
     fun shortestToChar(s: String, c: Char): IntArray {
