@@ -28,6 +28,21 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC824
+    private val vowel = arrayOf('a', 'e', 'i', 'o', 'u')
+    fun toGoatLatin(sentence: String): String {
+        return sentence.split(" ")
+            .mapIndexed { idx, str ->
+                var result = str
+                if (str[0].lowercaseChar() !in vowel) {
+                    result = str.substring(1) + str[0]
+                }
+                result += "ma"
+                repeat(idx + 1) { result += "a" }
+                result
+            }.joinToString(" ")
+    }
+
     // LC388
     var result: String = ""
     fun lengthLongestPath(input: String): Int {
