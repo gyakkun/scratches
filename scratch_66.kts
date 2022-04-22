@@ -1,6 +1,7 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import java.util.stream.IntStream
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.abs
@@ -27,6 +28,23 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    fun maxRotateFunction(nums: IntArray): Int {
+        val sum = nums.sum()
+        var init = 0
+        val n = nums.size
+        IntRange(0, n - 1).forEach { init += it * nums[it] }
+        var max = init
+        var cur = init
+        IntRange(1, n - 1).forEach { it ->
+            // next
+            with(cur + sum - n * nums[n - it]) {
+                max = this.coerceAtLeast(max)
+                cur = this
+            }
+        }
+        return max
+    }
 
     // LC824
     private val vowel = arrayOf('a', 'e', 'i', 'o', 'u')
