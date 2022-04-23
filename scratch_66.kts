@@ -28,22 +28,50 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
-
-    fun maxRotateFunction(nums: IntArray): Int {
-        val sum = nums.sum()
-        var init = 0
-        val n = nums.size
-        IntRange(0, n - 1).forEach { init += it * nums[it] }
-        var max = init
-        var cur = init
-        IntRange(1, n - 1).forEach { it ->
-            // next
-            with(cur + sum - n * nums[n - it]) {
-                max = this.coerceAtLeast(max)
-                cur = this
+    // LC587 ** 凸包
+    fun outerTrees(trees: Array<IntArray>): Array<IntArray> {
+        val n = trees.size
+        if (n < 4) {
+            return trees
+        }
+        var leftMost = 0
+        for (i in 0 until n) {
+            if (trees[i][0] < trees[leftMost][0]) {
+                leftMost = i
             }
         }
-        return max
+        val res: MutableList<IntArray> = ArrayList()
+        val visit = BooleanArray(n)
+        var p = leftMost
+        do {
+            var q = (p + 1) % n
+            for (r in 0 until n) {
+                /* 如果 r 在 pq 的右侧，则 q = r */
+                if (cross(trees[p], trees[q], trees[r]) < 0) {
+                    q = r
+                }
+            }
+            /* 是否存在点 i, 使得 p 、q 、i 在同一条直线上 */
+            for (i in 0 until n) {
+                if (visit[i] || i == p || i == q) {
+                    continue
+                }
+                if (cross(trees[p], trees[q], trees[i]) == 0) {
+                    res.add(trees[i])
+                    visit[i] = true
+                }
+            }
+            if (!visit[q]) {
+                res.add(trees[q])
+                visit[q] = true
+            }
+            p = q
+        } while (p != leftMost)
+        return res.toTypedArray()
+    }
+
+    private fun cross(p: IntArray, q: IntArray, r: IntArray): Int {
+        return (q[0] - p[0]) * (r[1] - q[1]) - (q[1] - p[1]) * (r[0] - q[0])
     }
 
     // LC824
