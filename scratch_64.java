@@ -16,6 +16,42 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1305
+    List<Integer> result = new ArrayList<>();
+
+    public List<Integer> getAllElements(TreeNode root1, TreeNode root2) {
+        inorder(root1);
+        inorder(root2);
+        Collections.sort(result);
+        return result;
+    }
+
+    private void inorder(TreeNode node) {
+        if (node == null) return;
+        if (node.left != null) inorder(node.left);
+        result.add(node.val);
+        if (node.right != null) inorder(node.right);
+    }
+
+    class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
     // LC954
     public boolean canReorderDoubled(int[] arr) {
         long zeroCount = Arrays.stream(arr).boxed().filter(i -> i == 0).count();
