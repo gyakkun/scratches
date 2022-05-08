@@ -29,55 +29,6 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
-    // LC1305
-
-    fun getAllElements(root1: TreeNode?, root2: TreeNode?): List<Int> {
-        return listOf()
-    }
-
-    class TNInorderIterator(root: TreeNode) {
-        var top: TreeNode? = null
-        private val stack: Deque<TreeNode?> = LinkedList()
-
-        init {
-            stack.push(root)
-            top = stack.peek()
-        }
-
-        fun next(): TreeNode? {
-            while (top != null || !stack.isEmpty()) {
-                while (top != null) {
-                    
-                }
-                
-            }
-
-        }
-
-        class TreeNode(var `val`: Int) {
-            var left: TreeNode? = null
-            var right: TreeNode? = null
-        }
-
-        // LC883
-        fun projectionArea(grid: Array<IntArray>): Int {
-            val m = grid.size
-            val n = grid[0].size
-            val mMax = IntArray(m)
-            val nMax = IntArray(n)
-            var bottom = 0
-
-            for (i in 0 until m) {
-                for (j in 0 until n) {
-                    mMax[i] = mMax[i].coerceAtLeast(grid[i][j])
-                    nMax[j] = nMax[j].coerceAtLeast(grid[i][j])
-                    bottom += if (grid[i][j] > 0) 1 else 0
-                }
-            }
-            return nMax.sum() + mMax.sum() + bottom
-        }
-    }
-
     // LC587 ** 凸包
     fun outerTrees(trees: Array<IntArray>): Array<IntArray> {
         val n = trees.size
