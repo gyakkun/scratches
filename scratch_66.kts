@@ -1,9 +1,6 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import java.util.stream.IntStream
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 import kotlin.math.abs
 import kotlin.math.pow
 
@@ -12,7 +9,7 @@ import kotlin.math.pow
 //        @JvmStatic
 //        fun main(args: Array<String>) {
 var before = Instant.now()!!
-var s = Solution()
+var s = lc1728()
 println(
     s.lengthLongestPath(
         "dir\n" +
@@ -28,10 +25,6 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
-
-    // LC433
-
-
 
     // LC587 ** 凸包
     fun outerTrees(trees: Array<IntArray>): Array<IntArray> {
@@ -350,5 +343,148 @@ class Solution {
             }
             letters[l]
         }
+    }
+}
+
+
+// LC1728 Kotlin again
+class lc1728 {
+    fun canMouseWin(grid: Array<String>, catJump: Int, mouseJump: Int): Boolean {
+        //System.out.println(grid[1].charAt(1));
+        val dp = Array(510) {
+            Array(65) {
+                IntArray(
+                    65
+                )
+            }
+        }
+        for (i in 0..509) for (j in 0..64) for (k in 0..64) dp[i][j][k] = -1
+        var x1 = -1
+        var x2 = -1
+        var y1 = -1
+        var y2 = -1
+        for (i in grid.indices) {
+            for (j in 0 until grid[0].length) {
+                if (grid[i][j] == 'C') {
+                    y1 = i
+                    y2 = j
+                }
+                if (grid[i][j] == 'M') {
+                    x1 = i
+                    x2 = j
+                }
+            }
+        }
+        val t = help(grid, dp, 0, matrixFlattenIdx(x1, x2), matrixFlattenIdx(y1, y2), catJump, mouseJump)
+        return if (t == 1) true else false
+    }
+
+    fun help(
+        grid: Array<String>,
+        dp: Array<Array<IntArray>>,
+        t: Int,
+        x: Int,
+        y: Int,
+        catJump: Int,
+        mouseJump: Int
+    ): Int {
+        if (t == 500) return 0.also { dp[t][x][y] = it }
+        if (dp[t][x][y] != -1) return dp[t][x][y]
+        val x1 = x / 8
+        val x2 = x % 8
+        val y1 = y / 8
+        val y2 = y % 8
+        if (t % 2 == 0) {
+            if (grid[x1][x2] == 'F') return 1.also { dp[t][x][y] = it }
+        }
+        if (t % 2 == 1) {
+            if (grid[y1][y2] == 'F') return 2.also { dp[t][x][y] = it }
+        }
+        if (x1 == y1 && x2 == y2) return 2.also { dp[t][x][y] = it }
+        return if (t % 2 == 0) { // step for mouse
+            var cat_win = true
+            for (i in 0..mouseJump) {
+                val x1_new = x1 + i
+                if (x1_new >= 0 && x1_new < grid.size) {
+                    if (grid[x1_new][x2] == '#') break
+                    val next = help(grid, dp, t + 1, matrixFlattenIdx(x1_new, x2), y, catJump, mouseJump)
+                    if (next == 1) return 1.also { dp[t][x][y] = it } else if (next != 2) cat_win = false
+                }
+            }
+            /////////////////////
+            for (i in 0..mouseJump) {
+                val x1_new = x1 - i
+                if (x1_new >= 0 && x1_new < grid.size) {
+                    if (grid[x1_new][x2] == '#') break
+                    val next = help(grid, dp, t + 1, matrixFlattenIdx(x1_new, x2), y, catJump, mouseJump)
+                    if (next == 1) return 1.also { dp[t][x][y] = it } else if (next != 2) cat_win = false
+                }
+            }
+            /////////////////////////////////////////////
+            for (i in 0..mouseJump) {
+                val x2_new = x2 + i
+                if (x2_new >= 0 && x2_new < grid[0].length) {
+                    if (grid[x1][x2_new] == '#') break
+                    val next = help(grid, dp, t + 1, matrixFlattenIdx(x1, x2_new), y, catJump, mouseJump)
+                    if (next == 1) return 1.also { dp[t][x][y] = it } else if (next != 2) cat_win = false
+                }
+            }
+            /////////////////////
+            for (i in 0..mouseJump) {
+                val x2_new = x2 - i
+                if (x2_new >= 0 && x2_new < grid[0].length) {
+                    if (grid[x1][x2_new] == '#') break
+                    val next = help(grid, dp, t + 1, matrixFlattenIdx(x1, x2_new), y, catJump, mouseJump)
+                    if (next == 1) return 1.also { dp[t][x][y] = it } else if (next != 2) cat_win = false
+                }
+            }
+            if (cat_win) 2.also { dp[t][x][y] = it } else 0.also {
+                dp[t][x][y] = it
+            }
+        } else {
+            var mouse_win = true
+            for (i in 0..catJump) {
+                val y1_new = y1 + i
+                if (y1_new >= 0 && y1_new < grid.size) {
+                    if (grid[y1_new][y2] == '#') break
+                    val next = help(grid, dp, t + 1, x, matrixFlattenIdx(y1_new, y2), catJump, mouseJump)
+                    if (next == 2) return 2.also { dp[t][x][y] = it } else if (next != 1) mouse_win = false
+                }
+            }
+            /////////////////////
+            for (i in 0..catJump) {
+                val y1_new = y1 - i
+                if (y1_new >= 0 && y1_new < grid.size) {
+                    if (grid[y1_new][y2] == '#') break
+                    val next = help(grid, dp, t + 1, x, matrixFlattenIdx(y1_new, y2), catJump, mouseJump)
+                    if (next == 2) return 2.also { dp[t][x][y] = it } else if (next != 1) mouse_win = false
+                }
+            }
+            /////////////////////////////////////////////
+            for (i in 0..catJump) {
+                val y2_new = y2 + i
+                if (y2_new >= 0 && y2_new < grid[0].length) {
+                    if (grid[y1][y2_new] == '#') break
+                    val next = help(grid, dp, t + 1, x, matrixFlattenIdx(y1, y2_new), catJump, mouseJump)
+                    if (next == 2) return 2.also { dp[t][x][y] = it } else if (next != 1) mouse_win = false
+                }
+            }
+            /////////////////////
+            for (i in 0..catJump) {
+                val y2_new = y2 - i
+                if (y2_new >= 0 && y2_new < grid[0].length) {
+                    if (grid[y1][y2_new] == '#') break
+                    val next = help(grid, dp, t + 1, x, matrixFlattenIdx(y1, y2_new), catJump, mouseJump)
+                    if (next == 2) return 2.also { dp[t][x][y] = it } else if (next != 1) mouse_win = false
+                }
+            }
+            if (mouse_win) 1.also { dp[t][x][y] = it } else 0.also {
+                dp[t][x][y] = it
+            }
+        }
+    }
+
+    fun matrixFlattenIdx(a: Int, b: Int): Int {
+        return a * 8 + b
     }
 }
