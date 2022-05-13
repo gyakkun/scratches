@@ -26,6 +26,40 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // Interview 01.05
+    fun oneEditAway(first: String, second: String): Boolean {
+        if (abs(first.length - second.length) > 1) return false
+        if (first == second) return true
+
+        if (first.length == second.length) {
+            var fp = 0
+            var sp = 0
+            var diffCtr = 0
+            while (fp != first.length && sp != second.length) {
+                if (first[fp] != second[fp]) diffCtr++
+                if (diffCtr > 1) return false
+                fp++
+                sp++
+            }
+        } else {
+            var lp = 0
+            var sp = 0
+            var longOne = if (first.length > second.length) first else second
+            var shortOne = if (first.length > second.length) second else first
+            while (lp != longOne.length && sp != shortOne.length && longOne[lp] == shortOne[sp]) {
+                lp++
+                sp++
+            }
+            lp++
+            while (lp != longOne.length && sp != shortOne.length) {
+                if (longOne[lp] != shortOne[sp]) return false
+                lp++
+                sp++
+            }
+        }
+        return true
+    }
+
     // LC587 ** 凸包
     fun outerTrees(trees: Array<IntArray>): Array<IntArray> {
         val n = trees.size
