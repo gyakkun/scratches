@@ -26,6 +26,82 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC691
+    var finResult = Integer.MAX_VALUE / 2
+    fun minStickers(stickers: Array<String>, target: String): Int {
+        val maskArr = stickers.map { helperMask(it) }.toTypedArray()
+        val totalMask = maskArr.reduce { acc, i -> acc or i }
+        val targetMask = helperMask(target)
+        if (targetMask and totalMask != totalMask) return -1
+        val stickSet = stickers.toMutableSet()
+        val msitr = stickSet.iterator()
+
+        // Sieve all valid stickers
+        outer@ while (msitr.hasNext()) {
+            val next = msitr.next()
+            val nextCountArr = helperCountArr(next)
+            for (st in stickers) {
+                if (helperAllLargerThanOrEqualToZero(helperCountArrDiff(helperCountArr(st), nextCountArr))
+                    && st != next
+                ) {
+                    msitr.remove()
+                    continue@outer
+                }
+            }
+        }
+        helper(0, helperCountArr(target), stickSet)
+        return finResult
+    }
+
+    fun helper(layer: Int, countArr: IntArray, stickSet: MutableSet<String>): Unit {
+        if (helperCountArrToMask(countArr) == 0) {
+            finResult = finResult.coerceAtMost(layer)
+            return
+        }
+        val nextLayer = layer + 1
+        val waitingMask = helperCountArrToMask(countArr)
+        stickSet.forEach {
+            val curMask = helperMask(it)
+            if (waitingMask and curMask == 0) return@forEach
+            val curCountArr = helperCountArr(it)
+            val nextCountArr = countArr.copyOf()
+            for (i in nextCountArr.indices) {
+                nextCountArr[i] = (nextCountArr[i] - curCountArr[i]).coerceAtLeast(0)
+            }
+            helper(nextLayer, nextCountArr, stickSet)
+        }
+    }
+
+    fun helperAllLargerThanOrEqualToZero(diffCountArr: IntArray): Boolean = diffCountArr.all { it >= 0 }
+
+    fun helperCountArrToMask(countArr: IntArray): Int {
+        var result = 0
+        countArr.forEachIndexed { index, i ->
+            if (i > 0) result = result and (1 shl index)
+        }
+        return result
+    }
+
+    fun helperCountArrDiff(c1: IntArray, c2: IntArray): IntArray {
+        val result = IntArray(26)
+        IntRange(0, 25).forEach { result[it] = c1[it] - c2[it] }
+        return result
+    }
+
+    fun helperMask(word: String): Int {
+        var mask: Int = 0
+        word.toCharArray().forEach {
+            mask = mask or (it.code - 'a'.code)
+        }
+        return mask
+    }
+
+    fun helperCountArr(word: String): IntArray {
+        val result = IntArray(26)
+        word.chars().forEach { result[it - 'a'.code]++ }
+        return result
+    }
+
     // Interview 01.05
     fun oneEditAway(first: String, second: String): Boolean {
         if (abs(first.length - second.length) > 1) return false
@@ -163,13 +239,13 @@ class Solution {
             curTabCount = nextTabCount
             prevStartToken = ++idx
         }
-        helper(root, "")
+        lc388Helper(root, "")
         return if (result.isEmpty()) 0 else {
             result.length - 2 - root.name.length
         }
     }
 
-    fun helper(root: Hierarchy, curPrefix: String) {
+    fun lc388Helper(root: Hierarchy, curPrefix: String) {
         val curPath = curPrefix + "/" + root.name
         if (root.isFile) {
             if (result.length < curPath.length) {
@@ -177,7 +253,7 @@ class Solution {
             }
         }
         root.children.forEach {
-            helper(it, curPath)
+            lc388Helper(it, curPath)
         }
     }
 
@@ -313,10 +389,10 @@ class Solution {
         val startPoint = edgeMtx.withIndex().first { it.value.size == 1 }.index
         val depthArr = IntArray(n).apply { fill(-1) }
         val parent = IntArray(n).apply { fill(-1) }
-        helper(startPoint, 0, edgeMtx, depthArr, parent)
+        lc310Helper(startPoint, 0, edgeMtx, depthArr, parent)
         val furthestPoint = depthArr.withIndex().maxByOrNull { it.value }!!.index
         depthArr.fill(-1)
-        helper(furthestPoint, 0, edgeMtx, depthArr, parent)
+        lc310Helper(furthestPoint, 0, edgeMtx, depthArr, parent)
         var endPoint: Int
         var longestDistance: Int
         depthArr.withIndex().maxByOrNull { it.value }!!.let {
@@ -340,7 +416,7 @@ class Solution {
         }
     }
 
-    private fun helper(
+    private fun lc310Helper(
         cur: Int,
         depth: Int,
         edgeMtx: MutableList<MutableList<Int>>,
@@ -352,7 +428,7 @@ class Solution {
         for (next in edgeMtx[cur]) {
             if (depthArr[next] != -1) continue
             parent[next] = cur
-            helper(next, depth + 1, edgeMtx, depthArr, parent)
+            lc310Helper(next, depth + 1, edgeMtx, depthArr, parent)
         }
     }
 
