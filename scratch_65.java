@@ -1,5 +1,6 @@
-import java.util.Arrays;
-import java.util.Random;
+import javafx.util.Pair;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 class Scratch {
@@ -7,11 +8,69 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.largestPalindrome(7));
+        System.out.println(s.cutOffTree(List.of(List.of(54581641, 64080174, 24346381, 69107959), List.of(86374198, 61363882, 68783324, 79706116), List.of(668150, 92178815, 89819108, 94701471), List.of(83920491, 22724204, 46281641, 47531096), List.of(89078499, 18904913, 25462145, 60813308))));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC675
+    public int cutOffTree(List<List<Integer>> forest) {
+        int m = forest.size(), n = forest.get(0).size();
+        int[] mtx = new int[m * n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                mtx[i * n + j] = forest.get(i).get(j);
+            }
+        }
+        List<Pair<Integer, Integer>> seq = new ArrayList<>();
+        for (int i = 0; i < m * n; i++) {
+            seq.add(new Pair<>(i, mtx[i]));
+        }
+        seq = seq.stream().filter(i -> i.getValue() > 1).collect(Collectors.toList());
+        Collections.sort(seq, Comparator.comparingInt(Pair::getValue));
+        int cur = 0, result = 0;
+        for (Pair<Integer, Integer> p : seq) {
+            // < IDX, VAL>
+            int next = p.getKey();
+            int step = helper(cur, next, m, n, mtx);
+            if (step == -1) return -1;
+            mtx[next] = 1;
+            result += step;
+            cur = next;
+        }
+        return result;
+    }
+
+    final int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    private int helper(int cur, int target, int m, int n, int[] mtx) {
+        if (cur == target) return 0;
+        Deque<Integer> q = new LinkedList<>();
+        q.offer(cur);
+        Set<Integer> visited = new HashSet<>();
+        int layer = -1;
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            layer++;
+            for (int i = 0; i < qs; i++) {
+                int p = q.poll();
+                if (visited.contains(p)) continue;
+                visited.add(p);
+                int r = p / n, c = p % n;
+                for (int[] d : directions) {
+                    int nr = r + d[0], nc = c + d[1];
+                    if (nr < 0 || nr >= m || nc < 0 || nc >= n) continue;
+                    int nidx = nr * n + nc;
+                    if (nidx == target) return layer + 1;
+                    if (mtx[nidx] == 0 || visited.contains(nidx)) continue;
+                    q.offer(nidx);
+                }
+            }
+        }
+        return -1;
+    }
+
 
     // LC479 **
     public long largestPalindrome(int n) {
@@ -52,10 +111,10 @@ class Scratch {
                 }
             }
         }
-        return helper(1, n - 1, 0);
+        return lyjjHelper(1, n - 1, 0);
     }
 
-    private int helper(int target, int numIdx, int mask) {
+    private int lyjjHelper(int target, int numIdx, int mask) {
         boolean isBackwardMOne = ((mask >> (backwardOne - 1)) & 1) == 1;
         boolean isBackwardMMinusOneOne = ((mask >> (backwardOne - 2)) & 1) == 1;
         if (numIdx == 1) { // 边界条件, 轮到正数第二个数(numIdx==1), 此时只剩下一个运算符
@@ -93,51 +152,51 @@ class Scratch {
                     if (isBackwardMOne) {
                         return Integer.MIN_VALUE / 2;
                     }
-                    result = 1 + helper(1, numIdx - 1, newMaskWithOne);
+                    result = 1 + lyjjHelper(1, numIdx - 1, newMaskWithOne);
                 } else if (target == 0) { // (0,0),(0,1),(1,0) 中最大的
                     result = Math.max(
                             Math.max(
-                                    0 + helper(0, numIdx - 1, newMaskWithZero),
-                                    0 + helper(1, numIdx - 1, newMaskWithZero)
+                                    0 + lyjjHelper(0, numIdx - 1, newMaskWithZero),
+                                    0 + lyjjHelper(1, numIdx - 1, newMaskWithZero)
                             ),
-                            1 + helper(0, numIdx - 1, newMaskWithOne)
+                            1 + lyjjHelper(0, numIdx - 1, newMaskWithOne)
                     );
                 }
                 break;
             case 1:
                 if (target == 1) {
                     if (isBackwardMOne) { // 意味着该位不能填1
-                        result = 0 + helper(1, numIdx - 1, newMaskWithZero);
+                        result = 0 + lyjjHelper(1, numIdx - 1, newMaskWithZero);
                     } else { // (0,1),(1,0),(1,1) 中最大的
                         result = Math.max(
                                 Math.max(
-                                        0 + helper(1, numIdx - 1, newMaskWithZero),
-                                        1 + helper(0, numIdx - 1, newMaskWithOne)),
-                                1 + helper(1, numIdx - 1, newMaskWithOne)
+                                        0 + lyjjHelper(1, numIdx - 1, newMaskWithZero),
+                                        1 + lyjjHelper(0, numIdx - 1, newMaskWithOne)),
+                                1 + lyjjHelper(1, numIdx - 1, newMaskWithOne)
                         );
                     }
                 } else if (target == 0) { // 意味着两侧都要填0
-                    result = 0 + helper(0, numIdx - 1, newMaskWithZero);
+                    result = 0 + lyjjHelper(0, numIdx - 1, newMaskWithZero);
                 }
                 break;
             case 2:
                 if (target == 1) {
                     if (isBackwardMOne) { // 意味着该位不能填1
-                        result = 0 + helper(1, numIdx - 1, newMaskWithZero);
+                        result = 0 + lyjjHelper(1, numIdx - 1, newMaskWithZero);
                     } else { // (0,1),(1,0)中最小的
                         result = Math.max(
-                                0 + helper(1, numIdx - 1, newMaskWithZero),
-                                1 + helper(0, numIdx - 1, newMaskWithOne)
+                                0 + lyjjHelper(1, numIdx - 1, newMaskWithZero),
+                                1 + lyjjHelper(0, numIdx - 1, newMaskWithOne)
                         );
 
                     }
                 } else if (target == 0) { // (0,0), (1,1)
                     if (isBackwardMOne) {
-                        result = 0 + helper(0, numIdx - 1, newMaskWithZero);
+                        result = 0 + lyjjHelper(0, numIdx - 1, newMaskWithZero);
                     } else {
                         result = Math.max(
-                                0 + helper(0, numIdx - 1, newMaskWithZero),
-                                1 + helper(1, numIdx - 1, newMaskWithOne)
+                                0 + lyjjHelper(0, numIdx - 1, newMaskWithZero),
+                                1 + lyjjHelper(1, numIdx - 1, newMaskWithOne)
                         );
                     }
                 }
