@@ -8,10 +8,53 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.cutOffTree(List.of(List.of(54581641, 64080174, 24346381, 69107959), List.of(86374198, 61363882, 68783324, 79706116), List.of(668150, 92178815, 89819108, 94701471), List.of(83920491, 22724204, 46281641, 47531096), List.of(89078499, 18904913, 25462145, 60813308))));
+        System.out.println(s.createBinaryTree(new int[][]{{20, 15, 1}, {20, 17, 0}, {50, 20, 1}, {50, 80, 0}, {80, 19, 1}}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // Interview 17.11
+    public int findClosest(String[] words, String word1, String word2) {
+        int p1 = -1, p2 = -1, result = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < words.length; i++) {
+            if (words[i].equals(word1)) {
+                if (p2 != -1) {
+                    result = Math.min(result, i - p2);
+                }
+                p1 = i;
+            }
+            if (words[i].equals(word2)) {
+                if (p1 != -1) {
+                    result = Math.min(result, i - p1);
+                }
+                p2 = i;
+            }
+        }
+        return result;
+    }
+
+    // LC2196
+    public TreeNode createBinaryTree(int[][] descriptions) {
+        Map<Integer, TreeNode> m = new HashMap<>();
+        Set<Integer> parentSet = new HashSet<>();
+        Set<Integer> childrenSet = new HashSet<>();
+        for (int[] nd : descriptions) {
+            int par = nd[0], cur = nd[1], isLeft = nd[2];
+            TreeNode curNode = m.getOrDefault(cur, new TreeNode(cur));
+            TreeNode parNode = m.getOrDefault(par, new TreeNode(par));
+            m.putIfAbsent(par, parNode);
+            m.putIfAbsent(cur, curNode);
+            if (isLeft == 1) {
+                parNode.left = curNode;
+            } else {
+                parNode.right = curNode;
+            }
+            parentSet.add(par);
+            childrenSet.add(cur);
+        }
+        parentSet.removeAll(childrenSet);
+        return m.get(parentSet.stream().findFirst().get());
     }
 
     // LC675
@@ -204,4 +247,23 @@ class Scratch {
         return memo[target][numIdx][mask] = (byte) result;
     }
 
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
 }
