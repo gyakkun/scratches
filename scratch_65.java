@@ -8,10 +8,44 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.createBinaryTree(new int[][]{{20, 15, 1}, {20, 17, 0}, {50, 20, 1}, {50, 80, 0}, {80, 19, 1}}));
+        System.out.println(s.isInterleave(
+                "aabcc",
+                "dbbca",
+                "aadbbcbcac"
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // JZ Offer II 096
+    // LC097
+    char[] ca1, ca2, ca3;
+    Boolean[][][] memo;
+
+    public boolean isInterleave(String s1, String s2, String s3) {
+        ca1 = s1.toCharArray();
+        ca2 = s2.toCharArray();
+        ca3 = s3.toCharArray();
+        if (ca1.length + ca2.length != ca3.length) return false;
+        memo = new Boolean[ca1.length + 1][ca2.length + 1][ca3.length + 1];
+        return helper(0, 0, 0);
+    }
+
+    private boolean helper(int p1, int p2, int p3) {
+        if (p3 == ca3.length && p2 == ca2.length && p1 == ca1.length) return true;
+        if (memo[p1][p2][p3] != null) return memo[p1][p2][p3];
+        char cur = ca3[p3];
+        boolean b1 = false, b2 = false;
+        if (p1 < ca1.length && ca1[p1] == cur) {
+            b1 = helper(p1 + 1, p2, p3 + 1);
+            if (b1) return memo[p1][p2][p3] = true;
+        }
+        if (p2 < ca2.length && ca2[p2] == cur) {
+            b2 = helper(p1, p2 + 1, p3 + 1);
+            if (b2) return memo[p1][p2][p3] = true;
+        }
+        return memo[p1][p2][p3] = false;
     }
 
     // Interview 17.11
@@ -76,7 +110,7 @@ class Scratch {
         for (Pair<Integer, Integer> p : seq) {
             // < IDX, VAL>
             int next = p.getKey();
-            int step = helper(cur, next, m, n, mtx);
+            int step = lc675Helper(cur, next, m, n, mtx);
             if (step == -1) return -1;
             mtx[next] = 1;
             result += step;
@@ -87,7 +121,7 @@ class Scratch {
 
     final int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
-    private int helper(int cur, int target, int m, int n, int[] mtx) {
+    private int lc675Helper(int cur, int target, int m, int n, int[] mtx) {
         if (cur == target) return 0;
         Deque<Integer> q = new LinkedList<>();
         q.offer(cur);
@@ -140,17 +174,17 @@ class Scratch {
     // 220327 LYJJ
     int backwardOne;
     int[] op;
-    byte[][][] memo;
+    byte[][][] lyjjMemo;
 
     public int maxOnes(int[] arr, int m) { // op: 0 - &, 1 - | ,2 - ^
         int n = arr.length + 1;
         backwardOne = m;
         op = arr;
-        memo = new byte[2][n][1 << m];
+        lyjjMemo = new byte[2][n][1 << m];
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < n; j++) {
                 for (int k = 0; k < 1 << m; k++) {
-                    memo[i][j][k] = -1;
+                    lyjjMemo[i][j][k] = -1;
                 }
             }
         }
@@ -183,8 +217,8 @@ class Scratch {
                     }
             }
         }
-        if (memo[target][numIdx][mask] != -1) {
-            return memo[target][numIdx][mask];
+        if (lyjjMemo[target][numIdx][mask] != -1) {
+            return lyjjMemo[target][numIdx][mask];
         }
         int result = -1;
         int newMaskWithOne = ((mask << 1) | 1) & ((1 << backwardOne) - 1);
@@ -244,7 +278,7 @@ class Scratch {
                     }
                 }
         }
-        return memo[target][numIdx][mask] = (byte) result;
+        return lyjjMemo[target][numIdx][mask] = (byte) result;
     }
 
 }
