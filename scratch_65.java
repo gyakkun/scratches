@@ -8,44 +8,98 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.isInterleave(
-                "aabcc",
-                "dbbca",
-                "aadbbcbcac"
-        ));
+        System.out.println(s.makesquare(new int[]{1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2}));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC829 Hard Math ** 推导不难
+    public int consecutiveNumbersSum(int n) {
+        int upperBound = 2 * n, result = 0;
+        for (int i = 1; i * (i + 1) <= upperBound; i++) {
+            if ((i & 1) == 1 && n % i == 0) { // odd
+                result++;
+            } else if (n % i != 0 && (2 * n) % i == 0) { // even
+                result++;
+            }
+        }
+        return result;
+    }
+
+    Map<Integer, Map<Integer, Boolean>> lc473Memo;
+
+    // LC473
+    public boolean makesquare(int[] matchsticks) {
+        if (matchsticks.length < 4) return false;
+        int sum = 0;
+        for (int i : matchsticks) {
+            sum += i;
+        }
+        if (sum % 4 != 0) return false;
+        int target = sum / 4;
+        for (int i : matchsticks) {
+            if (i > target) return false;
+        }
+        Arrays.sort(matchsticks);
+        lc473Memo = new HashMap<>();
+        return lc473Helper(0, 4, target, matchsticks, target);
+    }
+
+    private boolean lc473Helper(int origMask, int remain, int target, int[] matchsticks, int quarter) {
+        if (origMask == (1 << matchsticks.length) - 1 && remain == 0) return true;
+        if (lc473Memo.containsKey(origMask) && lc473Memo.get(origMask).containsKey(target)) {
+            return lc473Memo.get(origMask).get(target);
+        }
+        lc473Memo.putIfAbsent(origMask, new HashMap<>());
+        int mask = origMask;
+        for (int i = 0; i < matchsticks.length; i++) {
+            if (((mask >> i) & 1) == 1) continue;
+            if (matchsticks[i] > target) continue;
+            mask |= 1 << i;
+            boolean result;
+            if (target == matchsticks[i]) {
+                result = lc473Helper(mask, remain - 1, quarter, matchsticks, quarter);
+            } else {
+                result = lc473Helper(mask, remain, target - matchsticks[i], matchsticks, quarter);
+            }
+            if (result) {
+                return true;
+            }
+            mask ^= 1 << i;
+        }
+        lc473Memo.get(origMask).put(target, false);
+        return false;
+    }
+
     // JZ Offer II 096
     // LC097
     char[] ca1, ca2, ca3;
-    Boolean[][][] memo;
+    Boolean[][][] lc097Memo;
 
     public boolean isInterleave(String s1, String s2, String s3) {
         ca1 = s1.toCharArray();
         ca2 = s2.toCharArray();
         ca3 = s3.toCharArray();
         if (ca1.length + ca2.length != ca3.length) return false;
-        memo = new Boolean[ca1.length + 1][ca2.length + 1][ca3.length + 1];
-        return helper(0, 0, 0);
+        lc097Memo = new Boolean[ca1.length + 1][ca2.length + 1][ca3.length + 1];
+        return lc097Helper(0, 0, 0);
     }
 
-    private boolean helper(int p1, int p2, int p3) {
+    private boolean lc097Helper(int p1, int p2, int p3) {
         if (p3 == ca3.length && p2 == ca2.length && p1 == ca1.length) return true;
-        if (memo[p1][p2][p3] != null) return memo[p1][p2][p3];
+        if (lc097Memo[p1][p2][p3] != null) return lc097Memo[p1][p2][p3];
         char cur = ca3[p3];
         boolean b1 = false, b2 = false;
         if (p1 < ca1.length && ca1[p1] == cur) {
-            b1 = helper(p1 + 1, p2, p3 + 1);
-            if (b1) return memo[p1][p2][p3] = true;
+            b1 = lc097Helper(p1 + 1, p2, p3 + 1);
+            if (b1) return lc097Memo[p1][p2][p3] = true;
         }
         if (p2 < ca2.length && ca2[p2] == cur) {
-            b2 = helper(p1, p2 + 1, p3 + 1);
-            if (b2) return memo[p1][p2][p3] = true;
+            b2 = lc097Helper(p1, p2 + 1, p3 + 1);
+            if (b2) return lc097Memo[p1][p2][p3] = true;
         }
-        return memo[p1][p2][p3] = false;
+        return lc097Memo[p1][p2][p3] = false;
     }
 
     // Interview 17.11
