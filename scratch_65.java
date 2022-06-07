@@ -14,6 +14,27 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC875
+    public int minEatingSpeed(int[] piles, int h) {
+        if (h == piles.length) return Arrays.stream(piles).max().getAsInt();
+        int lo = 1, hi = Arrays.stream(piles).max().getAsInt();
+        while (lo < hi) {
+            // 满足条件的最小值
+            int mid = lo + (hi - lo) / 2;
+            if (helper(mid, piles, h)) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+    }
+
+    private boolean helper(int targetRate, int[] piles, int givenHours) {
+        // Ceil divide: (x+divider-1) / divider
+        return Arrays.stream(piles).map(i -> (i + targetRate - 1) / targetRate).sum() <= givenHours;
+    }
+
     // LC829 Hard Math ** 推导不难
     public int consecutiveNumbersSum(int n) {
         int upperBound = 2 * n, result = 0;
