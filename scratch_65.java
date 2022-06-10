@@ -17,13 +17,16 @@ class Scratch {
 
     // LC730 ** Hard
     Long[][] memo;
-    long mod = 1000000007;
+    long mod = 1000000007l;
+    int[] pre, next;
+    char[] ca;
 
     public int countPalindromicSubsequences(String s) {
         int n = s.length();
-        char[] ca = s.toCharArray();
+        ca = s.toCharArray();
         memo = new Long[n + 1][n + 1];
-        int[] pre = new int[n], next = new int[n];
+        pre = new int[n];
+        next = new int[n];
         int[] lookBack = new int[128], lookForward = new int[128];
         Arrays.fill(pre, -1);
         Arrays.fill(next, n);
@@ -41,10 +44,10 @@ class Scratch {
             }
             lookForward[ca[r]] = r;
         }
-        return (int) (helper(0, n - 1, ca, pre, next) % mod);
+        return (int) (helper(0, n - 1) % mod);
     }
 
-    private long helper(int i, int j, char[] ca, int[] pre, int[] next) {
+    private long helper(int i, int j) {
         if (i > j) return 0l;
         if (i == j) {
             if (ca[i] == ca[j]) return 1l;
@@ -52,18 +55,17 @@ class Scratch {
         }
         if (memo[i][j] != null) return memo[i][j];
         if (ca[i] != ca[j]) {
-            return memo[i][j] = (helper(i + 1, j, ca, pre, next) + helper(i, j - 1, ca, pre, next) - helper(i + 1, j - 1, ca, pre, next) + mod) % mod;
+            return memo[i][j] = (helper(i + 1, j) + helper(i, j - 1) - helper(i + 1, j - 1) + mod) % mod;
         }
         // if ca[i] == ca[j]
-        char x = ca[i];
         int lo = next[i], hi = pre[j];
-        long result = 2 * helper(i + 1, j - 1, ca, pre, next);
+        long result = 2 * helper(i + 1, j - 1);
         if (lo > hi) { // no middle x between i,j
             result += 2;
         } else if (lo == hi) { // one middle x between i,j
             result += 1;
         } else {
-            result -= helper(lo + 1, hi - 1, ca, pre, next);
+            result -= helper(lo + 1, hi - 1);
         }
         return memo[i][j] = (result + mod) % mod;
     }
