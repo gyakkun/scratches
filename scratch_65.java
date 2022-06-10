@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$EnumEntryOrBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -8,11 +9,65 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.makesquare(new int[]{1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2}));
+        System.out.println(s.countPalindromicSubsequences("bddaabdbbccdcdcbbdbddccbaaccabbcacbadbdadbccddccdbdbdbdabdbddcccadddaaddbcbcbabdcaccaacabdbdaccbaacc"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
+
+    // LC730 ** Hard
+    Long[][] memo;
+    long mod = 1000000007;
+
+    public int countPalindromicSubsequences(String s) {
+        int n = s.length();
+        char[] ca = s.toCharArray();
+        memo = new Long[n + 1][n + 1];
+        int[] pre = new int[n], next = new int[n];
+        int[] lookBack = new int[128], lookForward = new int[128];
+        Arrays.fill(pre, -1);
+        Arrays.fill(next, n);
+        Arrays.fill(lookBack, -1);
+        Arrays.fill(lookForward, n);
+        for (int i = 0; i < n; i++) {
+            int r = n - i - 1;
+            if (lookBack[ca[i]] != -1) {
+                pre[i] = lookBack[ca[i]];
+            }
+            lookBack[ca[i]] = i;
+
+            if (lookForward[ca[r]] != n) {
+                next[r] = lookForward[ca[r]];
+            }
+            lookForward[ca[r]] = r;
+        }
+        return (int) (helper(0, n - 1, ca, pre, next) % mod);
+    }
+
+    private long helper(int i, int j, char[] ca, int[] pre, int[] next) {
+        if (i > j) return 0l;
+        if (i == j) {
+            if (ca[i] == ca[j]) return 1l;
+            return 0l;
+        }
+        if (memo[i][j] != null) return memo[i][j];
+        if (ca[i] != ca[j]) {
+            return memo[i][j] = (helper(i + 1, j, ca, pre, next) + helper(i, j - 1, ca, pre, next) - helper(i + 1, j - 1, ca, pre, next) + mod) % mod;
+        }
+        // if ca[i] == ca[j]
+        char x = ca[i];
+        int lo = next[i], hi = pre[j];
+        long result = 2 * helper(i + 1, j - 1, ca, pre, next);
+        if (lo > hi) { // no middle x between i,j
+            result += 2;
+        } else if (lo == hi) { // one middle x between i,j
+            result += 1;
+        } else {
+            result -= helper(lo + 1, hi - 1, ca, pre, next);
+        }
+        return memo[i][j] = (result + mod) % mod;
+    }
+
 
     // LC875
     public int minEatingSpeed(int[] piles, int h) {
@@ -21,7 +76,7 @@ class Scratch {
         while (lo < hi) {
             // 满足条件的最小值
             int mid = lo + (hi - lo) / 2;
-            if (helper(mid, piles, h)) {
+            if (lc875Judge(mid, piles, h)) {
                 hi = mid;
             } else {
                 lo = mid + 1;
@@ -30,7 +85,7 @@ class Scratch {
         return lo;
     }
 
-    private boolean helper(int targetRate, int[] piles, int givenHours) {
+    private boolean lc875Judge(int targetRate, int[] piles, int givenHours) {
         // Ceil divide: (x+divider-1) / divider
         return Arrays.stream(piles).map(i -> (i + targetRate - 1) / targetRate).sum() <= givenHours;
     }
