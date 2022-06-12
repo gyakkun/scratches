@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-import kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$EnumEntryOrBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,65 +8,93 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.countPalindromicSubsequences("bddaabdbbccdcdcbbdbddccbaaccabbcacbadbdadbccddccdbdbdbdabdbddcccadddaaddbcbcbabdcaccaacabdbdaccbaacc"));
+        System.out.println(s.findAndReplacePattern(new String[]{"abc", "deq", "mee", "aqq", "dkd", "ccc"}, "abb"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC890
+    public List<String> findAndReplacePattern(String[] words, String pattern) {
+        int len = pattern.length();
+        Character[] map, rMap;
+        char[] pa = pattern.toCharArray();
+        List<String> result = new ArrayList<>();
+        outer:
+        for (String w : words) {
+            if (w.length() != len) continue outer;
+            char[] ca = w.toCharArray();
+            map = new Character[128];
+            rMap = new Character[128];
+            inner:
+            for (int i = 0; i < len; i++) {
+                if (map[pa[i]] == null && rMap[ca[i]] == null) {
+                    map[pa[i]] = ca[i];
+                    rMap[ca[i]] = pa[i];
+                } else {
+                    if (map[pa[i]] != null && ca[i] == map[pa[i]] && rMap[ca[i]] != null && pa[i] == rMap[ca[i]])
+                        continue inner;
+                    else continue outer;
+                }
+            }
+            result.add(w);
+        }
+        return result;
+    }
+
     // LC730 ** Hard
-    Long[][] memo;
-    long mod = 1000000007l;
-    int[] pre, next;
-    char[] ca;
+    Long[][] lc730Memo;
+    long lc730Mod = 1000000007l;
+    int[] lc730Pre, lc730Next;
+    char[] lc730Ca;
 
     public int countPalindromicSubsequences(String s) {
         int n = s.length();
-        ca = s.toCharArray();
-        memo = new Long[n + 1][n + 1];
-        pre = new int[n];
-        next = new int[n];
+        lc730Ca = s.toCharArray();
+        lc730Memo = new Long[n + 1][n + 1];
+        lc730Pre = new int[n];
+        lc730Next = new int[n];
         int[] lookBack = new int[128], lookForward = new int[128];
-        Arrays.fill(pre, -1);
-        Arrays.fill(next, n);
+        Arrays.fill(lc730Pre, -1);
+        Arrays.fill(lc730Next, n);
         Arrays.fill(lookBack, -1);
         Arrays.fill(lookForward, n);
         for (int i = 0; i < n; i++) {
             int r = n - i - 1;
-            if (lookBack[ca[i]] != -1) {
-                pre[i] = lookBack[ca[i]];
+            if (lookBack[lc730Ca[i]] != -1) {
+                lc730Pre[i] = lookBack[lc730Ca[i]];
             }
-            lookBack[ca[i]] = i;
+            lookBack[lc730Ca[i]] = i;
 
-            if (lookForward[ca[r]] != n) {
-                next[r] = lookForward[ca[r]];
+            if (lookForward[lc730Ca[r]] != n) {
+                lc730Next[r] = lookForward[lc730Ca[r]];
             }
-            lookForward[ca[r]] = r;
+            lookForward[lc730Ca[r]] = r;
         }
-        return (int) (helper(0, n - 1) % mod);
+        return (int) (lc730Helper(0, n - 1) % lc730Mod);
     }
 
-    private long helper(int i, int j) {
+    private long lc730Helper(int i, int j) {
         if (i > j) return 0l;
         if (i == j) {
-            if (ca[i] == ca[j]) return 1l;
+            if (lc730Ca[i] == lc730Ca[j]) return 1l;
             return 0l;
         }
-        if (memo[i][j] != null) return memo[i][j];
-        if (ca[i] != ca[j]) {
-            return memo[i][j] = (helper(i + 1, j) + helper(i, j - 1) - helper(i + 1, j - 1) + mod) % mod;
+        if (lc730Memo[i][j] != null) return lc730Memo[i][j];
+        if (lc730Ca[i] != lc730Ca[j]) {
+            return lc730Memo[i][j] = (lc730Helper(i + 1, j) + lc730Helper(i, j - 1) - lc730Helper(i + 1, j - 1) + lc730Mod) % lc730Mod;
         }
         // if ca[i] == ca[j]
-        int lo = next[i], hi = pre[j];
-        long result = 2 * helper(i + 1, j - 1);
+        int lo = lc730Next[i], hi = lc730Pre[j];
+        long result = 2 * lc730Helper(i + 1, j - 1);
         if (lo > hi) { // no middle x between i,j
             result += 2;
         } else if (lo == hi) { // one middle x between i,j
             result += 1;
         } else {
-            result -= helper(lo + 1, hi - 1);
+            result -= lc730Helper(lo + 1, hi - 1);
         }
-        return memo[i][j] = (result + mod) % mod;
+        return lc730Memo[i][j] = (result + lc730Mod) % lc730Mod;
     }
 
 
