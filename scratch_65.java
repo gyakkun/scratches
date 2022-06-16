@@ -1,6 +1,7 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class Scratch {
@@ -12,6 +13,26 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC532
+    public int findPairs(int[] nums, int k) {
+        Map<Integer, Integer> collect = Arrays.stream(nums).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1)));
+        int result = 0;
+        if (k == 0) {
+            for (Integer v : collect.values()) {
+                if (v > 1) result++;
+            }
+            return result;
+        } else {
+            TreeMap<Integer, Integer> tm = new TreeMap<>(collect);
+            for (Integer i : tm.keySet()) {
+                if (tm.containsKey(i + k)) {
+                    result++;
+                }
+            }
+            return result;
+        }
     }
 
     // LC498 **
