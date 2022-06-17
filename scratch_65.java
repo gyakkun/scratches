@@ -8,11 +8,38 @@ class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-
-        System.out.println(s.findDiagonalOrder(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10, 11, 12}}));
+        s.duplicateZeros(new int[]{1, 0, 2, 3, 0, 4, 5, 0});
+        System.out.println();
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC1089
+    public void duplicateZeros(int[] arr) {
+        int ctr = 0, pivot = 0, n = arr.length;
+        for (int i : arr) {
+            if (i == 0) {
+                ctr += 2;
+            } else {
+                ctr++;
+            }
+            if (ctr >= n) break;
+            pivot++;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            if (arr[pivot] == 0) {
+                if (i == n - 1 && ctr > n) {
+                    arr[i] = 0;
+                } else {
+                    arr[i] = arr[pivot];
+                    arr[--i] = 0;
+                }
+            } else {
+                arr[i] = arr[pivot];
+            }
+            pivot--;
+        }
     }
 
     // LC532
@@ -441,13 +468,7 @@ class Scratch {
                     }
                     result = 1 + lyjjHelper(1, numIdx - 1, newMaskWithOne);
                 } else if (target == 0) { // (0,0),(0,1),(1,0) 中最大的
-                    result = Math.max(
-                            Math.max(
-                                    0 + lyjjHelper(0, numIdx - 1, newMaskWithZero),
-                                    0 + lyjjHelper(1, numIdx - 1, newMaskWithZero)
-                            ),
-                            1 + lyjjHelper(0, numIdx - 1, newMaskWithOne)
-                    );
+                    result = Math.max(Math.max(0 + lyjjHelper(0, numIdx - 1, newMaskWithZero), 0 + lyjjHelper(1, numIdx - 1, newMaskWithZero)), 1 + lyjjHelper(0, numIdx - 1, newMaskWithOne));
                 }
                 break;
             case 1:
@@ -455,12 +476,7 @@ class Scratch {
                     if (isBackwardMOne) { // 意味着该位不能填1
                         result = 0 + lyjjHelper(1, numIdx - 1, newMaskWithZero);
                     } else { // (0,1),(1,0),(1,1) 中最大的
-                        result = Math.max(
-                                Math.max(
-                                        0 + lyjjHelper(1, numIdx - 1, newMaskWithZero),
-                                        1 + lyjjHelper(0, numIdx - 1, newMaskWithOne)),
-                                1 + lyjjHelper(1, numIdx - 1, newMaskWithOne)
-                        );
+                        result = Math.max(Math.max(0 + lyjjHelper(1, numIdx - 1, newMaskWithZero), 1 + lyjjHelper(0, numIdx - 1, newMaskWithOne)), 1 + lyjjHelper(1, numIdx - 1, newMaskWithOne));
                     }
                 } else if (target == 0) { // 意味着两侧都要填0
                     result = 0 + lyjjHelper(0, numIdx - 1, newMaskWithZero);
@@ -471,20 +487,14 @@ class Scratch {
                     if (isBackwardMOne) { // 意味着该位不能填1
                         result = 0 + lyjjHelper(1, numIdx - 1, newMaskWithZero);
                     } else { // (0,1),(1,0)中最小的
-                        result = Math.max(
-                                0 + lyjjHelper(1, numIdx - 1, newMaskWithZero),
-                                1 + lyjjHelper(0, numIdx - 1, newMaskWithOne)
-                        );
+                        result = Math.max(0 + lyjjHelper(1, numIdx - 1, newMaskWithZero), 1 + lyjjHelper(0, numIdx - 1, newMaskWithOne));
 
                     }
                 } else if (target == 0) { // (0,0), (1,1)
                     if (isBackwardMOne) {
                         result = 0 + lyjjHelper(0, numIdx - 1, newMaskWithZero);
                     } else {
-                        result = Math.max(
-                                0 + lyjjHelper(0, numIdx - 1, newMaskWithZero),
-                                1 + lyjjHelper(1, numIdx - 1, newMaskWithOne)
-                        );
+                        result = Math.max(0 + lyjjHelper(0, numIdx - 1, newMaskWithZero), 1 + lyjjHelper(1, numIdx - 1, newMaskWithOne));
                     }
                 }
         }
