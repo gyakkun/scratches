@@ -15,6 +15,34 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC513
+    public int findBottomLeftValue(TreeNode root) {
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int qs = q.size(), nextLayerCount = 0;
+            TreeNode leftMostNode = null;
+            for (int i = 0; i < qs; i++) {
+                TreeNode p = q.poll();
+                if (i == 0) {
+                    leftMostNode = p;
+                }
+                if (p.left != null) {
+                    q.offer(p.left);
+                    nextLayerCount++;
+                }
+                if (p.right != null) {
+                    q.offer(p.right);
+                    nextLayerCount++;
+                }
+            }
+            if (nextLayerCount == 0) {
+                return leftMostNode.val;
+            }
+        }
+        return -1;
+    }
+
     // LC1089
     public void duplicateZeros(int[] arr) {
         int ctr = 0, pivot = 0, n = arr.length;
