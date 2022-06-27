@@ -15,6 +15,29 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+
+    // LC522
+    public int findLUSlength(String[] strs) {
+        int result = -1;
+        outer:
+        for (int i = 0; i < strs.length; i++) {
+            inner:
+            for (int j = 0; j < strs.length; j++) {
+                if (i == j) continue;
+                int pi = 0, pj = 0;
+                char[] ci = strs[i].toCharArray(), cj = strs[j].toCharArray();
+                while (pi < ci.length && pj < cj.length) {
+                    if (ci[pi] == cj[pj]) pi++;
+                    pj++;
+                }
+                if (pi == ci.length) continue outer;
+            }
+            result = Math.max(result, strs[i].length());
+        }
+        return result;
+    }
+
+
     // LC513
     public int findBottomLeftValue(TreeNode root) {
         Deque<TreeNode> q = new LinkedList<>();
