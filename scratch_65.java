@@ -3,16 +3,77 @@ import javafx.util.Pair;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
-        s.duplicateZeros(new int[]{1, 0, 2, 3, 0, 4, 5, 0});
-        System.out.println();
+
+        System.out.println(s.diffWaysToCompute("2*3-4*5"));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    // LC241 **
+    List<Integer>[][] memo;
+    List<Integer> tokenList = new ArrayList<>();
+    List<Integer> opPosition = new ArrayList<>();
+
+    public List<Integer> diffWaysToCompute(String expression) {
+        int[] ops = new int[256];
+        ops['+'] = -1;
+        ops['-'] = -2;
+        ops['*'] = -3;
+        char[] ca = expression.toCharArray();
+        int prev = 0, cur = 0;
+        while (cur < ca.length) {
+            while (cur < ca.length && Character.isDigit(ca[cur])) cur++;
+            tokenList.add(Integer.parseInt(expression.substring(prev, cur)));
+            if (cur >= ca.length) break;
+            tokenList.add(ops[ca[cur]]);
+            opPosition.add(cur);
+            cur++;
+            prev = cur;
+        }
+        memo = new List[tokenList.size()][tokenList.size()];
+        IntStream.range(0, tokenList.size()).forEachOrdered(i -> {
+            IntStream.range(0, tokenList.size()).forEachOrdered(j -> {
+                memo[i][j] = new ArrayList<>();
+            });
+        });
+        return helper(0, tokenList.size() - 1).stream().toList();
+    }
+
+    private List<Integer> helper(int left, int right) { // 左闭右闭
+        if (memo[left][right].isEmpty()) {
+            if (left == right) {
+                memo[left][right].add(tokenList.get(left));
+            } else {
+                for (int i = left; i < right; i += 2) {
+                    List<Integer> l = helper(left, i);
+                    List<Integer> r = helper(i + 2, right);
+                    for (int j : l) {
+                        for (int k : r) {
+                            switch (tokenList.get(i + 1)) {
+                                case -1:
+                                    memo[left][right].add(j + k);
+                                    break;
+                                case -2:
+                                    memo[left][right].add(j - k);
+                                    break;
+                                case -3:
+                                    memo[left][right].add(j * k);
+                                    break;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        return memo[left][right];
     }
 
 
