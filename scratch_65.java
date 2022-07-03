@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import java.sql.ResultSet;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -10,16 +11,145 @@ class Scratch {
         Scratch s = new Scratch();
         long timing = System.currentTimeMillis();
 
-        System.out.println(s.diffWaysToCompute("2*3-4*5"));
+//        System.out.println(s.minRefuelStops(
+//                100,
+//                10,
+//                new int[][]{{10, 60}, {20, 30}, {30, 30}, {60, 40}}
+//        ));
+//        System.out.println(s.minRefuelStops(
+//                1000,
+//                10,
+//                new int[][]{{10, 201}, {201, 100}, {303, 330}, {600, 401}}
+//        ));
+//        System.out.println(s.minRefuelStops(
+//                1000,
+//                1,
+//                new int[][]{{125, 480}, {162, 46}, {175, 490}, {194, 207}, {355, 252}, {369, 75}, {433, 360}, {553, 95}, {562, 171}, {566, 12}}
+//        ));
+        System.out.println(s.minRefuelStops(
+                1000,
+                83,
+                new int[][]{{25, 27}, {36, 187}, {140, 186}, {378, 6}, {492, 202}, {517, 89}, {579, 234}, {673, 86}, {808, 53}, {954, 49}}
+        ));
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    public int nextGreaterElement(int n) {
+        char[] ca = ("" + n).toCharArray();
+        long next = Long.parseLong(new String(getNextPermutation(ca)));
+        if (next > Integer.MAX_VALUE) return -1;
+        if (next <= n) return -1;
+        return (int) next;
+    }
+
+    private char[] getNextPermutation(char[] ca) {
+        int n = ca.length;
+        int right = ca.length - 2;
+        while (right >= 0 && ca[right] >= ca[right + 1]) {
+            right--;
+        }
+        if (right >= 0) {
+            int left = n - 1;
+            while (left >= 0 && ca[right] >= ca[left]) {
+                left--;
+            }
+            arraySwap(ca, left, right);
+        }
+        arrayReverse(ca, right + 1, n - 1);
+        return ca;
+    }
+
+    private void arraySwap(char[] ca, int i, int j) {
+        if (i != j) {
+            char orig = ca[j];
+            ca[j] = ca[i];
+            ca[i] = orig;
+        }
+    }
+
+    private void arrayReverse(char[] ca, int from, int to) {
+        if (from < 0 || from >= ca.length || to < 0 || to >= ca.length) return;
+        int origFrom = from;
+        from = from > to ? to : from;
+        to = from == origFrom ? to : origFrom;
+        int mid = (from + to + 1) / 2;
+        for (int i = from; i < mid; i++) {
+            arraySwap(ca, i, to - (i - from));
+        }
+    }
+
+    // LC871
+    int startFuel, target;
+    int[][] stations;
+    Integer[][] memo;
+
+    public int minRefuelStops(int target, int startFuel, int[][] stations) {
+        if (startFuel >= target) return 0;
+        this.target = target;
+        this.startFuel = startFuel;
+        this.stations = stations;
+        int n = stations.length;
+        if (n == 0) return -1;
+        memo = new Integer[n + 1][n + 1];
+        // dp[i][j] 表示经过前 i 个油站, 在其中的j个油站中加了油, 最多还可以剩下多少升油?
+        int result = Integer.MAX_VALUE / 2;
+        for (int i = n; i >= 0; i--) {
+            if (helper(n - 1, i) >= target - stations[n - 1][0]) {
+                result = Math.min(result, i);
+            }
+        }
+        if (result == Integer.MAX_VALUE / 2) return -1;
+        return result;
+    }
+
+    private int helper(int current, int stopCount) {
+        if (stopCount > current + 1) {
+            return -1;
+        }
+        if (current < 0) {
+            return startFuel;
+        }
+        if (current == 0 && stopCount == 1) {
+            if (startFuel < stations[0][0]) return -1;
+            return startFuel - stations[0][0] + stations[0][1];
+        }
+        if (stopCount == 0) {
+            int remain = startFuel - stations[current][0];
+            return memo[current][stopCount] = remain;
+        }
+        if (stopCount < 0) {
+            return -1;
+        }
+        if (memo[current][stopCount] != null) {
+            return memo[current][stopCount];
+        }
+        int result = -1;
+
+        for (int i = 0; i < 2; i++) {
+            int remain = helper(current - 1, stopCount - i);
+            if (remain < 0) continue;
+            int consumption;
+            if (current == 0) {
+                consumption = stations[0][0];
+            } else {
+                consumption = stations[current][0] - stations[current - 1][0];
+            }
+            if (remain - consumption < 0) continue;
+            if (i == 0) { // 本站不加油
+                result = Math.max(result, remain - consumption);
+            } else if (i == 1) { // 本站 加油
+                result = Math.max(result, remain - consumption + stations[current][1]);
+            }
+        }
+        return memo[current][stopCount] = result;
+    }
+
     // LC241 **
-    List<Integer>[][] memo;
-    List<Integer> tokenList = new ArrayList<>();
-    List<Integer> opPosition = new ArrayList<>();
+    List<Integer>[][] lc241Memo;
+    List<Integer> lc241TokenList = new ArrayList<>();
+    List<Integer> lc241OpPosition = new ArrayList<>();
 
     public List<Integer> diffWaysToCompute(String expression) {
         int[] ops = new int[256];
@@ -30,41 +160,41 @@ class Scratch {
         int prev = 0, cur = 0;
         while (cur < ca.length) {
             while (cur < ca.length && Character.isDigit(ca[cur])) cur++;
-            tokenList.add(Integer.parseInt(expression.substring(prev, cur)));
+            lc241TokenList.add(Integer.parseInt(expression.substring(prev, cur)));
             if (cur >= ca.length) break;
-            tokenList.add(ops[ca[cur]]);
-            opPosition.add(cur);
+            lc241TokenList.add(ops[ca[cur]]);
+            lc241OpPosition.add(cur);
             cur++;
             prev = cur;
         }
-        memo = new List[tokenList.size()][tokenList.size()];
-        IntStream.range(0, tokenList.size()).forEachOrdered(i -> {
-            IntStream.range(0, tokenList.size()).forEachOrdered(j -> {
-                memo[i][j] = new ArrayList<>();
+        lc241Memo = new List[lc241TokenList.size()][lc241TokenList.size()];
+        IntStream.range(0, lc241TokenList.size()).forEachOrdered(i -> {
+            IntStream.range(0, lc241TokenList.size()).forEachOrdered(j -> {
+                lc241Memo[i][j] = new ArrayList<>();
             });
         });
-        return helper(0, tokenList.size() - 1).stream().toList();
+        return lc241Helper(0, lc241TokenList.size() - 1).stream().toList();
     }
 
-    private List<Integer> helper(int left, int right) { // 左闭右闭
-        if (memo[left][right].isEmpty()) {
+    private List<Integer> lc241Helper(int left, int right) { // 左闭右闭
+        if (lc241Memo[left][right].isEmpty()) {
             if (left == right) {
-                memo[left][right].add(tokenList.get(left));
+                lc241Memo[left][right].add(lc241TokenList.get(left));
             } else {
                 for (int i = left; i < right; i += 2) {
-                    List<Integer> l = helper(left, i);
-                    List<Integer> r = helper(i + 2, right);
+                    List<Integer> l = lc241Helper(left, i);
+                    List<Integer> r = lc241Helper(i + 2, right);
                     for (int j : l) {
                         for (int k : r) {
-                            switch (tokenList.get(i + 1)) {
+                            switch (lc241TokenList.get(i + 1)) {
                                 case -1:
-                                    memo[left][right].add(j + k);
+                                    lc241Memo[left][right].add(j + k);
                                     break;
                                 case -2:
-                                    memo[left][right].add(j - k);
+                                    lc241Memo[left][right].add(j - k);
                                     break;
                                 case -3:
-                                    memo[left][right].add(j * k);
+                                    lc241Memo[left][right].add(j * k);
                                     break;
                             }
                         }
@@ -73,7 +203,7 @@ class Scratch {
                 }
             }
         }
-        return memo[left][right];
+        return lc241Memo[left][right];
     }
 
 
