@@ -1,6 +1,5 @@
 import javafx.util.Pair;
 
-import java.sql.ResultSet;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,6 +33,28 @@ class Scratch {
 
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + "ms.");
+    }
+
+    List<String> result = new ArrayList<>();
+
+    public List<String> binaryTreePaths(TreeNode root) {
+        helper(root, new StringBuilder());
+        return result;
+    }
+
+    public void helper(TreeNode cur, StringBuilder sb) {
+        sb.append(cur.val);
+        if (cur.left == null && cur.right == null) {
+            result.add(sb.toString());
+            return;
+        }
+        sb.append("->");
+        if (cur.left != null) {
+            helper(cur.left, new StringBuilder(sb));
+        }
+        if (cur.right != null) {
+            helper(cur.right, new StringBuilder(sb));
+        }
     }
 
     public int nextGreaterElement(int n) {
@@ -81,22 +102,22 @@ class Scratch {
     }
 
     // LC871
-    int startFuel, target;
-    int[][] stations;
-    Integer[][] memo;
+    int lc871StartFuel, lc871Target;
+    int[][] lc871Stations;
+    Integer[][] lc871Memo;
 
     public int minRefuelStops(int target, int startFuel, int[][] stations) {
         if (startFuel >= target) return 0;
-        this.target = target;
-        this.startFuel = startFuel;
-        this.stations = stations;
+        this.lc871Target = target;
+        this.lc871StartFuel = startFuel;
+        this.lc871Stations = stations;
         int n = stations.length;
         if (n == 0) return -1;
-        memo = new Integer[n + 1][n + 1];
+        lc871Memo = new Integer[n + 1][n + 1];
         // dp[i][j] 表示经过前 i 个油站, 在其中的j个油站中加了油, 最多还可以剩下多少升油?
         int result = Integer.MAX_VALUE / 2;
         for (int i = n; i >= 0; i--) {
-            if (helper(n - 1, i) >= target - stations[n - 1][0]) {
+            if (lc871Helper(n - 1, i) >= target - stations[n - 1][0]) {
                 result = Math.min(result, i);
             }
         }
@@ -104,46 +125,46 @@ class Scratch {
         return result;
     }
 
-    private int helper(int current, int stopCount) {
+    private int lc871Helper(int current, int stopCount) {
         if (stopCount > current + 1) {
             return -1;
         }
         if (current < 0) {
-            return startFuel;
+            return lc871StartFuel;
         }
         if (current == 0 && stopCount == 1) {
-            if (startFuel < stations[0][0]) return -1;
-            return startFuel - stations[0][0] + stations[0][1];
+            if (lc871StartFuel < lc871Stations[0][0]) return -1;
+            return lc871StartFuel - lc871Stations[0][0] + lc871Stations[0][1];
         }
         if (stopCount == 0) {
-            int remain = startFuel - stations[current][0];
-            return memo[current][stopCount] = remain;
+            int remain = lc871StartFuel - lc871Stations[current][0];
+            return lc871Memo[current][stopCount] = remain;
         }
         if (stopCount < 0) {
             return -1;
         }
-        if (memo[current][stopCount] != null) {
-            return memo[current][stopCount];
+        if (lc871Memo[current][stopCount] != null) {
+            return lc871Memo[current][stopCount];
         }
         int result = -1;
 
         for (int i = 0; i < 2; i++) {
-            int remain = helper(current - 1, stopCount - i);
+            int remain = lc871Helper(current - 1, stopCount - i);
             if (remain < 0) continue;
             int consumption;
             if (current == 0) {
-                consumption = stations[0][0];
+                consumption = lc871Stations[0][0];
             } else {
-                consumption = stations[current][0] - stations[current - 1][0];
+                consumption = lc871Stations[current][0] - lc871Stations[current - 1][0];
             }
             if (remain - consumption < 0) continue;
             if (i == 0) { // 本站不加油
                 result = Math.max(result, remain - consumption);
             } else if (i == 1) { // 本站 加油
-                result = Math.max(result, remain - consumption + stations[current][1]);
+                result = Math.max(result, remain - consumption + lc871Stations[current][1]);
             }
         }
-        return memo[current][stopCount] = result;
+        return lc871Memo[current][stopCount] = result;
     }
 
     // LC241 **
