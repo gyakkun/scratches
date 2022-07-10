@@ -35,25 +35,82 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
-    List<String> result = new ArrayList<>();
 
-    public List<String> binaryTreePaths(TreeNode root) {
-        helper(root, new StringBuilder());
-        return result;
+    // LC741
+    Integer[][][] memo;
+    int[][] grid;
+    int mtxLen;
+
+    public int cherryPickup(int[][] grid) {
+        this.grid = grid;
+        int n = grid.length;
+        this.mtxLen = n;
+        int total = 2 * n - 2;
+        memo = new Integer[total + 1][n + 1][n + 1];
+        return Math.max(helper(0, 0, 0), 0);
     }
 
-    public void helper(TreeNode cur, StringBuilder sb) {
+    private int helper(int accu, int x1, int x2) {
+        int y1 = accu - x1, y2 = accu - x2;
+        if (grid[x1][y1] == -1 || grid[x2][y2] == -1) {
+            return Integer.MIN_VALUE / 2;
+        }
+        if (memo[accu][x1][x2] != null) return memo[accu][x1][x2];
+        int thisStepGain = 0;
+        if (grid[x1][y1] == 1) thisStepGain++;
+        if (grid[x2][y2] == 1) thisStepGain++;
+        if (x1 == x2 && grid[x1][y1] == 1) thisStepGain--;
+        if (accu == 2 * mtxLen - 2) return thisStepGain;
+        // Make choice
+        // X1 RIGHT, X2 RIGHT 0,0
+        // X1 RIGHT, X2 DOWN 0,1
+        // X1 DOWN, X2 RIGHT 1,0
+        // X1 DOWN, X2 DOWN 1,1
+        int mask = (1 << 2) - 1;
+        int result = Integer.MIN_VALUE / 2;
+        for (int i = 0; i < 4; i++) {
+            int nextX1 = -1, nextX2 = -1;
+            int x1Bit = ((i & mask) >> 1) & 1, x2Bit = (i & mask) & 1;
+            if (x1Bit == 0) { // right
+                if (x1 + 1 >= mtxLen) continue;
+                nextX1 = x1 + 1;
+            } else if (x1Bit == 1) { // down
+                if (y1 + 1 >= mtxLen) continue;
+                nextX1 = x1;
+            }
+
+            if (x2Bit == 0) {
+                if (x2 + 1 >= mtxLen) continue;
+                nextX2 = x2 + 1;
+            } else if (x2Bit == 1) {
+                if (y2 + 1 >= mtxLen) continue;
+                nextX2 = x2;
+            }
+            result = Math.max(result, helper(accu + 1, nextX1, nextX2));
+        }
+        return memo[accu][x1][x2] = result + thisStepGain;
+    }
+
+    // LC257
+    List<String> lc257Result = new ArrayList<>();
+
+    public List<String> binaryTreePaths(TreeNode root) {
+        lc257Helper(root, new StringBuilder());
+        return lc257Result;
+    }
+
+    public void lc257Helper(TreeNode cur, StringBuilder sb) {
         sb.append(cur.val);
         if (cur.left == null && cur.right == null) {
-            result.add(sb.toString());
+            lc257Result.add(sb.toString());
             return;
         }
         sb.append("->");
         if (cur.left != null) {
-            helper(cur.left, new StringBuilder(sb));
+            lc257Helper(cur.left, new StringBuilder(sb));
         }
         if (cur.right != null) {
-            helper(cur.right, new StringBuilder(sb));
+            lc257Helper(cur.right, new StringBuilder(sb));
         }
     }
 
