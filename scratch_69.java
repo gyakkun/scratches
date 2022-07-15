@@ -3,41 +3,33 @@ class Scratch {
 
     }
 
+    // LC558 ** Quad Tree
     public Node intersect(Node quadTree1, Node quadTree2) {
-        Node result = new Node();
-        if (quadTree1.isLeaf && quadTree2.isLeaf) {
-            result.val = quadTree1.val || quadTree2.val;
-            result.isLeaf = true;
-        } else if (quadTree1.isLeaf || quadTree2.isLeaf) {
-            Node dummy = new Node(), notLeafOne = quadTree1.isLeaf ? quadTree2 : quadTree1;
-            dummy.val = quadTree1.isLeaf ? quadTree1.val : quadTree2.val;
-            dummy.isLeaf = false;
-            result.topLeft = intersect(dummy, notLeafOne.topLeft);
-            result.topRight = intersect(dummy, notLeafOne.topRight);
-            result.bottomLeft = intersect(dummy, notLeafOne.bottomLeft);
-            result.bottomRight = intersect(dummy, notLeafOne.bottomRight);
-            result.isLeaf = result.topLeft.val == result.topRight.val && result.bottomLeft.val == result.bottomRight.val
-                    && result.bottomRight.val == result.topLeft.val;
-            if (result.isLeaf) {
-                result.val = result.topLeft.val;
-                // result.bottomLeft = result.bottomRight = result.topLeft = result.topRight = null;
-                result.bottomLeft = result.bottomRight = result.topLeft = result.topRight = null;
+        if (quadTree1.isLeaf) {
+            if (quadTree1.val) {
+                return new Node() {{
+                    val = true;
+                    isLeaf = true;
+                }};
             }
-        } else {
-            result.topLeft = intersect(quadTree1.topLeft, quadTree2.topLeft);
-            result.topRight = intersect(quadTree1.topRight, quadTree2.topRight);
-            result.bottomLeft = intersect(quadTree1.bottomLeft, quadTree2.bottomLeft);
-            result.bottomRight = intersect(quadTree1.bottomRight, quadTree2.bottomRight);
-            result.isLeaf = result.topLeft.val == result.topRight.val && result.bottomLeft.val == result.bottomRight.val
-                    && result.bottomRight.val == result.topLeft.val;
-            if (result.isLeaf) {
-                result.val = result.topLeft.val;
-                // result.bottomLeft = result.bottomRight = result.topLeft = result.topRight = null;
-                result.bottomLeft = result.bottomRight = result.topLeft = result.topRight = null;
-            }
+            return new Node(quadTree2.val, quadTree2.isLeaf, quadTree2.topLeft, quadTree2.topRight, quadTree2.bottomLeft, quadTree2.bottomRight);
         }
-        return result;
+        if (quadTree2.isLeaf) {
+            return intersect(quadTree2, quadTree1);
+        }
+        Node o1 = intersect(quadTree1.topLeft, quadTree2.topLeft);
+        Node o2 = intersect(quadTree1.topRight, quadTree2.topRight);
+        Node o3 = intersect(quadTree1.bottomLeft, quadTree2.bottomLeft);
+        Node o4 = intersect(quadTree1.bottomRight, quadTree2.bottomRight);
+        if (o1.isLeaf && o2.isLeaf && o3.isLeaf && o4.isLeaf && o1.val == o2.val && o1.val == o3.val && o1.val == o4.val) {
+            return new Node() {{
+                val = o1.val;
+                isLeaf = true;
+            }};
+        }
+        return new Node(false, false, o1, o2, o3, o4);
     }
+
 }
 
 // Definition for a QuadTree node.
