@@ -35,32 +35,52 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC1252 **
+    public int oddCells(int m, int n, int[][] indices) {
+        int[] row = new int[m], col = new int[n];
+        for (int[] i : indices) {
+            row[i[0]]++;
+            col[i[1]]++;
+        }
+        int oddx = 0, oddy = 0;
+        for (int i = 0; i < m; i++) {
+            if ((row[i] & 1) != 0) {
+                oddx++;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if ((col[i] & 1) != 0) {
+                oddy++;
+            }
+        }
+        return oddx * (n - oddy) + (m - oddx) * oddy;
+    }
 
     // LC741
-    Integer[][][] memo;
-    int[][] grid;
-    int mtxLen;
+    Integer[][][] lc741Memo;
+    int[][] lc741Grid;
+    int lc741MtxLen;
 
     public int cherryPickup(int[][] grid) {
-        this.grid = grid;
+        this.lc741Grid = grid;
         int n = grid.length;
-        this.mtxLen = n;
+        this.lc741MtxLen = n;
         int total = 2 * n - 2;
-        memo = new Integer[total + 1][n + 1][n + 1];
+        lc741Memo = new Integer[total + 1][n + 1][n + 1];
         return Math.max(helper(0, 0, 0), 0);
     }
 
     private int helper(int accu, int x1, int x2) {
         int y1 = accu - x1, y2 = accu - x2;
-        if (grid[x1][y1] == -1 || grid[x2][y2] == -1) {
+        if (lc741Grid[x1][y1] == -1 || lc741Grid[x2][y2] == -1) {
             return Integer.MIN_VALUE / 2;
         }
-        if (memo[accu][x1][x2] != null) return memo[accu][x1][x2];
+        if (lc741Memo[accu][x1][x2] != null) return lc741Memo[accu][x1][x2];
         int thisStepGain = 0;
-        if (grid[x1][y1] == 1) thisStepGain++;
-        if (grid[x2][y2] == 1) thisStepGain++;
-        if (x1 == x2 && grid[x1][y1] == 1) thisStepGain--;
-        if (accu == 2 * mtxLen - 2) return thisStepGain;
+        if (lc741Grid[x1][y1] == 1) thisStepGain++;
+        if (lc741Grid[x2][y2] == 1) thisStepGain++;
+        if (x1 == x2 && lc741Grid[x1][y1] == 1) thisStepGain--;
+        if (accu == 2 * lc741MtxLen - 2) return thisStepGain;
         // Make choice
         // X1 RIGHT, X2 RIGHT 0,0
         // X1 RIGHT, X2 DOWN 0,1
@@ -72,23 +92,23 @@ class Scratch {
             int nextX1 = -1, nextX2 = -1;
             int x1Bit = ((i & mask) >> 1) & 1, x2Bit = (i & mask) & 1;
             if (x1Bit == 0) { // right
-                if (x1 + 1 >= mtxLen) continue;
+                if (x1 + 1 >= lc741MtxLen) continue;
                 nextX1 = x1 + 1;
             } else if (x1Bit == 1) { // down
-                if (y1 + 1 >= mtxLen) continue;
+                if (y1 + 1 >= lc741MtxLen) continue;
                 nextX1 = x1;
             }
 
             if (x2Bit == 0) {
-                if (x2 + 1 >= mtxLen) continue;
+                if (x2 + 1 >= lc741MtxLen) continue;
                 nextX2 = x2 + 1;
             } else if (x2Bit == 1) {
-                if (y2 + 1 >= mtxLen) continue;
+                if (y2 + 1 >= lc741MtxLen) continue;
                 nextX2 = x2;
             }
             result = Math.max(result, helper(accu + 1, nextX1, nextX2));
         }
-        return memo[accu][x1][x2] = result + thisStepGain;
+        return lc741Memo[accu][x1][x2] = result + thisStepGain;
     }
 
     // LC257
