@@ -1,6 +1,21 @@
+import java.util.Arrays;
+
 class Scratch {
     public static void main(String[] args) {
 
+    }
+
+    // LC1184
+    public int distanceBetweenBusStops(int[] distance, int start, int destination) {
+        if (start == destination) return 0;
+        int forward = 0, backward = 0, startPoint = destination > start ? start : destination,
+                endPoint = destination > startPoint ? destination : start, total = Arrays.stream(distance).sum();
+
+        for (int i = startPoint; i < endPoint; i++) {
+            forward += distance[i];
+        }
+        backward = total - forward;
+        return Math.min(backward, forward);
     }
 
     // LC558 ** Quad Tree
