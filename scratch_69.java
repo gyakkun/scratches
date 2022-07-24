@@ -1,8 +1,61 @@
-import java.util.Arrays;
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
+        Scratch s = new Scratch();
+        System.err.println(s.sequenceReconstruction(new int[]{4, 1, 5, 2, 6, 3},
+                new int[][]{{5, 2, 6, 3}, {4, 1, 5, 2}}));
 
+    }
+
+    // LC444 JZOF II 115
+    public boolean sequenceReconstruction(int[] nums, int[][] sequences) {
+        int n = nums.length;
+        List<Integer>[] outEdge = new List[n + 1];
+        int[] indegree = new int[n + 1];
+        BitSet bs = new BitSet(n + 1);
+        for (int[] s : sequences) {
+            Integer prev = null;
+            for (int cur : s) {
+                bs.set(cur);
+                if (prev != null) {
+                    indegree[cur]++;
+                    if (outEdge[prev] == null) {
+                        outEdge[prev] = new ArrayList<>();
+                    }
+                    outEdge[prev].add(cur);
+                }
+                prev = cur;
+            }
+        }
+        if (bs.cardinality() != n) return false;
+        Deque<Integer> q = new LinkedList<>();
+        for (int i = 1; i <= n; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+                break;
+            }
+        }
+        if (q.size() != 1) return false;
+        List<Integer> topo = new ArrayList<>(n + 1);
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            if (qs > 1) return false;
+            int p = q.poll();
+            topo.add(p);
+            if (outEdge[p] == null) continue;
+            for (int next : outEdge[p]) {
+                indegree[next]--;
+                if (indegree[next] == 0) {
+                    q.offer(next);
+                }
+            }
+        }
+        if (topo.size() != n) return false;
+        for (int i = 0; i < n; i++) {
+            if (topo.get(i) != nums[i]) return false;
+        }
+        return true;
     }
 
     // LC1184
