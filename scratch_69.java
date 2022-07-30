@@ -8,6 +8,42 @@ class Scratch {
 
     }
 
+    // LC952
+    public int largestComponentSize(int[] nums) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        Map<Integer, Set<Integer>> factorNumMap = new HashMap<>();
+        for (int i = n - 1; i >= 0; i--) {
+            int victim = nums[i];
+            int sqrt = (int) Math.sqrt(victim) + 1;
+            for (int j = 1; j <= sqrt; j++) {
+                if (victim % j == 0) {
+                    int anotherFactor = victim / j;
+                    factorNumMap.putIfAbsent(j, new HashSet<>());
+                    factorNumMap.putIfAbsent(anotherFactor, new HashSet<>());
+                    factorNumMap.get(j).add(victim);
+                    factorNumMap.get(anotherFactor).add(victim);
+                }
+            }
+        }
+        DSUArray dsu = new DSUArray(100001);
+        for (Map.Entry<Integer, Set<Integer>> e : factorNumMap.entrySet()) {
+            if (e.getKey() == 1) continue;
+            Set<Integer> sharingEdge = e.getValue();
+            Integer root = sharingEdge.stream().findFirst().get();
+            for (int i : sharingEdge) {
+                dsu.add(i);
+                dsu.merge(i, root);
+            }
+        }
+        Map<Integer, Set<Integer>> allGroups = dsu.getAllGroups();
+        int result = 0;
+        for (Map.Entry<Integer, Set<Integer>> e : allGroups.entrySet()) {
+            result = Math.max(result, e.getValue().size());
+        }
+        return result;
+    }
+
     // LC444 JZOF II 115
     public boolean sequenceReconstruction(int[] nums, int[][] sequences) {
         int n = nums.length;
@@ -120,4 +156,188 @@ class Node {
         bottomLeft = _bottomLeft;
         bottomRight = _bottomRight;
     }
+}
+
+
+class DisjointSetUnion<T> {
+
+    Map<T, T> father;
+    Map<T, Integer> rank;
+
+    public DisjointSetUnion() {
+        father = new HashMap<>();
+        rank = new HashMap<>();
+    }
+
+    public void add(T i) {
+        if (!father.containsKey(i)) {
+            // 置初始父亲为自身
+            // 之后判断连通分量个数时候, 遍历father, 找value==key的
+            father.put(i, i);
+        }
+        if (!rank.containsKey(i)) {
+            rank.put(i, 1);
+        }
+    }
+
+    // 找父亲, 路径压缩
+    public T find(T i) {
+        //先找到根 再压缩
+        T root = i;
+        while (father.get(root) != root) {
+            root = father.get(root);
+        }
+        // 找到根, 开始对一路上的子节点进行路径压缩
+        while (father.get(i) != root) {
+            T origFather = father.get(i);
+            father.put(i, root);
+            // 更新秩, 按照节点数
+            rank.put(root, rank.get(root) + 1);
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(T i, T j) {
+        T iFather = find(i);
+        T jFather = find(j);
+        if (iFather == jFather) return false;
+        // 按秩合并
+        if (rank.get(iFather) >= rank.get(jFather)) {
+            father.put(jFather, iFather);
+            rank.put(iFather, rank.get(jFather) + rank.get(iFather));
+        } else {
+            father.put(iFather, jFather);
+            rank.put(jFather, rank.get(jFather) + rank.get(iFather));
+        }
+        return true;
+    }
+
+    public boolean isConnected(T i, T j) {
+        if (!father.containsKey(i) || !father.containsKey(j)) return false;
+        return find(i) == find(j);
+    }
+
+    public Map<T, Set<T>> getAllGroups() {
+        Map<T, Set<T>> result = new HashMap<>();
+        // 找出所有根
+        for (T i : father.keySet()) {
+            T f = find(i);
+            result.putIfAbsent(f, new HashSet<>());
+            result.get(f).add(i);
+        }
+        return result;
+    }
+
+    public int getNumOfGroups() {
+        Set<T> s = new HashSet<T>();
+        for (T i : father.keySet()) {
+            s.add(find(i));
+        }
+        return s.size();
+    }
+
+    public boolean contains(T i) {
+        return father.containsKey(i);
+    }
+
+}
+
+
+class DSUArray {
+    int[] father;
+    int[] rank;
+    int size;
+
+    public DSUArray(int size) {
+        this.size = size;
+        father = new int[size];
+        rank = new int[size];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public DSUArray() {
+        this.size = 1 << 16;
+        father = new int[1 << 16];
+        rank = new int[1 << 16];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public void add(int i) {
+        if (i >= this.size || i < 0) return;
+        if (father[i] == -1) {
+            father[i] = i;
+        }
+        if (rank[i] == -1) {
+            rank[i] = 1;
+        }
+    }
+
+    public boolean contains(int i) {
+        if (i >= this.size || i < 0) return false;
+        return father[i] != -1;
+    }
+
+    public int find(int i) {
+        if (i >= this.size || i < 0) return -1;
+        int root = i;
+        while (root < size && root >= 0 && father[root] != root) {
+            root = father[root];
+        }
+        if (root == -1) return -1;
+        while (father[i] != root) {
+            int origFather = father[i];
+            father[i] = root;
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (j >= this.size || j < 0) return false;
+        int iFather = find(i);
+        int jFather = find(j);
+        if (iFather == -1 || jFather == -1) return false;
+        if (iFather == jFather) return false;
+
+        if (rank[iFather] >= rank[jFather]) {
+            father[jFather] = iFather;
+            rank[iFather] += rank[jFather];
+        } else {
+            father[iFather] = jFather;
+            rank[jFather] += rank[iFather];
+        }
+        return true;
+    }
+
+    public boolean isConnected(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (i >= this.size || i < 0) return false;
+        return find(i) == find(j);
+    }
+
+    public Map<Integer, Set<Integer>> getAllGroups() {
+        Map<Integer, Set<Integer>> result = new HashMap<>();
+        // 找出所有根
+        for (int i = 0; i < size; i++) {
+            if (father[i] != -1) {
+                int f = find(i);
+                result.putIfAbsent(f, new HashSet<>());
+                result.get(f).add(i);
+            }
+        }
+        return result;
+    }
+
+    public int getNumOfGroups() {
+        return getAllGroups().size();
+    }
+
+    public int getSelfGroupSize(int x) {
+        return rank[find(x)];
+    }
+
 }
