@@ -3,9 +3,94 @@ import java.util.*;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.sequenceReconstruction(new int[]{4, 1, 5, 2, 6, 3},
-                new int[][]{{5, 2, 6, 3}, {4, 1, 5, 2}}));
+        System.err.println(s.minSubsequence(new int[]{4, 4, 7, 6, 7}));
 
+    }
+
+    // LC1403
+    public List<Integer> minSubsequence(int[] nums) {
+        int n = nums.length;
+//        Map<Integer, List<Integer>> reverseIdxMap = new HashMap<>();
+        int shortestLen = 0;
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+        }
+        int threshold = (sum / 2) + 1;
+        List<Integer> result = null;
+        int resultSum = -1;
+
+        Map<Integer, List<List<Integer>>> possibleResultMap = new HashMap<>();
+        Map<Integer, List<Integer>> possibleSumMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int val = nums[i];
+//            reverseIdxMap.putIfAbsent(val, new ArrayList<>());
+//            reverseIdxMap.get(val).add(i);
+
+            possibleResultMap.put(val, new ArrayList<>());
+            int ls = possibleResultMap.get(val).size();
+            possibleResultMap.get(val).add(new ArrayList<>());
+            // possibleResultMap.get(val).get(ls).add(val);
+
+            possibleSumMap.put(val, new ArrayList<>());
+            int ss = possibleSumMap.get(val).size();
+            possibleSumMap.get(val).add(0);
+
+            for (int j = val; j <= 100; j++) {
+//                if(!reverseIdxMap.containsKey(j)) continue;
+//                List<Integer> idxList = reverseIdxMap.get(j);
+                if (!possibleSumMap.containsKey(j)) continue;
+                List<List<Integer>> resultList = possibleResultMap.get(j);
+                List<Integer> sumList = possibleSumMap.get(j);
+
+                int rls = resultList.size();
+                for (int k = 0; k < rls; k++) {
+                    List<Integer> pr = resultList.get(k);
+                    pr.add(val);
+                    int origSum = sumList.get(k);
+                    int afterSum = origSum + val;
+                    sumList.set(k, afterSum);
+
+                    if (afterSum >= threshold) {
+                        if (result == null) {
+                            result = new ArrayList<>(pr);
+                            resultSum = afterSum;
+                        } else if (result.size() == pr.size()) {
+                            if (afterSum > resultSum) {
+                                result = new ArrayList<>(pr);
+                                resultSum = afterSum;
+                            }
+                        } else if (result.size() > pr.size()) {
+                            result = new ArrayList<>(pr);
+                            resultSum = afterSum;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    // LC1161
+    public int maxLevelSum(TreeNode root) {
+        LinkedList<TreeNode> q = new LinkedList<>();
+        int layer = 0, result = -1, maxSum = Integer.MIN_VALUE;
+        q.offer(root);
+        while (!q.isEmpty()) {
+            layer++;
+            int qs = q.size(), layerSum = 0;
+            for (int i = 0; i < qs; i++) {
+                TreeNode p = q.poll();
+                layerSum += p.val;
+                if (p.left != null) q.offer(p.left);
+                if (p.right != null) q.offer(p.right);
+            }
+            if (layerSum > maxSum) {
+                result = layer;
+                maxSum = layerSum;
+            }
+        }
+        return result;
     }
 
     // LC952
@@ -340,4 +425,24 @@ class DSUArray {
         return rank[find(x)];
     }
 
+}
+
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {
+    }
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
 }
