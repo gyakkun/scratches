@@ -10,62 +10,19 @@ class Scratch {
     // LC1403
     public List<Integer> minSubsequence(int[] nums) {
         int n = nums.length;
-//        Map<Integer, List<Integer>> reverseIdxMap = new HashMap<>();
-        int shortestLen = 0;
         int sum = 0;
         for (int i = 0; i < n; i++) {
             sum += nums[i];
         }
         int threshold = (sum / 2) + 1;
-        List<Integer> result = null;
-        int resultSum = -1;
-
-        Map<Integer, List<List<Integer>>> possibleResultMap = new HashMap<>();
-        Map<Integer, List<Integer>> possibleSumMap = new HashMap<>();
-        for (int i = 0; i < n; i++) {
-            int val = nums[i];
-//            reverseIdxMap.putIfAbsent(val, new ArrayList<>());
-//            reverseIdxMap.get(val).add(i);
-
-            possibleResultMap.put(val, new ArrayList<>());
-            int ls = possibleResultMap.get(val).size();
-            possibleResultMap.get(val).add(new ArrayList<>());
-            // possibleResultMap.get(val).get(ls).add(val);
-
-            possibleSumMap.put(val, new ArrayList<>());
-            int ss = possibleSumMap.get(val).size();
-            possibleSumMap.get(val).add(0);
-
-            for (int j = val; j <= 100; j++) {
-//                if(!reverseIdxMap.containsKey(j)) continue;
-//                List<Integer> idxList = reverseIdxMap.get(j);
-                if (!possibleSumMap.containsKey(j)) continue;
-                List<List<Integer>> resultList = possibleResultMap.get(j);
-                List<Integer> sumList = possibleSumMap.get(j);
-
-                int rls = resultList.size();
-                for (int k = 0; k < rls; k++) {
-                    List<Integer> pr = resultList.get(k);
-                    pr.add(val);
-                    int origSum = sumList.get(k);
-                    int afterSum = origSum + val;
-                    sumList.set(k, afterSum);
-
-                    if (afterSum >= threshold) {
-                        if (result == null) {
-                            result = new ArrayList<>(pr);
-                            resultSum = afterSum;
-                        } else if (result.size() == pr.size()) {
-                            if (afterSum > resultSum) {
-                                result = new ArrayList<>(pr);
-                                resultSum = afterSum;
-                            }
-                        } else if (result.size() > pr.size()) {
-                            result = new ArrayList<>(pr);
-                            resultSum = afterSum;
-                        }
-                    }
-                }
+        List<Integer> result = new ArrayList<>();
+        Arrays.sort(nums);
+        int tmp = 0;
+        for(int i=n-1;i>=0;i--){
+            tmp += nums[i];
+            result.add(nums[i]);
+            if(tmp>=threshold){
+                return result;
             }
         }
         return result;
