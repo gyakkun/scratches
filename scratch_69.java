@@ -1,3 +1,5 @@
+import sun.reflect.generics.tree.Tree;
+
 import java.util.*;
 
 class Scratch {
@@ -5,6 +7,48 @@ class Scratch {
         Scratch s = new Scratch();
         System.err.println(s.minSubsequence(new int[]{4, 4, 7, 6, 7}));
 
+    }
+
+    // LC623
+    public TreeNode addOneRow(TreeNode root, int val, int depth) {
+        if (depth == 1) {
+            TreeNode newRoot = new TreeNode(val);
+            newRoot.left = root;
+            return newRoot;
+        }
+        if (root == null) return null;
+        int layer = 0;
+        Deque<TreeNode> q = new LinkedList<>();
+        List<TreeNode> parent = new ArrayList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            layer++;
+            boolean parentFlag = layer == depth - 1;
+            int qs = q.size();
+            for (int i = 0; i < qs; i++) {
+                TreeNode p = q.poll();
+                if (parentFlag) {
+                    parent.add(p);
+                }
+                if (p.left != null) {
+                    q.offer(p.left);
+                }
+                if (p.right != null) {
+                    q.offer(p.right);
+                }
+            }
+            if (parentFlag) break;
+        }
+
+        for (TreeNode t : parent) {
+            TreeNode origLeft = t.left, origRight = t.right;
+            t.left = new TreeNode(val);
+            t.right = new TreeNode(val);
+            t.left.left = origLeft;
+            t.right.right = origRight;
+        }
+
+        return root;
     }
 
     // LC1403
@@ -18,10 +62,10 @@ class Scratch {
         List<Integer> result = new ArrayList<>();
         Arrays.sort(nums);
         int tmp = 0;
-        for(int i=n-1;i>=0;i--){
+        for (int i = n - 1; i >= 0; i--) {
             tmp += nums[i];
             result.add(nums[i]);
-            if(tmp>=threshold){
+            if (tmp >= threshold) {
                 return result;
             }
         }
