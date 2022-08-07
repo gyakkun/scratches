@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import org.graalvm.compiler.debug.TimeSource;
 
 import java.util.*;
 
@@ -11,37 +12,26 @@ class Scratch {
 
     // LC636
     public int[] exclusiveTime(int n, List<String> logs) {
-        List<Log> logList = new ArrayList<>(logs.size());
+        int[] result = new int[n];
+        int mutexFid = -1, mutexStartTime = -1;
+        Deque<Integer> stack = new LinkedList<>();
         for (String log : logs) {
             String[] split = log.split(":");
             int fid = Integer.parseInt(split[0]), timestamp = Integer.parseInt(split[2]);
-            Log.Event type = Log.Event.valueOf(split[1].toUpperCase());
-            Log l = new Log(fid, timestamp, type);
-            logList.add(l);
-        }
-        Collections.sort(logList);
-        int mutexFid = -1, mutexStartTime = -1;
-        Deque<Log> stack = new LinkedList<>();
-        int[] result = new int[n];
-        boolean[] working = new boolean[n];
-        for (Log log : logList) {
-            int timestamp = log.timestamp, fid = log.fid;
-            if (log.type == Log.Event.START) {
+            String type = split[1];
+            if (type.equals("start")) {
                 if (!stack.isEmpty()) {
-                    assert mutexFid != -1;
                     result[mutexFid] += timestamp - mutexStartTime;
                 }
-                stack.push(log);
+                stack.push(fid);
                 mutexFid = fid;
                 mutexStartTime = timestamp;
-            } else if (log.type == Log.Event.END) {
+            } else {
                 timestamp++;
-                assert !stack.isEmpty();
-                assert stack.peek().fid == fid;
                 result[fid] += timestamp - mutexStartTime;
                 stack.pop();
-                if (!stack.isEmpty()) {
-                    mutexFid = stack.peek().fid;
+                if(!stack.isEmpty()){
+                    mutexFid = stack.peek();
                     mutexStartTime = timestamp;
                 }
             }
