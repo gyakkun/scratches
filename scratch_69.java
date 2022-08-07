@@ -1,12 +1,72 @@
-import sun.reflect.generics.tree.Tree;
+import javafx.util.Pair;
 
 import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.minSubsequence(new int[]{4, 4, 7, 6, 7}));
+        System.err.println(s.exclusiveTime(1, List.of("0:start:0", "0:start:2", "0:end:5", "0:start:6", "0:end:6", "0:end:7"))[0]);
 
+    }
+
+    // LC636
+    public int[] exclusiveTime(int n, List<String> logs) {
+        List<Log> logList = new ArrayList<>(logs.size());
+        for (String log : logs) {
+            String[] split = log.split(":");
+            int fid = Integer.parseInt(split[0]), timestamp = Integer.parseInt(split[2]);
+            Log.Event type = Log.Event.valueOf(split[1].toUpperCase());
+            Log l = new Log(fid, timestamp, type);
+            logList.add(l);
+        }
+        Collections.sort(logList);
+        int mutexFid = -1, mutexStartTime = -1;
+        Deque<Log> stack = new LinkedList<>();
+        int[] result = new int[n];
+        boolean[] working = new boolean[n];
+        for (Log log : logList) {
+            int timestamp = log.timestamp, fid = log.fid;
+            if (log.type == Log.Event.START) {
+                if (!stack.isEmpty()) {
+                    assert mutexFid != -1;
+                    result[mutexFid] += timestamp - mutexStartTime;
+                }
+                stack.push(log);
+                mutexFid = fid;
+                mutexStartTime = timestamp;
+            } else if (log.type == Log.Event.END) {
+                timestamp++;
+                assert !stack.isEmpty();
+                assert stack.peek().fid == fid;
+                result[fid] += timestamp - mutexStartTime;
+                stack.pop();
+                if (!stack.isEmpty()) {
+                    mutexFid = stack.peek().fid;
+                    mutexStartTime = timestamp;
+                }
+            }
+        }
+        return result;
+    }
+
+    static final class Log implements Comparable<Log> {
+        int fid = -1, timestamp = -1;
+        Event type = Event.INVALID;
+
+        enum Event {
+            START, END, INVALID
+        }
+
+        public Log(int fid, int timestamp, Event type) {
+            this.fid = fid;
+            this.timestamp = timestamp;
+            this.type = type;
+        }
+
+        @Override
+        public int compareTo(Log another) {
+            return this.timestamp - another.timestamp;
+        }
     }
 
     // LC623
