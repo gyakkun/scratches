@@ -10,6 +10,31 @@ class Scratch {
 
     }
 
+    // LC1417
+    public String reformat(String s) {
+        char[] ca = s.toCharArray();
+        StringBuilder dsb = new StringBuilder(), lsb = new StringBuilder();
+        for (char c : ca) {
+            if(Character.isDigit(c)) {
+                dsb.append(c);
+            }
+            else if (Character.isLetter(c)) {
+                lsb.append(c);
+            }
+        }
+        if(Math.abs(dsb.length()-lsb.length())>1) return "";
+        StringBuilder longSb = dsb.length() > lsb.length() ? dsb : lsb;
+        StringBuilder shortSb = longSb == dsb ? lsb : dsb;
+        StringBuilder result = new StringBuilder();
+        int i = 0;
+        for (; i < shortSb.length(); i++) {
+            result.append(longSb.charAt(i));
+            result.append(shortSb.charAt(i));
+        }
+        if(i<=longSb.length()-1) result.append(longSb.charAt(i));
+        return result.toString();
+    }
+
     // LC636
     public int[] exclusiveTime(int n, List<String> logs) {
         int[] result = new int[n];
