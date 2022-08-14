@@ -10,19 +10,41 @@ class Scratch {
 
     }
 
+    // LC1422
+    public int maxScore(String s) {
+        int one = 0;
+        char[] ca = s.toCharArray();
+        for (char c : ca) {
+            one += c - '0';
+        }
+        int result = 0, zero = 0;
+        for (int i = 0; i < ca.length - 1; i++) {
+            char c = ca[i];
+            int score = 0;
+            if (c == '0') {
+                zero++;
+            } else {
+                one--;
+            }
+            score += zero;
+            score += one;
+            result = Math.max(result, score);
+        }
+        return result;
+    }
+
     // LC1417
     public String reformat(String s) {
         char[] ca = s.toCharArray();
         StringBuilder dsb = new StringBuilder(), lsb = new StringBuilder();
         for (char c : ca) {
-            if(Character.isDigit(c)) {
+            if (Character.isDigit(c)) {
                 dsb.append(c);
-            }
-            else if (Character.isLetter(c)) {
+            } else if (Character.isLetter(c)) {
                 lsb.append(c);
             }
         }
-        if(Math.abs(dsb.length()-lsb.length())>1) return "";
+        if (Math.abs(dsb.length() - lsb.length()) > 1) return "";
         StringBuilder longSb = dsb.length() > lsb.length() ? dsb : lsb;
         StringBuilder shortSb = longSb == dsb ? lsb : dsb;
         StringBuilder result = new StringBuilder();
@@ -31,7 +53,7 @@ class Scratch {
             result.append(longSb.charAt(i));
             result.append(shortSb.charAt(i));
         }
-        if(i<=longSb.length()-1) result.append(longSb.charAt(i));
+        if (i <= longSb.length() - 1) result.append(longSb.charAt(i));
         return result.toString();
     }
 
@@ -55,7 +77,7 @@ class Scratch {
                 timestamp++;
                 result[fid] += timestamp - mutexStartTime;
                 stack.pop();
-                if(!stack.isEmpty()){
+                if (!stack.isEmpty()) {
                     mutexFid = stack.peek();
                     mutexStartTime = timestamp;
                 }
