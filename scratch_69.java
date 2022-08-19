@@ -1,6 +1,5 @@
 import javafx.util.Pair;
-import org.graalvm.compiler.debug.TimeSource;
-
+`
 import java.util.*;
 
 class Scratch {
@@ -8,6 +7,16 @@ class Scratch {
         Scratch s = new Scratch();
         System.err.println(s.exclusiveTime(1, List.of("0:start:0", "0:start:2", "0:end:5", "0:start:6", "0:end:6", "0:end:7"))[0]);
 
+    }
+
+    // LC1450
+    public int busyStudent(int[] startTime, int[] endTime, int queryTime) {
+        int n = startTime.length, result = 0;
+        for (int i = 0; i < n; i++) {
+            int start = startTime[i], end = endTime[i];
+            if (start <= queryTime && queryTime <= end) result++;
+        }
+        return result;
     }
 
     // LC1422
