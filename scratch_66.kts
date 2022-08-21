@@ -11,12 +11,7 @@ import kotlin.math.pow
 var before = Instant.now()!!
 var s = lc1728()
 println(
-    s.lengthLongestPath(
-        "dir\n" +
-                "\tsubdir1\n" +
-                "\tsubdir2\n" +
-                "\t\tfile.ext"
-    )
+    s
 )
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")

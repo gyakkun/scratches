@@ -1,12 +1,18 @@
 import javafx.util.Pair;
-`
+
 import java.util.*;
+import java.util.stream.IntStream;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         System.err.println(s.exclusiveTime(1, List.of("0:start:0", "0:start:2", "0:end:5", "0:start:6", "0:end:6", "0:end:7"))[0]);
 
+    }
+
+    // LC1455
+    public int isPrefixOfWord(String sentence, String searchWord) {
+        return IntStream.range(0, sentence.split(" ").length).filter(i -> sentence.split(" ")[i].startsWith(searchWord)).findFirst().orElse(-1);
     }
 
     // LC1450
