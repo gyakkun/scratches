@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -8,6 +6,46 @@ class Scratch {
         Scratch s = new Scratch();
         System.err.println(s.exclusiveTime(1, List.of("0:start:0", "0:start:2", "0:end:5", "0:start:6", "0:end:6", "0:end:7"))[0]);
 
+    }
+
+    // LC655
+    public List<List<String>> printTree(TreeNode root) {
+        int layer = 0;
+        Deque<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            layer++;
+            for (int i = 0; i < qs; i++) {
+                TreeNode p = q.poll();
+                if (p.left != null) {
+                    q.offer(p.left);
+                }
+                if (p.right != null) {
+                    q.offer(p.right);
+                }
+            }
+        }
+        int colNum = (1 << layer) - 1;
+        List<List<String>> result = new ArrayList<>(layer);
+        for (int i = 0; i < layer; i++) {
+            List<String> thisLayer = new ArrayList<>(colNum);
+            for (int j = 0; j < colNum; j++) {
+                thisLayer.add("");
+            }
+            result.add(thisLayer);
+        }
+        lc655Helper(root, 0, 0, colNum - 1, result);
+        return result;
+    }
+
+    private void lc655Helper(TreeNode node, int layer, int from, int to, List<List<String>> result) {
+        if (node == null) return;
+        List<String> thisLayer = result.get(layer);
+        int idx = (from + to) / 2;
+        thisLayer.set(idx, "" + node.val);
+        lc655Helper(node.left, layer + 1, from, idx - 1, result);
+        lc655Helper(node.right, layer + 1, idx + 1, to, result);
     }
 
     // LC1455
