@@ -48,8 +48,8 @@ class Scratch {
         if (m % 2 == 1 && Math.abs(Integer.bitCount(fullmask) - Integer.bitCount(ct1) - Integer.bitCount(ct1)) > 1)
             return -1;
 
-        int rowMoves = getMoves(rt1, rowTypeSet.keySet().size(), m);
-        int colMoves = getMoves(ct1, colTypeSet.keySet().size(), m);
+        int rowMoves = getMoves(rt1, rowTypeSet.get(rt1), m);
+        int colMoves = getMoves(ct1, colTypeSet.get(ct1), m);
         if (rowMoves == -1 || colMoves == -1) return -1;
         return colMoves + rowMoves;
     }
