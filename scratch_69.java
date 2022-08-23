@@ -11,7 +11,9 @@ class Scratch {
 
     // LC782
     public int movesToChessboard(int[][] board) {
-        if(judgeBoard(board)) return 0;
+        if (judgeBoard(board)) return 0;
+        int m = board.length, n = board[0].length;
+        int fullmask = (1 << m) - 1;
         int oneCount = 0, zeroCount = 0;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
@@ -20,6 +22,39 @@ class Scratch {
             }
         }
         if (Math.abs(oneCount - zeroCount) > 1) return -1;
+
+        // Judge if there's only two kinds of row
+        Set<Integer> rowTypeSet = new HashSet<>();
+        for (int i = 0; i < m; i++) {
+            int mask = 0;
+            for (int j = 0; j < n; j++) {
+                mask |= (board[i][j] << j);
+            }
+            rowTypeSet.add(mask);
+            if (rowTypeSet.size() > 2) return -1;
+        }
+        int rt1 = rowTypeSet.stream().findFirst().get();
+        if (!rowTypeSet.contains(fullmask ^ rt1)) return -1;
+        if (m % 2 == 0 && Integer.bitCount(fullmask) - Integer.bitCount(rt1) != Integer.bitCount(rt1)) return -1;
+        if (m % 2 == 1 && Math.abs(Integer.bitCount(fullmask) - Integer.bitCount(rt1) - Integer.bitCount(rt1)) > 1)
+            return -1;
+
+        // Judge if there's only two kinds of col
+        Set<Integer> colTypeSet = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            int mask = 0;
+            for (int j = 0; j < m; j++) {
+                mask |= (board[j][i] << j);
+            }
+            colTypeSet.add(mask);
+            if (colTypeSet.size() > 2) return -1;
+        }
+        int ct1 = colTypeSet.stream().findFirst().get();
+        if (!colTypeSet.contains(fullmask ^ ct1)) return -1;
+        if (m % 2 == 0 && Integer.bitCount(fullmask) - Integer.bitCount(ct1) != Integer.bitCount(ct1)) return -1;
+        if (m % 2 == 1 && Math.abs(Integer.bitCount(fullmask) - Integer.bitCount(ct1) - Integer.bitCount(ct1)) > 1)
+            return -1;
+
 
 
         return -1;
