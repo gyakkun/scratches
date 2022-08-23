@@ -8,6 +8,39 @@ class Scratch {
 
     }
 
+
+    // LC782
+    public int movesToChessboard(int[][] board) {
+        if(judgeBoard(board)) return 0;
+        int oneCount = 0, zeroCount = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                oneCount += board[i][j];
+                zeroCount += 1 - board[i][j];
+            }
+        }
+        if (Math.abs(oneCount - zeroCount) > 1) return -1;
+
+
+        return -1;
+    }
+
+    private boolean judgeBoard(int[][] board) {
+        int m = board.length, n = board[0].length;
+        final int[][] dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int r = 0; r < board.length; r++) {
+            for (int c = 0; c < board[0].length; c++) {
+                for (int[] d : dir) {
+                    int nr = r + d[0], nc = c + d[1];
+                    if (nr >= 0 && nr < m && nc >= 0 && nc < n) {
+                        if (board[nr][nc] == board[r][c]) return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     // LC655
     public List<List<String>> printTree(TreeNode root) {
         int layer = 0;
