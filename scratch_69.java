@@ -4,7 +4,7 @@ import java.util.stream.IntStream;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.exclusiveTime(1, List.of("0:start:0", "0:start:2", "0:end:5", "0:start:6", "0:end:6", "0:end:7"))[0]);
+        System.err.println(s.movesToChessboard(new int[][]{{0, 0, 1, 0, 1, 1}, {1, 1, 0, 1, 0, 0}, {1, 1, 0, 1, 0, 0}, {0, 0, 1, 0, 1, 1}, {1, 1, 0, 1, 0, 0}, {0, 0, 1, 0, 1, 1}}));
 
     }
 
@@ -24,40 +24,34 @@ class Scratch {
         if (Math.abs(oneCount - zeroCount) > 1) return -1;
 
         // Judge if there's only two kinds of row
-        Set<Integer> rowTypeSet = new HashSet<>();
+        Map<Integer, Integer> rowTypeSet = new HashMap<>();
+        Map<Integer, Integer> colTypeSet = new HashMap<>();
         for (int i = 0; i < m; i++) {
-            int mask = 0;
+            int rowMask = 0, colMask = 0;
             for (int j = 0; j < n; j++) {
-                mask |= (board[i][j] << j);
+                rowMask |= (board[i][j] << j);
+                colMask |= (board[j][i] << j);
             }
-            rowTypeSet.add(mask);
-            if (rowTypeSet.size() > 2) return -1;
+            rowTypeSet.put(rowMask, rowTypeSet.getOrDefault(rowMask, 0) + 1);
+            colTypeSet.put(colMask, colTypeSet.getOrDefault(colMask, 0) + 1);
+            if (rowTypeSet.keySet().size() > 2 || colTypeSet.keySet().size() > 2) return -1;
         }
-        int rt1 = rowTypeSet.stream().findFirst().get();
-        if (!rowTypeSet.contains(fullmask ^ rt1)) return -1;
+        int rt1 = rowTypeSet.keySet().stream().findFirst().get();
+        if (!rowTypeSet.keySet().contains(fullmask ^ rt1)) return -1;
         if (m % 2 == 0 && Integer.bitCount(fullmask) - Integer.bitCount(rt1) != Integer.bitCount(rt1)) return -1;
         if (m % 2 == 1 && Math.abs(Integer.bitCount(fullmask) - Integer.bitCount(rt1) - Integer.bitCount(rt1)) > 1)
             return -1;
 
-        // Judge if there's only two kinds of col
-        Set<Integer> colTypeSet = new HashSet<>();
-        for (int i = 0; i < n; i++) {
-            int mask = 0;
-            for (int j = 0; j < m; j++) {
-                mask |= (board[j][i] << j);
-            }
-            colTypeSet.add(mask);
-            if (colTypeSet.size() > 2) return -1;
-        }
-        int ct1 = colTypeSet.stream().findFirst().get();
-        if (!colTypeSet.contains(fullmask ^ ct1)) return -1;
+        int ct1 = colTypeSet.keySet().stream().findFirst().get();
+        if (!colTypeSet.keySet().contains(fullmask ^ ct1)) return -1;
         if (m % 2 == 0 && Integer.bitCount(fullmask) - Integer.bitCount(ct1) != Integer.bitCount(ct1)) return -1;
         if (m % 2 == 1 && Math.abs(Integer.bitCount(fullmask) - Integer.bitCount(ct1) - Integer.bitCount(ct1)) > 1)
             return -1;
 
-
-
-        return -1;
+        int rowMoves = getMoves(rt1, rowTypeSet.keySet().size(), m);
+        int colMoves = getMoves(ct1, colTypeSet.keySet().size(), m);
+        if (rowMoves == -1 || colMoves == -1) return -1;
+        return colMoves + rowMoves;
     }
 
     private boolean judgeBoard(int[][] board) {
@@ -75,6 +69,32 @@ class Scratch {
         }
         return true;
     }
+
+    public int getMoves(int mask, int count, int n) {
+        int ones = Integer.bitCount(mask);
+        if ((n & 1) == 1) {
+            /* 如果 n 为奇数，则每一行中 1 与 0 的数目相差为 1，且满足相邻行交替 */
+            if (Math.abs(n - 2 * ones) != 1 || Math.abs(n - 2 * count) != 1) {
+                return -1;
+            }
+            if (ones == (n >> 1)) {
+                /* 以 0 为开头的最小交换次数 */
+                return n / 2 - Integer.bitCount(mask & 0xAAAAAAAA);
+            } else {
+                return (n + 1) / 2 - Integer.bitCount(mask & 0x55555555);
+            }
+        } else {
+            /* 如果 n 为偶数，则每一行中 1 与 0 的数目相等，且满足相邻行交替 */
+            if (ones != (n >> 1) || count != (n >> 1)) {
+                return -1;
+            }
+            /* 找到行的最小交换次数 */
+            int count0 = n / 2 - Integer.bitCount(mask & 0xAAAAAAAA);
+            int count1 = n / 2 - Integer.bitCount(mask & 0x55555555);
+            return Math.min(count0, count1);
+        }
+    }
+
 
     // LC655
     public List<List<String>> printTree(TreeNode root) {
