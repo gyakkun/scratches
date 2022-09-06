@@ -21,6 +21,9 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC828
+    
+
     // LC691
     var finResult = Integer.MAX_VALUE / 2
     fun minStickers(stickers: Array<String>, target: String): Int {

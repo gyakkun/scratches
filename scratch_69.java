@@ -9,7 +9,7 @@ class Scratch {
     }
 
 
-    // LC782
+    // LC782 ** Hard
     public int movesToChessboard(int[][] board) {
         if (judgeBoard(board)) return 0;
         int m = board.length, n = board[0].length;
