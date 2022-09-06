@@ -1,6 +1,7 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
 
@@ -21,8 +22,24 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
-    // LC828
-    
+    // LC828 ** Hard
+    fun uniqueLetterString(s: String): Int {
+        val ca = s.toCharArray()
+        val indexes = HashMap<Char, MutableList<Int>>()
+        var result = 0
+        ca.forEachIndexed { idx, c ->
+            indexes.putIfAbsent(c, ArrayList<Int>().apply { this.add(-1) })
+            indexes[c]!!.add(idx)
+        }
+        indexes.forEach outer@{ _, l ->
+            l.add(s.length)
+            val ls = l.size
+            IntRange(1, ls - 1).forEach inner@{ i ->
+                result += (l[i] - l[i - 1]) * (l[i + 1] - l[i])
+            }
+        }
+        return result
+    }
 
     // LC691
     var finResult = Integer.MAX_VALUE / 2
