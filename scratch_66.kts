@@ -10,9 +10,9 @@ import kotlin.math.pow
 //        @JvmStatic
 //        fun main(args: Array<String>) {
 var before = Instant.now()!!
-var s = lc1728()
+var s = Solution()
 println(
-    s
+    s.reorderSpaces("  this   is  a sentence ")
 )
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -21,6 +21,23 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+    // LC1592
+    fun reorderSpaces(text: String): String {
+        val split: List<String> = text.split(regex = Regex("\\s+")).filter { it.isNotBlank() }.toList()
+        val charLenSum = split.sumOf { it.length }
+        val spaceCount = text.length - charLenSum
+        val avgSpace = if (split.size == 1) 0 else spaceCount / (split.size - 1)
+        val remainSpace = spaceCount - avgSpace * (split.size - 1)
+        val infix = StringBuffer()
+        val suffix = StringBuffer()
+        repeat(avgSpace) {
+            infix.append(" ")
+        }
+        repeat(remainSpace) {
+            suffix.append(" ")
+        }
+        return split.joinToString(separator = infix.toString(), postfix = suffix.toString())
+    }
 
     // LC828 ** Hard
     fun uniqueLetterString(s: String): Int {
