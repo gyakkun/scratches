@@ -58,6 +58,23 @@ class Solution {
         return result
     }
 
+    // LC1624
+    fun maxLengthBetweenEqualCharacters(s: String): Int {
+        val ca = s.toCharArray()
+        val idxMap = IntArray(128).apply { fill(-1) }
+        var result = -1
+        for (i in ca.indices) {
+            val c = ca[i]
+            var prevIdx: Int
+            if (idxMap[c.toInt()].also { prevIdx = it } >= 0) {
+                result = result.coerceAtLeast(i - prevIdx - 1)
+            } else {
+                idxMap[c.toInt()] = i
+            }
+        }
+        return result
+    }
+
     // LC691
     var finResult = Integer.MAX_VALUE / 2
     fun minStickers(stickers: Array<String>, target: String): Int {
