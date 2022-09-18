@@ -1,13 +1,75 @@
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.stream.IntStream;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.movesToChessboard(new int[][]{{0, 0, 1, 0, 1, 1}, {1, 1, 0, 1, 0, 0}, {1, 1, 0, 1, 0, 0}, {0, 0, 1, 0, 1, 1}, {1, 1, 0, 1, 0, 0}, {0, 0, 1, 0, 1, 1}}));
+        // System.err.println(s.largestIsland(new int[][]{{0, 0, 0, 0, 0, 0, 0}, {0, 1, 1, 1, 1, 0, 0}, {0, 1, 0, 0, 1, 0, 0}, {1, 0, 1, 0, 1, 0, 0}, {0, 1, 0, 0, 1, 0, 0}, {0, 1, 0, 0, 1, 0, 0}, {0, 1, 1, 1, 1, 0, 0}}));
+        System.err.println(s.largestIsland(new int[][]{{1, 0, 1}, {0, 0, 0}, {0, 1, 1}}));
 
     }
 
+
+    // LC827 Hard
+    public int largestIsland(int[][] grid) {
+        int n = grid.length;
+        int result = 0;
+        DSUArray dsu = new DSUArray(n * n + 1);
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int r = 0; r < n; r++) {
+            for (int c = 0; c < n; c++) {
+                if (grid[r][c] == 0) continue;
+                int idx = r * n + c;
+                dsu.add(idx);
+                for (int[] d : dirs) {
+                    int nr = r + d[0], nc = c + d[1];
+                    int nidx = nr * n + nc;
+                    if (nr < 0 || nc < 0 || nc >= n || nr >= n || grid[nr][nc] == 0) {
+                        continue;
+                    }
+                    dsu.add(nidx);
+                    dsu.merge(idx, nidx);
+                }
+            }
+        }
+        Map<Integer, Set<Integer>> allGroups = dsu.getAllGroups();
+        if (allGroups.size() == 0) return 1;
+        result = allGroups.values().stream().map(i -> i.size()).max(Comparator.naturalOrder()).get();
+        // Probe
+
+        for (Map.Entry<Integer, Set<Integer>> group : allGroups.entrySet()) {
+            int father = group.getKey();
+            Set<Integer> members = group.getValue();
+            int thisGroupSize = members.size();
+            for (int idx : members) {
+                int r = idx / n, c = idx % n;
+                for (int[] outerD : dirs) {
+                    int nr = r + outerD[0], nc = c + outerD[1];
+                    int nidx = nr * n + nc;
+                    if (nr < 0 || nc < 0 || nc >= n || nr >= n || grid[nr][nc] == 1) {
+                        continue;
+                    }
+                    result = Math.max(result, thisGroupSize + 1);
+                    Set<Integer> connectableFathers = new HashSet<>();
+                    connectableFathers.add(father);
+                    for (int[] innerD : dirs) {
+                        int nnr = nr + innerD[0], nnc = nc + innerD[1];
+                        int nnidx = nnr * n + nnc;
+                        if (nnr < 0 || nnc < 0 || nnc >= n || nnr >= n || grid[nnr][nnc] == 0) {
+                            continue;
+                        }
+                        int besideFather = dsu.find(nnidx);
+                        connectableFathers.add(besideFather);
+                    }
+                    int mergedSize = connectableFathers.stream().map(allGroups::get).map(Set::size).reduce((a, b) -> a + b).get() + 1;
+                    result = Math.max(result, mergedSize);
+                }
+            }
+        }
+        return result;
+    }
 
     // LC782 ** Hard
     public int movesToChessboard(int[][] board) {
