@@ -21,6 +21,20 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC1636
+    fun frequencySort(nums: IntArray): IntArray {
+        val freqMap = nums.toTypedArray().groupingBy { it }.eachCount()
+        return nums.toTypedArray().apply {
+            sortWith(kotlin.Comparator { o1, o2 ->
+                if (freqMap[o1]!! == freqMap[o2]!!) {
+                    return@Comparator o2 - o1
+                }
+                return@Comparator freqMap[o1]!! - freqMap[o2]!!
+            })
+        }.toIntArray()
+    }
+
     // LC1592
     fun reorderSpaces(text: String): String {
         val split: List<String> = text.split(regex = Regex("\\s+")).filter { it.isNotBlank() }.toList()
