@@ -4,6 +4,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
+import kotlin.math.sign
 
 //class Main {
 //    companion object {
@@ -21,6 +22,33 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC1640
+    fun canFormArray(arr: IntArray, pieces: Array<IntArray>): Boolean {
+        val m: MutableMap<Int, Int> = HashMap()
+        for (i in pieces.indices) {
+            val ar = pieces[i]
+            for (j in ar) {
+                m[j] = i
+            }
+        }
+        var i = 0
+        while (i < arr.size) {
+            val v = arr[i]
+            if (!m.containsKey(v)) return false
+
+            val thePiece = pieces[m[v]!!]
+            var j = 0
+            while (j < thePiece.size) {
+                if (arr[i] != thePiece[j]) return false
+
+                // defer
+                j++
+                i++
+            }
+        }
+        return true
+    }
 
     // LC1636
     fun frequencySort(nums: IntArray): IntArray {
