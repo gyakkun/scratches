@@ -6,11 +6,34 @@ import java.util.stream.IntStream;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        // System.err.println(s.largestIsland(new int[][]{{0, 0, 0, 0, 0, 0, 0}, {0, 1, 1, 1, 1, 0, 0}, {0, 1, 0, 0, 1, 0, 0}, {1, 0, 1, 0, 1, 0, 0}, {0, 1, 0, 0, 1, 0, 0}, {0, 1, 0, 0, 1, 0, 0}, {0, 1, 1, 1, 1, 0, 0}}));
-        System.err.println(s.largestIsland(new int[][]{{1, 0, 1}, {0, 0, 0}, {0, 1, 1}}));
-
+        System.err.println(Integer.bitCount(Integer.MIN_VALUE));
     }
 
+
+    // Interview 17.19 Hard **
+    public int[] missingTwo(int[] nums) {
+        int xorSum = 0, n = nums.length + 2;
+        for (int i : nums) xorSum ^= i;
+        for (int i = 1; i <= n; i++) xorSum ^= i;
+        int lsb = xorSum & -xorSum;
+        if (xorSum == Integer.MIN_VALUE) lsb = xorSum; // 0x8000000
+        int r1 = 0, r2 = 0;
+        for (int i : nums) {
+            if ((i & lsb) == 0) {
+                r1 ^= i;
+            } else {
+                r2 ^= i;
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if ((i & lsb) == 0) {
+                r1 ^= i;
+            } else {
+                r2 ^= i;
+            }
+        }
+        return new int[]{r1, r2};
+    }
 
     // LC827 Hard
     public int largestIsland(int[][] grid) {
