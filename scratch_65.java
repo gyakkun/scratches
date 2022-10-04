@@ -35,6 +35,17 @@ class Scratch {
         System.err.println("TIMING: " + timing + "ms.");
     }
 
+    // LC921
+    public int minAddToMakeValid(String s) {
+        int ctr = 0, extra = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '(') ctr++;
+            else if (ctr > 0 && c == ')') ctr--;
+            else if (ctr <= 0 && c == ')') extra++;
+        }
+        return ctr + extra;
+    }
+
     // LC1252 **
     public int oddCells(int m, int n, int[][] indices) {
         int[] row = new int[m], col = new int[n];
