@@ -1,6 +1,7 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
@@ -22,6 +23,27 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC811
+    fun subdomainVisits(cpdomains: Array<String>): List<String> {
+        val freqMap = HashMap<String, Int>()
+        for (cp in cpdomains) {
+            val splitBySpace = cp.split(" ")
+            val count = Integer.parseInt(splitBySpace[0])
+            val fullDomain = splitBySpace[1]
+            val domainSplit = fullDomain.split(".")
+            val sb = StringBuilder()
+            for (piece in domainSplit.reversed()) {
+                sb.insert(0, piece)
+                val fragmentedDomain = sb.toString()
+                freqMap[fragmentedDomain] = freqMap.getOrDefault(fragmentedDomain, 0) + count
+                sb.insert(0, ".")
+            }
+        }
+        return freqMap.map { e ->
+            "${e.value} ${e.key}"
+        }.toList()
+    }
 
     // LC1640
     fun canFormArray(arr: IntArray, pieces: Array<IntArray>): Boolean {
