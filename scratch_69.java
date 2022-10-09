@@ -6,9 +6,45 @@ import java.util.stream.IntStream;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(Integer.bitCount(Integer.MIN_VALUE));
+        System.err.println(s.scoreOfParentheses("(()(()))"));
     }
 
+    // LC856 ** Don't be lazy!
+    public int scoreOfParentheses(String s) {
+        // () - 1
+        // ()() - 1 + 1
+        // (()) - 2 * 1
+        // ()(()) - 1 + 2 * 1
+        char[] ca = s.toCharArray();
+        int n = ca.length;
+        if (n == 2 && ca[0] == '(' && ca[1] == ')') {
+            return 1;
+        } else {
+            int stack = 0, firstLeftIdx = -1, score = 0;
+            for (int i = 0; i < n; i++) {
+                if (stack == 0) {
+                    if (firstLeftIdx < i) {
+                        firstLeftIdx = i;
+                    }
+                }
+                if (ca[i] == '(') {
+                    stack++;
+                } else {
+                    stack--;
+                }
+                if (stack == 0) {
+                    String substr = s.substring(firstLeftIdx, i + 1);
+                    if (substr.length() == 2 && substr.charAt(0) == '(' && substr.charAt(1) == ')') {
+                        score += 1;
+                    } else {
+                        score += 2 * scoreOfParentheses(substr.substring(1, substr.length() - 1));
+                    }
+                }
+
+            }
+            return score;
+        }
+    }
 
     // Interview 17.19 Hard **
     public int[] missingTwo(int[] nums) {
