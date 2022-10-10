@@ -1,3 +1,4 @@
+import java.lang.IllegalStateException
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -5,7 +6,6 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
-import kotlin.math.sign
 
 //class Main {
 //    companion object {
@@ -14,7 +14,7 @@ import kotlin.math.sign
 var before = Instant.now()!!
 var s = Solution()
 println(
-    s.reorderSpaces("  this   is  a sentence ")
+    s.minSwap(intArrayOf(1, 2, 3, 8), intArrayOf(5, 6, 7, 4))
 )
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -23,6 +23,36 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC801 ** Hard
+    fun minSwap(nums1: IntArray, nums2: IntArray): Int {
+        val n = nums1.size
+        var memo = Array(n) { Array<Int?>(2) { null } }
+        fun helper(idx: Int, operateOrNot: Int): Int {
+            if (idx == 0) {
+                return if (operateOrNot == 0) {
+                    0
+                } else {
+                    1
+                }
+            }
+            if (memo[idx][operateOrNot] != null) {
+                return memo[idx][operateOrNot]!!
+            }
+            val judge1 = nums1[idx] > nums1[idx - 1] && nums2[idx] > nums2[idx - 1];
+            val judge2 = nums1[idx] > nums2[idx - 1] && nums2[idx] > nums1[idx - 1];
+            var result: Int = if (judge1 && judge2) {
+                operateOrNot + helper(idx - 1, operateOrNot).coerceAtMost(helper(idx - 1, 1 - operateOrNot))
+            } else if (judge1) {
+                operateOrNot + helper(idx - 1, operateOrNot)
+            } else {
+                operateOrNot + helper(idx - 1, 1 - operateOrNot)
+            }
+            return result!!.also { memo[idx][operateOrNot] = it }
+        }
+        return helper(n - 1, 1).coerceAtMost(helper(n - 1, 0))
+    }
+
 
     // LC811
     fun subdomainVisits(cpdomains: Array<String>): List<String> {
@@ -162,11 +192,11 @@ class Solution {
                 }
             }
         }
-        helper(0, helperCountArr(target), stickSet)
+        lc691Helper(0, helperCountArr(target), stickSet)
         return finResult
     }
 
-    fun helper(layer: Int, countArr: IntArray, stickSet: MutableSet<String>): Unit {
+    fun lc691Helper(layer: Int, countArr: IntArray, stickSet: MutableSet<String>): Unit {
         if (helperCountArrToMask(countArr) == 0) {
             finResult = finResult.coerceAtMost(layer)
             return
@@ -181,7 +211,7 @@ class Solution {
             for (i in nextCountArr.indices) {
                 nextCountArr[i] = (nextCountArr[i] - curCountArr[i]).coerceAtLeast(0)
             }
-            helper(nextLayer, nextCountArr, stickSet)
+            lc691Helper(nextLayer, nextCountArr, stickSet)
         }
     }
 
