@@ -21,7 +21,7 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
-    // LC1987
+    // LC1987 Hard **
     fun numberOfUniqueGoodSubsequences(binary: String): Int {
         val ca = binary.toCharArray()
         val mod = 1000000007L
@@ -64,7 +64,7 @@ class Solution {
         return result.toInt()
     }
 
-    // LC941
+    // LC941 Hard **
     fun distinctSubseqII(s: String): Int {
         val n = s.length
         val ca = s.toCharArray()
