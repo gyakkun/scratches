@@ -1,9 +1,6 @@
-import java.lang.IllegalStateException
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
 
@@ -23,6 +20,70 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC1987
+    fun numberOfUniqueGoodSubsequences(binary: String): Int {
+        val ca = binary.toCharArray()
+        val mod = 1000000007L
+        val n = ca.size
+        val dp = Array(n + 1) { LongArray(2) }
+        var hasZero = false
+        for (i in 0 until n) {
+            if (ca[i] == '1') {
+                // end with 0
+                dp[i][0] = if (i > 0) {
+                    dp[i - 1][0]
+                } else {
+                    0
+                }
+                // end with 1
+                dp[i][1] = if (i > 0) {
+                    dp[i - 1][0] + dp[i - 1][1] + 1 /* sel */
+                } else {
+                    1
+                }
+            } else if (ca[i] == '0') {
+                hasZero = true
+                // end with 0
+                dp[i][0] = if (i > 0) {
+                    dp[i - 1][0] + dp[i - 1][1] /* when self is zero, not take into consideration. Handle with hasZero */
+                } else {
+                    0
+                }
+                dp[i][1] = if (i > 0) {
+                    dp[i - 1][1]
+                } else {
+                    0
+                }
+            }
+            dp[i][0] %= mod
+            dp[i][1] %= mod
+        }
+        var result = (dp[n - 1][0] + dp[n - 1][1] + mod) % mod
+        if (hasZero) result = (result + 1 + mod) % mod
+        return result.toInt()
+    }
+
+    // LC941
+    fun distinctSubseqII(s: String): Int {
+        val n = s.length
+        val ca = s.toCharArray()
+        val dp = IntArray(n + 1)
+        dp[0] = 1 // 空串
+        val lastOccur = IntArray(128)
+        Arrays.fill(lastOccur, -1)
+        val mod = 1000000007
+        for (i in 0 until n) {
+            dp[i + 1] = dp[i] * 2 % mod
+            if (lastOccur[ca[i].toInt()] != -1) {
+                dp[i + 1] -= dp[lastOccur[ca[i].toInt()]]
+            }
+            dp[i + 1] %= mod
+            lastOccur[ca[i].toInt()] = i
+        }
+        dp[n] = (dp[n] - 1 + mod) % mod // -1 处理空串
+        return dp[n]
+    }
 
     // LC801 ** Hard
     fun minSwap(nums1: IntArray, nums2: IntArray): Int {
