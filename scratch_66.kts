@@ -1,8 +1,10 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
+
 
 //class Main {
 //    companion object {
@@ -11,7 +13,17 @@ import kotlin.math.pow
 var before = Instant.now()!!
 var s = Solution()
 println(
-    s.minSwap(intArrayOf(1, 2, 3, 8), intArrayOf(5, 6, 7, 4))
+    s.possibleBipartition(
+        10,
+        arrayOf(
+            intArrayOf(1, 2),
+            intArrayOf(3, 4),
+            intArrayOf(5, 6),
+            intArrayOf(6, 7),
+            intArrayOf(8, 9),
+            intArrayOf(7, 8)
+        )
+    )
 )
 var after = Instant.now()!!
 System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
@@ -20,6 +32,30 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC886
+    fun possibleBipartition(n: Int, dislikes: Array<IntArray>): Boolean {
+        var dsu = DSUArray(2 * n)
+        var dedicatedParent = HashMap<Int, Int>()
+        for (d in dislikes) {
+            if (dedicatedParent[d[0]] == null) {
+                dedicatedParent[d[0]] = d[1]
+            }
+            if (dedicatedParent[d[1]] == null) {
+                dedicatedParent[d[1]] = d[0]
+            }
+            dsu.add(d[0])
+            dsu.add(d[1])
+            dsu.merge(dedicatedParent[d[0]]!!, d[1])
+            dsu.merge(dedicatedParent[d[1]]!!, d[0])
+        }
+        val allGroups = dsu.allGroups
+        for ((disee, leader) in dedicatedParent) {
+            var finalParent = dsu.father[leader]
+            if(allGroups[finalParent]!!.contains(disee)) return false
+        }
+        return true
+    }
 
     // LC1987 Hard **
     fun numberOfUniqueGoodSubsequences(binary: String): Int {
@@ -800,5 +836,102 @@ class lc1728 {
 
     fun matrixFlattenIdx(a: Int, b: Int): Int {
         return a * 8 + b
+    }
+}
+
+class DSUArray {
+    var father: IntArray
+    var rank: IntArray
+    var size: Int
+
+    constructor(size: Int) {
+        this.size = size
+        father = IntArray(size)
+        rank = IntArray(size)
+        Arrays.fill(father, -1)
+        Arrays.fill(rank, -1)
+    }
+
+    constructor() {
+        size = 1 shl 16
+        father = IntArray(1 shl 16)
+        rank = IntArray(1 shl 16)
+        Arrays.fill(father, -1)
+        Arrays.fill(rank, -1)
+    }
+
+    fun add(i: Int) {
+        if (i >= size || i < 0) return
+        if (father[i] == -1) {
+            father[i] = i
+        }
+        if (rank[i] == -1) {
+            rank[i] = 1
+        }
+    }
+
+    operator fun contains(i: Int): Boolean {
+        return if (i >= size || i < 0) false else father[i] != -1
+    }
+
+    fun find(i: Int): Int {
+        var i = i
+        if (i >= size || i < 0) return -1
+        var root = i
+        while ((root < size) && (root >= 0) && (father[root] != root)) {
+            root = father[root]
+        }
+        if (root == -1) return -1
+        while (father[i] != root) {
+            val origFather = father[i]
+            father[i] = root
+            i = origFather
+        }
+        return root
+    }
+
+    fun merge(i: Int, j: Int): Boolean {
+        if (i >= size || i < 0) return false
+        if (j >= size || j < 0) return false
+        val iFather = find(i)
+        val jFather = find(j)
+        if (iFather == -1 || jFather == -1) return false
+        if (iFather == jFather) return false
+        if (rank[iFather] >= rank[jFather]) {
+            father[jFather] = iFather
+            rank[iFather] += rank[jFather]
+        } else {
+            father[iFather] = jFather
+            rank[jFather] += rank[iFather]
+        }
+        return true
+    }
+
+    fun isConnected(i: Int, j: Int): Boolean {
+        if (i >= size || i < 0) return false
+        return if (i >= size || i < 0) false else find(i) == find(j)
+    }
+
+    // 找出所有根
+    val allGroups: Map<Int, MutableSet<Int>>
+        get() {
+            val result: MutableMap<Int, MutableSet<Int>> = HashMap()
+            // 找出所有根
+            for (i in 0 until size) {
+                if (father[i] != -1) {
+                    val f = find(i)
+                    result.putIfAbsent(f, HashSet())
+                    result[f]!!.add(i)
+                }
+            }
+            return result
+        }
+
+    fun getNumOfGroups(): Int {
+        return allGroups.size
+    }
+
+    fun getSelfGroupSize(x: Int): Int {
+        return rank[find(x)]
     }
 }
