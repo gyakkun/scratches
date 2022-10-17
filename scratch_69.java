@@ -1,12 +1,36 @@
-import javafx.util.Pair;
-
 import java.util.*;
 import java.util.stream.IntStream;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.scoreOfParentheses("(()(()))"));
+        System.err.println(s.totalFruit(new int[]{0, 1, 2, 2}));
+    }
+
+    // LC904 Again
+    public int totalFruit(int[] fruits) {
+        List<Integer> selectedTypes = new ArrayList<>();
+        int left = 0, right = 0, n = fruits.length, result = 0;
+        while (right < n) {
+            int currentType = fruits[right];
+            if (selectedTypes.contains(currentType)) {
+                right++;
+            } else if (selectedTypes.size() == 2) {
+                int prevType = fruits[right - 1];
+                int i = right - 1;
+                while (i >= left && fruits[i] == prevType) {
+                    i--;
+                }
+                left = i + 1;
+                selectedTypes.set(0, prevType);
+                selectedTypes.set(1, currentType);
+            } else if (selectedTypes.size() < 2) {
+                right++;
+                selectedTypes.add(currentType);
+            }
+            result = Math.max(result, right - left);
+        }
+        return result;
     }
 
     // LC1891
