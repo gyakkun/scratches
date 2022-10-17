@@ -9,6 +9,29 @@ class Scratch {
         System.err.println(s.scoreOfParentheses("(()(()))"));
     }
 
+    // LC1891
+    public int maxLength(int[] ribbons, int k) {
+        int maxLen = Arrays.stream(ribbons).max().getAsInt();
+        int lo = 0, hi = maxLen;
+        int result = 0;
+        while (lo < hi) {
+            int mid = (lo + hi + 1) / 2;
+            if (helper(mid, ribbons) >= k) {
+                result = Math.max(result, mid);
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return result;
+    }
+
+    private int helper(int target, int[] ribbons) {
+        int result = 0;
+        for (int i : ribbons) result += i / target;
+        return result;
+    }
+
     // LC856 ** Don't be lazy!
     public int scoreOfParentheses(String s) {
         // () - 1
