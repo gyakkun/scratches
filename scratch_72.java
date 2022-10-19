@@ -10,11 +10,83 @@ class Scratch {
         System.err.println(s.longestSubsequence("1001010", 5));
     }
 
+    // LCP49 Hard
+    long finalOrValue = 0L;
+    int leftMost, rightMost;
+
+    public long ringGame(long[] challenge) {
+        int n = challenge.length;
+        List<Pair<Integer, Long>> idxValPairList = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            idxValPairList.add(new Pair<>(i, challenge[i]));
+        }
+        DSUArray dsu = new DSUArray(n + 1);
+        idxValPairList.sort(Comparator.comparingLong(i -> i.getValue()));
+        Pair<Integer, Long> lastPair = idxValPairList.get(n - 1);
+        long largestBonus = lastPair.getValue();
+        int bitLenWithoutLeadingZeros = Long.SIZE - Long.numberOfLeadingZeros(largestBonus);
+        long leastInitScore = 1L << (bitLenWithoutLeadingZeros - 1);
+        Map<Integer, Long> idxMinInitScoreMap = new HashMap<>();
+        Map<Integer, Long> finalOrValueMap = new HashMap<>();
+        Map<Integer, Integer> fatherLeftMostIdxMap = new HashMap<>();
+        Map<Integer, Integer> fatherRightMostIdxMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            Pair<Integer, Long> p = idxValPairList.get(i);
+            int idx = p.getKey();
+            long bonus = p.getValue();
+            if (!dsu.contains(idx)) {
+                continue;
+            }
+            dsu.add(idx);
+            finalOrValue = 0;
+            leftMost = idx;
+            rightMost = idx;
+            dfs(idx, 0L, dsu, challenge, 1);
+            dfs(idx, 0L, dsu, challenge, -1);
+            int father = dsu.find(idx);
+            idxMinInitScoreMap.put(father, bonus);
+            finalOrValueMap.put(father, finalOrValue);
+            fatherLeftMostIdxMap.put(father, leftMost);
+            fatherRightMostIdxMap.put(father, rightMost);
+        }
+        Map<Integer, Set<Integer>> allGroups = dsu.getAllGroups();
+        List<Integer> fathers = new ArrayList<>(allGroups.keySet());
+        fathers.sort(Comparator.comparingLong(i -> idxMinInitScoreMap.getOrDefault(i, Long.MAX_VALUE)));
+        long result = 0;
+        DSUArray dsuForResult = new DSUArray(n + 1);
+        for (int f : fathers) {
+            long initVal = idxMinInitScoreMap.get(f);
+            long finalOrVal = finalOrValueMap.get(f);
+            int leftMostIdx = fatherLeftMostIdxMap.get(f);
+            int rightMostIdx = fatherRightMostIdxMap.get(f);
+
+        }
+
+        return -1;
+    }
+
+    private void dfs(int idx, long initScore, DSUArray dsu, long[] challenge, int direction) {
+        long score = initScore | challenge[idx];
+        finalOrValue = Math.max(finalOrValue, score);
+        int n = challenge.length;
+        int nextIdx = (idx + direction + n) % n;
+        if (score >= challenge[nextIdx] && !dsu.contains(nextIdx)) {
+            if (direction > 0) {
+                rightMost = nextIdx;
+            } else if (direction < 0) {
+                leftMost = nextIdx;
+            }
+            dsu.add(nextIdx);
+            dsu.merge(idx, nextIdx);
+            dfs(nextIdx, score, dsu, challenge, direction);
+        }
+    }
+
+
     // LC2311 **
     public int longestSubsequence(String s, int k) {
         int sLen = s.length(), kLen = Integer.SIZE - Integer.numberOfLeadingZeros(k);
         if (sLen < kLen) return sLen;
-        // kLen >= sLen, kLen - sLen >= 0
         int alignWithK = Integer.parseInt(s.substring(sLen - kLen), 2);
         int result = alignWithK > k ? kLen - 1 : kLen;
         int leadingZeros = (int) s.substring(0, sLen - kLen).chars().filter(i -> i == '0').count();
@@ -30,13 +102,13 @@ class Scratch {
     }
 
     // LC1262
-    Integer[][] memo;
+    Integer[][] lc1262Memo;
     int[] lc1262Nums;
 
     public int maxSumDivThree(int[] nums) {
         lc1262Nums = nums;
         int n = nums.length;
-        memo = new Integer[n + 1][3];
+        lc1262Memo = new Integer[n + 1][3];
         return helper(n - 1, 0);
     }
 
@@ -45,7 +117,7 @@ class Scratch {
             if (lc1262Nums[idx] % 3 != targetRemain) return 0;
             return lc1262Nums[idx];
         }
-        if (memo[idx][targetRemain] != null) return memo[idx][targetRemain];
+        if (lc1262Memo[idx][targetRemain] != null) return lc1262Memo[idx][targetRemain];
         int result = 0;
         int currentRemain = lc1262Nums[idx] % 3, currentValue = lc1262Nums[idx];
         // Choose current
@@ -60,7 +132,7 @@ class Scratch {
         if (tmpResult % 3 == targetRemain) {
             result = Math.max(result, tmpResult);
         }
-        return memo[idx][targetRemain] = result;
+        return lc1262Memo[idx][targetRemain] = result;
     }
 
     // LC2089
@@ -152,4 +224,102 @@ class Scratch {
             return result;
         }
     }
+}
+
+class DSUArray {
+    int[] father;
+    int[] rank;
+    int size;
+
+    public DSUArray(int size) {
+        this.size = size;
+        father = new int[size];
+        rank = new int[size];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public DSUArray() {
+        this.size = 1 << 16;
+        father = new int[1 << 16];
+        rank = new int[1 << 16];
+        Arrays.fill(father, -1);
+        Arrays.fill(rank, -1);
+    }
+
+    public void add(int i) {
+        if (i >= this.size || i < 0) return;
+        if (father[i] == -1) {
+            father[i] = i;
+        }
+        if (rank[i] == -1) {
+            rank[i] = 1;
+        }
+    }
+
+    public boolean contains(int i) {
+        if (i >= this.size || i < 0) return false;
+        return father[i] != -1;
+    }
+
+    public int find(int i) {
+        if (i >= this.size || i < 0) return -1;
+        int root = i;
+        while (root < size && root >= 0 && father[root] != root) {
+            root = father[root];
+        }
+        if (root == -1) return -1;
+        while (father[i] != root) {
+            int origFather = father[i];
+            father[i] = root;
+            i = origFather;
+        }
+        return root;
+    }
+
+    public boolean merge(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (j >= this.size || j < 0) return false;
+        int iFather = find(i);
+        int jFather = find(j);
+        if (iFather == -1 || jFather == -1) return false;
+        if (iFather == jFather) return false;
+
+        if (rank[iFather] >= rank[jFather]) {
+            father[jFather] = iFather;
+            rank[iFather] += rank[jFather];
+        } else {
+            father[iFather] = jFather;
+            rank[jFather] += rank[iFather];
+        }
+        return true;
+    }
+
+    public boolean isConnected(int i, int j) {
+        if (i >= this.size || i < 0) return false;
+        if (i >= this.size || i < 0) return false;
+        return find(i) == find(j);
+    }
+
+    public Map<Integer, Set<Integer>> getAllGroups() {
+        Map<Integer, Set<Integer>> result = new HashMap<>();
+        // 找出所有根
+        for (int i = 0; i < size; i++) {
+            if (father[i] != -1) {
+                int f = find(i);
+                result.putIfAbsent(f, new HashSet<>());
+                result.get(f).add(i);
+            }
+        }
+        return result;
+    }
+
+    public int getNumOfGroups() {
+        return getAllGroups().size();
+    }
+
+    public int getSelfGroupSize(int x) {
+        return rank[find(x)];
+    }
+
 }
