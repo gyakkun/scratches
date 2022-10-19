@@ -10,76 +10,57 @@ class Scratch {
         System.err.println(s.longestSubsequence("1001010", 5));
     }
 
-    // LCP49 Hard
-    long finalOrValue = 0L;
-    int leftMost, rightMost;
-
+    // LCP49 Hard ** 楼教主解法
     public long ringGame(long[] challenge) {
         int n = challenge.length;
-        List<Pair<Integer, Long>> idxValPairList = new ArrayList<>();
+        List<Pair<Integer, Long>> idxScoreList = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            idxValPairList.add(new Pair<>(i, challenge[i]));
+            idxScoreList.add(new Pair<>(i, challenge[i]));
         }
-        DSUArray dsu = new DSUArray(n + 1);
-        idxValPairList.sort(Comparator.comparingLong(i -> i.getValue()));
-        Pair<Integer, Long> lastPair = idxValPairList.get(n - 1);
-        long largestBonus = lastPair.getValue();
-        int bitLenWithoutLeadingZeros = Long.SIZE - Long.numberOfLeadingZeros(largestBonus);
-        long leastInitScore = 1L << (bitLenWithoutLeadingZeros - 1);
-        Map<Integer, Long> idxMinInitScoreMap = new HashMap<>();
-        Map<Integer, Long> finalOrValueMap = new HashMap<>();
-        Map<Integer, Integer> fatherLeftMostIdxMap = new HashMap<>();
-        Map<Integer, Integer> fatherRightMostIdxMap = new HashMap<>();
-        for (int i = 0; i < n; i++) {
-            Pair<Integer, Long> p = idxValPairList.get(i);
-            int idx = p.getKey();
-            long bonus = p.getValue();
-            if (!dsu.contains(idx)) {
-                continue;
+        idxScoreList.sort(Comparator.comparingLong(i -> -i.getValue()));
+        Function<Integer, Integer> getNext = i -> (i + 1) % n;
+        Function<Integer, Integer> getPrev = i -> (i - 1 + n) % n;
+        Function<Long, Boolean> check = initVal -> {
+            long ongoingVal = initVal;
+            BitSet visited = new BitSet(n);
+            for (Pair<Integer, Long> p : idxScoreList) { // 从最大的开始遍历所有起点
+                int idx = p.getKey();
+                long necessaryScore = p.getValue();
+                if (ongoingVal < necessaryScore) {
+                    continue;
+                }
+                if (visited.get(idx)) {
+                    continue;
+                }
+                long mergedScore = ongoingVal | necessaryScore;
+                visited.set(idx);
+                int leftPtr = idx, rightPtr = idx;
+                while (true) {
+                    if (getNext.apply(rightPtr) == leftPtr) return true;
+                    if (mergedScore >= challenge[getPrev.apply(leftPtr)]) {
+                        leftPtr = getPrev.apply(leftPtr);
+                        mergedScore |= challenge[leftPtr];
+                        visited.set(leftPtr);
+                    } else if (mergedScore >= challenge[getNext.apply(rightPtr)]) {
+                        rightPtr = getNext.apply(rightPtr);
+                        mergedScore |= challenge[rightPtr];
+                        visited.set(rightPtr);
+                    } else {
+                        break;
+                    }
+                }
             }
-            dsu.add(idx);
-            finalOrValue = 0;
-            leftMost = idx;
-            rightMost = idx;
-            dfs(idx, 0L, dsu, challenge, 1);
-            dfs(idx, 0L, dsu, challenge, -1);
-            int father = dsu.find(idx);
-            idxMinInitScoreMap.put(father, bonus);
-            finalOrValueMap.put(father, finalOrValue);
-            fatherLeftMostIdxMap.put(father, leftMost);
-            fatherRightMostIdxMap.put(father, rightMost);
-        }
-        Map<Integer, Set<Integer>> allGroups = dsu.getAllGroups();
-        List<Integer> fathers = new ArrayList<>(allGroups.keySet());
-        fathers.sort(Comparator.comparingLong(i -> idxMinInitScoreMap.getOrDefault(i, Long.MAX_VALUE)));
+            return false;
+        };
+
         long result = 0;
-        DSUArray dsuForResult = new DSUArray(n + 1);
-        for (int f : fathers) {
-            long initVal = idxMinInitScoreMap.get(f);
-            long finalOrVal = finalOrValueMap.get(f);
-            int leftMostIdx = fatherLeftMostIdxMap.get(f);
-            int rightMostIdx = fatherRightMostIdxMap.get(f);
-
-        }
-
-        return -1;
-    }
-
-    private void dfs(int idx, long initScore, DSUArray dsu, long[] challenge, int direction) {
-        long score = initScore | challenge[idx];
-        finalOrValue = Math.max(finalOrValue, score);
-        int n = challenge.length;
-        int nextIdx = (idx + direction + n) % n;
-        if (score >= challenge[nextIdx] && !dsu.contains(nextIdx)) {
-            if (direction > 0) {
-                rightMost = nextIdx;
-            } else if (direction < 0) {
-                leftMost = nextIdx;
+        for (int i = 63; i >= 0; i--) {
+            long initVal = (result | (1L << i)) - 1;
+            if (!check.apply(initVal)) {
+                result |= (1L << i);
             }
-            dsu.add(nextIdx);
-            dsu.merge(idx, nextIdx);
-            dfs(nextIdx, score, dsu, challenge, direction);
         }
+        return result;
     }
 
 
