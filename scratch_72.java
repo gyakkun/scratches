@@ -1,11 +1,21 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         System.err.println(s.maxSumDivThree(new int[]{1, 2, 3, 4, 4}));
+    }
+
+    // LC2341
+    public int[] numberOfPairs(int[] nums) {
+        Map<Integer, List<Integer>> m = Arrays.stream(nums).boxed().collect(Collectors.groupingBy(Function.identity()));
+        int a0 = m.values().stream().map(i -> i.size() / 2).reduce((a, b) -> a + b).get();
+        int a1 = m.values().stream().map(i -> i.size() % 2).reduce((a, b) -> a + b).get();
+        return new int[]{a0, a1};
     }
 
     // LC1262
