@@ -8,6 +8,16 @@ class Scratch {
         System.err.println(s.largestArea(new String[]{"02520253", "51551213", "03512513", "34312132", "21051025", "52005131", "34235150", "22154013"}));
     }
 
+    // LC2089
+    public List<Integer> targetIndices(int[] nums, int target) {
+        Arrays.sort(nums);
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == target) result.add(i);
+        }
+        return result;
+    }
+
     // LC1383 ** Hard
     public int maxPerformance(int n, int[] speed, int[] efficiency, int k) {
         // Pair: <speed, efficiency>
