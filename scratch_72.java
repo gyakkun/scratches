@@ -1,52 +1,49 @@
 import javafx.util.Pair;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.largestArea(new String[]{"02520253", "51551213", "03512513", "34312132", "21051025", "52005131", "34235150", "22154013"}));
+        System.err.println(s.maxSumDivThree(new int[]{1, 2, 3, 4, 4}));
     }
 
-    // LC1262 WA
+    // LC1262
+    Integer[][] memo;
+    int[] lc1262Nums;
+
     public int maxSumDivThree(int[] nums) {
-        int sum = Arrays.stream(nums).sum();
-        if (sum % 3 == 0) return sum;
-        Map<Integer, List<Integer>> m = Arrays.stream(nums).boxed().collect(Collectors.groupingBy(i -> i % 3));
-        TreeSet<Integer> remain1 = new TreeSet<>(m.getOrDefault(1, new ArrayList<>()));
-        TreeSet<Integer> remain2 = new TreeSet<>(m.getOrDefault(2, new ArrayList<>()));
-        int minReduce = sum;
-        int targetRemain = sum % 3;
-        if (targetRemain == 1) {
-            if (remain1.size() >= 1) {
-                minReduce = Math.min(minReduce, remain1.first());
-            }
-            if (remain2.size() >= 2) {
-                Iterator<Integer> it = remain2.iterator();
-                int remain2First2Sum = 0;
-                for (int i = 0; i < 2; i++) {
-                    int tmp = it.next();
-                    remain2First2Sum += tmp;
-                }
-                minReduce = Math.min(minReduce, remain2First2Sum);
-            }
-        } else if (targetRemain == 2) {
-            if (remain2.size() >= 1) {
-                minReduce = Math.min(minReduce, remain2.first());
-            }
-            if (remain1.size() >= 2) {
-                Iterator<Integer> it = remain1.iterator();
-                int remain1First2Sum = 0;
-                for (int i = 0; i < 2; i++) {
-                    int tmp = it.next();
-                    remain1First2Sum += tmp;
-                }
-                minReduce = Math.min(minReduce, remain1First2Sum);
-            }
+        lc1262Nums = nums;
+        int n = nums.length;
+        memo = new Integer[n + 1][3];
+        int result = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            result = Math.max(result, helper(i, 0));
         }
-        return sum - minReduce;
+        return result;
+    }
+
+    private int helper(int idx, int targetRemain) {
+        if (idx == 0) {
+            if (lc1262Nums[idx] % 3 != targetRemain) return 0;
+            return lc1262Nums[idx];
+        }
+        if (memo[idx][targetRemain] != null) return memo[idx][targetRemain];
+        int result = 0;
+        int currentRemain = lc1262Nums[idx] % 3, currentValue = lc1262Nums[idx];
+        // Choose current
+        int nextTargetRemain = (targetRemain - currentRemain + 3) % 3;
+        int tmpChooseRightPart = helper(idx - 1, nextTargetRemain);
+        int tmpResult = currentValue + tmpChooseRightPart;
+        if (tmpResult % 3 == targetRemain) {
+            result = Math.max(result, tmpResult);
+        }
+        // Don't choose current
+        tmpResult = helper(idx - 1, targetRemain);
+        if (tmpResult % 3 == targetRemain) {
+            result = Math.max(result, tmpResult);
+        }
+        return memo[idx][targetRemain] = result;
     }
 
     // LC2089
@@ -96,45 +93,46 @@ class Scratch {
         return n - count;
     }
 
-    // LCS 03
-    Set<Integer> visited = new HashSet<>();
-    char[][] matrix;
-    int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-    int finalResult = 0, row = 0, col = 0;
-    boolean isTouchBoundary;
+    final static class LCS03 {// LCS 03
+        Set<Integer> visited = new HashSet<>();
+        char[][] matrix;
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int finalResult = 0, row = 0, col = 0;
+        boolean isTouchBoundary;
 
-    public int largestArea(String[] grid) {
-        matrix = new char[grid.length][];
-        for (int i = 0; i < grid.length; i++) {
-            matrix[i] = grid[i].toCharArray();
-        }
-        row = matrix.length;
-        col = matrix[0].length;
-        for (int i = 0; i < (row * col); i++) {
-            isTouchBoundary = false;
-            int result = helper(i);
-            if (!isTouchBoundary) finalResult = Math.max(result, finalResult);
-        }
-        return finalResult;
-    }
-
-    private int helper(int i) {
-        if (visited.contains(i)) return 0;
-        visited.add(i);
-        int r = i / col, c = i % col;
-        if (r == 0 || r == row - 1 || c == 0 || c == col - 1 || matrix[r][c] == '0') isTouchBoundary = true;
-        int result = 1;
-        for (int[] d : directions) {
-            int nr = r + d[0], nc = c + d[1];
-            if (!(nr >= 0 && nr < row && nc >= 0 && nc < col)) continue;
-            if (matrix[nr][nc] == '0') {
-                isTouchBoundary = true;
-                continue;
+        public int largestArea(String[] grid) {
+            matrix = new char[grid.length][];
+            for (int i = 0; i < grid.length; i++) {
+                matrix[i] = grid[i].toCharArray();
             }
-            if (matrix[nr][nc] != matrix[r][c]) continue;
-            int next = helper(nr * col + nc);
-            result += next;
+            row = matrix.length;
+            col = matrix[0].length;
+            for (int i = 0; i < (row * col); i++) {
+                isTouchBoundary = false;
+                int result = lcs03Helper(i);
+                if (!isTouchBoundary) finalResult = Math.max(result, finalResult);
+            }
+            return finalResult;
         }
-        return result;
+
+        private int lcs03Helper(int i) {
+            if (visited.contains(i)) return 0;
+            visited.add(i);
+            int r = i / col, c = i % col;
+            if (r == 0 || r == row - 1 || c == 0 || c == col - 1 || matrix[r][c] == '0') isTouchBoundary = true;
+            int result = 1;
+            for (int[] d : directions) {
+                int nr = r + d[0], nc = c + d[1];
+                if (!(nr >= 0 && nr < row && nc >= 0 && nc < col)) continue;
+                if (matrix[nr][nc] == '0') {
+                    isTouchBoundary = true;
+                    continue;
+                }
+                if (matrix[nr][nc] != matrix[r][c]) continue;
+                int next = lcs03Helper(nr * col + nc);
+                result += next;
+            }
+            return result;
+        }
     }
 }
