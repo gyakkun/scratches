@@ -1,10 +1,35 @@
-import java.util.HashSet;
-import java.util.Set;
+import javafx.util.Pair;
+
+import java.util.*;
 
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
         System.err.println(s.largestArea(new String[]{"02520253", "51551213", "03512513", "34312132", "21051025", "52005131", "34235150", "22154013"}));
+    }
+
+    // LC1383 ** Hard
+    public int maxPerformance(int n, int[] speed, int[] efficiency, int k) {
+        // Pair: <speed, efficiency>
+        List<Pair<Integer, Integer>> employeeList = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            employeeList.add(new Pair<>(speed[i], efficiency[i]));
+        }
+        employeeList.sort(Comparator.comparingInt(i -> -i.getValue()));
+        PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(i -> i.getKey()));
+        long sumSpeed = 0L, result = 0L;
+        for (int i = 0; i < n; i++) {
+            Pair<Integer, Integer> minEfficiencyStaff = employeeList.get(i);
+            int staffSpeed = minEfficiencyStaff.getKey(), staffEfficiency = minEfficiencyStaff.getValue();
+            sumSpeed += staffSpeed;
+            result = Math.max(result, sumSpeed * (long) staffEfficiency);
+            pq.offer(minEfficiencyStaff);
+            if (pq.size() == k) {
+                Pair<Integer, Integer> p = pq.poll();
+                sumSpeed -= p.getKey();
+            }
+        }
+        return (int) (result % 1000000007L);
     }
 
     // LC1700
