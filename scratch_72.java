@@ -7,7 +7,18 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.maxSumDivThree(new int[]{1, 2, 3, 4, 4}));
+        System.err.println(s.longestSubsequence("1001010", 5));
+    }
+
+    // LC2311 **
+    public int longestSubsequence(String s, int k) {
+        int sLen = s.length(), kLen = Integer.SIZE - Integer.numberOfLeadingZeros(k);
+        if (sLen < kLen) return sLen;
+        // kLen >= sLen, kLen - sLen >= 0
+        int alignWithK = Integer.parseInt(s.substring(sLen - kLen), 2);
+        int result = alignWithK > k ? kLen - 1 : kLen;
+        int leadingZeros = (int) s.substring(0, sLen - kLen).chars().filter(i -> i == '0').count();
+        return leadingZeros + result;
     }
 
     // LC2341
