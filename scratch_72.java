@@ -16,11 +16,7 @@ class Scratch {
         lc1262Nums = nums;
         int n = nums.length;
         memo = new Integer[n + 1][3];
-        int result = 0;
-        for (int i = n - 1; i >= 0; i--) {
-            result = Math.max(result, helper(i, 0));
-        }
-        return result;
+        return helper(n - 1, 0);
     }
 
     private int helper(int idx, int targetRemain) {
