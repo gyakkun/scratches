@@ -7,6 +7,19 @@ class Scratch {
         System.err.println(s.largestArea(new String[]{"02520253", "51551213", "03512513", "34312132", "21051025", "52005131", "34235150", "22154013"}));
     }
 
+    // LC1700
+    public int countStudents(int[] students, int[] sandwiches) {
+        int n = students.length;
+        int count = 0;
+        int[] remain = new int[2];
+        for (int i : sandwiches) remain[i]++;
+        while (count < n && remain[sandwiches[count]] > 0) {
+            remain[sandwiches[count]]--;
+            count++;
+        }
+        return n - count;
+    }
+
     // LCS 03
     Set<Integer> visited = new HashSet<>();
     char[][] matrix;
