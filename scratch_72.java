@@ -7,7 +7,34 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.longestSubsequence("1001010", 5));
+        System.err.println(s.kthGrammar(1, 1));
+        System.err.println(s.kthGrammar(2, 1));
+        System.err.println(s.kthGrammar(2, 2));
+        System.err.println(s.kthGrammar(30, (1<<16)));
+    }
+
+    // LC779
+    public int kthGrammar(int n, int k) {
+        int actualN = n - 1, actualK = k - 1;
+        List<Integer> remain = new ArrayList<>();
+        while (actualN >= 0) {
+            remain.add(actualK % 2);
+            actualK /= 2;
+            actualN--;
+        }
+        int s = remain.size(), cur = 0;
+        int[] zeroOne = {0, 1}, oneZero = {1, 0};
+        for (int i = s - 1; i >= 0; i--) {
+            int r = remain.get(i);
+            int next = -1;
+            if (cur == 0) {
+                next = zeroOne[r];
+            } else {
+                next = oneZero[r];
+            }
+            cur = next;
+        }
+        return cur;
     }
 
     // LCP49 Hard ** 楼教主解法
