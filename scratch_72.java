@@ -7,10 +7,25 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.kthGrammar(1, 1));
-        System.err.println(s.kthGrammar(2, 1));
-        System.err.println(s.kthGrammar(2, 2));
-        System.err.println(s.kthGrammar(30, (1 << 16)));
+        System.err.println(s.checkIfExist(new int[]{-2, 0, 10, -19, 4, 6, -8}));
+    }
+
+    // LC1346
+    public boolean checkIfExist(int[] arr) {
+        Map<Integer, Set<Integer>> m = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            m.putIfAbsent(arr[i], new HashSet<>());
+            m.get(arr[i]).add(i);
+        }
+        for (int i : arr) {
+            if (i == 0 && m.get(i).size() > 1) {
+                return true;
+            }
+            if (i != 0 && i % 2 == 0 && m.containsKey(i / 2)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // LCP50
