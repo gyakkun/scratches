@@ -10,7 +10,20 @@ class Scratch {
         System.err.println(s.kthGrammar(1, 1));
         System.err.println(s.kthGrammar(2, 1));
         System.err.println(s.kthGrammar(2, 2));
-        System.err.println(s.kthGrammar(30, (1<<16)));
+        System.err.println(s.kthGrammar(30, (1 << 16)));
+    }
+
+    // LCP50
+    public int giveGem(int[] gem, int[][] operations) {
+        for (int[] o : operations) {
+            int x = o[0], y = o[1];
+            int origX = gem[x], origY = gem[y];
+            gem[y] = origY + origX / 2;
+            gem[x] = origX - origX / 2;
+        }
+        Arrays.sort(gem);
+
+        return gem[gem.length - 1] - gem[0];
     }
 
     // LC779
