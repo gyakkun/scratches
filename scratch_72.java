@@ -10,6 +10,21 @@ class Scratch {
         System.err.println(s.checkIfExist(new int[]{-2, 0, 10, -19, 4, 6, -8}));
     }
 
+    // LC2294 ** 纸币试下 排序后不会出现分组不当导致的错划分组使得答案次佳的情况
+    public int partitionArray(int[] nums, int k) {
+        int n = nums.length;
+        if (n == 1) return 1;
+        Arrays.sort(nums);
+        int min = nums[0], result = 1;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > min + k) {
+                result++;
+                min = nums[i];
+            }
+        }
+        return result;
+    }
+
     // LC1346
     public boolean checkIfExist(int[] arr) {
         Map<Integer, Set<Integer>> m = new HashMap<>();
