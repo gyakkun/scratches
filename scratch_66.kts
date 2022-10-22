@@ -33,6 +33,45 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC1235 Hard
+    fun jobScheduling(startTime: IntArray, endTime: IntArray, profit: IntArray): Int {
+        val l = ArrayList<Triple<Int, Int, Int>>()
+        val n = startTime.size
+        val memo = Array<Int?>(n + 1) { null }
+        for (i in 0 until n) {
+            l.add(Triple(startTime[i], endTime[i], profit[i]))
+        }
+        l.sortBy { it.first } // Order by start time ascending
+        // Return max profit starting by mission in this idx (inclusive)
+        fun helper(idx: Int): Int {
+            if (idx < 0) return 0
+            if (idx == n - 1) return l[idx].third
+            if (memo[idx] != null) return memo[idx]!!
+            val start = l[idx].first
+            val end = l[idx].second
+            val profit = l[idx].third
+
+            var result = helper(idx + 1) // not choose this mission
+            // If choose this mission, then the next mission should be in far behind.
+            // Use binary search to locate the closest mission the start time of which is equal or larger than end time of current
+            var lo = idx + 1
+            var hi = n - 1
+            while (lo < hi) {
+                val mid = lo + (hi - lo) / 2
+                if (l[mid].first >= end) {
+                    hi = mid
+                } else {
+                    lo = mid + 1
+                }
+            }
+            var victimIdx = hi
+            if (l[hi].first < end) victimIdx = -1
+            result = Math.max(result, profit + helper(victimIdx))
+            return result.also { memo[idx] = it }
+        }
+        return helper(0)
+    }
+
     // LC886
     fun possibleBipartition(n: Int, dislikes: Array<IntArray>): Boolean {
         var dsu = DSUArray(2 * n)
