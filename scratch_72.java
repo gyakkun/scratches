@@ -1,6 +1,8 @@
+import com.sun.jndi.ldap.ext.StartTlsResponseImpl;
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,6 +14,36 @@ class Scratch {
                 1,
                 1,
                 0));
+    }
+
+    // LC1235 TBD
+    public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
+        int n = startTime.length;
+        List<int[]> l = new ArrayList<>(n);
+        TreeSet<Integer> startTS = new TreeSet<>(), endTS = new TreeSet<>();
+        for (int i = 0; i < n; i++) {
+            startTS.add(startTime[i]);
+            endTS.add(endTime[i]);
+        }
+        // 离散化
+        Map<Integer, Integer> startTimeMap = new HashMap<>(), endTimeMap = new HashMap<>();
+        List<Integer> startList = startTS.stream().toList(), endList = endTS.stream().toList();
+        for (int i = 0; i < startList.size(); i++) {
+            startTimeMap.put(startList.get(i), i);
+        }
+        for (int i = 0; i < endList.size(); i++) {
+            endTimeMap.put(endList.get(i), i);
+        }
+        for (int i = 0; i < n; i++) {
+            l.add(new int[]{startTimeMap.get(startTime[i]), endTimeMap.get(endTime[i]), profit[i]});
+        }
+        l.sort(Comparator.comparingInt(i -> i[0]));
+        Integer[] memo = new Integer[startTS.size() + endTS.size()];
+        BiFunction<Integer, Integer, Integer> helper = (startTimeIdx, nextStartTimeIdx) -> {
+            // 返回在当前下标开始时间(含)的情况下, 最多能获得多少利润
+            return -1;
+        };
+        return helper.apply(0, null);
     }
 
     // LC1768
