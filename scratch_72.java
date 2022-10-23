@@ -10,6 +10,27 @@ class Scratch {
         System.err.println(s.checkIfExist(new int[]{-2, 0, 10, -19, 4, 6, -8}));
     }
 
+    // LC2156
+    public String subStrHash(String s, int power, int modulo, int k, int hashValue) {
+        long hashLong = (long) hashValue;
+        char[] ca = s.toCharArray();
+        long hash = 0L;
+
+        // Cache each power result to avoid repetitive calculation
+        long[] powerCache = new long[k + 1];
+        long ongoing = 1L;
+        powerCache[0] = ongoing;
+        for (int i = 1; i < k; i++) {
+            ongoing *= power;
+            ongoing %= modulo;
+            powerCache[i] = ongoing;
+        }
+
+        // Cal the initial
+        // TBD
+        return null;
+    }
+
     // LC2294 ** 纸笔试下 排序后不会出现分组不当导致的错划分组使得答案次佳的情况
     public int partitionArray(int[] nums, int k) {
         int n = nums.length;
