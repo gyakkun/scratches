@@ -1174,7 +1174,7 @@ class Scratch {
     }
 
 
-    // LC1044
+    // LC1044 滚动哈希
     final long lc1044Mod = 1000000007l;
     final long lc1044Base1 = 29;
     final long lc1044Base2 = 31;

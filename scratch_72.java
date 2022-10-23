@@ -7,7 +7,11 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.checkIfExist(new int[]{-2, 0, 10, -19, 4, 6, -8}));
+        System.err.println(s.subStrHash("a",
+                1,
+                1,
+                1,
+                0));
     }
 
     // LC1768
@@ -26,25 +30,39 @@ class Scratch {
         return sb.toString();
     }
 
-    // LC2156
+    // LC2156 Hard ** 滚动哈希 需要及其熟悉模算术 TAG: Rabin-Karp
     public String subStrHash(String s, int power, int modulo, int k, int hashValue) {
-        long hashLong = (long) hashValue;
-        char[] ca = s.toCharArray();
-        long hash = 0L;
+        int n = s.length();
+        int result = -1;
+        long hashing, powering;
 
-        // Cache each power result to avoid repetitive calculation
-        long[] powerCache = new long[k + 1];
-        long ongoing = 1L;
-        powerCache[0] = ongoing;
+        String reversed = new StringBuilder(s).reverse().toString();
+        char[] ca = reversed.toCharArray();
+
+        hashing = (ca[0] - 'a' + 1) % modulo;
+        powering = 1L;
         for (int i = 1; i < k; i++) {
-            ongoing *= power;
-            ongoing %= modulo;
-            powerCache[i] = ongoing;
+            powering *= power;
+            powering %= modulo;
+            hashing *= power;
+            hashing += ca[i] - 'a' + 1;
+            hashing %= modulo;
         }
-
-        // Cal the initial
-        // TBD
-        return null;
+        if (hashing == hashValue) {
+            // result = k - 1 - k + 1;
+            result = 0;
+        }
+        for (int i = k; i < n; i++) {
+            hashing -= ((long) (ca[i - k] - 'a' + 1) * powering) % modulo;
+            hashing += modulo;
+            hashing *= power;
+            hashing += ca[i] - 'a' + 1;
+            hashing %= modulo;
+            if (hashing == hashValue) {
+                result = i - k + 1;
+            }
+        }
+        return new StringBuilder(reversed.substring(result, result + k)).reverse().toString();
     }
 
     // LC2294 ** 纸笔试下 排序后不会出现分组不当导致的错划分组使得答案次佳的情况
