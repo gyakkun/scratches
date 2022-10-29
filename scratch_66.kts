@@ -33,6 +33,16 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC1773
+    fun countMatches(items: List<List<String>>, ruleKey: String, ruleValue: String): Int {
+        return when (ruleKey) {
+            "type" -> items.count { it[0] == ruleValue }
+            "color" -> items.count { it[1] == ruleValue }
+            "name" -> items.count { it[2] == ruleValue }
+            else -> 0
+        }
+    }
+
     // LC1235 Hard
     fun jobScheduling(startTime: IntArray, endTime: IntArray, profit: IntArray): Int {
         val l = ArrayList<Triple<Int, Int, Int>>()
