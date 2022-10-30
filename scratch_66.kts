@@ -34,6 +34,67 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC15 3-Sum. Try to generalize.
+    class KSum {
+        fun threeSum(nums: IntArray): List<List<Int>> {
+            return kSum(nums, 0, 3)
+        }
+
+        fun kSum(nums: IntArray, target: Int, k: Int): MutableList<MutableList<Int>> {
+            if (k == 1) {
+                val result = java.util.ArrayList<MutableList<Int>>()
+                for (i in nums) if (i == target) result.add(mutableListOf(i))
+                return result
+            }
+            Arrays.sort(nums)
+            return kSum(nums, target, k, 0)
+        }
+
+        fun kSum(nums: IntArray, target: Int, k: Int, startIdx: Int): MutableList<MutableList<Int>> {
+            val len = nums.size - startIdx
+            if (k > len) return mutableListOf()
+            if (k == 2) {
+                var left = startIdx
+                var right = nums.size - 1
+                val result = java.util.ArrayList<MutableList<Int>>()
+                while (left < right) {
+                    if (nums[left] + nums[right] == target) {
+                        result.add(mutableListOf(nums[left], nums[right]))
+                        while (left < right && nums[left] == nums[left + 1]) {
+                            left++
+                        }
+                        left++
+                        while (left < right && nums[right] == nums[right - 1]) {
+                            right--
+                        }
+                        right--
+                    } else if (nums[left] + nums[right] < target) {
+                        left++
+                    } else if (nums[left] + nums[right] > target) {
+                        right--
+                    }
+                }
+                return result
+            }
+            val result = java.util.ArrayList<MutableList<Int>>()
+            for (i in startIdx..(nums.size - k)) {
+                // If can include ele in different idx with same value, then allow the first half of OR
+                if ((i > startIdx && nums[i] == nums[i - 1]) || (nums[i] + (k - 1) * nums[nums.size - 1] < target)) {
+                    continue
+                }
+                if (nums[i] + (k - 1) * nums[i + 1] > target) {
+                    break
+                }
+                val subResult = kSum(nums, target - nums[i], k - 1, i + 1)
+                for (j in subResult) {
+                    j.add(nums[i])
+                    result.add(j)
+                }
+            }
+            return result
+        }
+    }
+
     // LC784
     fun letterCasePermutation(s: String): List<String> {
         val result = ArrayList<String>()
