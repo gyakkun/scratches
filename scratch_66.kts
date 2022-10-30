@@ -1,6 +1,7 @@
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
@@ -32,6 +33,31 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 //}
 
 class Solution {
+
+    // LC784
+    fun letterCasePermutation(s: String): List<String> {
+        val result = ArrayList<String>()
+        fun helper(sb: StringBuilder, idx: Int) {
+            if (idx == s.length) {
+                result.add(sb.toString())
+                return
+            }
+            if (!Character.isLetter(s[idx])) {
+                sb.append(s[idx])
+                helper(sb, idx + 1)
+                sb.deleteCharAt(idx)
+                return
+            }
+            sb.append(s[idx].uppercaseChar())
+            helper(sb, idx + 1)
+            sb.deleteCharAt(idx)
+            sb.append(s[idx].lowercaseChar())
+            helper(sb, idx + 1)
+            sb.deleteCharAt(idx)
+        }
+        helper(StringBuilder(), 0)
+        return result
+    }
 
     // LC1773
     fun countMatches(items: List<List<String>>, ruleKey: String, ruleValue: String): Int {
@@ -101,7 +127,7 @@ class Solution {
         val allGroups = dsu.allGroups
         for ((disee, leader) in dedicatedParent) {
             var finalParent = dsu.father[leader]
-            if(allGroups[finalParent]!!.contains(disee)) return false
+            if (allGroups[finalParent]!!.contains(disee)) return false
         }
         return true
     }
