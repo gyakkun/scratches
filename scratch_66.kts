@@ -34,6 +34,27 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC1668 ???
+    fun maxRepeating(sequence: String, word: String): Int {
+        val len = word.length
+        var tmp = -1
+        var result = 0
+        for (i in sequence.indices) {
+            var ctr = 0
+            var prevIdx = -len + i
+            while (prevIdx <= sequence.length && sequence.indexOf(word, prevIdx + len).also { tmp = it } >= 0) {
+                if (tmp - prevIdx == len) {
+                    ctr++
+                } else {
+                    ctr = 1
+                }
+                prevIdx = tmp
+                if (ctr > result) result = ctr
+            }
+        }
+        return result
+    }
+
     // LC15 3-Sum. Try to generalize.
     class KSum {
         fun threeSum(nums: IntArray): List<List<Int>> {
@@ -93,6 +114,11 @@ class Solution {
             }
             return result
         }
+    }
+
+    // LC1662
+    fun arrayStringsAreEqual(word1: Array<String>, word2: Array<String>): Boolean {
+        return word1.reduce { a, b -> a + b } == word2.reduce { a, b -> a + b }
     }
 
     // LC784
