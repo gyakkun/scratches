@@ -34,6 +34,70 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+
+    fun ambiguousCoordinates(s: String): List<String> {
+        val workingStr = s.substring(1, s.length - 1)
+        val result = ArrayList<String>()
+        fun judge(num: String): Boolean {
+            if (num.indexOf(".") < 0) {
+                if (num[0] == '0') {
+                    return num.length == 1
+                }
+            } else {
+                val split = num.split(".")
+                if (split.size != 2) return false
+                if (!judge(split[0])) return false
+                if (split[1].endsWith('0')) return false
+            }
+            return true
+        }
+
+        fun insertPoint(num: String): List<String> {
+            val result = ArrayList<String>()
+            result.add(num)
+            for (i in 1 until num.length) {
+                result.add(num.substring(0, i) + "." + num.substring(i))
+            }
+            return result
+        }
+
+        for (i in 1 until workingStr.length) {
+            val firstHalf = workingStr.substring(0, i)
+            val secondHalf = workingStr.substring(i)
+            val firstHalfPointed = insertPoint(firstHalf)
+            val secondHalfPointed = insertPoint(secondHalf)
+            for (j in firstHalfPointed) {
+                if (!judge(j)) continue
+                for (k in secondHalfPointed) {
+                    if (!judge(k)) continue
+                    result.add("($j, $k)")
+                }
+            }
+        }
+        return result
+    }
+
+    // LC1678 尝试状态机思路
+    fun interpret(command: String): String? {
+        val sb = StringBuilder()
+        val stepMap = mapOf(
+            'G' to 1,
+            '(' to 1,
+            'a' to 3 // 跳过"o)", 要+3
+        )
+        val appendMap = mapOf(
+            'G' to "G",
+            ')' to "o",
+            'a' to "al"
+        )
+        var ptr = 0
+        while (ptr < command.length) {
+            sb.append(appendMap[command[ptr]] ?: "")
+            ptr += stepMap[command[ptr]] ?: 1
+        }
+        return sb.toString()
+    }
+
     // LC1668 ???
     fun maxRepeating(sequence: String, word: String): Int {
         val len = word.length
