@@ -14,7 +14,6 @@ class Scratch {
     }
 
     // LC864 Hard
-    Integer lc864Result = null;
     int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     public int shortestPathAllKeys(String[] grid) {
@@ -53,10 +52,6 @@ class Scratch {
     private int helper(char[][] grid, Set<Character> remain, int[][][] coordinate, int r, int c, int prevSteps) {
         if (remain.isEmpty()) {
             return 0;
-        }
-        // 剪枝 (错误的)
-        if (lc864Result != null && prevSteps >= lc864Result) {
-            // return Integer.MAX_VALUE / 2;
         }
         int m = grid.length, n = grid[0].length;
         // BFS 求出所有可达的钥匙的位置
@@ -104,13 +99,6 @@ class Scratch {
             remain.remove(ch);
 
             result = Math.min(result, currentSteps + helper(grid, remain, coordinate, currentRow, currentCol, currentSteps + prevSteps));
-            if (remain.isEmpty()) {
-                if (lc864Result == null) {
-                    lc864Result = result;
-                } else {
-                    lc864Result = Math.min(lc864Result, result);
-                }
-            }
 
             grid[unlockedRow][unlockedCol] = Character.toUpperCase(ch);
             remain.add(ch);
