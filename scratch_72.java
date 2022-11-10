@@ -1,4 +1,3 @@
-import com.sun.jndi.ldap.ext.StartTlsResponseImpl;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -9,11 +8,116 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.subStrHash("a",
-                1,
-                1,
-                1,
-                0));
+        System.err.println(s.shortestPathAllKeys(new String[]{
+                "..#....##.","....d.#.D#","#...#.c...","..##.#..a.","...#....##","#....b....",".#..#.....","..........",".#..##..A.",".B..C.#..@"
+        }));
+    }
+
+    // LC864 Hard
+    Integer lc864Result = null;
+    int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    public int shortestPathAllKeys(String[] grid) {
+        int m = grid.length, n = grid[0].length();
+        char[][] mat = new char[m][];
+        for (int i = 0; i < m; i++) mat[i] = grid[i].toCharArray();
+        int[][][] coordinate = new int[128][][];
+        int row = -1, col = -1;
+        Set<Character> remain = new HashSet<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = mat[i][j];
+                if (c == '@') {
+                    row = i;
+                    col = j;
+                } else if (Character.isLowerCase(c)) { // Key
+                    if (coordinate[c] == null) {
+                        coordinate[c] = new int[2][];
+                    }
+                    coordinate[c][0] = new int[]{i, j};
+                    remain.add(c);
+                } else if (Character.isUpperCase(c)) { // Lock
+                    char upper = Character.toLowerCase(c);
+                    if (coordinate[upper] == null) {
+                        coordinate[upper] = new int[2][];
+                    }
+                    coordinate[upper][1] = new int[]{i, j};
+                }
+            }
+        }
+        int r = helper(mat, remain, coordinate, row, col, 0);
+        if (r >= Integer.MAX_VALUE / 2) return -1;
+        return r;
+    }
+
+    private int helper(char[][] grid, Set<Character> remain, int[][][] coordinate, int r, int c, int prevSteps) {
+        if (remain.isEmpty()) {
+            return 0;
+        }
+        // 剪枝 (错误的)
+        if (lc864Result != null && prevSteps >= lc864Result) {
+            // return Integer.MAX_VALUE / 2;
+        }
+        int m = grid.length, n = grid[0].length;
+        // BFS 求出所有可达的钥匙的位置
+        Deque<Integer> q = new LinkedList<>();
+        q.offer(r * n + c);
+        List<Pair<Character, Integer>> reachable = new ArrayList<>();
+        Set<Integer> visited = new HashSet<>();
+        int layer = -1;
+        outer:
+        while (!q.isEmpty()) {
+            int qs = q.size();
+            layer++;
+            for (int i = 0; i < qs; i++) {
+                int p = q.poll();
+                if (visited.contains(p)) continue;
+                visited.add(p);
+                int row = p / n, col = p % n;
+                if (Character.isLowerCase(grid[row][col])) {
+                    if (remain.contains(grid[row][col])) {
+                        reachable.add(new Pair<>(grid[row][col], layer));
+                        if (reachable.size() == remain.size()) break outer;
+                    }
+                }
+                for (int[] d : dirs) {
+                    int nr = row + d[0], nc = col + d[1];
+                    if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] != '#' && !Character.isUpperCase(grid[nr][nc])) {
+                        int next = nr * n + nc;
+                        if (visited.contains(next)) continue;
+                        q.offer(next);
+                    }
+                }
+            }
+        }
+        if (reachable.isEmpty()) {
+            return Integer.MAX_VALUE / 2;
+        }
+        int result = Integer.MAX_VALUE / 2;
+        for (Pair<Character, Integer> p : reachable) {
+            Character ch = p.getKey();
+            int currentSteps = p.getValue();
+            int currentRow = coordinate[ch][0][0], currentCol = coordinate[ch][0][1];
+            int unlockedRow = coordinate[ch][1][0], unlockedCol = coordinate[ch][1][1];
+
+            grid[unlockedRow][unlockedCol] = '.';
+            remain.remove(ch);
+
+            result = Math.min(result, currentSteps + helper(grid, remain, coordinate, currentRow, currentCol, currentSteps + prevSteps));
+            if (remain.isEmpty()) {
+                if (lc864Result == null) {
+                    lc864Result = result;
+                } else {
+                    lc864Result = Math.min(lc864Result, result);
+                }
+            }
+
+            grid[unlockedRow][unlockedCol] = Character.toUpperCase(ch);
+            remain.add(ch);
+
+        }
+
+        return result;
     }
 
     // LC1235 TBD
