@@ -8,13 +8,38 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.shortestPathAllKeys(new String[]{
-                "..#....##.","....d.#.D#","#...#.c...","..##.#..a.","...#....##","#....b....",".#..#.....","..........",".#..##..A.",".B..C.#..@"
-        }));
+        System.err.println(s.numTilings(4));
+    }
+
+    // LC790 DP
+    Integer[] memo;
+
+    public int numTilings(int n) {
+        memo = new Integer[n + 3];
+        memo[0] = 0;
+        memo[1] = 1;
+        memo[2] = 2;
+        memo[3] = 5;
+        return helper(n);
+    }
+
+    public int helper(int n) {
+        if (memo[n] != null) {
+            return memo[n];
+        }
+        long result = 0l;
+        for (int i = 1; i <=3; i++) {
+            int left = i, right = n - i;
+            long tmp = helper(left) * helper(right);
+            tmp %= 1000000007L;
+            result += tmp;
+            result %= 1000000007L;
+        }
+        return memo[n] = (int) result;
     }
 
     // LC864 Hard
-    int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    int[][] lc864Dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     public int shortestPathAllKeys(String[] grid) {
         int m = grid.length, n = grid[0].length();
@@ -44,12 +69,12 @@ class Scratch {
                 }
             }
         }
-        int r = helper(mat, remain, coordinate, row, col, 0);
+        int r = lc864Helper(mat, remain, coordinate, row, col, 0);
         if (r >= Integer.MAX_VALUE / 2) return -1;
         return r;
     }
 
-    private int helper(char[][] grid, Set<Character> remain, int[][][] coordinate, int r, int c, int prevSteps) {
+    private int lc864Helper(char[][] grid, Set<Character> remain, int[][][] coordinate, int r, int c, int prevSteps) {
         if (remain.isEmpty()) {
             return 0;
         }
@@ -75,7 +100,7 @@ class Scratch {
                         if (reachable.size() == remain.size()) break outer;
                     }
                 }
-                for (int[] d : dirs) {
+                for (int[] d : lc864Dirs) {
                     int nr = row + d[0], nc = col + d[1];
                     if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] != '#' && !Character.isUpperCase(grid[nr][nc])) {
                         int next = nr * n + nc;
@@ -98,7 +123,7 @@ class Scratch {
             grid[unlockedRow][unlockedCol] = '.';
             remain.remove(ch);
 
-            result = Math.min(result, currentSteps + helper(grid, remain, coordinate, currentRow, currentCol, currentSteps + prevSteps));
+            result = Math.min(result, currentSteps + lc864Helper(grid, remain, coordinate, currentRow, currentCol, currentSteps + prevSteps));
 
             grid[unlockedRow][unlockedCol] = Character.toUpperCase(ch);
             remain.add(ch);
@@ -339,10 +364,10 @@ class Scratch {
         lc1262Nums = nums;
         int n = nums.length;
         lc1262Memo = new Integer[n + 1][3];
-        return helper(n - 1, 0);
+        return lc864Helper(n - 1, 0);
     }
 
-    private int helper(int idx, int targetRemain) {
+    private int lc864Helper(int idx, int targetRemain) {
         if (idx == 0) {
             if (lc1262Nums[idx] % 3 != targetRemain) return 0;
             return lc1262Nums[idx];
@@ -352,13 +377,13 @@ class Scratch {
         int currentRemain = lc1262Nums[idx] % 3, currentValue = lc1262Nums[idx];
         // Choose current
         int nextTargetRemain = (targetRemain - currentRemain + 3) % 3;
-        int tmpChooseRightPart = helper(idx - 1, nextTargetRemain);
+        int tmpChooseRightPart = lc864Helper(idx - 1, nextTargetRemain);
         int tmpResult = currentValue + tmpChooseRightPart;
         if (tmpResult % 3 == targetRemain) {
             result = Math.max(result, tmpResult);
         }
         // Don't choose current
-        tmpResult = helper(idx - 1, targetRemain);
+        tmpResult = lc864Helper(idx - 1, targetRemain);
         if (tmpResult % 3 == targetRemain) {
             result = Math.max(result, tmpResult);
         }

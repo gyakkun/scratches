@@ -34,6 +34,25 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC775
+    fun isIdealPermutation(nums: IntArray) = nums.indices.all { Math.abs(nums[it] - it) <= 1 }
+
+    // LC1710
+    fun maximumUnits(boxTypes: Array<IntArray>, truckSize: Int): Int {
+        boxTypes.sortBy { -it[1] }
+        var remain = truckSize
+        var result = 0
+        for (i in boxTypes) {
+            if (remain >= i[0]) {
+                result += i[0] * i[1]
+                remain -= i[0]
+            } else {
+                result += remain * i[1]
+                break
+            }
+        }
+        return result
+    }
 
     fun ambiguousCoordinates(s: String): List<String> {
         val workingStr = s.substring(1, s.length - 1)
