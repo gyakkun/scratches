@@ -11,6 +11,23 @@ class Scratch {
         System.err.println(s.numTilings(4));
     }
 
+    // LC799 DP **
+    public double champagneTower(int poured, int queryRow, int queryGlass) {
+        double[] row = {poured};
+        for (int i = 1; i <= queryRow; i++) {
+            double[] nr = new double[i + 1];
+            for (int j = 0; j < row.length; j++) {
+                double volume = row[j];
+                if (volume > 1D) {
+                    nr[j] += (volume - 1) / 2;
+                    nr[j + 1] += (volume - 1) / 2;
+                }
+            }
+            row = nr;
+        }
+        return Math.min(1d, row[queryGlass]);
+    }
+
     // LC790 DP
     Integer[] memo;
 
@@ -28,7 +45,7 @@ class Scratch {
             return memo[n];
         }
         long result = 0l;
-        for (int i = 1; i <=3; i++) {
+        for (int i = 1; i <= 3; i++) {
             int left = i, right = n - i;
             long tmp = helper(left) * helper(right);
             tmp %= 1000000007L;
