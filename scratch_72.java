@@ -27,6 +27,34 @@ class Scratch {
         }
         return Math.min(1d, row[queryGlass]);
     }
+    
+    // LC792
+    public int numMatchingSubseq(String s, String[] words) {
+        char[] ca = s.toCharArray();
+        char[][] wca = new char[words.length][];
+        int result = 0;
+        for (int i = 0; i < words.length; i++) wca[i] = words[i].toCharArray();
+        Deque<int[]>[] qq = new Deque[128];
+        for (int i = 'a'; i <= 'z'; i++) qq[i] = new LinkedList<>();
+        for (int i = 0; i < wca.length; i++) {
+            qq[wca[i][0]].offer(new int[]{i, 0});
+        }
+        for (char c : ca) {
+            int qs = qq[c].size();
+            for (int i = 0; i < qs; i++) {
+                int[] p = qq[c].poll();
+                int whichWord = p[0];
+                int idxOnWord = p[1];
+                if (idxOnWord == wca[whichWord].length - 1) {
+                    result++;
+                } else {
+                    p[1]++;
+                    qq[wca[whichWord][p[1]]].offer(p);
+                }
+            }
+        }
+        return result;
+    }
 
     // LC790 DP
     Integer[] memo;
