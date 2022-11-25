@@ -34,6 +34,46 @@ System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
 class Solution {
 
+    // LC809
+    fun expressiveWords(s: String, words: Array<String>): Int {
+        val target = groupWord(s)
+        var result = 0
+        outer@
+        for (word in words) {
+            val cur = groupWord(word)
+            if (cur.size != target.size) continue@outer
+            inner@
+            for (i in cur.indices) {
+                if (target[i][0] != cur[i][0]) continue@outer
+                if (target[i][1] == cur[i][1]) continue@inner
+                if (target[i][1] < cur[i][1] || target[i][1] < 3) continue@outer
+            }
+            result++
+        }
+        return result
+    }
+
+    fun groupWord(word: String): List<IntArray> {
+        val ca = word.toCharArray()
+        var prev: Char? = null
+        var curPair: IntArray? = null
+        val result = ArrayList<IntArray>()
+        for (i in ca.indices) {
+            val cur = ca[i]
+            if (prev == null || cur != prev) {
+                if (curPair != null) {
+                    result.add(curPair)
+                }
+                curPair = IntArray(2) { 0 }
+                curPair[0] = cur.toInt()
+            }
+            curPair!![1]++
+            prev = cur
+        }
+        result.add(curPair!!)
+        return result
+    }
+
     // LC775
     fun isIdealPermutation(nums: IntArray) = nums.indices.all { Math.abs(nums[it] - it) <= 1 }
 
