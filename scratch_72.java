@@ -8,7 +8,69 @@ import java.util.stream.Collectors;
 class Scratch {
     public static void main(String[] args) {
         Scratch s = new Scratch();
-        System.err.println(s.numTilings(4));
+        System.err.println(s.reachableNodes(new int[][]{{0, 1, 10}, {0, 2, 1}, {1, 2, 2}}, 6, 3));
+    }
+
+    // LC882 Hard TLE **
+    public int reachableNodes(int[][] edges, int maxMoves, int n) {
+        Map<Integer, Map<Integer, Integer>> farMostOnEdge = new HashMap<>();
+        Map<Integer, Map<Integer, Integer>> edgeMap = new HashMap<>();
+        Set<Integer> visited = new HashSet<>();
+        visited.add(0);
+        for (int[] e : edges) {
+            edgeMap.putIfAbsent(e[0], new HashMap<>());
+            edgeMap.putIfAbsent(e[1], new HashMap<>());
+            edgeMap.get(e[0]).put(e[1], e[2]);
+            edgeMap.get(e[1]).put(e[0], e[2]);
+
+            farMostOnEdge.putIfAbsent(e[0], new HashMap<>());
+            farMostOnEdge.putIfAbsent(e[1], new HashMap<>());
+            farMostOnEdge.get(e[0]).put(e[1], 0);
+            farMostOnEdge.get(e[1]).put(e[0], 0);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(i -> -i[2])); // [from, to, /*nth always 0*/, remain]
+        Map<Integer, Integer> zeroNext = edgeMap.getOrDefault(0, new HashMap<>());
+        for (Map.Entry<Integer, Integer> e : zeroNext.entrySet()) {
+            pq.offer(new int[]{0, e.getKey(), maxMoves});
+        }
+        while (!pq.isEmpty()) {
+            int[] p = pq.poll();
+            int from = p[0], to = p[1], remain = p[2];
+            int pointsOnEdge = edgeMap.get(from).get(to);
+            visited.add(from);
+            int farMostEverOnTheEdge = farMostOnEdge.get(from).get(to);
+            if (farMostEverOnTheEdge >= remain) continue;
+            if (remain <= pointsOnEdge) {
+                farMostOnEdge.get(from).put(to, remain);
+                continue;
+            } else if (/* pointsOnEdge < */remain <= pointsOnEdge + 1) {
+                farMostOnEdge.get(from).put(to, pointsOnEdge);
+                visited.add(to);
+                continue;
+            } else {
+                farMostOnEdge.get(from).put(to, pointsOnEdge);
+                int newFrom = to, newRemain = remain - (pointsOnEdge + 1);
+                for (Map.Entry<Integer, Integer> e : edgeMap.get(newFrom).entrySet()) {
+                    pq.offer(new int[]{newFrom, e.getKey(), newRemain});
+                }
+            }
+        }
+        int result = visited.size();
+        for (int[] e : edges) {
+            int a = e[0], b = e[1], points = e[2];
+            int fromAToB = farMostOnEdge.get(a).get(b), fromBToA = farMostOnEdge.get(b).get(a);
+            result += Math.min(fromAToB + fromBToA, points);
+        }
+
+        return result;
+    }
+
+    private int getEdgeId(int a, int b, int occupiedBits) { // n vertexes
+        return a | (b << occupiedBits);
+    }
+
+    private int[] getEdgeVertexes(int id, int occupiedBits) {
+        return new int[]{id & ((1 << occupiedBits) - 1), id >> occupiedBits};
     }
 
     // LC799 DP **
@@ -27,7 +89,7 @@ class Scratch {
         }
         return Math.min(1d, row[queryGlass]);
     }
-    
+
     // LC792
     public int numMatchingSubseq(String s, String[] words) {
         char[] ca = s.toCharArray();
