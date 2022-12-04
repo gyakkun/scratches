@@ -12,59 +12,51 @@ class Scratch {
         // System.err.println(s.reachableNodes(new int[][]{{0, 1, 10}, {0, 2, 1}, {1, 2, 2}}, 6, 3));
         System.err.println(s.
 //                largestSumOfAverages(new int[]{9, 1, 2, 3, 9}, 3));
-        largestSumOfAverages(new int[]{1, 2, 3, 4, 5, 6, 7}, 4));
+        closestCost(new int[]{52, 48, 17, 44, 33, 17, 58, 52},
+        new int[]{74, 28, 20, 98, 46, 9, 1, 1, 22, 2},
+        93));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + " ms.");
     }
 
     // LC1774
-    int lc1774Result = -1;
-    Map<Integer, Map<Integer, Integer>> memo = new HashMap<>();
+    int lc1774Result = Integer.MAX_VALUE;
 
     public int closestCost(int[] baseCosts, int[] toppingCosts, int target) {
         int numBase = baseCosts.length;
         int numTopping = toppingCosts.length;
-        Set<Integer> visited = new HashSet<>();
         for (int i = 0; i < baseCosts.length; i++) {
-            if (target - baseCosts[i] < 0) continue;
-            if (target - baseCosts[i] == 0) return target;
-            if (visited.contains(baseCosts[i])) continue;
-            visited.add(baseCosts[i]);
-            int helperResult = helper(target - baseCosts[i], 0, toppingCosts);
-            if (helperResult == target - baseCosts[i]) return target;
+            int newCost = baseCosts[i];
+            if (Math.abs(newCost - target) < Math.abs(lc1774Result - target)) {
+                lc1774Result = newCost;
+            } else if (Math.abs(newCost - target) == Math.abs(lc1774Result - target)) {
+                if (newCost < lc1774Result) {
+                    lc1774Result = newCost;
+                }
+            }
+            helper(newCost, 0, new int[numTopping], toppingCosts, target);
         }
         return lc1774Result;
     }
 
     // 返回最接近remainBudget情况下的规划
-    private int helper(int remainBudget, int toppingMask, int[] toppingCosts) {
-        if (memo.containsKey(remainBudget) && memo.get(remainBudget).containsKey(toppingMask)) {
-            return memo.get(remainBudget).get(toppingMask);
-        }
-        memo.putIfAbsent(remainBudget, new HashMap<>());
-        int numTopping = toppingCosts.length;
-        int fullMask = (1 << (numTopping * 2)) - 1;
-        int rightFullMask = (1 << numTopping) - 1;
-        int leftFullMask = fullMask ^ rightFullMask;
-        int left = (toppingMask & leftFullMask) >> numTopping;
-        int right = toppingMask & rightFullMask;
-        int minDistance = remainBudget;
-        int cost = 0;
-        for (int i = 0; i < numTopping; i++) {
-            if (remainBudget < toppingCosts[i]) continue;
-            int leftCount = (left >> i) & 1;
-            int rightCount = (right >> i) & 1;
-            int allocatedCount = leftCount + rightCount;
-            if (allocatedCount == 2) {
-                continue;
-            } else if (allocatedCount == 1) {
-                int newBudget = remainBudget - toppingCosts[i];
-                int newLeft = left & (1 << i);
-                int newRight = right & (1 << i);
-                int newMask = (left << numTopping) | right;
-
-            } else if (allocatedCount == 0) {
-
+    private void helper(int cost, int idx, int[] toppingCount, int[] toppingCosts, int target) {
+        for (int i = idx; i < toppingCosts.length; i++) {
+            if (toppingCount[i] == 2) continue;
+            int origCount = toppingCount[i];
+            // if (Math.abs(cost + toppingCosts[i] - target) > Math.abs(lc1774Result - target)) continue;
+            for (int j = origCount + 1; j <= 2; j++) {
+                toppingCount[i] = j;
+                int newCost = cost + toppingCosts[i] * (j - origCount);
+                if (Math.abs(newCost - target) < Math.abs(lc1774Result - target)) {
+                    lc1774Result = newCost;
+                } else if (Math.abs(newCost - target) == Math.abs(lc1774Result - target)) {
+                    if (newCost < lc1774Result) {
+                        lc1774Result = newCost;
+                    }
+                }
+                helper(newCost, i + 1, toppingCount, toppingCosts, target);
+                toppingCount[i] = origCount;
             }
         }
     }
