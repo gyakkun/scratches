@@ -17,6 +17,58 @@ class Scratch {
         System.err.println("TIMING: " + timing + " ms.");
     }
 
+    // LC1774
+    int lc1774Result = -1;
+    Map<Integer, Map<Integer, Integer>> memo = new HashMap<>();
+
+    public int closestCost(int[] baseCosts, int[] toppingCosts, int target) {
+        int numBase = baseCosts.length;
+        int numTopping = toppingCosts.length;
+        Set<Integer> visited = new HashSet<>();
+        for (int i = 0; i < baseCosts.length; i++) {
+            if (target - baseCosts[i] < 0) continue;
+            if (target - baseCosts[i] == 0) return target;
+            if (visited.contains(baseCosts[i])) continue;
+            visited.add(baseCosts[i]);
+            int helperResult = helper(target - baseCosts[i], 0, toppingCosts);
+            if (helperResult == target - baseCosts[i]) return target;
+        }
+        return lc1774Result;
+    }
+
+    // 返回最接近remainBudget情况下的规划
+    private int helper(int remainBudget, int toppingMask, int[] toppingCosts) {
+        if (memo.containsKey(remainBudget) && memo.get(remainBudget).containsKey(toppingMask)) {
+            return memo.get(remainBudget).get(toppingMask);
+        }
+        memo.putIfAbsent(remainBudget, new HashMap<>());
+        int numTopping = toppingCosts.length;
+        int fullMask = (1 << (numTopping * 2)) - 1;
+        int rightFullMask = (1 << numTopping) - 1;
+        int leftFullMask = fullMask ^ rightFullMask;
+        int left = (toppingMask & leftFullMask) >> numTopping;
+        int right = toppingMask & rightFullMask;
+        int minDistance = remainBudget;
+        int cost = 0;
+        for (int i = 0; i < numTopping; i++) {
+            if (remainBudget < toppingCosts[i]) continue;
+            int leftCount = (left >> i) & 1;
+            int rightCount = (right >> i) & 1;
+            int allocatedCount = leftCount + rightCount;
+            if (allocatedCount == 2) {
+                continue;
+            } else if (allocatedCount == 1) {
+                int newBudget = remainBudget - toppingCosts[i];
+                int newLeft = left & (1 << i);
+                int newRight = right & (1 << i);
+                int newMask = (left << numTopping) | right;
+
+            } else if (allocatedCount == 0) {
+
+            }
+        }
+    }
+
     // LC813
     public double largestSumOfAverages(int[] nums, int ik) {//最多K组
         double n = nums.length, k = ik;
@@ -33,12 +85,12 @@ class Scratch {
         // Status : [o,p], 在前o个数(1到n),分p组
         double result = memo[in][1];
         for (int i = ik; i > 0; i--) {
-            result = Math.max(result, helper(in, i, memo, prefix));
+            result = Math.max(result, lc813Helper(in, i, memo, prefix));
         }
         return result;
     }
 
-    private double helper(int o, int p, Double[][] memo, double[] prefix) {
+    private double lc813Helper(int o, int p, Double[][] memo, double[] prefix) {
         if (p == 1) {
             return prefix[o] / (o + 0d);
         }
@@ -52,7 +104,7 @@ class Scratch {
             double count = o - i;
             double sum = prefix[o] - prefix[i];
             double avg = sum / count;
-            double tmp = avg + helper(i, p - 1, memo, prefix);
+            double tmp = avg + lc813Helper(i, p - 1, memo, prefix);
             result = Math.max(result, tmp);
         }
         return memo[o][p] = result;
