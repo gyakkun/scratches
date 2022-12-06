@@ -12,11 +12,57 @@ class Scratch {
         // System.err.println(s.reachableNodes(new int[][]{{0, 1, 10}, {0, 2, 1}, {1, 2, 2}}, 6, 3));
         System.err.println(s.
 //                largestSumOfAverages(new int[]{9, 1, 2, 3, 9}, 3));
-        closestCost(new int[]{52, 48, 17, 44, 33, 17, 58, 52},
-        new int[]{74, 28, 20, 98, 46, 9, 1, 1, 22, 2},
-        93));
+        numDifferentIntegers("a1b01c001"));
         timing = System.currentTimeMillis() - timing;
         System.err.println("TIMING: " + timing + " ms.");
+    }
+
+    // LC1805
+    public int numDifferentIntegers(String word) {
+        String[] arr = word.split("[a-z]+");
+        Set<String> set = new HashSet<>();
+        for (String c : arr) {
+            if (c.length() == 0) {
+                continue;
+            }
+            int i = 0;
+            while (c.charAt(i) == '0' && i < c.length() - 1) {
+                i++;
+            }
+            set.add(c.substring(i));
+        }
+        return set.size();
+    }
+
+    // LC1687 HARD **
+    public int boxDelivering(int[][] boxes, int portsCount, int maxBoxes, int maxWeight) {
+        int numBox = boxes.length;
+        int[] wp = new int[numBox + 1]; // wPrefix
+        for (int i = 1; i <= numBox; i++) wp[i] = wp[i - 1] + boxes[i - 1][0];
+        // [i,j] 总重 wp[j+1]-wp[i]
+        int[] nipif = new int[numBox - 1]; // Neighbour Identical Port Indicator Func
+        for (int i = 0; i < numBox - 1; i++) {
+            if (boxes[i][1] == boxes[i + 1][1]) {
+                nipif[i] = 0;
+            } else {
+                nipif[i] = 1;
+            }
+        }
+        int[] np = new int[numBox]; // nipifPrefix
+        for (int i = 1; i < numBox; i++) np[i] = np[i - 1] + nipif[i - 1];
+        // [i,j] 要运输 np[j] - np[i] + 2 次
+
+
+        // dp[i] 表示 前 i (含, 从1计) 最少要运输多少个单位长度
+        // 答案为 dp[numBox]
+
+        // dp[i] = min( dp[j] + np[i-1] - np[j] + 2 )
+        // 其中
+        // 0 <= j < i <= numBox
+        // wp[i] - wp[j] <= maxWeight
+        // i - j <= maxBoxes
+        // dp[0] = 0
+        return -1;
     }
 
     // LC1774
@@ -34,13 +80,13 @@ class Scratch {
                     lc1774Result = newCost;
                 }
             }
-            helper(newCost, 0, new int[numTopping], toppingCosts, target);
+            lc1774Helper(newCost, 0, new int[numTopping], toppingCosts, target);
         }
         return lc1774Result;
     }
 
     // 返回最接近remainBudget情况下的规划
-    private void helper(int cost, int idx, int[] toppingCount, int[] toppingCosts, int target) {
+    private void lc1774Helper(int cost, int idx, int[] toppingCount, int[] toppingCosts, int target) {
         for (int i = idx; i < toppingCosts.length; i++) {
             if (toppingCount[i] == 2) continue;
             int origCount = toppingCount[i];
@@ -55,7 +101,7 @@ class Scratch {
                         lc1774Result = newCost;
                     }
                 }
-                helper(newCost, i + 1, toppingCount, toppingCosts, target);
+                lc1774Helper(newCost, i + 1, toppingCount, toppingCosts, target);
                 toppingCount[i] = origCount;
             }
         }
