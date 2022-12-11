@@ -17,6 +17,38 @@ class Scratch {
         System.err.println("TIMING: " + timing + " ms.");
     }
 
+    // LC1691 Hard **
+    Integer[] memo;
+
+    public int maxHeight(int[][] cuboids) {
+        int result = 0;
+        for (int[] i : cuboids) {
+            Arrays.sort(i);
+            result = Math.max(result, i[2]);
+        }
+        Arrays.sort(cuboids, Comparator.comparingInt(a -> (a[0] + a[1] + a[2])));
+        memo = new Integer[cuboids.length + 1];
+
+        for (int i = 0; i < cuboids.length; i++) {
+            result = Math.max(result, helper(cuboids, i));
+        }
+        return result;
+    }
+
+    private int helper(int[][] cuboids, int topIdx) {
+        if (topIdx < 0 || topIdx >= cuboids.length) {
+            return 0;
+        }
+        if (memo[topIdx] != null) return memo[topIdx];
+        int result = cuboids[topIdx][2];
+        for (int i = topIdx - 1; i >= 0; i--) {
+            if (cuboids[i][0] <= cuboids[topIdx][0] && cuboids[i][1] <= cuboids[topIdx][1] && cuboids[i][2] <= cuboids[topIdx][2]) {
+                result = Math.max(result, cuboids[topIdx][2] + helper(cuboids, i));
+            }
+        }
+        return memo[topIdx] = result;
+    }
+
     // LC1805
     public int numDifferentIntegers(String word) {
         String[] arr = word.split("[a-z]+");
