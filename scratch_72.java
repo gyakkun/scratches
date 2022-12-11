@@ -19,8 +19,10 @@ class Scratch {
 
     // LC1691 Hard **
     Integer[] memo;
+    int[][] c;
 
     public int maxHeight(int[][] cuboids) {
+        c = cuboids;
         int result = 0;
         for (int[] i : cuboids) {
             Arrays.sort(i);
@@ -29,24 +31,24 @@ class Scratch {
         Arrays.sort(cuboids, Comparator.comparingInt(a -> (a[0] + a[1] + a[2])));
         memo = new Integer[cuboids.length + 1];
 
-        for (int i = 0; i < cuboids.length; i++) {
-            result = Math.max(result, helper(cuboids, i));
+        for (int i = cuboids.length - 1; i >= 0; i--) {
+            result = Math.max(result, helper(i));
         }
         return result;
     }
 
-    private int helper(int[][] cuboids, int topIdx) {
-        if (topIdx < 0 || topIdx >= cuboids.length) {
+    private int helper(int bottomIdx) {
+        if (bottomIdx < 0 || bottomIdx >= c.length) {
             return 0;
         }
-        if (memo[topIdx] != null) return memo[topIdx];
-        int result = cuboids[topIdx][2];
-        for (int i = topIdx - 1; i >= 0; i--) {
-            if (cuboids[i][0] <= cuboids[topIdx][0] && cuboids[i][1] <= cuboids[topIdx][1] && cuboids[i][2] <= cuboids[topIdx][2]) {
-                result = Math.max(result, cuboids[topIdx][2] + helper(cuboids, i));
+        if (memo[bottomIdx] != null) return memo[bottomIdx];
+        int result = c[bottomIdx][2];
+        for (int i = bottomIdx - 1; i >= 0; i--) {
+            if (c[i][0] <= c[bottomIdx][0] && c[i][1] <= c[bottomIdx][1] && c[i][2] <= c[bottomIdx][2]) {
+                result = Math.max(result, c[bottomIdx][2] + helper(i));
             }
         }
-        return memo[topIdx] = result;
+        return memo[bottomIdx] = result;
     }
 
     // LC1805
