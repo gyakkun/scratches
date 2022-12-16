@@ -17,6 +17,21 @@ class Scratch {
         System.err.println("TIMING: " + timing + " ms.");
     }
 
+    // LC1785
+    public int minElements(int[] nums, int limit, int goal) {
+        long sum = 0;
+        for (int i : nums) sum += i;
+        long delta = (long) goal - sum;
+        if (delta == 0) return 0;
+        if (delta > 0) {
+            return (int) ((delta + (long) limit - 1) / (long) limit);
+        }
+        if (delta < 0) {
+            return (int) ((-delta + (long) limit - 1) / limit);
+        }
+        return -1;
+    }
+
     // LC1691 Hard **
     Integer[] memo;
     int[][] c;
