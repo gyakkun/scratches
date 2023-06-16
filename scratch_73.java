@@ -1,9 +1,7 @@
-import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Arrays;
 
 class Scratch {
     public static void main(String[] args) {
@@ -12,7 +10,7 @@ class Scratch {
                 new int[]{-1702094, -9635380, 5210548, 8165619, 8054294, 1363850, 6300176, 8430440, -9635380, -1343994, -9365453, 5210548, -1702094, 8165619, 4988596, -1524607, -4244825, -7838619, -1604017, 8054294, 3277839, -1343994, -1524607, 1363850, 6300176, 8165619, -9180987, 4743777, 9146280, -7908834}));
     }
 
-    
+
     private static void testExtremeRandom() {
         var spotCheckBs = new BitSet(390016);
         spotCheckBs.set(0, spotCheckBs.size());
