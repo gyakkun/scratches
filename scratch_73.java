@@ -1,3 +1,8 @@
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Random;
 import java.util.Arrays;
 
 class Scratch {
@@ -5,6 +10,40 @@ class Scratch {
         Scratch s = new Scratch();
         System.err.println(s.canChoose(new int[][]{{1363850, 6300176, 8430440, -9635380, -1343994, -9365453, 5210548, -1702094, 8165619, 4988596, -1524607, -4244825, -7838619, -1604017, 8054294, 3277839}, {-9180987, 4743777, 9146280, -7908834, 1909925, 4434157}, {3981590}},
                 new int[]{-1702094, -9635380, 5210548, 8165619, 8054294, 1363850, 6300176, 8430440, -9635380, -1343994, -9365453, 5210548, -1702094, 8165619, 4988596, -1524607, -4244825, -7838619, -1604017, 8054294, 3277839, -1343994, -1524607, 1363850, 6300176, 8165619, -9180987, 4743777, 9146280, -7908834}));
+    }
+
+    
+    private static void testExtremeRandom() {
+        var spotCheckBs = new BitSet(390016);
+        spotCheckBs.set(0, spotCheckBs.size());
+        var r = new Random();
+        var a = new HashSet<Integer>();
+        var b = new HashSet<Integer>();
+        for (int i = 0; i < Long.SIZE; i++) {
+            int s;
+            do {
+                s = r.nextInt(0, spotCheckBs.size());
+            } while (!spotCheckBs.get(s));
+            System.err.println("S: " + s);
+            a.add(s);
+            spotCheckBs.clear(s);
+        }
+        System.err.println("Remain zeros: " + (spotCheckBs.size() - spotCheckBs.cardinality()));
+        for (int i = 0; i < Long.SIZE; i++) {
+            int victim = 0;
+            // do {
+            //     victim = bs.nextClearBit(r.nextInt(0, bs.size()));
+            // } while (victim >= bs.size());
+            while ((victim = (spotCheckBs.nextClearBit(victim))) < spotCheckBs.size()) {
+                spotCheckBs.set(victim);
+                b.add(victim);
+                System.err.println("V: " + victim);
+            }
+        }
+        System.err.println(a.equals(b));
+        if (!a.equals(b)) {
+            throw new RuntimeException("a b should equal");
+        }
     }
 
     public boolean canChoose(int[][] groups, int[] nums) {

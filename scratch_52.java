@@ -2354,6 +2354,7 @@ class RangeBit {
         this.len = arr.length;
         diff = new BIT(len);
         iDiff = new BIT(len);
+        for (int i = 0; i < arr.length; i++) update(i, arr[i]);
     }
 
     public long get(int zeroBased) {
