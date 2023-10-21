@@ -6,7 +6,42 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
 
-        System.err.println(s.minOperations(new int[]{14}, new int[]{86}));
+        // System.err.println(s.productQueries(15, new int[][]{{0, 1}, {2, 2}, {0, 3}}));
+        System.err.println(s.productQueries(2, new int[][]{{0,0}}));
+    }
+
+    // LC2438
+    public int[] productQueries(int n, int[][] queries) {
+        List<Integer> binaryArr = toRadix(n, 2);
+        List<Integer> twoPowers = new ArrayList<>();
+        for (int i = 0; i < binaryArr.size(); i++) {
+            if (binaryArr.get(i) == 0) continue;
+            int rank = i;
+            twoPowers.add(rank);
+        }
+        twoPowers.sort(Comparator.naturalOrder());
+        int[] prefix = new int[twoPowers.size() + 1];
+        for (int i = 1; i < prefix.length; i++) {
+            prefix[i] = prefix[i - 1] + twoPowers.get(i - 1);
+        }
+        int[] res = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            // inclusive
+            int left = Math.max(0, queries[i][0]);
+            int right = Math.min(twoPowers.size() - 1, queries[i][1]);
+            int pow = prefix[right + 1] - prefix[left];
+            res[i] = (int) quickPower(2, pow);
+        }
+        return res;
+    }
+
+    long mod = 1000000007L;
+
+    private long quickPower(long num, long pow) {
+        if (pow == 0L) return 1;
+        long res = quickPower(num, pow / 2) % mod;
+        res = (pow % 2 == 1 ? res * res * num : res * res) % mod;
+        return res;
     }
 
     // LC2412 Hard **
@@ -25,7 +60,7 @@ class Solution {
         lossTrans.sort(Comparator.comparingInt(i -> i[1]));
         long mostLoss = Long.MAX_VALUE;
         long curMoney = 0;
-        for(int[] i:lossTrans){
+        for (int[] i : lossTrans) {
             curMoney -= i[0];
             mostLoss = Math.min(mostLoss, curMoney);
             curMoney += i[1];
