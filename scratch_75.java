@@ -3,10 +3,71 @@ import java.util.*;
 class Solution {
     public static void main(String[] args) {
         var s = new Solution();
-        var i = s.countPairs(11, new int[][]{{5, 0}, {1, 0}, {10, 7}, {9, 8}, {7, 2}, {1, 3}, {0, 2}, {8, 5}, {4, 6}, {4, 2}});
-        System.err.println(i);
+        ListNode i = prepareNode(new int[]{8, 24, 5, 21, 10, 11, 11, 12, 6, 17});
+
+        System.err.println(s.spiralMatrix(10, 1, i));
     }
 
+    private static ListNode prepareNode(int[] arr) {
+        ListNode root = new ListNode(arr[0]);
+        ListNode pivot = root;
+        for (int i = 1; i < arr.length; i++) {
+            pivot.next = new ListNode(arr[i]);
+            pivot = pivot.next;
+        }
+        return root;
+    }
+
+
+    // LC2326
+    int[][] directions = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+    public int[][] spiralMatrix(int m, int n, ListNode head) {
+        int[][] res = new int[m][n];
+        for (int i = 0; i < m; i++) for (int j = 0; j < n; j++) res[i][j] = -1;
+        BitSet bs = new BitSet(m * n);
+        int dir = 0;
+        ListNode node = head;
+        int curX = 0, curY = 0;
+        while (node != null) {
+            res[curX][curY] = node.val;
+            bs.set(curX * n + curY);
+            if (node.next == null) break;
+            int[] next = nextStep(curX, curY, dir, m, n, bs);
+            curX = next[0];
+            curY = next[1];
+            dir = next[2];
+            node = node.next;
+        }
+        return res;
+    }
+
+    private int[] nextStep(int curX, int curY, int dir, int m, int n, BitSet bs) {
+        boolean shouldTurn = false;
+        int nextDir = dir;
+        int nextX = curX + directions[nextDir][0], nextY = curY + directions[nextDir][1];
+        int nextRank = nextX * n + nextY;
+        shouldTurn = isShouldTurn(m, n, bs, nextX, nextY, nextRank);
+        int loopCount = 0;
+        while (shouldTurn) {
+            nextDir = (dir + 1) % 4;
+            nextX = curX + directions[nextDir][0];
+            nextY = curY + directions[nextDir][1];
+            nextRank = nextX * n + nextY;
+            shouldTurn = isShouldTurn(m, n, bs, nextX, nextY, nextRank);
+            if (shouldTurn && ++loopCount >= 4) {
+                throw new IllegalStateException("Next step is not available! next x: %d, next y: %d. m: %d, n: %d".formatted(nextX, nextY, m, n));
+            }
+        }
+        return new int[]{nextX, nextY, nextDir};
+    }
+
+    private static boolean isShouldTurn(int m, int n, BitSet bs, int nextX, int nextY, int nextRank) {
+        return (nextX < 0 || nextX >= m || nextY < 0 || nextY >= n || bs.get(nextRank));
+    }
+
+
+    // LC2316
     public long countPairs(int n, int[][] edges) {
         var dsu = new DSU();
         for (int i = 0; i < n; i++) dsu.add(i);
@@ -86,5 +147,22 @@ class DSU {
 
     public int getNumOfGroups() {
         return getAllGroups().size();
+    }
+}
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {
+    }
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
