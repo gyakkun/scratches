@@ -9,10 +9,41 @@ class Solution {
         System.err.println(s.minOperations(new int[]{14}, new int[]{86}));
     }
 
+    // LC2412 Hard **
+    public long minimumMoney(int[][] transactions) {
+        List<int[]> earnTrans = new ArrayList<>(), lossTrans = new ArrayList<>();
+        for (int[] i : transactions) {
+            if (i[1] >= i[0]) {
+                earnTrans.add(i);
+            } else {
+                lossTrans.add(i);
+            }
+        }
+        // 困难模式: 先做亏钱的, 从回报最少的开始
+        // 然后做赚钱的, 从投入最大的开始
+        earnTrans.sort(Comparator.comparingInt(i -> -i[0]));
+        lossTrans.sort(Comparator.comparingInt(i -> i[1]));
+        long mostLoss = Long.MAX_VALUE;
+        long curMoney = 0;
+        for(int[] i:lossTrans){
+            curMoney -= i[0];
+            mostLoss = Math.min(mostLoss, curMoney);
+            curMoney += i[1];
+            mostLoss = Math.min(mostLoss, curMoney);
+        }
+        for (int[] i : earnTrans) {
+            curMoney -= i[0];
+            mostLoss = Math.min(mostLoss, curMoney);
+            curMoney += i[1];
+            mostLoss = Math.min(mostLoss, curMoney);
+        }
+        return -mostLoss;
+    }
+
     // LC2396
     public boolean isStrictlyPalindromic(int n) {
         for (int rad = 2; rad < n - 1; rad++) {
-            if(!isPalinDromicList(toRadix(n,rad))) return false;
+            if (!isPalinDromicList(toRadix(n, rad))) return false;
         }
         return true;
     }
