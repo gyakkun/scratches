@@ -9,6 +9,34 @@ class Solution {
         System.err.println(s.minOperations(new int[]{14}, new int[]{86}));
     }
 
+    // LC2396
+    public boolean isStrictlyPalindromic(int n) {
+        for (int rad = 2; rad < n - 1; rad++) {
+            if(!isPalinDromicList(toRadix(n,rad))) return false;
+        }
+        return true;
+    }
+
+    private boolean isPalinDromicList(List<Integer> arr) {
+        int half = arr.size() / 2;
+        int len = arr.size();
+        for (int i = 0; i < half; i++) {
+            if (arr.get(i) != arr.get(len - 1 - i)) return false;
+        }
+        return true;
+    }
+
+    private List<Integer> toRadix(int num, int radix) {
+        int left = num;
+        List<Integer> res = new ArrayList<>();
+        while (left > 0) {
+            int remain = left % radix;
+            left = left / radix;
+            res.add(remain);
+        }
+        return res;
+    }
+
     // LC2410
     public int matchPlayersAndTrainers(int[] players, int[] trainers) {
         int np = players.length, nt = trainers.length;
