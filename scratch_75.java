@@ -7,7 +7,15 @@ class Solution {
         var s = new Solution();
 
         // System.err.println(s.productQueries(15, new int[][]{{0, 1}, {2, 2}, {0, 3}}));
-        System.err.println(s.productQueries(2, new int[][]{{0,0}}));
+        System.err.println(s.productQueries(2, new int[][]{{0, 0}}));
+    }
+
+    // LC1665 Hard **
+    public int minimumEffort(int[][] tasks) {
+        Arrays.sort(tasks, (i, j) -> i[1] - i[0] - (j[1] - j[0]));
+        int res = Integer.MIN_VALUE;
+        for (int[] t : tasks) res = Math.max(res + t[0], t[1]);
+        return res;
     }
 
     // LC2136 Hard **
