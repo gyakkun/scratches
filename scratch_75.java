@@ -3,9 +3,67 @@ import java.util.*;
 class Solution {
     public static void main(String[] args) {
         var s = new Solution();
-        ListNode i = prepareNode(new int[]{8, 24, 5, 21, 10, 11, 11, 12, 6, 17});
 
-        System.err.println(s.spiralMatrix(10, 1, i));
+        System.err.println(s.canChange("_L__R__R_", "L______RR"));
+    }
+
+
+    // LC2337
+    public boolean canChange(String start, String target) {
+        if (!start.replaceAll("_", "").equals(target.replaceAll("_", ""))) return false;
+        // From left to right
+        char[] startCarr = start.toCharArray(), targetCarr = target.toCharArray();
+        int n = start.length();
+        int startSpaceCounter = 0, startLetterCounter = 0;
+        int targetSpaceCounter = 0, targetLetterCounter = 0;
+        char wantedChar = 'L', unwantedChar = 'R';
+        for (int i = 0; i < n; i++) {
+            char s = startCarr[i], t = targetCarr[i];
+            if (s == unwantedChar || t == unwantedChar) {
+                if (Character.isLetter(s) && Character.isLetter(t) && s != t) {
+                    return false;
+                }
+                startSpaceCounter = 0;
+                startLetterCounter = 0;
+                targetSpaceCounter = 0;
+                targetLetterCounter = 0;
+                continue;
+            }
+            if (s == '_') startSpaceCounter++;
+            if (t == '_') targetSpaceCounter++;
+            if (s == wantedChar) startLetterCounter++;
+            if (t == wantedChar) targetLetterCounter++;
+            if (!judge(startSpaceCounter, startLetterCounter, targetSpaceCounter, targetLetterCounter)) {
+                return false;
+            }
+        }
+        wantedChar = 'R';
+        unwantedChar = 'L';
+        for (int i = n - 1; i >= 0; i--) {
+            char s = startCarr[i], t = targetCarr[i];
+            if (s == unwantedChar || t == unwantedChar) {
+                if (Character.isLetter(s) && Character.isLetter(t) && s != t) {
+                    return false;
+                }
+                startSpaceCounter = 0;
+                startLetterCounter = 0;
+                targetSpaceCounter = 0;
+                targetLetterCounter = 0;
+                continue;
+            }
+            if (s == '_') startSpaceCounter++;
+            if (t == '_') targetSpaceCounter++;
+            if (s == wantedChar) startLetterCounter++;
+            if (t == wantedChar) targetLetterCounter++;
+            if (!judge(startSpaceCounter, startLetterCounter, targetSpaceCounter, targetLetterCounter)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean judge(int startSpaceCounter, int startLetterCounter, int targetSpaceCounter, int targetLetterCounter) {
+        return startSpaceCounter >= targetSpaceCounter && startLetterCounter <= targetLetterCounter;
     }
 
     private static ListNode prepareNode(int[] arr) {
