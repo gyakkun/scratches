@@ -10,6 +10,22 @@ class Solution {
         System.err.println(s.productQueries(2, new int[][]{{0,0}}));
     }
 
+    // LC2136 Hard **
+    public int earliestFullBloom(int[] plantTime, int[] growTime) {
+        int n = plantTime.length;
+        Integer[] id = new Integer[n];
+        for (int i = 0; i < n; i++) {
+            id[i] = i;
+        }
+        Arrays.sort(id, (i, j) -> growTime[j] - growTime[i]);
+        int res = Integer.MIN_VALUE, plantingDays = 0;
+        for (int i : id) {
+            plantingDays += plantTime[i];
+            res = Math.max(res, plantingDays + growTime[i]);
+        }
+        return res;
+    }
+
     // LC2438
     public int[] productQueries(int n, int[][] queries) {
         List<Integer> binaryArr = toRadix(n, 2);
