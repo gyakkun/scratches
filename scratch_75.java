@@ -1,10 +1,43 @@
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class Solution {
     public static void main(String[] args) {
         var s = new Solution();
 
-        System.err.println(s.canChange("_L__R__R_", "L______RR"));
+        System.err.println(s.minOperations(new int[]{14}, new int[]{86}));
+    }
+
+    // LC2344 ** Hard
+    public int minOperations(int[] nums, int[] numsDivide) {
+        int gcd = gcd(numsDivide);
+        Map<Integer, Integer> freqImMap = Arrays.stream(nums).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1)));
+        TreeMap<Integer, Integer> freqTm = new TreeMap<>(freqImMap);
+        int counter = 0;
+        for (var i : freqTm.entrySet()) {
+            int k = i.getKey(), freq = i.getValue();
+            if (k == gcd) return counter;
+            if (k > gcd) return -1;
+            // k < gcd
+            if (gcd % k == 0) return counter;
+            counter += freq;
+        }
+        return -1;
+    }
+
+    private int gcd(int[] numsDivide) {
+        List<Integer> reverseSortedUniqNumsToDivide = Arrays.stream(numsDivide).boxed()
+                .distinct()
+                .sorted(Comparator.reverseOrder())
+                .toList();
+        Optional<Integer> reduce = reverseSortedUniqNumsToDivide.stream()
+                .reduce(this::gcd);
+        return reduce.get();
+    }
+
+    private int gcd(int a, int b) {
+        return a % b == 0 ? b : gcd(b, a % b);
     }
 
 
