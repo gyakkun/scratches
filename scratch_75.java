@@ -9,6 +9,23 @@ class Solution {
         System.err.println(s.minOperations(new int[]{14}, new int[]{86}));
     }
 
+    // LC2367
+    public int arithmeticTriplets(int[] nums, int diff) {
+        Map<Integer, Integer> idxMap = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            idxMap.put(nums[i], i);
+        }
+        int res = 0;
+        for (int i : nums) {
+            int nextOne = i + diff;
+            int nextTwo = nextOne + diff;
+            if (idxMap.containsKey(nextOne) && idxMap.containsKey(nextTwo)) {
+                res++;
+            }
+        }
+        return res;
+    }
+
     // LC2344 ** Hard
     public int minOperations(int[] nums, int[] numsDivide) {
         int gcd = gcd(numsDivide);
