@@ -1,3 +1,6 @@
+import sun.reflect.generics.tree.Tree;
+
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -7,6 +10,40 @@ class Solution {
         var s = new Solution();
 
         System.err.println(s.minOperations(new int[]{14}, new int[]{86}));
+    }
+
+    // LC2410
+    public int matchPlayersAndTrainers(int[] players, int[] trainers) {
+        int np = players.length, nt = trainers.length;
+        int res = 0;
+        if (np >= nt) {
+            // 运动员更多, 教练员应该尽量匹配能力值高的
+            Map<Integer, Integer> freq = Arrays.stream(players).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1)));
+            TreeMap<Integer, Integer> tm = new TreeMap<>(freq);
+            Arrays.sort(trainers);
+            for (int i : trainers) {
+                Integer candidateVal = tm.floorKey(i); // 小于等于教练能力值的第一个运动员
+                if (candidateVal == null) continue;
+                int origCount = tm.get(candidateVal);
+                if (origCount == 1) tm.remove(candidateVal);
+                else tm.put(candidateVal, origCount - 1);
+                res++;
+            }
+        } else {
+            // 教练员更多, 运动员应该尽量匹配能力值高的
+            Map<Integer, Integer> freq = Arrays.stream(trainers).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1)));
+            TreeMap<Integer, Integer> tm = new TreeMap<>(freq);
+            Arrays.sort(players);
+            for (int i : players) {
+                Integer candidateVal = tm.ceilingKey(i); // 大于等于运动员能力值的第一个教练
+                if (candidateVal == null) continue;
+                int origCount = tm.get(candidateVal);
+                if (origCount == 1) tm.remove(candidateVal);
+                else tm.put(candidateVal, origCount - 1);
+                res++;
+            }
+        }
+        return res;
     }
 
     // LC2367
