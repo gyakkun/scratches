@@ -5,9 +5,26 @@ import java.util.stream.Collectors;
 class Solution {
     public static void main(String[] args) {
         var s = new Solution();
+        long timing = System.currentTimeMillis();
+        System.err.println(s.maxSatisfaction(new int[]{-1, -8, 0, 5, -9}));
+        timing = System.currentTimeMillis() - timing;
+        System.err.println(timing + "ms");
+    }
 
-        // System.err.println(s.productQueries(15, new int[][]{{0, 1}, {2, 2}, {0, 3}}));
-        System.err.println(s.productQueries(2, new int[][]{{0, 0}}));
+    // LC1402 Hard ** 题解 
+    // https://leetcode.cn/u/endlesscheng/
+    public int maxSatisfaction(int[] satisfaction) {
+        Arrays.sort(satisfaction);
+        int f = 0; // f(0) = 0
+        int s = 0;
+        for (int i = satisfaction.length - 1; i >= 0; i--) {
+            s += satisfaction[i];
+            if (s <= 0) { // 后面不可能找到更大的 f(k)
+                break;
+            }
+            f += s; // f(k) = f(k-1) + s
+        }
+        return f;
     }
 
     // LC1665 Hard **
@@ -17,6 +34,7 @@ class Solution {
         for (int[] t : tasks) res = Math.max(res + t[0], t[1]);
         return res;
     }
+
 
     // LC2136 Hard **
     public int earliestFullBloom(int[] plantTime, int[] growTime) {
