@@ -11,6 +11,25 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC1362
+    public int[] closestDivisors(int num) {
+        int[] res = new int[]{Integer.MAX_VALUE, 0};
+        int resDiff = Integer.MAX_VALUE;
+        for (int i = 1; i < 3; i++) {
+            int tmp = num + i;
+            int sqrt = (int) Math.ceil(Math.sqrt(num));
+            for (int j = 1; j <= sqrt; j++) {
+                if (tmp % j != 0) continue;
+                int another = tmp / j;
+                if (Math.abs(j - another) < resDiff) {
+                    res = new int[]{j, another};
+                    resDiff = Math.abs(j - another);
+                }
+            }
+        }
+        return res;
+    }
+
     // LC1432
     public int maxDiff(int num) {
         String victim = Integer.valueOf(num).toString();
