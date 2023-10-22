@@ -20,7 +20,7 @@ class Solution {
                 String newNum = victim.replaceAll("" + i, "" + j);
                 if (newNum.equals("0")) continue;
                 else if (newNum.startsWith("0")) continue;
-                Integer newInt = Integer.valueOf(newNum);
+                int newInt = Integer.parseInt(newNum);
                 max = Math.max(max, newInt);
                 min = Math.min(min, newInt);
             }
