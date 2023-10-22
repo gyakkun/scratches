@@ -6,9 +6,34 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.maxSatisfaction(new int[]{-1, -8, 0, 5, -9}));
+        System.err.println(s.minReorder(6,new int[][]{{0,1},{1,3},{2,3},{4,0},{4,5}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC1466
+    int lc1466Res = 0;
+    boolean[] lc1466Visited;
+    public int minReorder(int n, int[][] connections) {
+        lc1466Visited = new boolean[n];
+        Map<Integer, List<int[]>> forward = Arrays.stream(connections).collect(Collectors.groupingBy(i -> i[0]));
+        Map<Integer, List<int[]>> reverse = Arrays.stream(connections).collect(Collectors.groupingBy(i -> i[1]));
+        lc1466Helper(0, forward, reverse);
+        return lc1466Res;
+    }
+
+    private void lc1466Helper(int startPoint, Map<Integer, List<int[]>> forward, Map<Integer, List<int[]>> reverse){
+        if(lc1466Visited[startPoint]) return;
+        lc1466Visited[startPoint] = true;
+        for(int[] i : forward.getOrDefault(startPoint, new ArrayList<>())){
+            if(lc1466Visited[i[1]]) continue;
+            lc1466Res++;
+            lc1466Helper(i[1], forward, reverse);
+        }
+        for(int[] j : reverse.getOrDefault(startPoint,new ArrayList<>())){
+            if(lc1466Visited[j[0]]) continue;
+            lc1466Helper(j[0], forward, reverse);
+        }
     }
 
     // LC1402 Hard ** 题解 
