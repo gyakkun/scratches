@@ -6,14 +6,49 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.minReorder(6,new int[][]{{0,1},{1,3},{2,3},{4,0},{4,5}}));
+        System.err.println(s.minReorder(6, new int[][]{{0, 1}, {1, 3}, {2, 3}, {4, 0}, {4, 5}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC1478 Hard **
+    interface TriFun<A, B, C, D> {
+        D fun(A a, B b, C c);
+    }
+
+    public int minDistance(int[] houses, int k) {
+        Arrays.sort(houses);
+        int len = houses.length;
+        Integer[][][] memo = new Integer[len + 1][len + 1][k + 1];
+        TriFun<Integer, Integer, Integer, Integer> fun = new TriFun<>() {
+            @Override
+            public Integer fun(Integer l, Integer r, Integer j) {
+                if (l >= r) return 0; // 等于说明是中位数下标, 小于说明已经交叉, 是无效位置
+                if (j == 1) { // 只有一个邮箱, 则应该放置在下标中位数的房子的位置
+                    return houses[r] - houses[l] // 两端点房子到邮箱的距离
+                            + fun(l + 1, r - 1, 1); // 内测房子到邮箱的距离
+                }
+                if (memo[l][r][j] != null) return memo[l][r][j];
+                int res = Integer.MAX_VALUE;
+                // 总共还有 r-l+1 个房子
+                // 最多可以放 j 个邮箱, j 的上界 = r-l+1
+                // r - j + 2 <= r - r + l -1 +2 = l+1
+                // 换而言之 在最理想的情况下 只需尝试一次(直接在l端点处放置一个) 然后进入下一层
+                // 否则 要尝试在[l,r-j+1] 中每个位置都放一个 然后进入下一层
+
+                for (int i = l; i < (r - j + 2); i++) {
+                    res = Math.min(res, fun(l, i, 1) + fun(i + 1, r, j - 1));
+                }
+                return memo[l][r][j] = res;
+            }
+        };
+        return fun.fun(0, len - 1, k);
     }
 
     // LC1466
     int lc1466Res = 0;
     boolean[] lc1466Visited;
+
     public int minReorder(int n, int[][] connections) {
         lc1466Visited = new boolean[n];
         Map<Integer, List<int[]>> forward = Arrays.stream(connections).collect(Collectors.groupingBy(i -> i[0]));
@@ -22,16 +57,16 @@ class Solution {
         return lc1466Res;
     }
 
-    private void lc1466Helper(int startPoint, Map<Integer, List<int[]>> forward, Map<Integer, List<int[]>> reverse){
-        if(lc1466Visited[startPoint]) return;
+    private void lc1466Helper(int startPoint, Map<Integer, List<int[]>> forward, Map<Integer, List<int[]>> reverse) {
+        if (lc1466Visited[startPoint]) return;
         lc1466Visited[startPoint] = true;
-        for(int[] i : forward.getOrDefault(startPoint, new ArrayList<>())){
-            if(lc1466Visited[i[1]]) continue;
+        for (int[] i : forward.getOrDefault(startPoint, new ArrayList<>())) {
+            if (lc1466Visited[i[1]]) continue;
             lc1466Res++;
             lc1466Helper(i[1], forward, reverse);
         }
-        for(int[] j : reverse.getOrDefault(startPoint,new ArrayList<>())){
-            if(lc1466Visited[j[0]]) continue;
+        for (int[] j : reverse.getOrDefault(startPoint, new ArrayList<>())) {
+            if (lc1466Visited[j[0]]) continue;
             lc1466Helper(j[0], forward, reverse);
         }
     }
