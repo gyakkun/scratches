@@ -11,6 +11,23 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC1432
+    public int maxDiff(int num) {
+        String victim = Integer.valueOf(num).toString();
+        int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                String newNum = victim.replaceAll("" + i, "" + j);
+                if (newNum.equals("0")) continue;
+                else if (newNum.startsWith("0")) continue;
+                Integer newInt = Integer.valueOf(newNum);
+                max = Math.max(max, newInt);
+                min = Math.min(min, newInt);
+            }
+        }
+        return max - min;
+    }
+
     // LC1478 Hard **
     interface TriFun<A, B, C, D> {
         D fun(A a, B b, C c);
