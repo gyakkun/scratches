@@ -6,9 +6,27 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.checkValidGrid(new int[][]{{24, 11, 22, 17, 4}, {21, 16, 5, 12, 9}, {6, 23, 10, 3, 18}, {15, 20, 1, 8, 13}, {0, 7, 14, 19, 2}}));
+        System.err.println(s.sumOfPower(new int[]{1, 2, 3}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC2681 Hard **
+    public int sumOfPower(int[] nums) {
+        Arrays.sort(nums);
+        long res = 0;
+        long prefix = 0;
+        long mae = 0;
+        long mod = 1000000007;
+        for (int num : nums) {
+            mae = prefix + num;
+            mae %= mod;
+            prefix = prefix + mae;
+            prefix %= mod;
+            res += (((long) num * (long) num) % mod) * mae;
+            res %= mod;
+        }
+        return (int) res;
     }
 
     // LC2592
@@ -27,7 +45,7 @@ class Solution {
             } else {
                 // 如果没有比他大的, 就直接找最小的凑数
                 Integer minKey = tm.firstKey();
-                assert minKey!=null;
+                assert minKey != null;
                 int prevFreq = tm.get(minKey);
                 int newFreq = prevFreq - 1;
                 tm.put(minKey, newFreq);
