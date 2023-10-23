@@ -11,6 +11,15 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2678
+    public int countSeniors(String[] details) {
+        return (int) Arrays.stream(details)
+                .map(i -> i.substring(11, 13))
+                .map(Integer::parseInt)
+                .filter(i -> i > 60)
+                .count();
+    }
+
     // LC1362
     public int[] closestDivisors(int num) {
         int[] res = new int[]{Integer.MAX_VALUE, 0};
