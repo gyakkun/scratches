@@ -11,6 +11,32 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2592
+    public int maximizeGreatness(int[] nums) {
+        Map<Integer, Integer> m = Arrays.stream(nums).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1)));
+        TreeMap<Integer, Integer> tm = new TreeMap<>(m);
+        int res = 0;
+        for (int i : nums) {
+            Integer higher = tm.higherKey(i);
+            if (higher != null) {
+                res++;
+                int prevFreq = tm.get(higher);
+                int newFreq = prevFreq - 1;
+                tm.put(higher, newFreq);
+                if (newFreq == 0) tm.remove(higher);
+            } else {
+                // 如果没有比他大的, 就直接找最小的凑数
+                Integer minKey = tm.firstKey();
+                assert minKey!=null;
+                int prevFreq = tm.get(minKey);
+                int newFreq = prevFreq - 1;
+                tm.put(minKey, newFreq);
+                if (newFreq == 0) tm.remove(minKey);
+            }
+        }
+        return res;
+    }
+
     // LC2596
     public boolean checkValidGrid(int[][] grid) {
         int[][] directions = new int[][]{{-2, -1}, {-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}};
