@@ -11,6 +11,27 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2660
+    public int isWinner(int[] player1, int[] player2) {
+        int v1 = 0, v2 = 0;
+        for (int i = 0; i < player1.length; i++) {
+
+            if ((i - 1 >= 0 && player1[i - 1] == 10) || (i - 2 >= 0 && player1[i - 2] == 10)) {
+                v1 += 2 * player1[i];
+            } else {
+                v1 += player1[i];
+            }
+            if ((i - 1 >= 0 && player2[i - 1] == 10) || (i - 2 >= 0 && player2[i - 2] == 10)) {
+                v2 += 2 * player2[i];
+            } else {
+                v2 += player2[i];
+            }
+        }
+        if (v1 > v2) return 1;
+        if (v2 > v1) return 2;
+        return 0;
+    }
+
     // LC2678
     public int countSeniors(String[] details) {
         return (int) Arrays.stream(details)
