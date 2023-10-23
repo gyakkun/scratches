@@ -11,6 +11,18 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2652
+    public int sumOfMultiples(int n) {
+        // 3 5 7
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            if (i % 3 == 0) res += i;
+            else if (i % 5 == 0) res += i;
+            else if (i % 7 == 0) res += i;
+        }
+        return res;
+    }
+
     // LC2681 Hard **
     public int sumOfPower(int[] nums) {
         Arrays.sort(nums);
