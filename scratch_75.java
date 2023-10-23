@@ -6,9 +6,44 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.minReorder(6, new int[][]{{0, 1}, {1, 3}, {2, 3}, {4, 0}, {4, 5}}));
+        System.err.println(s.checkValidGrid(new int[][]{{24, 11, 22, 17, 4}, {21, 16, 5, 12, 9}, {6, 23, 10, 3, 18}, {15, 20, 1, 8, 13}, {0, 7, 14, 19, 2}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC2596
+    public boolean checkValidGrid(int[][] grid) {
+        int[][] directions = new int[][]{{-2, -1}, {-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}};
+        int len = grid.length;
+        int size = len * len;
+        boolean[][] visited = new boolean[len][len];
+        int[][] idxMap = new int[size][];
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                idxMap[grid[i][j]] = new int[]{i, j};
+            }
+        }
+        int r = idxMap[0][0], c = idxMap[0][1];
+        if (r != 0 || c != 0) return false;
+        visited[r][c] = true;
+        for (int i = 1; i < size; i++) {
+            int nr = idxMap[i][0], nc = idxMap[i][1];
+            boolean pass = false;
+            for (int[] d : directions) {
+                int pr = r + d[0], pc = c + d[1];
+                if (pr >= 0 && pr < len && pc >= 0 && pc < len && !visited[pr][pc] && pr == nr && pc == nc) {
+                    pass = true;
+                    break;
+                }
+            }
+            if (!pass) {
+                return false;
+            }
+            visited[nr][nc] = true;
+            r = nr;
+            c = nc;
+        }
+        return true;
     }
 
     // LC2660
