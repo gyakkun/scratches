@@ -605,3 +605,48 @@ class ListNode {
         this.next = next;
     }
 }
+
+// LC2671
+class FrequencyTracker {
+
+    Map<Integer, Integer> freq = new HashMap<>();
+    Map<Integer, Set<Integer>> revFreq = new HashMap<>();
+
+    public FrequencyTracker() {
+
+    }
+
+    public void add(int number) {
+        int prevFreq = freq.getOrDefault(number, 0);
+        int newFreq = prevFreq + 1;
+        freq.put(number, newFreq);
+        if (prevFreq != 0) {
+            revFreq.get(prevFreq).remove(number);
+            if (revFreq.get(prevFreq).isEmpty()) revFreq.remove(prevFreq);
+        }
+        revFreq.computeIfAbsent(newFreq, i -> new HashSet<>())
+                .add(number);
+    }
+
+    public void deleteOne(int number) {
+        int prevFreq = freq.getOrDefault(number, 0);
+        int newFreq = prevFreq - 1;
+        if (prevFreq == 0) return;
+        if (prevFreq == 1) {
+            freq.remove(number);
+        } else {
+            freq.put(number, newFreq);
+        }
+        if (prevFreq != 0) {
+            revFreq.get(prevFreq).remove(number);
+            if (revFreq.get(prevFreq).isEmpty()) revFreq.remove(prevFreq);
+        }
+        revFreq.computeIfAbsent(newFreq, i -> new HashSet<>())
+                .add(number);
+    }
+
+    public boolean hasFrequency(int frequency) {
+        return revFreq.containsKey(frequency);
+    }
+}
+
