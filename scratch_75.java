@@ -11,6 +11,33 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC1155
+    Integer[][][] lc1155Memo;
+
+    public int numRollsToTarget(int n, int k, int target) {
+        lc1155Memo = new Integer[n + 1][k + 1][target + 1];
+        return lc1155Helper(n, k, target);
+    }
+
+    private int lc1155Helper(int nDice, int kFace, int target) {
+        if (nDice == 0 && target == 0) return 1;
+        if (nDice <= 0) return 0;
+        if (target <= 0) return 0;
+        if (nDice * kFace < target) return 0; // 值最大情况下都凑不齐
+        if (nDice * kFace == target) return 1;
+        if (nDice > target) return 0; // 值最小的情况下都太大
+        if (nDice == 1 && target <= kFace) return 1;
+        if (lc1155Memo[nDice][kFace][target] != null) return lc1155Memo[nDice][kFace][target];
+        long mod = 1000000007;
+        long res = 0;
+        // 只掷一次骰子
+        for (int i = 1; i <= kFace; i++) {
+            res += lc1155Helper(nDice - 1, kFace, target - i);
+            res %= mod;
+        }
+        return lc1155Memo[nDice][kFace][target] = (int) res;
+    }
+
     // LC2652
     public int sumOfMultiples(int n) {
         // 3 5 7
