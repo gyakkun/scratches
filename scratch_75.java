@@ -6,7 +6,10 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.sumOfPower(new int[]{1, 2, 3}));
+        var ta = new TreeAncestor(5, new int[]{-1, 0, 0, 1, 2});
+        // System.err.println(s.sumOfPower(new int[]{1, 2, 3}));
+        ta.getKthAncestor(3, 5);
+        ta.getKthAncestor(3, 2);
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
     }
@@ -762,3 +765,34 @@ class FrequencyTracker {
     }
 }
 
+
+// LC1483 Hard ** 数上倍增
+class TreeAncestor {
+    int n;
+    int[] parent;
+    int[][] cache; // cache[node][power of two]
+
+    public TreeAncestor(int n, int[] parent) {
+        this.n = n;
+        this.parent = parent;
+        int log2 = Integer.SIZE - Integer.numberOfLeadingZeros(n);
+        cache = new int[n][log2];
+        for (int i = 0; i < n; i++) {
+            cache[i][0] = parent[i];
+        }
+        for (int i = 1; i < log2; i++) {
+            for (int j = 0; j < n; j++) {
+                int p = cache[j][i - 1];
+                cache[j][i] = p < 0 ? -1 : cache[p][i - 1];
+            }
+        }
+    }
+
+    public int getKthAncestor(int node, int k)   {
+        while (k > 0 && node != -1) {
+            node = cache[node][Integer.numberOfTrailingZeros(k)];
+            k = k & (k - 1);
+        }
+        return node;
+    }
+}
