@@ -11,6 +11,27 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2591 **
+    public int distMoney(int money, int children) {
+        if (money < children) return -1;
+        if (money < 8) return 0;
+        if (money - children < 7) return 0;
+        int allocating = money - children;
+        int count = Math.min(children, allocating / 7);
+        int remain = children - count;
+        allocating -= count * 7;
+        if (remain == 0) {
+            if (allocating > 0) {
+                count--;
+            }
+        } else if (remain == 1) {
+            if (allocating == 3) {
+                count--;
+            }
+        }
+        return count;
+    }
+
     // LCP06
     public int minCount(int[] coins) {
         return Arrays.stream(coins).boxed()
@@ -21,6 +42,7 @@ class Solution {
 
     // LC1155
     Integer[][][] lc1155Memo;
+
     public int numRollsToTarget(int n, int k, int target) {
         lc1155Memo = new Integer[n + 1][k + 1][target + 1];
         return lc1155Helper(n, k, target);
