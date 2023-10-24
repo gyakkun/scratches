@@ -14,6 +14,28 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2682
+    public int[] circularGameLosers(int n, int k) {
+        Set<Integer> visited = new HashSet<>();
+        int cur = 0, loop = 1;
+        visited.add(0);
+        while (true) {
+            int next = cur + loop * k;
+            next %= n;
+            if (visited.contains(next)) break;
+            visited.add(next);
+            loop++;
+            cur = next;
+        }
+        int[] res = new int[n - visited.size()];
+        int counter = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited.contains(i)) continue;
+            res[counter++] = i + 1;
+        }
+        return res;
+    }
+
     // LC2591 **
     public int distMoney(int money, int children) {
         if (money < children) return -1;
@@ -788,7 +810,7 @@ class TreeAncestor {
         }
     }
 
-    public int getKthAncestor(int node, int k)   {
+    public int getKthAncestor(int node, int k) {
         while (k > 0 && node != -1) {
             node = cache[node][Integer.numberOfTrailingZeros(k)];
             k = k & (k - 1);
