@@ -11,9 +11,16 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LCP06
+    public int minCount(int[] coins) {
+        return Arrays.stream(coins).boxed()
+                .map(i -> (int) Math.ceil((i / 2d)))
+                .mapToInt(Integer::valueOf)
+                .sum();
+    }
+
     // LC1155
     Integer[][][] lc1155Memo;
-
     public int numRollsToTarget(int n, int k, int target) {
         lc1155Memo = new Integer[n + 1][k + 1][target + 1];
         return lc1155Helper(n, k, target);
