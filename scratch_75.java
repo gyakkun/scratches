@@ -6,9 +6,37 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.punishmentNumber(37));
+        System.err.println(s.checkArray(new int[]{60, 72, 87, 89, 63, 52, 64, 62, 31, 37, 57, 83, 98, 94, 92, 77, 94, 91, 87, 100, 91, 91, 50, 26}, 4));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC2772 ** 差分数组 忘光了
+    public boolean checkArray(int[] nums, int k) {
+        int[] diff = new int[nums.length];
+        diff[0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            diff[i] = nums[i] - nums[i - 1];
+        }
+        int tracking = 0;
+        for (int i = 0; i <= nums.length - k; i++) {
+            tracking += diff[i];
+            if (tracking < 0) {
+                return false;
+            }
+            diff[i] -= tracking;
+            if (i + k >= nums.length) continue;
+            diff[i + k] += tracking;
+            tracking = 0;
+        }
+        tracking = diff[0];
+        for (int i = 1; i < nums.length; i++) {
+            tracking += diff[i];
+            if (tracking != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // LC2740
