@@ -11,6 +11,19 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2740
+    public int findValueOfPartition(int[] nums) {
+        Arrays.sort(nums);
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.length - 1; i++) {
+            int j = nums[i], k = nums[i + 1];
+            if (k - j < res) {
+                res = k - j;
+            }
+        }
+        return res;
+    }
+
     // LC2748
     public int countBeautifulPairs(int[] nums) {
         int res = 0;
