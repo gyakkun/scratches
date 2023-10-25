@@ -11,6 +11,25 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2697
+    public String makeSmallestPalindrome(String s) {
+        int len = s.length();
+        int half = (len + 1) / 2;
+        char[] carr = s.toCharArray();
+        for (int i = 0; i < half; i++) {
+            int oppose = len - i - 1;
+            if (s.charAt(i) == s.charAt(oppose)) continue;
+            char left = s.charAt(i);
+            char right = s.charAt(oppose);
+            if (left < right) {
+                carr[oppose] = left;
+            } else {
+                carr[i] = right;
+            }
+        }
+        return new String(carr);
+    }
+
     // LC2698
     public int punishmentNumber(int n) {
         int res = 0;
