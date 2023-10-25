@@ -6,12 +6,43 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        var ta = new TreeAncestor(5, new int[]{-1, 0, 0, 1, 2});
-        // System.err.println(s.sumOfPower(new int[]{1, 2, 3}));
-        ta.getKthAncestor(3, 5);
-        ta.getKthAncestor(3, 2);
+        System.err.println(s.punishmentNumber(37));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC2698
+    public int punishmentNumber(int n) {
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            if (lc2698Helper(i)) res += i * i;
+        }
+        return res;
+    }
+
+    private boolean lc2698Helper(int i) {
+        int sqr = i * i;
+        String str = Integer.toString(sqr);
+        return lc2698TrySplit(str, i);
+    }
+
+    private boolean lc2698TrySplit(String str, int target) {
+        if (str.length() == 1) return Integer.parseInt(str) == target;
+        if (Integer.parseInt(str) == target) return true;
+        if (str.chars().allMatch(i -> (char) i == '0')) return target == 0;
+        int sum = str.chars().map(i -> (char) i).map(i -> i - '0').sum();
+        if (sum == target) return true;
+        if (sum > target) return false;
+        for (int i = 1; i < str.length(); i++) {
+            String sub = str.substring(0, i);
+            int subInt = Integer.parseInt(sub);
+            if (subInt > target) continue;
+            int remainInt = target - subInt;
+            String remainStr = str.substring(i);
+            boolean hope = lc2698TrySplit(remainStr, remainInt);
+            if (hope) return true;
+        }
+        return false;
     }
 
     // LC2682
