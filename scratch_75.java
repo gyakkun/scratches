@@ -11,6 +11,18 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2520
+    public int countDigits(int num) {
+        int victim = num;
+        int res = 0;
+        while (victim > 0) {
+            int digit = victim % 10;
+            if (num % digit == 0) res++;
+            victim /= 10;
+        }
+        return res;
+    }
+
     // LC2772 ** 差分数组 忘光了
     public boolean checkArray(int[] nums, int k) {
         int[] diff = new int[nums.length];
