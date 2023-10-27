@@ -11,6 +11,34 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC1465
+    public int maxArea(int h, int w, int[] horizontalCuts, int[] verticalCuts) {
+        List<Integer> hlist = new ArrayList<>(Arrays.stream(horizontalCuts).boxed().sorted().toList());
+        List<Integer> vlist = new ArrayList<>(Arrays.stream(verticalCuts).boxed().sorted().toList());
+        hlist.add(0, 0);
+        hlist.add(h);
+        vlist.add(0, 0);
+        vlist.add(w);
+        int maxHDiff = Integer.MIN_VALUE, maxVDiff = Integer.MIN_VALUE;
+        for (int i = 0; i < hlist.size() - 1; i++) {
+            int left = hlist.get(i), right = hlist.get(i + 1);
+            int diff = right - left;
+            if (diff > maxHDiff) {
+                maxHDiff = diff;
+            }
+        }
+        for (int i = 0; i < vlist.size()-1; i++) {
+            int left = vlist.get(i), right = vlist.get(i + 1);
+            int diff = right - left;
+            if (diff > maxVDiff) {
+                maxVDiff = diff;
+            }
+        }
+        long res = (long) maxHDiff * (long) maxVDiff;
+        res %= 1000000007;
+        return (int) res;
+    }
+
     // LC2520
     public int countDigits(int num) {
         int victim = num;
