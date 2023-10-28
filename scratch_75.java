@@ -11,6 +11,22 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2558
+    public long pickGifts(int[] gifts, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
+        for (int i : gifts) pq.offer(i);
+        for (int i = 0; i < k; i++) {
+            int p = pq.poll();
+            p = (int) Math.sqrt(p);
+            pq.offer(p);
+        }
+        long res = 0;
+        while (!pq.isEmpty()) {
+            res += pq.poll();
+        }
+        return res;
+    }
+
     // LC1465
     public int maxArea(int h, int w, int[] horizontalCuts, int[] verticalCuts) {
         List<Integer> hlist = new ArrayList<>(Arrays.stream(horizontalCuts).boxed().sorted().toList());
@@ -27,7 +43,7 @@ class Solution {
                 maxHDiff = diff;
             }
         }
-        for (int i = 0; i < vlist.size()-1; i++) {
+        for (int i = 0; i < vlist.size() - 1; i++) {
             int left = vlist.get(i), right = vlist.get(i + 1);
             int diff = right - left;
             if (diff > maxVDiff) {
