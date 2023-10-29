@@ -11,6 +11,19 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC274
+    public int hIndex(int[] citations) {
+        Map<Integer, Integer> collect = Arrays.stream(citations).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1)));
+        TreeMap<Integer, Integer> tm = new TreeMap<>(collect); // [引用次数, 篇数]
+        int res = 0, accu = 0;
+        for (Map.Entry<Integer, Integer> e : tm.descendingMap().entrySet()) {
+            accu += e.getValue();
+            int h = Math.min(e.getKey(), accu);
+            if (h > res) res = h;
+        }
+        return res;
+    }
+
     // LC2558
     public long pickGifts(int[] gifts, int k) {
         PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
