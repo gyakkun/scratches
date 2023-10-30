@@ -6,9 +6,74 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.hIndex2(new int[]{3}));
+        System.err.println(s.isValid("abcabcababcc"));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC1003 WA!
+    BitSet visited, memo;
+
+    public boolean isValid(String s) {
+        int len = s.length();
+        visited = new BitSet(len);
+        memo = new BitSet(len);
+        return isValid(s, s.toCharArray(), 0, s.length() - 1);
+    }
+
+    public boolean isValid(String s, char[] carr, int left, int right) {
+        String subs = s.substring(left, right + 1);
+        System.err.println(subs);
+        int memoIdx = left * carr.length + right;
+        int len = right - left + 1;
+        if (len % 3 != 0) return false;
+        if (len == 3) return carr[left] == 'a' && carr[left + 1] == 'b' && carr[right] == 'c';
+        len = carr.length;
+        if (visited.get(memoIdx)) {
+            return memo.get(memoIdx);
+        }
+        boolean res = false;
+        while (true) {
+            // 凑abc
+            // 0,3
+            if (right - 2 >= 0 && carr[right] == 'c' && carr[right - 1] == 'b' && carr[right - 2] == 'a') {
+                int nl = left, nr = right - 3;
+                boolean may = isValid(s, carr, nl, nr);
+                if (may) {
+                    res = true;
+                    break;
+                }
+            }
+            if (left < len && right - 1 >= 0 && carr[left] == 'a' && carr[right - 1] == 'b' && carr[right] == 'c') {
+                // 1,2
+                int nl = left + 1, nr = right - 2;
+                boolean may = isValid(s, carr, nl, nr);
+                if (may) {
+                    res = true;
+                    break;
+                }
+            }
+            if (left + 1 < len && right >= 0 && carr[left] == 'a' && carr[left + 1] == 'b' && carr[right] == 'c') {
+                int nl = left + 2, nr = right - 1;
+                boolean may = isValid(s, carr, nl, nr);
+                if (may) {
+                    res = true;
+                    break;
+                }
+            }
+            if (left + 2 < len && carr[left] == 'a' && carr[left + 1] == 'b' && carr[left + 2] == 'c') {
+                int nl = left + 3, nr = right;
+                boolean may = isValid(s, carr, nl, nr);
+                if (may) {
+                    res = true;
+                    break;
+                }
+            }
+            break;
+        }
+        visited.set(memoIdx);
+        memo.set(memoIdx, res);
+        return res;
     }
 
     // LC1499 Hard ** 单调队列
