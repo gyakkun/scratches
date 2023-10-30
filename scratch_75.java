@@ -6,17 +6,23 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.hIndex2(new int[]{0, 1, 3, 5, 6}));
+        System.err.println(s.hIndex2(new int[]{3}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
     }
 
     // LC275
     public int hIndex2(int[] citations) {
-        TreeMap<Integer, Integer> m = new TreeMap<>();
         int len = citations.length;
+        int[] m = new int[citations[len - 1] + 1];
+        Arrays.fill(m, -1);
         for (int i = len - 1; i >= 0; i--) {
-            m.put(citations[i], i); // 方便找出该引用次数第一次出现的下标 (最小下标)
+            m[citations[i]] = i;
+        }
+        int j = citations[len - 1];
+        while (j >= 0) {
+            int k = m[j];
+            while (--j >= 0 && m[j] == -1) m[j] = k;
         }
         // H指数最高不超过最大引用次数, 最小为0, 考虑单调性, 可二分
         int lo = 0, hi = citations[len - 1];
@@ -24,7 +30,7 @@ class Solution {
             int mid = lo + (hi - lo + 1) / 2; // 找最大值, 需要取上届
             // how to judge?
             // find the largest index that have mid citation
-            int idx = m.ceilingEntry(mid).getValue(); // 找出大于等于mid的引用次数出现的最小下标
+            int idx = m[mid]; // 找出大于等于mid的引用次数出现的最小下标
             int sum = len - idx;
             if (sum >= mid) { // valid candidate! can find in high half
                 lo = mid;
