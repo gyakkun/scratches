@@ -17,16 +17,17 @@ class Solution {
         // 求0<=i<j<len, yi+yj+|xi-xj|的最大值, 其中|xi-xj|<=k
 
         // yi + yj + |xi-xj| = xj + yj + (yi - xi)
-        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(i -> i[0])); // 堆顶最小, [x-y, x]
+        Deque<int[]> dq = new LinkedList<>();
         int res = Integer.MIN_VALUE;
         for (int[] j : points) {
             int xj = j[0], yj = j[1];
             // 出队所有不满足 xj-xi 的元素
-            while (!pq.isEmpty() && xj - pq.peek()[1] > k) pq.poll();
-            if (!pq.isEmpty()) {
-                res = Math.max(res, xj + yj + (-pq.peek()[0]));
+            while (!dq.isEmpty() && xj - dq.peekFirst()[1] > k) dq.pollFirst();
+            if (!dq.isEmpty()) {
+                res = Math.max(res, xj + yj + dq.peekFirst()[0]);
             }
-            pq.offer(new int[]{xj - yj, xj});
+            while (!dq.isEmpty() && yj - xj >= dq.peekLast()[0]) dq.pollLast();
+            dq.offer(new int[]{yj - xj, xj});
         }
         return res;
     }
