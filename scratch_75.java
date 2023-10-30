@@ -11,6 +11,26 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC1499 Hard ** 单调队列
+    public int findMaxValueOfEquation(int[][] points, int k) {
+        // points按照[x,y] 中x的升序排列
+        // 求0<=i<j<len, yi+yj+|xi-xj|的最大值, 其中|xi-xj|<=k
+
+        // yi + yj + |xi-xj| = xj + yj + (yi - xi)
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(i -> i[0])); // 堆顶最小, [x-y, x]
+        int res = Integer.MIN_VALUE;
+        for (int[] j : points) {
+            int xj = j[0], yj = j[1];
+            // 出队所有不满足 xj-xi 的元素
+            while (!pq.isEmpty() && xj - pq.peek()[1] > k) pq.poll();
+            if (!pq.isEmpty()) {
+                res = Math.max(res, xj + yj + (-pq.peek()[0]));
+            }
+            pq.offer(new int[]{xj - yj, xj});
+        }
+        return res;
+    }
+
     // LC275
     public int hIndex2(int[] citations) {
         int len = citations.length;
