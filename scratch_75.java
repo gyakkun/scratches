@@ -6,9 +6,33 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.checkArray(new int[]{60, 72, 87, 89, 63, 52, 64, 62, 31, 37, 57, 83, 98, 94, 92, 77, 94, 91, 87, 100, 91, 91, 50, 26}, 4));
+        System.err.println(s.hIndex2(new int[]{0, 1, 3, 5, 6}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC275
+    public int hIndex2(int[] citations) {
+        TreeMap<Integer, Integer> m = new TreeMap<>();
+        int len = citations.length;
+        for (int i = len - 1; i >= 0; i--) {
+            m.put(citations[i], i); // 方便找出该引用次数第一次出现的下标 (最小下标)
+        }
+        // H指数最高不超过最大引用次数, 最小为0, 考虑单调性, 可二分
+        int lo = 0, hi = citations[len - 1];
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2; // 找最大值, 需要取上届
+            // how to judge?
+            // find the largest index that have mid citation
+            int idx = m.ceilingEntry(mid).getValue(); // 找出大于等于mid的引用次数出现的最小下标
+            int sum = len - idx;
+            if (sum >= mid) { // valid candidate! can find in high half
+                lo = mid;
+            } else { // not enough, should find in the low half
+                hi = mid - 1;
+            }
+        }
+        return lo;
     }
 
     // LC274
