@@ -11,6 +11,35 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2003 MLE
+    public int[] smallestMissingValueSubtree(int[] parents, int[] nums) {
+        Map<Integer, Set<Integer>> children = new HashMap<>();
+        // bottom up
+        for (int i = 0; i < parents.length; i++) {
+            children.computeIfAbsent(parents[i], j -> new HashSet<>())
+                    .add(i);
+        }
+        // Set<Integer> leaves = new HashSet<>();
+        // for (int i = 0; i < parents.length; i++) {
+        //     if (!children.containsKey(i)) leaves.add(i);
+        // }
+        int[] res = new int[parents.length];
+        lc2003Helper(0, parents, nums, children, res);
+        return res;
+    }
+
+    private BitSet lc2003Helper(int cur, int[] parents, int[] nums, Map<Integer,Set<Integer>> children, int[] res){
+        Set<Integer> ch = children.getOrDefault(cur, new HashSet<>());
+        BitSet bs = new BitSet();
+        bs.set(nums[cur]);
+        for (int c : ch) {
+            bs.or(lc2003Helper(c, parents, nums, children, res));
+        }
+        int ans = bs.nextClearBit(1);
+        res[cur] = ans;
+        return bs;
+    }
+
     // 蒙特卡洛
     public double monteCarlo() {
         // range1 [-50,50]
@@ -31,7 +60,7 @@ class Solution {
             if (stir1 >= stir2) {
                 alertingTime += stir1 - stir2;
             }
-            if(alertingTime-0d<=1e-9) zeroCount++;
+            if (alertingTime - 0d <= 1e-9) zeroCount++;
             avgAlert = (avgAlert * i + alertingTime) / (i + 1);
             avgDelay = (avgDelay * i + (stir1 - 120 * 60)) / (i + 1);
             maxAlert = Math.max(maxAlert, alertingTime);
