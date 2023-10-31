@@ -11,42 +11,47 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
-    // LC1388 Hard ** WA
+    // LC1388 Hard ** DP
     Integer[][] lc1388Memo;
-
     public int maxSizeSlices(int[] slices) {
         int len = slices.length;
-        lc1388Memo = new Integer[2 + 1][len + 1];
         int res = Integer.MIN_VALUE;
-        // 尝试定义状态: [第一个选中的下标(0,1,2), 最后一个选中的下标]-> 当前取得的最大值
-        for (int i = 0; i < 2; i++) {
-            res = Math.max(res, lc1388Helper(i, i, slices));
-        }
+        // 不选第一个
+        lc1388Memo = new Integer[len + 1][len + 1];
+        res = Math.max(res, lc1388Helper(len - 1, len / 3, slices, true, false));
+
+        // 不选最后一个
+        lc1388Memo = new Integer[len + 1][len + 1];
+        res = Math.max(res, lc1388Helper(len - 1, len / 3, slices, false, true));
+
         return res;
     }
 
-    private int lc1388Helper(int init, int cur, int[] slices) {
-        if (lc1388Memo[init][cur] != null) return lc1388Memo[init][cur];
-        int len = slices.length;
-        int maxChunk = (len - 1) / 2;
-        int curChunk = cur / 2;
-        if (curChunk == maxChunk) {
-            int res = Integer.MIN_VALUE;
-            for (int i = 0; i < 2; i++) {
-                if (i == 0 && (cur % 2 == 1)) continue;
-                if (i == 1 && (init == 0)) continue;
-                res = Math.max(res, slices[curChunk * 2 + i]);
-            }
-            return lc1388Memo[init][cur] = res;
+    private int lc1388Helper(int rangeInclusive, int selected, int[] slices, boolean shouldChooseFirst, boolean shouldChooseLast) {
+        if (lc1388Memo[rangeInclusive][selected] != null) return lc1388Memo[rangeInclusive][selected];
+        // while rangeIncl < 2 or selected = 0
+        if (selected == 0) return 0;
+        if (rangeInclusive == 0 && selected == 1) {
+            if (!shouldChooseFirst) return Integer.MIN_VALUE;
+            return slices[0];
         }
-        int nextChunk = curChunk + 1;
+        if (rangeInclusive == 1 && selected == 1) {
+            if (!shouldChooseFirst) return slices[1];
+            return Math.max(slices[0], slices[1]);
+        }
+        if (rangeInclusive < 2 && selected >= 2) return Integer.MIN_VALUE;
+
         int res = Integer.MIN_VALUE;
-        for (int i = 0; i < 2; i++) {
-            if (i == 0 && (cur % 2 == 1)) continue;
-            int selected = nextChunk * 2 + i;
-            res = Math.max(res, slices[cur] + lc1388Helper(init, selected, slices));
+        int choose = Integer.MIN_VALUE;
+        // if choose idx=rangeIncl
+        if (rangeInclusive == slices.length - 1 && !shouldChooseLast) {
+            ;
+        } else {
+            choose = slices[rangeInclusive] + lc1388Helper(rangeInclusive - 2, selected - 1, slices, shouldChooseFirst, shouldChooseLast);
         }
-        return lc1388Memo[init][cur] = res;
+        int notChoose = lc1388Helper(rangeInclusive - 1, selected, slices, shouldChooseFirst, shouldChooseLast);
+        res = Math.max(choose, notChoose);
+        return lc1388Memo[rangeInclusive][selected] = res;
     }
 
     // LC2003 Hard **c
