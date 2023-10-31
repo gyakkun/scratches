@@ -6,9 +6,47 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.monteCarlo());
+        System.err.println(s.maxSizeSlices(new int[]{1, 2, 3, 4, 5, 6}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC1388 Hard ** WA
+    Integer[][] lc1388Memo;
+
+    public int maxSizeSlices(int[] slices) {
+        int len = slices.length;
+        lc1388Memo = new Integer[2 + 1][len + 1];
+        int res = Integer.MIN_VALUE;
+        // 尝试定义状态: [第一个选中的下标(0,1,2), 最后一个选中的下标]-> 当前取得的最大值
+        for (int i = 0; i < 2; i++) {
+            res = Math.max(res, lc1388Helper(i, i, slices));
+        }
+        return res;
+    }
+
+    private int lc1388Helper(int init, int cur, int[] slices) {
+        if (lc1388Memo[init][cur] != null) return lc1388Memo[init][cur];
+        int len = slices.length;
+        int maxChunk = (len - 1) / 2;
+        int curChunk = cur / 2;
+        if (curChunk == maxChunk) {
+            int res = Integer.MIN_VALUE;
+            for (int i = 0; i < 2; i++) {
+                if (i == 0 && (cur % 2 == 1)) continue;
+                if (i == 1 && (init == 0)) continue;
+                res = Math.max(res, slices[curChunk * 2 + i]);
+            }
+            return lc1388Memo[init][cur] = res;
+        }
+        int nextChunk = curChunk + 1;
+        int res = Integer.MIN_VALUE;
+        for (int i = 0; i < 2; i++) {
+            if (i == 0 && (cur % 2 == 1)) continue;
+            int selected = nextChunk * 2 + i;
+            res = Math.max(res, slices[cur] + lc1388Helper(init, selected, slices));
+        }
+        return lc1388Memo[init][cur] = res;
     }
 
     // LC2003 Hard **c
@@ -34,18 +72,18 @@ class Solution {
         Set<Integer> visited = new HashSet<>(), gene = new HashSet<>();
         int expectedLackNode = 1;
         while (cur != -1) {
-            lc2003Helper(cur, nums,children,visited,gene);
-            while(gene.contains(expectedLackNode)) expectedLackNode++;
-            res[cur] =expectedLackNode;
+            lc2003Helper(cur, nums, children, visited, gene);
+            while (gene.contains(expectedLackNode)) expectedLackNode++;
+            res[cur] = expectedLackNode;
             cur = parents[cur];
         }
         return res;
     }
 
     private void lc2003Helper(int cur, int[] nums,
-                                Map<Integer, Set<Integer>> children,
-                                Set<Integer> visited, Set<Integer> gene) {
-        if(visited.contains(cur)) return;
+                              Map<Integer, Set<Integer>> children,
+                              Set<Integer> visited, Set<Integer> gene) {
+        if (visited.contains(cur)) return;
         visited.add(cur);
         gene.add(nums[cur]);
         Set<Integer> ch = children.getOrDefault(cur, new HashSet<>());
