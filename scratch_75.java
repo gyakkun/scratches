@@ -11,8 +11,33 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2544
+    public int alternateDigitSum(int n) {
+        int res = 0, numDigit = 0;
+        int tmp = n;
+        do {
+            tmp /= 10;
+            numDigit++;
+        } while (tmp > 0);
+
+        int sign = 0;
+        if (numDigit % 2 == 0) {
+            sign = -1;
+        } else {
+            sign = 1;
+        }
+        tmp = n;
+        while(tmp!=0) {
+            res += sign * (tmp % 10);
+            sign *= -1;
+            tmp /= 10;
+        }
+        return res;
+    }
+
     // LC1388 Hard ** DP
     Integer[][] lc1388Memo;
+
     public int maxSizeSlices(int[] slices) {
         int len = slices.length;
         int res = Integer.MIN_VALUE;
