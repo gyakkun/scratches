@@ -11,6 +11,24 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2500
+    public int deleteGreatestValue(int[][] grid) {
+        int m = grid.length, n = grid[0].length, res = 0;
+        PriorityQueue<Integer>[] pqarr = new PriorityQueue[m];
+        for (int i = 0; i < m; i++) {
+            pqarr[i] = new PriorityQueue<>(Comparator.reverseOrder());
+            for (int j = 0; j < n; j++) pqarr[i].offer(grid[i][j]);
+        }
+        for (int i = 0; i < n; i++) {
+            int max = Integer.MIN_VALUE;
+            for (int j = 0; j < m; j++) {
+                max = Math.max(max, pqarr[j].poll());
+            }
+            res += max;
+        }
+        return res;
+    }
+
     // LC2544
     public int alternateDigitSum(int n) {
         int res = 0, numDigit = 0;
