@@ -11,33 +11,47 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
-    // LC2003 MLE
+    // LC2003 Hard **c
     public int[] smallestMissingValueSubtree(int[] parents, int[] nums) {
+        int[] res = new int[parents.length];
+        Arrays.fill(res, 1);
         Map<Integer, Set<Integer>> children = new HashMap<>();
-        // bottom up
+        // Build children map
         for (int i = 0; i < parents.length; i++) {
             children.computeIfAbsent(parents[i], j -> new HashSet<>())
                     .add(i);
         }
-        // Set<Integer> leaves = new HashSet<>();
-        // for (int i = 0; i < parents.length; i++) {
-        //     if (!children.containsKey(i)) leaves.add(i);
-        // }
-        int[] res = new int[parents.length];
-        lc2003Helper(0, parents, nums, children, res);
+        // bottom up
+        List<Integer> chain = new ArrayList<>();
+        int oneLoc = -1;
+        for (int i = 0; i < parents.length; i++) {
+            if (nums[i] == 1) {
+                oneLoc = i;
+                break;
+            }
+        }
+        int cur = oneLoc;
+        Set<Integer> visited = new HashSet<>(), gene = new HashSet<>();
+        int expectedLackNode = 1;
+        while (cur != -1) {
+            lc2003Helper(cur, nums,children,visited,gene);
+            while(gene.contains(expectedLackNode)) expectedLackNode++;
+            res[cur] =expectedLackNode;
+            cur = parents[cur];
+        }
         return res;
     }
 
-    private BitSet lc2003Helper(int cur, int[] parents, int[] nums, Map<Integer,Set<Integer>> children, int[] res){
+    private void lc2003Helper(int cur, int[] nums,
+                                Map<Integer, Set<Integer>> children,
+                                Set<Integer> visited, Set<Integer> gene) {
+        if(visited.contains(cur)) return;
+        visited.add(cur);
+        gene.add(nums[cur]);
         Set<Integer> ch = children.getOrDefault(cur, new HashSet<>());
-        BitSet bs = new BitSet();
-        bs.set(nums[cur]);
         for (int c : ch) {
-            bs.or(lc2003Helper(c, parents, nums, children, res));
+            lc2003Helper(c, nums, children, visited, gene);
         }
-        int ans = bs.nextClearBit(1);
-        res[cur] = ans;
-        return bs;
     }
 
     // 蒙特卡洛
