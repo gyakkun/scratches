@@ -6,9 +6,39 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.isValid("abcabcababcc"));
+        System.err.println(s.monteCarlo());
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // 蒙特卡洛
+    public double monteCarlo() {
+        // range1 [-50,50]
+        // range2 [-45,45]
+        // min 0, max 45, 10 bars
+        int[] freqMap = new int[10];
+        Random r = new Random();
+        double avgAlert = 0d;
+        double avgDelay = 0d;
+        double maxAlert = 0d;
+        int zeroCount = 0;
+        for (int i = 0; i < 10000000; i++) {
+            double stir1 = r.nextDouble() * 100 - 50; // server check
+            double stir2 = r.nextDouble() * 90 - 45; // client check
+            while (stir1 < 120 * 60) stir1 += 50;
+            while (stir2 < 120 * 60) stir2 += 45;
+            double alertingTime = 0d;
+            if (stir1 >= stir2) {
+                alertingTime += stir1 - stir2;
+            }
+            if(alertingTime-0d<=1e-9) zeroCount++;
+            avgAlert = (avgAlert * i + alertingTime) / (i + 1);
+            avgDelay = (avgDelay * i + (stir1 - 120 * 60)) / (i + 1);
+            maxAlert = Math.max(maxAlert, alertingTime);
+            freqMap[(int) (alertingTime / 5d)]++;
+        }
+        System.err.println("Zero count " + zeroCount);
+        return avgAlert; // ~9.25s, [0, 0s+,5s+...45s+] = [45%, 15%,9.4%,8.3%,7.2%,6.1%,5.0%,3.9%,2.8%,1.7%,0.56%]
     }
 
     // LC1003 **
