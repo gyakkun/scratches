@@ -6,9 +6,41 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.maximumInvitations(new int[]{1, 0, 3, 2, 5, 6, 7, 4, 9, 8, 11, 10, 11, 12, 10}));
+        System.err.println(s.handleQuery(new int[]{1, 0, 1}, new int[]{0, 0, 0}, new int[][]{{1, 1, 1}, {2, 1, 0}, {3, 0, 0}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC2569 Hard
+    // Should use lazy segment tree, but can try bitset first
+    public long[] handleQuery(int[] nums1, int[] nums2, int[][] queries) {
+        int len = nums1.length;
+        BitSet bs = new BitSet(len);
+        long sum = 0;
+        List<Long> res = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            sum += nums2[i];
+            if (nums1[i] == 1) bs.set(i);
+        }
+        for (int[] q : queries) {
+            switch (q[0]) {
+                case 1: {
+                    int l = q[1], r = q[2];
+                    bs.flip(l, r + 1);
+                    break;
+                }
+                case 2: {
+                    sum += (long) bs.cardinality() * q[1];
+                    break;
+                }
+                case 3: {
+                    res.add(sum);
+                    break;
+                    // sum nums2
+                }
+            }
+        }
+        return res.stream().mapToLong(Long::valueOf).toArray();
     }
 
     // LC2127 Hard ** 基环内向树
