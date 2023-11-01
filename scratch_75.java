@@ -6,9 +6,73 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.maxSizeSlices(new int[]{1, 2, 3, 4, 5, 6}));
+        System.err.println(s.maximumInvitations(new int[]{1, 0, 3, 2, 5, 6, 7, 4, 9, 8, 11, 10, 11, 12, 10}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC2127 Hard ** 基环内向树
+    public int maximumInvitations(int[] favorite) {
+        // 每个人只有一个出度！！！！
+        // 一个人可以有多个入度！！！
+        int len = favorite.length;
+        int[] indeg = new int[len];
+        for (int i : favorite) indeg[i]++;
+        boolean[] visited = new boolean[len];
+
+        // 先找出所有环上的节点 用拓扑排序
+        Deque<Integer> dq = new LinkedList<>();
+        for (int i = 0; i < len; i++) if (indeg[i] == 0) dq.offer(i);
+        int[] maxLenEndWith = new int[len];
+        Arrays.fill(maxLenEndWith, 1);
+        while (!dq.isEmpty()) {
+            int p = dq.poll();
+            visited[p] = true;
+            int next = favorite[p];
+            maxLenEndWith[next] = Math.max(maxLenEndWith[p] + 1, maxLenEndWith[next]);
+            indeg[next]--;
+            if (indeg[next] == 0) dq.offer(next);
+        }
+        Set<Integer> purelyOnCycle = new HashSet<>();
+        for (int i = 0; i < len; i++) if (!visited[i]) purelyOnCycle.add(i);
+
+        // DFS 取最大环
+        int res = 0;
+        int acyclic = 0;
+        for (int node : purelyOnCycle) {
+            if (visited[node]) continue;
+            int cur = node, layer = 1;
+            visited[cur] = true;
+            while (!visited[favorite[cur]]) {
+                int next = favorite[cur];
+                visited[next] = true;
+                layer++;
+                cur = next;
+            }
+            res = Math.max(layer, res);
+            if (layer == 2) {
+                acyclic += maxLenEndWith[node] + maxLenEndWith[favorite[node]];
+                res = Math.max(res, acyclic);
+            }
+        }
+        return res;
+    }
+
+
+    // LC2465
+    public int distinctAverages(int[] nums) {
+        Map<Integer, Integer> freq = Arrays.stream(nums).boxed().collect(Collectors.groupingBy(Function.identity(), Collectors.summingInt(i -> 1)));
+        TreeMap<Integer, Integer> tm = new TreeMap<>(freq);
+        Set<Integer> avg = new HashSet<>();
+        while (!tm.isEmpty()) {
+            int min = tm.firstKey(), max = tm.lastKey();
+            avg.add(min + max);
+            tm.put(min, tm.get(min) - 1);
+            if (tm.get(min) == 0) tm.remove(min);
+            tm.put(max, tm.get(max) - 1);
+            if (tm.get(max) == 0) tm.remove(max);
+        }
+        return avg.size();
     }
 
     // LC2500
@@ -45,7 +109,7 @@ class Solution {
             sign = 1;
         }
         tmp = n;
-        while(tmp!=0) {
+        while (tmp != 0) {
             res += sign * (tmp % 10);
             sign *= -1;
             tmp /= 10;
