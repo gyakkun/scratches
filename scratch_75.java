@@ -1,5 +1,3 @@
-import jdk.jfr.internal.Bits;
-
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -8,9 +6,44 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.handleQuery(new int[]{1, 0, 1}, new int[]{0, 0, 0}, new int[][]{{1, 1, 1}, {2, 1, 0}, {3, 0, 0}}));
+        System.err.println(s.canMakePaliQueries("abcda", new int[][]{{1,2,0}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC1177
+    public List<Boolean> canMakePaliQueries(String s, int[][] queries) {
+        List<Boolean> res = new ArrayList<>();
+        int len = s.length();
+        char[] carr = s.toCharArray();
+        int[][] singelBit = new int[256][];
+        int[][] prefix = new int[256][];
+        for (int i = 'a'; i <= 'z'; i++) singelBit[i] = new int[len + 1];
+        for (int i = 'a'; i <= 'z'; i++) prefix[i] = new int[len + 1];
+        for (int i = 'a'; i <= 'z'; i++) {
+            for (int j = 0; j < len; j++) {
+                if (carr[j] != i) continue;
+                singelBit[i][j]++;
+            }
+            for (int j = 0; j < len; j++) {
+                prefix[i][j + 1] = prefix[i][j] + singelBit[i][j];
+            }
+        }
+        for (int[] q : queries) {
+            int[] freq = new int[256];
+            int qlen = q[1] - q[0] + 1;
+            int budget = q[2];
+            // if(qlen%2==1) budget++;
+            int needReplace = 0;
+            for (int i = 'a'; i <= 'z'; i++) {
+                    freq[i] = prefix[i][q[1]+1] - prefix[i][q[0]];
+                needReplace += freq[i] % 2;
+            }
+            if (qlen % 2 == 1) needReplace--;
+            needReplace /= 2;
+            res.add(needReplace <= budget);
+        }
+        return res;
     }
 
     // LC2103
@@ -21,7 +54,7 @@ class Solution {
         bss['R'] = new BitSet();
         bss['G'] = new BitSet();
         bss['B'] = new BitSet();
-        for (int i = 0; i < len; i+=2) {
+        for (int i = 0; i < len; i += 2) {
             char color = carr[i];
             int idx = carr[i + 1] - '0';
             bss[color].set(idx);
