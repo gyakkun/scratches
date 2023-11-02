@@ -11,6 +11,17 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2496
+    public int maximumValue(String[] strs) {
+        int res = Integer.MIN_VALUE;
+        for (String s : strs) {
+            boolean isNum = s.chars().allMatch(Character::isDigit);
+            if (isNum) res = Math.max(res, Integer.parseInt(s));
+            else res = Math.max(res, s.length());
+        }
+        return res;
+    }
+
     // LC1186
     public int maximumSum(int[] arr) {
         // [前i个(含), 0/1 删不删] 能得到的数组的最大和
