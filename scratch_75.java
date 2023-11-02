@@ -6,9 +6,41 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.canMakePaliQueries("abcda", new int[][]{{1,2,0}}));
+        System.err.println(s.canMakePaliQueries("abcda", new int[][]{{1, 2, 0}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC1186
+    public int maximumSum(int[] arr) {
+        // [前i个(含), 0/1 删不删] 能得到的数组的最大和
+        // 如果删除的话 必定删的是最小的
+        // 怎么转移？
+        // 考虑从左右各执行一次Kanade算法, Ref LC53
+        int len = arr.length;
+        int[] fromLeft = new int[len], fromRight = new int[len];
+        fromLeft[0] = arr[0];
+        fromRight[0] = arr[len - 1];
+        int res = Math.max(fromLeft[0], fromRight[0]);
+        for (int i = 1; i < len; i++) {
+            fromLeft[i] = Math.max(fromLeft[i - 1] + arr[i], arr[i]);
+            fromRight[i] = Math.max(fromRight[i - 1] + arr[len - 1 - i], arr[len - 1 - i]);
+            res = Math.max(res, fromLeft[i]);
+            res = Math.max(res, fromRight[i]);
+        }
+        for (int i = 1; i < len - 1; i++) {
+            res = Math.max(res, fromLeft[i - 1] + fromRight[len - 1 - i - 1]);
+        }
+        return res;
+    }
+
+    // LC771
+    public int numJewelsInStones(String jewels, String stones) {
+        int[] freq = new int[256];
+        int res = 0;
+        for (char c : stones.toCharArray()) freq[c]++;
+        for (char c : jewels.toCharArray()) res += freq[c];
+        return res;
     }
 
     // LC1177
@@ -36,7 +68,7 @@ class Solution {
             // if(qlen%2==1) budget++;
             int needReplace = 0;
             for (int i = 'a'; i <= 'z'; i++) {
-                    freq[i] = prefix[i][q[1]+1] - prefix[i][q[0]];
+                freq[i] = prefix[i][q[1] + 1] - prefix[i][q[0]];
                 needReplace += freq[i] % 2;
             }
             if (qlen % 2 == 1) needReplace--;
