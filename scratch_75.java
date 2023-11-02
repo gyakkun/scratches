@@ -1,3 +1,5 @@
+import jdk.jfr.internal.Bits;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -9,6 +11,26 @@ class Solution {
         System.err.println(s.handleQuery(new int[]{1, 0, 1}, new int[]{0, 0, 0}, new int[][]{{1, 1, 1}, {2, 1, 0}, {3, 0, 0}}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC2103
+    public int countPoints(String rings) {
+        int len = rings.length();
+        char[] carr = rings.toCharArray();
+        BitSet[] bss = new BitSet[256];
+        bss['R'] = new BitSet();
+        bss['G'] = new BitSet();
+        bss['B'] = new BitSet();
+        for (int i = 0; i < len; i+=2) {
+            char color = carr[i];
+            int idx = carr[i + 1] - '0';
+            bss[color].set(idx);
+        }
+        BitSet res = (BitSet) bss['R'].clone();
+        res.and(bss['G']);
+        res.and(bss['B']);
+        return res.cardinality();
+
     }
 
     // LC2569 Hard
