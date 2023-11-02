@@ -11,6 +11,58 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC2560
+    public int minCapability(int[] nums, int k) {
+        int len = nums.length;
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        for (int num : nums) {
+            min = Math.min(num, min);
+            max = Math.max(num, max);
+        }
+        int hi = max, lo = min;
+        while (lo < hi) {//找最小值
+            int mid = lo + (hi - lo) / 2;
+            int counter = 0;
+            int idx = 0;
+            boolean res = false;
+            while (idx < len) {
+                if (nums[idx] <= mid) {
+                    idx += 2;
+                    counter++;
+                    if (counter >= k) {
+                        res = true;
+                    }
+                    if (res) break;
+                } else {
+                    idx++;
+                }
+            }
+            if (!res) {
+                idx = 1;
+                counter = 0;
+                while (idx < len) {
+                    if (nums[idx] <= mid) {
+                        idx += 2;
+                        counter++;
+                        if (counter >= k) {
+                            res = true;
+                        }
+                        if (res) break;
+                    } else {
+                        idx++;
+                    }
+                }
+            }
+
+            if (res) { // 找满足条件的最小值
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+    }
+
     // LC2496
     public int maximumValue(String[] strs) {
         int res = Integer.MIN_VALUE;
