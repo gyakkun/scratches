@@ -2483,7 +2483,7 @@ class MajorityChecker {
     }
 }
 
-// LC1707 Trie ** 字典树上异或
+// LC1707 Trie Hard ** 字典树上异或
 class Lc1707 {
     // LC421
     public int findMaximumXOR(int[] nums) {
