@@ -2485,6 +2485,29 @@ class MajorityChecker {
 
 // LC1707 Trie ** 字典树上异或
 class Lc1707 {
+    // LC421
+    public int findMaximumXOR(int[] nums) {
+        int res = Integer.MIN_VALUE;
+        BTrie trie = new BTrie();
+        for (int i : nums) trie.add(i);
+        for (int i : nums) {
+            int[] victim = intToBinArr(i);
+            BTrieNode cur = trie.root;
+            for (int j = 0; j < Integer.SIZE; j++) {
+                int thisBit = victim[j];
+                if (cur.children[1 - thisBit] != null) {
+                    victim[j] = 1;
+                    cur = cur.children[1 - thisBit];
+                } else {
+                    victim[j] = 0;
+                    cur = cur.children[thisBit];
+                }
+            }
+            res = Math.max(res, binArrToInt(victim));
+        }
+        return res;
+    }
+
     public int[] maximizeXor(int[] nums, int[][] queries) {
         Arrays.sort(nums);
         Map<int[], Integer> idxMap = new HashMap<>();

@@ -11,6 +11,12 @@ class Solution {
         System.err.println(timing + "ms");
     }
 
+    // LC421
+    public int findMaximumXOR(int[] nums) {
+        int max = Integer.MIN_VALUE;
+        
+    }
+
     // LC2560
     public int minCapability(int[] nums, int k) {
         int len = nums.length;
@@ -1437,7 +1443,7 @@ class FrequencyTracker {
 }
 
 
-// LC1483 Hard ** 数上倍增
+// LC1483 Hard ** 树上倍增
 class TreeAncestor {
     int n;
     int[] parent;
