@@ -6,15 +6,36 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.canMakePaliQueries("abcda", new int[][]{{1, 2, 0}}));
+        System.err.println(s.reversePairs(new int[]{-5, -5}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
     }
 
-    // LC421
-    public int findMaximumXOR(int[] nums) {
-        int max = Integer.MIN_VALUE;
-        
+    // LC493 Hard
+    public int reversePairs(int[] nums) {
+        int len = nums.length;
+        int res = 0;
+        // 先离散化
+        List<Long> uniqSorted = Arrays.stream(nums).boxed().mapToLong(Integer::longValue).distinct().sorted().boxed().toList();
+        TreeSet<Long> ts = new TreeSet<>(uniqSorted);
+        Map<Long, Integer> idxMap = new HashMap<>();
+        for (int i = 0; i < uniqSorted.size(); i++) {
+            idxMap.put(uniqSorted.get(i), i);
+        }
+        RangeBit rb = new RangeBit(uniqSorted.size() + 2);
+        for (int i = 0; i < len; i++) {
+            int self = nums[i];
+            int selfIdx = idxMap.get((long) self);
+            long twice = 2L * self;
+            Long twiceEle = ts.higher(twice);
+            if (twiceEle != null) {
+                int twiceIdx = idxMap.get(twiceEle);
+                int count = (int) rb.sumRange(twiceIdx, uniqSorted.size());
+                res += count;
+            }
+            rb.update(selfIdx, 1);
+        }
+        return res;
     }
 
     // LC2560
@@ -1472,4 +1493,123 @@ class TreeAncestor {
         }
         return node;
     }
+}
+
+
+class BIT {
+    long[] tree;
+    int len;
+
+    public BIT(int len) {
+        this.len = len;
+        this.tree = new long[len + 1];
+    }
+
+    public BIT(int[] arr) {
+        this.len = arr.length;
+        this.tree = new long[len + 1];
+        for (int i = 0; i < arr.length; i++) {
+            int oneBasedIdx = i + 1;
+            tree[oneBasedIdx] += arr[i];
+            int nextOneBasedIdx = oneBasedIdx + lowbit(oneBasedIdx);
+            if (nextOneBasedIdx <= len) tree[nextOneBasedIdx] += tree[oneBasedIdx];
+        }
+    }
+
+    public void set(int idxZeroBased, long val) {
+        long delta = val - get(idxZeroBased);
+        update(idxZeroBased, delta);
+    }
+
+    public long get(int idxZeroBased) {
+        return sumOneBased(idxZeroBased + 1) - sumOneBased(idxZeroBased);
+    }
+
+    public void update(int idxZeroBased, long delta) {
+        updateOneBased(idxZeroBased + 1, delta);
+    }
+
+    public long sumRange(int left, int right) {
+        return sumOneBased(right + 1) - sumOneBased(left);
+    }
+
+    public void updateOneBased(int idxOneBased, long delta) {
+        while (idxOneBased <= len) {
+            tree[idxOneBased] += delta;
+            idxOneBased += lowbit(idxOneBased);
+        }
+    }
+
+    public long sumOneBased(int idxOneBased) {
+        int sum = 0;
+        while (idxOneBased > 0) {
+            sum += tree[idxOneBased];
+            idxOneBased -= lowbit(idxOneBased);
+        }
+        return sum;
+    }
+
+    private int lowbit(int x) {
+        return x & (-x);
+    }
+}
+
+class RangeBit {
+    BIT diff;
+    BIT iDiff;
+    int len;
+
+    public RangeBit(int len) {
+        diff = new BIT(len);
+        iDiff = new BIT(len);
+        this.len = len;
+    }
+
+    public RangeBit(int[] arr) {
+        this.len = arr.length;
+        diff = new BIT(len);
+        iDiff = new BIT(len);
+        for (int i = 0; i < arr.length; i++) update(i, arr[i]);
+    }
+
+    public long get(int zeroBased) {
+        return sumRangeOneBased(zeroBased + 1) - sumRangeOneBased(zeroBased);
+    }
+
+    public void set(int idx, long val) {
+        update(idx, val - get(idx));
+    }
+
+    public void update(int idx, long delta) {
+        rangeUpdate(idx, idx, delta);
+    }
+
+    public void rangeUpdate(int left, int right, long delta) {
+        rangeUpdateOneBased(left + 1, right + 1, delta);
+    }
+
+    public long sumRange(int left, int right) {
+        return sumRangeOneBased(right + 1) - sumRangeOneBased(left);
+    }
+
+    private void rangeUpdateOneBased(int left, int right, long delta) {
+        updateOneBased(left, delta);
+        updateOneBased(right + 1, -delta);
+    }
+
+    private void updateOneBased(int idx, long delta) {
+        long iDelta = idx * delta;
+        diff.updateOneBased(idx, delta);
+        iDiff.updateOneBased(idx, iDelta);
+    }
+
+    private long sumRangeOneBased(int r) {
+        return (r + 1) * diff.sumOneBased(r) - iDiff.sumOneBased(r);
+    }
+
+
+    private int lowbit(int x) {
+        return x & (-x);
+    }
+
 }
