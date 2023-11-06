@@ -6,9 +6,28 @@ class Solution {
     public static void main(String[] args) {
         var s = new Solution();
         long timing = System.currentTimeMillis();
-        System.err.println(s.reversePairs(new int[]{-5, -5}));
+        System.err.println(s.maxProduct(new String[]{"abcw", "baz", "foo", "bar", "xtfn", "abcdef"}));
         timing = System.currentTimeMillis() - timing;
         System.err.println(timing + "ms");
+    }
+
+    // LC318
+    public int maxProduct(String[] words) {
+        int len = words.length;
+        int res = 0;
+        int[] bm = new int[len];
+        for (int i = 0; i < len; i++) {
+            char[] ca = words[i].toCharArray();
+            for (char c : ca) bm[i] |= 1 << (c - 'a');
+        }
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len; j++) {
+                if ((bm[i] & bm[j]) == 0) {
+                    res = Math.max(words[j].length() * words[i].length(), res);
+                }
+            }
+        }
+        return res;
     }
 
     // LC493 Hard
