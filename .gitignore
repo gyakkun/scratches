@@ -33,3 +33,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Others ###
+buffer*.txt
+*.md
+*.png
+*.jpg
+*.json
