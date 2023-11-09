@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="jfxrt">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../../Program Files/RedHat/java-1.8.0-openjdk-1.8.0.312-2/jre/lib/ext/jfxrt.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
