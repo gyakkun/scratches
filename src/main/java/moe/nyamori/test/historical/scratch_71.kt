@@ -1,3 +1,5 @@
+package moe.nyamori.test.historical
+
 fun main() {
     fun sanitizeFilename(filename: String): String {
         // val reg = Regex("[#%&{}\<>?/ $!'":@+`|=]""
