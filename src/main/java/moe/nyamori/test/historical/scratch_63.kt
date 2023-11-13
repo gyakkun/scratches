@@ -1,14 +1,22 @@
+package moe.nyamori.test.historical
+
 import java.time.Duration
 import java.time.Instant
 import java.util.*
 
-var before = Instant.now()!!
-var s = Solution()
-println(s)
-var after = Instant.now()!!
-System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
 
-class Solution {
+object Main63 {
+    @JvmStatic
+    fun main(argv: Array<String>) {
+        var before = Instant.now()!!
+        var s = SolutionKt63()
+        println(s)
+        var after = Instant.now()!!
+        System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
+    }
+}
+
+class SolutionKt63 {
 
     // LC1748
     fun sumOfUnique(nums: IntArray): Int {
@@ -77,7 +85,8 @@ class Solution {
         if (arrival.size <= k) {
             return IntRange(0, k - 1).toList()
         }
-        val pq: PriorityQueue<Pair<Int, Int>> = PriorityQueue<Pair<Int, Int>> { o1, o2 -> o1.first - o2.first } // <在什么时刻重新空闲, 是第几个服务器>
+        val pq: PriorityQueue<Pair<Int, Int>> =
+            PriorityQueue<Pair<Int, Int>> { o1, o2 -> o1.first - o2.first } // <在什么时刻重新空闲, 是第几个服务器>
         val ts = TreeSet<Int>() // 空闲服务器列表
         val count = IntArray(k)
         val max = arrayOf(Int.MIN_VALUE / 2)
@@ -92,7 +101,8 @@ class Solution {
                 return@forEach
             }
             var nextServer = ts.ceiling(it % k)
-            if (nextServer == null) nextServer = ts.first() // 如果没有比这个i%k大的编号的服务器, 则说明已经只能从头开始找了, 而ts不为空, 所以总能找到编号最小的服务器响应请求
+            if (nextServer == null) nextServer =
+                ts.first() // 如果没有比这个i%k大的编号的服务器, 则说明已经只能从头开始找了, 而ts不为空, 所以总能找到编号最小的服务器响应请求
             ts.remove(nextServer)
             pq.offer(Pair(arrival[it] + load[it], nextServer))
             count[nextServer!!]++
@@ -109,7 +119,7 @@ class Solution {
 
     // LC1791
     fun findCenter(edges: Array<IntArray>): Int =
-            edges.flatMap { it.toList() }.groupingBy { it }.eachCount().filter { it.value != 1 }.entries.first().key
+        edges.flatMap { it.toList() }.groupingBy { it }.eachCount().filter { it.value != 1 }.entries.first().key
 
 
     // LC1219
@@ -358,14 +368,18 @@ class Solution {
             0 -> return (lc1220Helper(remainLetters - 1, 1) % mod).also {
                 memo[remainLetters][currentLetterIdx] = it
             }
+
             1 -> return ((lc1220Helper(remainLetters - 1, 0)
                     + lc1220Helper(remainLetters - 1, 2)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+
             2 -> return ((lc1220Helper(remainLetters - 1, 0)
                     + lc1220Helper(remainLetters - 1, 1)
                     + lc1220Helper(remainLetters - 1, 3)
                     + lc1220Helper(remainLetters - 1, 4)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+
             3 -> return ((lc1220Helper(remainLetters - 1, 2)
                     + lc1220Helper(remainLetters - 1, 4)) % mod).also { memo[remainLetters][currentLetterIdx] = it }
+
             4 -> return (lc1220Helper(remainLetters - 1, 0) % mod).also { memo[remainLetters][currentLetterIdx] = it }
         }
         return 0
@@ -455,7 +469,7 @@ class Solution {
         val cBound = if (pc == bound - 1) cid else cid + 1
         val mtx = Array(rBound + 1) {
             BooleanArray(
-                    cBound + 1
+                cBound + 1
             )
         } // use as visited[][] too
 
@@ -565,7 +579,7 @@ class Solution {
         lc913Memo = Array(graph.size * 2 + 1) {
             Array<Array<Int?>>(graph.size + 1) {
                 arrayOfNulls(
-                        graph.size + 1
+                    graph.size + 1
                 )
             }
         }

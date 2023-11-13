@@ -1,3 +1,5 @@
+package moe.nyamori.test.historical
+
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -6,33 +8,30 @@ import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.pow
 
-
-//class Main {
-//    companion object {
-//        @JvmStatic
-//        fun main(args: Array<String>) {
-var before = Instant.now()!!
-var s = Solution()
-println(
-    s.possibleBipartition(
-        10,
-        arrayOf(
-            intArrayOf(1, 2),
-            intArrayOf(3, 4),
-            intArrayOf(5, 6),
-            intArrayOf(6, 7),
-            intArrayOf(8, 9),
-            intArrayOf(7, 8)
+object Main66 {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        var before = Instant.now()!!
+        var s = SolutionKt66()
+        println(
+            s.possibleBipartition(
+                10,
+                arrayOf(
+                    intArrayOf(1, 2),
+                    intArrayOf(3, 4),
+                    intArrayOf(5, 6),
+                    intArrayOf(6, 7),
+                    intArrayOf(8, 9),
+                    intArrayOf(7, 8)
+                )
+            )
         )
-    )
-)
-var after = Instant.now()!!
-System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
-//        }
-//    }
-//}
+        var after = Instant.now()!!
+        System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
+    }
+}
 
-class Solution {
+class SolutionKt66 {
 
     // LC809
     fun expressiveWords(s: String, words: Array<String>): Int {

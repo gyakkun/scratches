@@ -1,20 +1,25 @@
+package moe.nyamori.test.historical
+
 import java.lang.Math.PI
 import java.lang.Math.atan2
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import kotlin.collections.ArrayList
 
+object Main61 {
+    @JvmStatic
+    fun main(argv: Array<String>) {
+        var before = Instant.now()
+        var s = SolutionKt61()
+        println(
+            s.generateParenthesis(3)
+        )
+        var after = Instant.now()
+        System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
+    }
+}
 
-var before = Instant.now()
-var s = Solution()
-println(
-    s.generateParenthesis(3)
-)
-var after = Instant.now()
-System.err.println("TIMING: ${Duration.between(before, after).toMillis()}ms")
-
-class Solution {
+class SolutionKt61 {
 
     // JZOF II 085
     var result = java.util.ArrayList<String>()
