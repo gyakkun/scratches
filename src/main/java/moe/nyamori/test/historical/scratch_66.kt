@@ -319,7 +319,7 @@ class SolutionKt66 {
 
     // LC886
     fun possibleBipartition(n: Int, dislikes: Array<IntArray>): Boolean {
-        var dsu = DSUArray(2 * n)
+        var dsu = DSUArrayKt66(2 * n)
         var dedicatedParent = HashMap<Int, Int>()
         for (d in dislikes) {
             if (dedicatedParent[d[0]] == null) {
@@ -1123,7 +1123,7 @@ class lc1728 {
     }
 }
 
-class DSUArray {
+class DSUArrayKt66 {
     var father: IntArray
     var rank: IntArray
     var size: Int

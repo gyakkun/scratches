@@ -722,7 +722,7 @@ class SolutionKt63 {
 }
 
 // LC2013
-internal class DetectSquares {
+internal class DetectSquaresKt {
     var xyMap: MutableMap<Int, MutableMap<Int, Int>> = HashMap()
     fun add(point: IntArray) {
         xyMap.putIfAbsent(point[0], HashMap())
@@ -758,7 +758,7 @@ internal class DetectSquares {
 }
 
 // LC2034
-internal class StockPrice {
+internal class StockPriceKt {
     var timePriceMap = TreeMap<Int, Int>()
     var priceTimeMap = TreeMap<Int, MutableSet<Int>>()
     fun update(timestamp: Int, price: Int) {
