@@ -26,7 +26,7 @@ class scratch_2 {
                 break;
             }
 
-            long curLong = Long.valueOf(s.substring(index, i+1));
+            long curLong = Long.valueOf(s.substring(index, i + 1));
 
             if (curLong > Integer.MAX_VALUE) {
                 break;

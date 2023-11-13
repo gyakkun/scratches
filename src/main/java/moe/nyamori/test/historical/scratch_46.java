@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -107,10 +107,10 @@ class scratch_46 {
         if (point.size() != 4) return false;
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
         for (Pair<Integer, Integer> p : point) {
-            minX = Math.min(minX, p.getFirst());
-            minY = Math.min(minY, p.getSecond());
-            maxX = Math.max(maxX, p.getFirst());
-            maxY = Math.max(maxY, p.getSecond());
+            minX = Math.min(minX, p.getKey());
+            minY = Math.min(minY, p.getValue());
+            maxX = Math.max(maxX, p.getKey());
+            maxY = Math.max(maxY, p.getValue());
         }
         return area == (long) (maxY - minY) * (long) (maxX - minX);
     }
@@ -1928,26 +1928,26 @@ class scratch_46 {
         Pair<Long, Pair<Integer, Integer>> doubleDp = new Pair<>(0l, new Pair<>(0, 0));
         Pair<Long, Pair<Integer, Integer>> doubleMax = new Pair<>(0l, new Pair<>(0, 0));
         for (int i = 1; i <= 2 * arr.length; i++) {
-            if (doubleDp.getFirst() + arr[(i - 1) % arr.length] > arr[(i - 1) % arr.length]) {
-                doubleDp = new Pair<>(doubleDp.getFirst() + +arr[(i - 1) % arr.length], new Pair<>(doubleDp.getSecond().getFirst(), i));
+            if (doubleDp.getKey() + arr[(i - 1) % arr.length] > arr[(i - 1) % arr.length]) {
+                doubleDp = new Pair<>(doubleDp.getKey() + +arr[(i - 1) % arr.length], new Pair<>(doubleDp.getValue().getKey(), i));
             } else {
                 doubleDp = new Pair<>((long) arr[(i - 1) % arr.length], new Pair<>(i, i));
             }
 //            doubleDp = Math.max(doubleDp + arr[(i - 1 % arr.length)], arr[(i - 1) % arr.length]);
-            if (doubleDp.getFirst() > doubleMax.getFirst()) {
-                doubleMax = new Pair<>(doubleDp.getFirst(), new Pair<>(doubleDp.getSecond().getFirst(), doubleDp.getSecond().getSecond()));
+            if (doubleDp.getKey() > doubleMax.getKey()) {
+                doubleMax = new Pair<>(doubleDp.getKey(), new Pair<>(doubleDp.getValue().getKey(), doubleDp.getValue().getValue()));
             }
         }
-        if (doubleMax.getFirst() == max) return (int) (max % mod);
-        int left = doubleMax.getSecond().getFirst(), right = doubleMax.getSecond().getSecond();
+        if (doubleMax.getKey() == max) return (int) (max % mod);
+        int left = doubleMax.getValue().getKey(), right = doubleMax.getValue().getValue();
         if (left == 0) left = 1;
         left--;
         right--;
         if (right - left + 1 < arr.length) {
-            return (int) (doubleMax.getFirst() % mod);
+            return (int) (doubleMax.getKey() % mod);
         } else if (right - left + 1 >= arr.length && right - left + 1 < 2 * arr.length) {
             // doubleMax = max*2-k -> k=max*2-doubleMax
-            long gap = max * 2 - doubleMax.getFirst();
+            long gap = max * 2 - doubleMax.getKey();
             return (int) ((max * k - gap * (k - 1)) % mod);
         } else {
             return (int) ((k * max) % mod);
@@ -1984,7 +1984,7 @@ class scratch_46 {
             }
         }
         for (Pair<Integer, Integer> p : notEqual) {
-            if (dsu.find(p.getFirst()) == dsu.find(p.getSecond())) return false;
+            if (dsu.find(p.getKey()) == dsu.find(p.getValue())) return false;
         }
         return true;
     }

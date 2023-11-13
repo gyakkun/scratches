@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -2139,35 +2139,35 @@ class SummaryRanges55 {
     TreeSet<Pair<Integer, Integer>> leftSide, rightSide;
 
     public SummaryRanges55() {
-        leftSide = new TreeSet<>(Comparator.comparingInt(Pair::getFirst));
-        rightSide = new TreeSet<>(Comparator.comparingInt(Pair::getSecond));
+        leftSide = new TreeSet<>(Comparator.comparingInt(Pair::getKey));
+        rightSide = new TreeSet<>(Comparator.comparingInt(Pair::getValue));
     }
 
     public void addNum(int val) {
         Pair<Integer, Integer> p = new Pair<>(val, val);
         Pair<Integer, Integer> lsf = leftSide.floor(p), rsc = rightSide.ceiling(p); // 左侧小于等于val的最大值, 右侧大于等于val的最小值, 以期合并
-        if (lsf != null && rsc != null && lsf.getSecond() + 1 == val && rsc.getFirst() - 1 == val) {
+        if (lsf != null && rsc != null && lsf.getValue() + 1 == val && rsc.getKey() - 1 == val) {
             // 如 [1,2] [3] [4,5] -> [1,5]
             leftSide.remove(lsf);
             leftSide.remove(rsc);
             rightSide.remove(lsf);
             rightSide.remove(rsc);
-            Pair<Integer, Integer> merged = new Pair<>(lsf.getFirst(), rsc.getSecond());
+            Pair<Integer, Integer> merged = new Pair<>(lsf.getKey(), rsc.getValue());
             leftSide.add(merged);
             rightSide.add(merged);
-        } else if (lsf != null && lsf.getSecond() + 1 == val) {
+        } else if (lsf != null && lsf.getValue() + 1 == val) {
             leftSide.remove(lsf);
             rightSide.remove(lsf);
-            Pair<Integer, Integer> merged = new Pair<>(lsf.getFirst(), val);
+            Pair<Integer, Integer> merged = new Pair<>(lsf.getKey(), val);
             leftSide.add(merged);
             rightSide.add(merged);
-        } else if (rsc != null && rsc.getFirst() - 1 == val) {
+        } else if (rsc != null && rsc.getKey() - 1 == val) {
             leftSide.remove(rsc);
             rightSide.remove(rsc);
-            Pair<Integer, Integer> merged = new Pair<>(val, rsc.getSecond());
+            Pair<Integer, Integer> merged = new Pair<>(val, rsc.getValue());
             leftSide.add(merged);
             rightSide.add(merged);
-        } else if (lsf != null && val <= lsf.getSecond() && rsc != null && val >= rsc.getFirst()) {
+        } else if (lsf != null && val <= lsf.getValue() && rsc != null && val >= rsc.getKey()) {
             ;
         } else {
             leftSide.add(p);
@@ -2179,7 +2179,7 @@ class SummaryRanges55 {
         int[][] result = new int[leftSide.size()][];
         int ctr = 0;
         for (Pair<Integer, Integer> p : leftSide) {
-            result[ctr++] = new int[]{p.getFirst(), p.getSecond()};
+            result[ctr++] = new int[]{p.getKey(), p.getValue()};
         }
         return result;
     }

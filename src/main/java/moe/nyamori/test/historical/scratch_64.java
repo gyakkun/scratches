@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.Function;
@@ -99,16 +99,16 @@ class scratch_64 {
         if (arrival.length <= k) {
             return IntStream.range(0, arrival.length).boxed().collect(Collectors.toList());
         }
-        PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(i -> i.getFirst())); // <在什么时刻重新空闲, 是第几个服务器>
+        PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(i -> i.getKey())); // <在什么时刻重新空闲, 是第几个服务器>
         TreeSet<Integer> ts = new TreeSet<>(); // 空闲服务器列表
         int[] count = new int[k];
         final Integer[] max = {Integer.MIN_VALUE / 2};
         List<Integer> result = new ArrayList<>();
         IntStream.range(0, k).forEachOrdered(ts::add);
         IntStream.range(0, arrival.length).forEachOrdered(i -> {
-            while (!pq.isEmpty() && pq.peek().getFirst() <= arrival[i]) {
+            while (!pq.isEmpty() && pq.peek().getKey() <= arrival[i]) {
                 Pair<Integer, Integer> p = pq.poll();
-                ts.add(p.getSecond());
+                ts.add(p.getValue());
             }
             if (ts.isEmpty()) {
                 return;

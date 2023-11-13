@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -2568,8 +2568,8 @@ class Lc1707 {
 
         if (nodeNumQIdxQueryMap.containsKey(root)) {
             for (Pair<Integer, int[]> pair : nodeNumQIdxQueryMap.get(root)) {
-                int qIdx = pair.getFirst();
-                int[] q = pair.getSecond();
+                int qIdx = pair.getKey();
+                int[] q = pair.getValue();
                 int[] victim = intToBinArr(q[1]);
                 BTrieNode cur = trie.root;
                 for (int i = 0; i < 32; i++) {

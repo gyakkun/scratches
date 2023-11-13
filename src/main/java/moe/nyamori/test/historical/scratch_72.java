@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -415,8 +415,8 @@ class scratch_72 {
         }
         int result = Integer.MAX_VALUE / 2;
         for (Pair<Character, Integer> p : reachable) {
-            Character ch = p.getFirst();
-            int currentSteps = p.getSecond();
+            Character ch = p.getKey();
+            int currentSteps = p.getValue();
             int currentRow = coordinate[ch][0][0], currentCol = coordinate[ch][0][1];
             int unlockedRow = coordinate[ch][1][0], unlockedCol = coordinate[ch][1][1];
 
@@ -591,15 +591,15 @@ class scratch_72 {
         for (int i = 0; i < n; i++) {
             idxScoreList.add(new Pair<>(i, challenge[i]));
         }
-        idxScoreList.sort(Comparator.comparingLong(i -> -i.getSecond()));
+        idxScoreList.sort(Comparator.comparingLong(i -> -i.getValue()));
         Function<Integer, Integer> getNext = i -> (i + 1) % n;
         Function<Integer, Integer> getPrev = i -> (i - 1 + n) % n;
         Function<Long, Boolean> check = initVal -> {
             long ongoingVal = initVal;
             BitSet visited = new BitSet(n);
             for (Pair<Integer, Long> p : idxScoreList) { // 从最大的开始遍历所有起点
-                int idx = p.getFirst();
-                long necessaryScore = p.getSecond();
+                int idx = p.getKey();
+                long necessaryScore = p.getValue();
                 if (ongoingVal < necessaryScore) {
                     continue;
                 }
@@ -707,18 +707,18 @@ class scratch_72 {
         for (int i = 0; i < n; i++) {
             employeeList.add(new Pair<>(speed[i], efficiency[i]));
         }
-        employeeList.sort(Comparator.comparingInt(i -> -i.getSecond()));
-        PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(i -> i.getFirst()));
+        employeeList.sort(Comparator.comparingInt(i -> -i.getValue()));
+        PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(i -> i.getKey()));
         long sumSpeed = 0L, result = 0L;
         for (int i = 0; i < n; i++) {
             Pair<Integer, Integer> minEfficiencyStaff = employeeList.get(i);
-            int staffSpeed = minEfficiencyStaff.getFirst(), staffEfficiency = minEfficiencyStaff.getSecond();
+            int staffSpeed = minEfficiencyStaff.getKey(), staffEfficiency = minEfficiencyStaff.getValue();
             sumSpeed += staffSpeed;
             result = Math.max(result, sumSpeed * (long) staffEfficiency);
             pq.offer(minEfficiencyStaff);
             if (pq.size() == k) {
                 Pair<Integer, Integer> p = pq.poll();
-                sumSpeed -= p.getFirst();
+                sumSpeed -= p.getKey();
             }
         }
         return (int) (result % 1000000007L);

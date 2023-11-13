@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -88,7 +88,7 @@ class scratch_54 {
         TreeMap<Pair<Integer, Integer>, Integer> activeXs = new TreeMap<>(new Comparator<Pair<Integer, Integer>>() {
             @Override
             public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                return !o1.getFirst().equals(o2.getFirst()) ? o1.getFirst() - o2.getFirst() : o1.getSecond() - o2.getSecond();
+                return !o1.getKey().equals(o2.getKey()) ? o1.getKey() - o2.getKey() : o1.getValue() - o2.getValue();
             }
         });
         activeXs.put(new Pair<>(events[0][2], events[0][3]), 1);
@@ -99,9 +99,9 @@ class scratch_54 {
             int length = 0;
             int cur = Integer.MIN_VALUE; // 遍历当前所有活动中的X线, 取全长
             for (Pair<Integer, Integer> xPair : activeXs.keySet()) { // 从左到右的X坐标们
-                cur = Math.max(cur, xPair.getFirst());
-                length += Math.max(0, xPair.getSecond() - cur);
-                cur = Math.max(cur, xPair.getSecond());
+                cur = Math.max(cur, xPair.getKey());
+                length += Math.max(0, xPair.getValue() - cur);
+                cur = Math.max(cur, xPair.getValue());
             }
             project += height * length;
             Pair<Integer, Integer> thisX = new Pair<>(events[i][2], events[i][3]);

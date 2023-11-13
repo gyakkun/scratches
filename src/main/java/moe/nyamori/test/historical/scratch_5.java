@@ -15,7 +15,7 @@ class scratch_5 {
         }
         Pn = 0;
         for (int i = 2; i <= 120000; ++i) {
-            if ((~MxPF[i])!=0) {
+            if ((~MxPF[i]) != 0) {
                 continue;
             }
             P[++Pn] = i;
@@ -75,7 +75,7 @@ class scratch_5 {
             long answer = GetPI(Long.parseLong(tmp));
             long endTime = System.currentTimeMillis();
             System.out.println("Pi(" + tmp + ") = " + answer + " .");
-            System.out.println("Time is " + (endTime - startTime ) + " ms .");
+            System.out.println("Time is " + (endTime - startTime) + " ms .");
         }
     }
 }

@@ -9,7 +9,7 @@ class scratch_25 {
     }
 
     // LC1438
-    public int longestSubarrayAVL(int[] nums,int limit){
+    public int longestSubarrayAVL(int[] nums, int limit) {
         TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
         int n = nums.length;
         int left = 0, right = 0;

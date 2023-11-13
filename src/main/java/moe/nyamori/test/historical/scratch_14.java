@@ -169,10 +169,10 @@ class scratch_14 {
 
     // LC1579
     public static int maxNumEdgesToRemove(int n, int[][] edges) {
-    // 1. 对alice&bob, 加入所有的III类边, 并找出里面可能的冗余边(merge返回false的情况), 记录冗余边数
-    // 2. 对alice, 加入所有I类边, 记录冗余边。若最后dsu中有大于一个连通分量, 或dsu的总点数!=n, 直接返回-1
-    // 3. 对bob同alice
-    // 4. 返回冗余边总数
+        // 1. 对alice&bob, 加入所有的III类边, 并找出里面可能的冗余边(merge返回false的情况), 记录冗余边数
+        // 2. 对alice, 加入所有I类边, 记录冗余边。若最后dsu中有大于一个连通分量, 或dsu的总点数!=n, 直接返回-1
+        // 3. 对bob同alice
+        // 4. 返回冗余边总数
         DisjointSetUnion14 alice = new DisjointSetUnion14();
         DisjointSetUnion14 bob = new DisjointSetUnion14();
 

@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.Function;
@@ -1952,7 +1952,7 @@ class RangeBit50 {
     }
 
     public void update(int zeroBased, int delta) {
-        rangeUpdate(zeroBased,zeroBased,delta);
+        rangeUpdate(zeroBased, zeroBased, delta);
     }
 
     public int sumRange(int l, int r) {

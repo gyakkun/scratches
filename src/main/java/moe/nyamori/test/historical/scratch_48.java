@@ -1,6 +1,6 @@
 package moe.nyamori.test.historical;
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.Function;
@@ -314,7 +314,7 @@ class scratch_48 {
         int[] result = new int[k];
         // <idx,sum>
         PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(
-                (o1, o2) -> o2.getSecond() == o1.getSecond() ? o2.getFirst() - o1.getFirst() : o2.getSecond() - o1.getSecond()
+                (o1, o2) -> o2.getValue() == o1.getValue() ? o2.getKey() - o1.getKey() : o2.getValue() - o1.getValue()
         );
         for (int i = 0; i < mat.length; i++) {
             int[] arr = mat[i];
@@ -324,7 +324,7 @@ class scratch_48 {
         }
         int ctr = 0;
         while (ctr < k) {
-            result[ctr++] = pq.poll().getFirst();
+            result[ctr++] = pq.poll().getKey();
         }
         return result;
     }

@@ -7,7 +7,7 @@ class scratch_31 {
     public static void main(String[] args) {
         scratch_31 s = new scratch_31();
         Long timing = System.currentTimeMillis();
-        System.err.println(s.find132pattern(new int[]{1,0,1,-4,-3}));
+        System.err.println(s.find132pattern(new int[]{1, 0, 1, -4, -3}));
         timing = System.currentTimeMillis() - timing;
         System.err.print("TIMING : " + timing + "ms");
     }

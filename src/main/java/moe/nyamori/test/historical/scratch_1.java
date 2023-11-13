@@ -1,6 +1,5 @@
 package moe.nyamori.test.historical;
 
-import java.util.Currency;
 import java.util.LinkedList;
 
 class scratch_1 {
@@ -27,7 +26,7 @@ class scratch_1 {
                 break;
             }
 
-            long curLong = Long.valueOf(s.substring(index, i+1));
+            long curLong = Long.valueOf(s.substring(index, i + 1));
 
             if (curLong > Integer.MAX_VALUE) {
                 break;

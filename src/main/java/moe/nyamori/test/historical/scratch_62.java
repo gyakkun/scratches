@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.Function;
@@ -356,7 +356,7 @@ class scratch_62 {
     // LC537
     public String complexNumberMultiply(String num1, String num2) {
         Pair<Integer, Integer> first = extract(num1), second = extract(num2);
-        int a = first.getFirst(), b = first.getSecond(), c = second.getFirst(), d = second.getSecond();
+        int a = first.getKey(), b = first.getValue(), c = second.getKey(), d = second.getValue();
         int real = a * c - b * d, unreal = a * d + b * c;
         return "" + real + "+" + unreal + "i";
 

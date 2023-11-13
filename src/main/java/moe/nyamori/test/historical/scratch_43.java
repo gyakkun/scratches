@@ -1,6 +1,6 @@
 package moe.nyamori.test.historical;
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -235,7 +235,7 @@ class scratch_43 {
         TreeMap<Pair<Integer, Integer>, Integer> activeXs = new TreeMap<>(new Comparator<Pair<Integer, Integer>>() {
             @Override
             public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                return o1.getFirst() == o2.getFirst() ? o1.getSecond() - o2.getSecond() : o1.getFirst() - o2.getFirst();
+                return o1.getKey() == o2.getKey() ? o1.getValue() - o2.getValue() : o1.getKey() - o2.getKey();
             }
         });
         activeXs.put(new Pair<>(events[0][2], events[0][3]), 1);
@@ -248,9 +248,9 @@ class scratch_43 {
             long cur = -1;
             long length = 0;
             for (Pair<Integer, Integer> intv : activeXs.keySet()) {
-                cur = Math.max(intv.getFirst(), cur);
-                length += Math.max(0, intv.getSecond() - cur);
-                cur = Math.max(intv.getSecond(), cur);
+                cur = Math.max(intv.getKey(), cur);
+                length += Math.max(0, intv.getValue() - cur);
+                cur = Math.max(intv.getValue(), cur);
             }
             ans += height * length;
             int x1 = events[i][2], x2 = events[i][3];
@@ -344,15 +344,15 @@ class scratch_43 {
 
         @Override
         public int compareTo(scratch_43.PII o) {
-            return field.getFirst().equals(o.field.getFirst()) ? field.getSecond() - o.field.getSecond() : field.getFirst() - o.field.getFirst();
+            return field.getKey().equals(o.field.getKey()) ? field.getValue() - o.field.getValue() : field.getKey() - o.field.getKey();
         }
 
         public Integer getKey() {
-            return field.getFirst();
+            return field.getKey();
         }
 
         public Integer getValue() {
-            return field.getSecond();
+            return field.getValue();
         }
     }
 
@@ -825,8 +825,8 @@ class scratch_43 {
             if (origStack.isEmpty()) {
                 origStack.push(new Pair<>(c, 1));
             } else {
-                if (c == origStack.peek().getFirst()) {
-                    origStack.push(new Pair<>(c, origStack.pop().getSecond() + 1));
+                if (c == origStack.peek().getKey()) {
+                    origStack.push(new Pair<>(c, origStack.pop().getValue() + 1));
                 } else {
                     origStack.push(new Pair<>(c, 1));
                 }
@@ -837,9 +837,9 @@ class scratch_43 {
             origLen = nextLen;
             Deque<Pair<Character, Integer>> newStack = new LinkedList<>();
             while (!origStack.isEmpty()) {
-                if (!newStack.isEmpty() && origStack.peek().getFirst() == newStack.peek().getFirst()) {
-                    char tmpChar = origStack.peek().getFirst();
-                    int tmpCount = origStack.pop().getSecond() + newStack.peek().getSecond();
+                if (!newStack.isEmpty() && origStack.peek().getKey() == newStack.peek().getKey()) {
+                    char tmpChar = origStack.peek().getKey();
+                    int tmpCount = origStack.pop().getValue() + newStack.peek().getValue();
                     nextLen -= (tmpCount / k) * k;
                     newStack.pop();
                     if (tmpCount % k != 0) {
@@ -847,10 +847,10 @@ class scratch_43 {
                     }
                 } else {
                     Pair<Character, Integer> tmpPop = origStack.pop();
-                    int tmpCount = tmpPop.getSecond();
+                    int tmpCount = tmpPop.getValue();
                     nextLen -= (tmpCount / k) * k;
                     if (tmpCount % k != 0) {
-                        tmpPop = new Pair<>(tmpPop.getFirst(), tmpPop.getSecond() % k);
+                        tmpPop = new Pair<>(tmpPop.getKey(), tmpPop.getValue() % k);
                         newStack.push(tmpPop);
                     }
                 }
@@ -862,15 +862,15 @@ class scratch_43 {
         if (evenOdd) {
             while (!origStack.isEmpty()) {
                 Pair<Character, Integer> tmpPop = origStack.pop();
-                for (int i = 0; i < tmpPop.getSecond(); i++) {
-                    sb.append(tmpPop.getFirst());
+                for (int i = 0; i < tmpPop.getValue(); i++) {
+                    sb.append(tmpPop.getKey());
                 }
             }
         } else {
             while (!origStack.isEmpty()) {
                 Pair<Character, Integer> tmpPoll = origStack.pollLast();
-                for (int i = 0; i < tmpPoll.getSecond(); i++) {
-                    sb.append(tmpPoll.getFirst());
+                for (int i = 0; i < tmpPoll.getValue(); i++) {
+                    sb.append(tmpPoll.getKey());
                 }
             }
         }
@@ -1113,7 +1113,7 @@ class scratch_43 {
         PriorityQueue<Pair<Integer, List<Integer>>> pq = new PriorityQueue<>(new Comparator<Pair<Integer, List<Integer>>>() {
             @Override
             public int compare(Pair<Integer, List<Integer>> o1, Pair<Integer, List<Integer>> o2) {
-                return o2.getFirst() - o1.getFirst();
+                return o2.getKey() - o1.getKey();
             }
         });
         for (int i : nums1) {
@@ -1121,7 +1121,7 @@ class scratch_43 {
                 if (pq.size() < k) {
                     pq.offer(new Pair<>(i + j, Arrays.asList(new Integer[]{i, j})));
                 } else {
-                    if (i + j < pq.peek().getFirst()) {
+                    if (i + j < pq.peek().getKey()) {
                         pq.poll();
                         pq.offer(new Pair<>(i + j, Arrays.asList(new Integer[]{i, j})));
                     }
@@ -1130,7 +1130,7 @@ class scratch_43 {
         }
         List<List<Integer>> result = new ArrayList<>(k);
         while (!pq.isEmpty()) {
-            result.add(pq.poll().getSecond());
+            result.add(pq.poll().getValue());
         }
         result.sort((o1, o2) -> (o1.get(0) == o2.get(0) ? o1.get(1) - o2.get(1) : o1.get(0) - o2.get(0)));
         return result;
@@ -1142,7 +1142,7 @@ class scratch_43 {
         PriorityQueue<Pair<Integer, Integer>> pq = new PriorityQueue<>(new Comparator<Pair<Integer, Integer>>() {
             @Override
             public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                return (o2.getSecond() + o2.getFirst()) - (o1.getSecond() - o1.getFirst());
+                return (o2.getValue() + o2.getKey()) - (o1.getValue() - o1.getKey());
             }
         });
         for (int i = 0; i < nums1.length; i++) {
@@ -1150,7 +1150,7 @@ class scratch_43 {
                 if (pq.size() < k) {
                     pq.offer(new Pair<>(nums1[i], nums2[j]));
                 } else {
-                    if (nums1[i] + nums2[j] < pq.peek().getFirst() + pq.peek().getSecond()) {
+                    if (nums1[i] + nums2[j] < pq.peek().getKey() + pq.peek().getValue()) {
                         pq.poll();
                         pq.offer(new Pair<>(nums1[i], nums2[j]));
                     }
@@ -1160,7 +1160,7 @@ class scratch_43 {
         List<List<Integer>> result = new ArrayList<>(k);
         while (!pq.isEmpty()) {
             Pair<Integer, Integer> tmp = pq.poll();
-            result.add(Arrays.asList(new Integer[]{tmp.getFirst(), tmp.getSecond()}));
+            result.add(Arrays.asList(new Integer[]{tmp.getKey(), tmp.getValue()}));
         }
         return result;
     }

@@ -1,6 +1,6 @@
 package moe.nyamori.test.historical;
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -1020,13 +1020,13 @@ class RLEIterator {
     public int next(int n) {
         // 8 8 8 5 5
         n += offset;
-        while (!l.isEmpty() && n > l.peek().getFirst()) {
+        while (!l.isEmpty() && n > l.peek().getKey()) {
             Pair<Integer, Integer> p = l.poll();
-            n -= p.getFirst();
+            n -= p.getKey();
         }
         offset = n;
         if (l.isEmpty()) return -1;
-        return l.peek().getSecond();
+        return l.peek().getValue();
     }
 }
 
@@ -1694,7 +1694,7 @@ class Twitter {
     public List<Integer> getNewsFeed(int userId) {
         if (!follow.containsKey(userId)) follow.put(userId, new HashSet<>());
         if (!tweets.containsKey(userId)) tweets.put(userId, new LinkedList<>());
-        PriorityQueue<Pair<Long, Integer>> pq = new PriorityQueue<>(Comparator.comparingLong(o -> o.getFirst()));
+        PriorityQueue<Pair<Long, Integer>> pq = new PriorityQueue<>(Comparator.comparingLong(o -> o.getKey()));
         final int maxSize = 10;
         for (Pair<Long, Integer> t : tweets.get(userId)) {
             if (pq.size() < maxSize) {
@@ -1706,7 +1706,7 @@ class Twitter {
                 if (pq.size() < maxSize) {
                     pq.offer(t);
                 } else {
-                    if (pq.peek().getFirst() < t.getFirst()) {
+                    if (pq.peek().getKey() < t.getKey()) {
                         pq.poll();
                         pq.offer(t);
                     } else {
@@ -1717,7 +1717,7 @@ class Twitter {
         }
         List<Integer> result = new LinkedList<>();
         while (!pq.isEmpty()) {
-            result.add(0, pq.poll().getSecond());
+            result.add(0, pq.poll().getValue());
         }
         return result;
     }
@@ -1755,7 +1755,7 @@ class RangeModule {
         ts = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
             @Override
             public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                return o1.getSecond() == o2.getSecond() ? o1.getFirst() - o2.getFirst() : o1.getSecond() - o2.getSecond();
+                return o1.getValue() == o2.getValue() ? o1.getKey() - o2.getKey() : o1.getValue() - o2.getValue();
             }
         });
     }
@@ -1764,9 +1764,9 @@ class RangeModule {
         Iterator<Pair<Integer, Integer>> it = ts.tailSet(new Pair<>(0, left), false).iterator();
         while (it.hasNext()) {
             Pair<Integer, Integer> r = it.next();
-            if (right < r.getFirst()) break;
-            left = Math.min(r.getFirst(), left);
-            right = Math.max(r.getSecond(), right);
+            if (right < r.getKey()) break;
+            left = Math.min(r.getKey(), left);
+            right = Math.max(r.getValue(), right);
             it.remove();
             ts.remove(r);
         }
@@ -1775,7 +1775,7 @@ class RangeModule {
 
     public boolean queryRange(int left, int right) {
         Pair<Integer, Integer> r = ts.higher(new Pair<>(0, left));
-        return r != null && r.getFirst() <= left && right <= r.getSecond();
+        return r != null && r.getKey() <= left && right <= r.getValue();
     }
 
     public void removeRange(int left, int right) {
@@ -1783,9 +1783,9 @@ class RangeModule {
         List<Pair<Integer, Integer>> toAdd = new LinkedList<>();
         while (it.hasNext()) {
             Pair<Integer, Integer> r = it.next();
-            if (r.getFirst() > right) break;
-            if (r.getFirst() < left) toAdd.add(new Pair<>(r.getFirst(), left));
-            if (r.getSecond() > right) toAdd.add(new Pair<>(right, r.getSecond()));
+            if (r.getKey() > right) break;
+            if (r.getKey() < left) toAdd.add(new Pair<>(r.getKey(), left));
+            if (r.getValue() > right) toAdd.add(new Pair<>(right, r.getValue()));
             it.remove();
             ts.remove(r);
         }
@@ -1806,13 +1806,13 @@ class SummaryRanges {
         leftSide = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
             @Override
             public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                return o1.getFirst().compareTo(o2.getFirst());
+                return o1.getKey().compareTo(o2.getKey());
             }
         });
         rightSide = new TreeSet<>(new Comparator<Pair<Integer, Integer>>() {
             @Override
             public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                return o1.getSecond().compareTo(o2.getSecond());
+                return o1.getValue().compareTo(o2.getValue());
             }
         });
     }
@@ -1821,28 +1821,28 @@ class SummaryRanges {
         Pair<Integer, Integer> p = new Pair<>(val, val);
         Pair<Integer, Integer> lsf = leftSide.floor(p);
         Pair<Integer, Integer> rsc = rightSide.ceiling(p);
-        if (lsf != null && rsc != null && lsf.getSecond() + 1 == val && rsc.getFirst() - 1 == val) {
+        if (lsf != null && rsc != null && lsf.getValue() + 1 == val && rsc.getKey() - 1 == val) {
             // merge lsf rsc
             leftSide.remove(rsc);
             leftSide.remove(lsf);
             rightSide.remove(rsc);
             rightSide.remove(lsf);
-            Pair<Integer, Integer> n = new Pair<>(lsf.getFirst(), rsc.getSecond());
+            Pair<Integer, Integer> n = new Pair<>(lsf.getKey(), rsc.getValue());
             leftSide.add(n);
             rightSide.add(n);
-        } else if (lsf != null && lsf.getSecond() + 1 == val) {
+        } else if (lsf != null && lsf.getValue() + 1 == val) {
             leftSide.remove(lsf);
             rightSide.remove(lsf);
-            Pair<Integer, Integer> n = new Pair<>(lsf.getFirst(), val);
+            Pair<Integer, Integer> n = new Pair<>(lsf.getKey(), val);
             leftSide.add(n);
             rightSide.add(n);
-        } else if (rsc != null && rsc.getFirst() - 1 == val) {
+        } else if (rsc != null && rsc.getKey() - 1 == val) {
             leftSide.remove(rsc);
             rightSide.remove(rsc);
-            Pair<Integer, Integer> n = new Pair<>(val, rsc.getSecond());
+            Pair<Integer, Integer> n = new Pair<>(val, rsc.getValue());
             leftSide.add(n);
             rightSide.add(n);
-        } else if ((lsf != null && val <= lsf.getSecond()) || (rsc != null && val >= rsc.getFirst())) {
+        } else if ((lsf != null && val <= lsf.getValue()) || (rsc != null && val >= rsc.getKey())) {
             ;
         } else {
             leftSide.add(p);
@@ -1855,7 +1855,7 @@ class SummaryRanges {
         int[][] result = new int[leftSide.size()][];
         int ctr = 0;
         for (Pair<Integer, Integer> p : leftSide) {
-            result[ctr++] = new int[]{p.getFirst(), p.getSecond()};
+            result[ctr++] = new int[]{p.getKey(), p.getValue()};
         }
         return result;
     }

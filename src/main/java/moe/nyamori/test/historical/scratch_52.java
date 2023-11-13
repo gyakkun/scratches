@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -433,7 +433,7 @@ class scratch_52 {
         int right = 0, result = Integer.MAX_VALUE;
         while (right <= n) {
             // 单调栈, 同时需要O(1)/O(log(n))的寻址, TreeMap和普通的ArrayList都可以
-            while (!stack.isEmpty() && stack.get(stack.size() - 1).getFirst() >= prefix[right]) {
+            while (!stack.isEmpty() && stack.get(stack.size() - 1).getKey() >= prefix[right]) {
                 stack.remove(stack.size() - 1);
             }
 
@@ -442,16 +442,16 @@ class scratch_52 {
                 int lo = 0, hi = stack.size() - 1;
                 while (lo < hi) { // 相当于求floor
                     int mid = lo + (hi - lo + 1) / 2;
-                    if (stack.get(mid).getFirst() <= target) {
+                    if (stack.get(mid).getKey() <= target) {
                         lo = mid;
                     } else {
                         hi = mid - 1;
                     }
                 }
-                if (stack.get(lo).getFirst() > target) {
+                if (stack.get(lo).getKey() > target) {
                     // 无效下界
                 } else {
-                    result = Math.min(result, right - stack.get(lo).getSecond());
+                    result = Math.min(result, right - stack.get(lo).getValue());
                 }
             }
 
@@ -1344,7 +1344,7 @@ class scratch_52 {
 
                 for (Pair<int[], int[]> pair : legalStandPointTargetPosList) {
                     boolean[][] innerVisited = new boolean[m][n];
-                    int[] innerTarget = pair.getFirst();
+                    int[] innerTarget = pair.getKey();
                     int[] innerStartPoint = new int[]{selfRow, selfCol};
                     Deque<int[]> innerQ = new LinkedList<>();
                     boolean canReach = false;
@@ -1367,8 +1367,8 @@ class scratch_52 {
                         }
                     }
                     if (canReach) {
-                        // 若推得动, 则此时玩家位置变为原箱子位置, 箱子位置变为targetPos(即pair.getSecond())
-                        q.offer(new int[]{boxRow, boxCol, pair.getSecond()[0], pair.getSecond()[1]});
+                        // 若推得动, 则此时玩家位置变为原箱子位置, 箱子位置变为targetPos(即pair.getValue())
+                        q.offer(new int[]{boxRow, boxCol, pair.getValue()[0], pair.getValue()[1]});
                     }
                 }
             }
@@ -1723,9 +1723,9 @@ class scratch_52 {
         }
         Set<Pair<Integer, Integer>> s = new HashSet<>();
         for (Pair<Integer, Integer> p : all) {
-            if ((double) p.getFirst() == ((double) midXTimes2 / 2)) continue;
-            if (!s.remove(new Pair<>(p.getFirst(), p.getSecond()))) {
-                s.add(new Pair<>(midXTimes2 - p.getFirst(), p.getSecond()));
+            if ((double) p.getKey() == ((double) midXTimes2 / 2)) continue;
+            if (!s.remove(new Pair<>(p.getKey(), p.getValue()))) {
+                s.add(new Pair<>(midXTimes2 - p.getKey(), p.getValue()));
             }
         }
         return s.size() == 0;
@@ -1762,7 +1762,7 @@ class scratch_52 {
         }
         List<List<Integer>> listResult = new ArrayList<>(result.size());
         for (Pair<Integer, Integer> p : result) {
-            listResult.add(Arrays.asList(p.getFirst(), p.getSecond()));
+            listResult.add(Arrays.asList(p.getKey(), p.getValue()));
         }
         return listResult;
     }

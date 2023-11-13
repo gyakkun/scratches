@@ -1,6 +1,6 @@
 package moe.nyamori.test.historical;
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -657,7 +657,7 @@ class scratch_56 {
 
     // LC767 **
     public String reorganizeString(String s) {
-        PriorityQueue<Pair<Character, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o.getSecond()));
+        PriorityQueue<Pair<Character, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o.getValue()));
         Deque<Pair<Character, Integer>> q = new LinkedList<>();
         Map<Character, Integer> freq = new HashMap<>(26);
         for (char c : s.toCharArray()) {
@@ -669,10 +669,10 @@ class scratch_56 {
         StringBuilder sb = new StringBuilder();
         while (!pq.isEmpty()) {
             Pair<Character, Integer> p = pq.poll();
-            sb.append(p.getFirst());
-            q.offer(new Pair<>(p.getFirst(), p.getSecond() - 1));
+            sb.append(p.getKey());
+            q.offer(new Pair<>(p.getKey(), p.getValue() - 1));
             if (q.size() == 2) {
-                if (q.peek().getSecond() > 0) {
+                if (q.peek().getValue() > 0) {
                     pq.offer(q.peek());
                 }
                 q.poll();
@@ -783,7 +783,7 @@ class scratch_56 {
     // LC358 ** Heap
     public String rearrangeString(String s, int k) {
         if (k == 0) return s;
-        PriorityQueue<Pair<Character, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o.getSecond()));
+        PriorityQueue<Pair<Character, Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(o -> -o.getValue()));
         Map<Character, Integer> freq = new HashMap<>(26);
         Deque<Pair<Character, Integer>> q = new LinkedList<>();
         StringBuilder sb = new StringBuilder();
@@ -791,10 +791,10 @@ class scratch_56 {
         for (Map.Entry<Character, Integer> e : freq.entrySet()) pq.offer(new Pair<>(e.getKey(), e.getValue()));
         while (!pq.isEmpty()) {
             Pair<Character, Integer> p = pq.poll();
-            sb.append(p.getFirst());
-            q.offer(new Pair<>(p.getFirst(), p.getSecond() - 1));
+            sb.append(p.getKey());
+            q.offer(new Pair<>(p.getKey(), p.getValue() - 1));
             if (q.size() == k) {
-                if (q.peek().getSecond() > 0) {
+                if (q.peek().getValue() > 0) {
                     pq.offer(q.peek());
                 }
                 q.poll();

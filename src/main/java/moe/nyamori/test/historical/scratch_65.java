@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.Function;
@@ -695,12 +695,12 @@ class scratch_65 {
         for (int i = 0; i < m * n; i++) {
             seq.add(new Pair<>(i, mtx[i]));
         }
-        seq = seq.stream().filter(i -> i.getSecond() > 1).collect(Collectors.toList());
-        Collections.sort(seq, Comparator.comparingInt(Pair::getSecond));
+        seq = seq.stream().filter(i -> i.getValue() > 1).collect(Collectors.toList());
+        Collections.sort(seq, Comparator.comparingInt(Pair::getValue));
         int cur = 0, result = 0;
         for (Pair<Integer, Integer> p : seq) {
             // < IDX, VAL>
-            int next = p.getFirst();
+            int next = p.getKey();
             int step = lc675Helper(cur, next, m, n, mtx);
             if (step == -1) return -1;
             mtx[next] = 1;

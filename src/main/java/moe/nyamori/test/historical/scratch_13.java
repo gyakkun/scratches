@@ -11,7 +11,7 @@ class scratch_13 {
     }
 
     public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
-        if(pairs.size()==0) return s;
+        if (pairs.size() == 0) return s;
         char[] sChar = s.toCharArray();
         int maxIndex = -1;
 //        int minIndex = Integer.MAX_VALUE;
@@ -27,16 +27,16 @@ class scratch_13 {
         boolean[] visited = new boolean[s.length()];
         for (List<Integer> li : pairs) {
 //            if (mtx.get(li.get(0)) == null) {
-                mtx.putIfAbsent(li.get(0), new HashMap<>());
+            mtx.putIfAbsent(li.get(0), new HashMap<>());
 //            }
 //            if (mtx.get(li.get(0)).get(li.get(1)) == null) {
-                mtx.get(li.get(0)).putIfAbsent(li.get(1), true);
+            mtx.get(li.get(0)).putIfAbsent(li.get(1), true);
 //            }
 //            if (mtx.get(li.get(1)) == null) {
-                mtx.putIfAbsent(li.get(1), new HashMap<>());
+            mtx.putIfAbsent(li.get(1), new HashMap<>());
 //            }
 //            if (mtx.get(li.get(1)).get(li.get(0)) == null) {
-                mtx.get(li.get(1)).putIfAbsent(li.get(0), true);
+            mtx.get(li.get(1)).putIfAbsent(li.get(0), true);
 //            }
 
 //            mtx[li.get(0)][li.get(1)] = true;

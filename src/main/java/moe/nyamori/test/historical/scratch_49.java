@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.function.Function;
@@ -354,22 +354,22 @@ class scratch_49 {
         // Arrays.fill(visited, 0d);
         prob[start] = 1d;
         PriorityQueue<Pair<Integer, Double>> pq = new PriorityQueue<>((o1, o2) -> {
-            if (o1.getSecond() == o2.getSecond()) return o1.getFirst() - o2.getFirst();
-            return o1.getSecond() < o2.getSecond() ? 1 : -1;
+            if (o1.getValue() == o2.getValue()) return o1.getKey() - o2.getKey();
+            return o1.getValue() < o2.getValue() ? 1 : -1;
         });
         pq.offer(new Pair<>(start, 1d));
         while (!pq.isEmpty()) {
             Pair<Integer, Double> p = pq.poll();
-            int cur = p.getFirst();
-            double curProb = p.getSecond();
+            int cur = p.getKey();
+            double curProb = p.getValue();
             if (prob[cur] > curProb) continue;
             prob[cur] = curProb;
             for (Pair<Integer, Double> e : outEdge.get(cur)) {
-                int nextIdx = e.getFirst();
-                double nextProb = curProb * e.getSecond();
+                int nextIdx = e.getKey();
+                double nextProb = curProb * e.getValue();
                 if (nextProb > prob[nextIdx]) {
                     prob[nextIdx] = nextProb;
-                    Pair<Integer, Double> nextEle = new Pair<>(e.getFirst(), nextProb);
+                    Pair<Integer, Double> nextEle = new Pair<>(e.getKey(), nextProb);
                     pq.offer(nextEle);
                 }
             }
@@ -457,7 +457,7 @@ class scratch_49 {
 
                             Pair<int[], int[]> pointPairP = vecPointPairMap.get(vecP);
                             Pair<int[], int[]> pointPairQ = vecPointPairMap.get(vecQ);
-                            int[][] tmpPa = new int[][]{pointPairP.getFirst(), pointPairP.getSecond(), pointPairQ.getFirst(), pointPairQ.getSecond()};
+                            int[][] tmpPa = new int[][]{pointPairP.getKey(), pointPairP.getValue(), pointPairQ.getKey(), pointPairQ.getValue()};
                             Set<int[]> tmpPs = new HashSet<>();
                             int[] dup = new int[0];
                             for (int[] mayDup : tmpPa) {
@@ -868,7 +868,7 @@ class scratch_49 {
     // LC652
     public List<TreeNode49
             > findDuplicateSubtrees(TreeNode49
-                                                       root) {
+                                            root) {
         List<TreeNode49
                 > result = new ArrayList<>();
         if (root == null) return result;
@@ -1344,7 +1344,7 @@ class scratch_49 {
             // result[i] = c1 + c3 - c2, c2被重复计算了
             int c1 = 0, c2 = 0, c3 = 0;
             for (Pair<Integer, Integer> edge : edgeCount.keySet()) {
-                int a = edge.getFirst(), b = edge.getSecond();
+                int a = edge.getKey(), b = edge.getValue();
                 if (deg[a] + deg[b] - edgeCount.get(edge) > queries[i]) c1++;
                 if (deg[a] + deg[b] > queries[i]) c2++;
             }
@@ -2277,7 +2277,7 @@ class TreeNode49 {
 
     TreeNode49(int val, TreeNode49
             left, TreeNode49
-            right) {
+                       right) {
         this.val = val;
         this.left = left;
         this.right = right;

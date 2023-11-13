@@ -35,15 +35,15 @@ public class Solution {
                 target -= minus;
                 if (target == 0) break;
             }
-            if(target!=0) {
+            if (target != 0) {
                 res[i] = 0;
                 continue;
             }
             int left = rows - i;
             for (Integer k : copy.descendingKeySet()) {
                 int f = copy.get(k);
-                if(f==0) continue;
-                if(f>left) {
+                if (f == 0) continue;
+                if (f > left) {
                     res[i] = 0;
                     continue outer;
                 }

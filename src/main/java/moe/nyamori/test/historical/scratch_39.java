@@ -1,6 +1,6 @@
 package moe.nyamori.test.historical;
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -871,13 +871,13 @@ class scratch_39 {
         q.add(new Pair<>(0, 0));
         while (!q.isEmpty()) {
             Pair<Integer, Integer> tmp = q.poll();
-            int i = tmp.getFirst();
-            int j = tmp.getSecond();
+            int i = tmp.getKey();
+            int j = tmp.getValue();
             for (int k = j - 1; k <= j + 1; k++) {
                 if (k > 0 && k < n && idxMap.containsKey(stones[i] + k)) {
                     Pair<Integer, Integer> tmpPair = new Pair<>(idxMap.get(stones[i] + k), k);
                     if (pairSet.add(tmpPair)) {
-                        if (tmpPair.getFirst() == n - 1) return true; // 剪枝
+                        if (tmpPair.getKey() == n - 1) return true; // 剪枝
                         q.offer(tmpPair);
                     }
                 }

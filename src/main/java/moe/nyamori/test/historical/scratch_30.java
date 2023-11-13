@@ -474,7 +474,7 @@ class scratch_30 {
         }
         if (daySet.contains(day)) {
             memo[day] = Math.min(Math.min(minCostTicketsRecursive(day + 1, memo, daySet, costs) + costs[0],
-                    minCostTicketsRecursive(day + 7, memo, daySet, costs) + costs[1]),
+                            minCostTicketsRecursive(day + 7, memo, daySet, costs) + costs[1]),
                     minCostTicketsRecursive(day + 30, memo, daySet, costs) + costs[2]);
         } else {
             memo[day] = minCostTicketsRecursive(day + 1, memo, daySet, costs);

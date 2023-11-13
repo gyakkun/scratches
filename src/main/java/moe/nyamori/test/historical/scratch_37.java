@@ -40,7 +40,7 @@ class scratch_37 {
                 fjp.submit(job);
             }
         }
-        while(fjp.getActiveThreadCount()!=0){
+        while (fjp.getActiveThreadCount() != 0) {
             ;
         }
         return new LinkedList<>(lc212Result.keySet());

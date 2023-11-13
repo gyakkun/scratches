@@ -1,7 +1,7 @@
 package moe.nyamori.test.historical;
 
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1181,8 +1181,8 @@ class scratch_42 {
 
                 for (Pair<Integer, Integer> tmpTwo : twoSet) {
                     for (int i : oneSet) {
-                        int j = tmpTwo.getFirst();
-                        int k = tmpTwo.getSecond();
+                        int j = tmpTwo.getKey();
+                        int k = tmpTwo.getValue();
                         if (i != j && i != k && j != k) {
                             int[] tmpArr = new int[]{nums[i], nums[j], nums[k]};
                             Arrays.sort(tmpArr);
@@ -1195,9 +1195,9 @@ class scratch_42 {
         List<List<Integer>> resultList = new ArrayList<>(result.size());
         for (Pair<Integer, Pair<Integer, Integer>> r : result) {
             resultList.add(new ArrayList<Integer>(3) {{
-                add(r.getFirst());
-                add(r.getSecond().getFirst());
-                add(r.getSecond().getSecond());
+                add(r.getKey());
+                add(r.getValue().getKey());
+                add(r.getValue().getValue());
             }});
         }
         return resultList;
@@ -1514,12 +1514,12 @@ class scratch_42 {
         Collections.sort(freqList, new Comparator<Pair<Character, Integer>>() {
             @Override
             public int compare(Pair<Character, Integer> o1, Pair<Character, Integer> o2) {
-                return o2.getSecond() - o1.getSecond();
+                return o2.getValue() - o1.getValue();
             }
         });
         for (Pair<Character, Integer> pair : freqList) {
-            for (int i = 0; i < pair.getSecond(); i++) {
-                sb.append(pair.getFirst());
+            for (int i = 0; i < pair.getValue(); i++) {
+                sb.append(pair.getKey());
             }
         }
 

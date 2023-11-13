@@ -9,7 +9,7 @@ class scratch_24 {
             60, 52, 44, 36, 28, 20, 12, 4,
             62, 54, 46, 38, 30, 22, 14, 6,
             64, 56, 48, 40, 32, 24, 16, 8,
-            57, 49, 41, 33, 25, 17,  9, 1,
+            57, 49, 41, 33, 25, 17, 9, 1,
             59, 51, 43, 35, 27, 19, 11, 3,
             61, 53, 45, 37, 29, 21, 13, 5,
             63, 55, 47, 39, 31, 23, 15, 7
@@ -23,96 +23,96 @@ class scratch_24 {
             36, 4, 44, 12, 52, 20, 60, 28,
             35, 3, 43, 11, 51, 19, 59, 27,
             34, 2, 42, 10, 50, 18, 58, 26,
-            33, 1, 41,  9, 49, 17, 57, 25
+            33, 1, 41, 9, 49, 17, 57, 25
     };
     /* Expansion Permutation */
     static final int[] E = {
-            32,  1,  2,  3,  4,  5,
-            4,  5,  6,  7,  8,  9,
-            8,  9, 10, 11, 12, 13,
+            32, 1, 2, 3, 4, 5,
+            4, 5, 6, 7, 8, 9,
+            8, 9, 10, 11, 12, 13,
             12, 13, 14, 15, 16, 17,
             16, 17, 18, 19, 20, 21,
             20, 21, 22, 23, 24, 25,
             24, 25, 26, 27, 28, 29,
-            28, 29, 30, 31, 32,  1
+            28, 29, 30, 31, 32, 1
     };
     /* Permutation Function */
     static final int[] P = {
-            16,  7, 20, 21,
+            16, 7, 20, 21,
             29, 12, 28, 17,
             1, 15, 23, 26,
             5, 18, 31, 10,
-            2,  8, 24, 14,
-            32, 27,  3,  9,
-            19, 13, 30,  6,
-            22, 11,  4, 25
+            2, 8, 24, 14,
+            32, 27, 3, 9,
+            19, 13, 30, 6,
+            22, 11, 4, 25
     };
     /* S-Boxes*/
     static final int[] S1 = {
-            14,  4, 13,  1,  2, 15, 11,  8,  3, 10,  6, 12,  5,  9,  0,  7,
-            0, 15,  7,  4, 14,  2, 13,  1, 10,  6, 12, 11,  9,  5,  3,  8,
-            4,  1, 14,  8, 13,  6,  2, 11, 15, 12,  9,  7,  3, 10,  5,  0,
-            15, 12,  8,  2,  4,  9,  1,  7,  5, 11,  3, 14, 10,  0,  6, 13
+            14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7,
+            0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8,
+            4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0,
+            15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13
     };
     static final int[] S2 = {
-            15,  1,  8, 14,  6, 11,  3,  4,  9,  7,  2, 13, 12,  0,  5, 10,
-            3, 13,  4,  7, 15,  2,  8, 14, 12,  0,  1, 10,  6,  9, 11,  5,
-            0, 14,  7, 11, 10,  4, 13,  1,  5,  8, 12,  6,  9,  3,  2, 15,
-            13,  8, 10,  1,  3, 15,  4,  2, 11,  6,  7, 12,  0,  5, 14,  9
+            15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10,
+            3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5,
+            0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15,
+            13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9
     };
     static final int[] S3 = {
-            10,  0,  9, 14,  6,  3, 15,  5,  1, 13, 12,  7, 11,  4,  2,  8,
-            13,  7,  0,  9,  3,  4,  6, 10,  2,  8,  5, 14, 12, 11, 15,  1,
-            13,  6,  4,  9,  8, 15,  3,  0, 11,  1,  2, 12,  5, 10, 14,  7,
-            1, 10, 13,  0,  6,  9,  8,  7,  4, 15, 14,  3, 11,  5,  2, 12
+            10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8,
+            13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1,
+            13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7,
+            1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12
     };
     static final int[] S4 = {
-            7, 13, 14,  3,  0,  6,  9, 10,  1,  2,  8,  5, 11, 12,  4, 15,
-            13,  8, 11,  5,  6, 15,  0,  3,  4,  7,  2, 12,  1, 10, 14,  9,
-            10,  6,  9,  0, 12, 11,  7, 13, 15,  1,  3, 14,  5,  2,  8,  4,
-            3, 15,  0,  6, 10,  1, 13,  8,  9,  4,  5, 11, 12,  7,  2, 14
+            7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15,
+            13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9,
+            10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4,
+            3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14
     };
     static final int[] S5 = {
-            2, 12,  4,  1,  7, 10, 11,  6,  8,  5,  3, 15, 13,  0, 14,  9,
-            14, 11,  2, 12,  4,  7, 13,  1,  5,  0, 15, 10,  3,  9,  8,  6,
-            4,  2,  1, 11, 10, 13,  7,  8, 15,  9, 12,  5,  6,  3,  0, 14,
-            11,  8, 12,  7,  1, 14,  2, 13,  6, 15,  0,  9, 10,  4,  5,  3
+            2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9,
+            14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6,
+            4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14,
+            11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3
     };
     static final int[] S6 = {
-            12,  1, 10, 15,  9,  2,  6,  8,  0, 13,  3,  4, 14,  7,  5, 11,
-            10, 15,  4,  2,  7, 12,  9,  5,  6,  1, 13, 14,  0, 11,  3,  8,
-            9, 14, 15,  5,  2,  8, 12,  3,  7,  0,  4, 10,  1, 13, 11,  6,
-            4,  3,  2, 12,  9,  5, 15, 10, 11, 14,  1,  7,  6,  0,  8, 13
+            12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11,
+            10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8,
+            9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6,
+            4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13
     };
     static final int[] S7 = {
-            4, 11,  2, 14, 15,  0,  8, 13,  3, 12,  9,  7,  5, 10,  6,  1,
-            13,  0, 11,  7,  4,  9,  1, 10, 14,  3,  5, 12,  2, 15,  8,  6,
-            1,  4, 11, 13, 12,  3,  7, 14, 10, 15,  6,  8,  0,  5,  9,  2,
-            6, 11, 13,  8,  1,  4, 10,  7,  9,  5,  0, 15, 14,  2,  3, 12
+            4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1,
+            13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6,
+            1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2,
+            6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12
     };
     static final int[] S8 = {
-            13,  2,  8,  4,  6, 15, 11,  1, 10,  9,  3, 14,  5,  0, 12,  7,
-            1, 15, 13,  8, 10,  3,  7,  4, 12,  5,  6, 11,  0, 14,  9,  2,
-            7, 11,  4,  1,  9, 12, 14,  2,  0,  6, 10, 13, 15,  3,  5,  8,
-            2,  1, 14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11
+            13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7,
+            1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2,
+            7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8,
+            2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11
     };
     /* Permuted Choice One */
     static final int[] PC1 = {
-            57, 49, 41, 33, 25, 17,  9,
+            57, 49, 41, 33, 25, 17, 9,
             1, 58, 50, 42, 34, 26, 18,
-            10,  2, 59, 51, 43, 35, 27,
-            19, 11,  3, 60, 52, 44, 36,
+            10, 2, 59, 51, 43, 35, 27,
+            19, 11, 3, 60, 52, 44, 36,
             63, 55, 47, 39, 31, 23, 15,
             7, 62, 54, 46, 38, 30, 22,
-            14,  6, 61, 53, 45, 37, 29,
-            21, 13,  5, 28, 20, 12,  4
+            14, 6, 61, 53, 45, 37, 29,
+            21, 13, 5, 28, 20, 12, 4
     };
     /* Permuted Choice Two */
     static final int[] PC2 = {
-            14, 17, 11, 24,  1,  5,
-            3, 28, 15,  6, 21, 10,
-            23, 19, 12,  4, 26,  8,
-            16,  7, 27, 20, 13,  2,
+            14, 17, 11, 24, 1, 5,
+            3, 28, 15, 6, 21, 10,
+            23, 19, 12, 4, 26, 8,
+            16, 7, 27, 20, 13, 2,
             41, 52, 31, 37, 47, 55,
             30, 40, 51, 45, 33, 48,
             44, 49, 39, 56, 34, 53,
@@ -128,7 +128,7 @@ class scratch_24 {
 
     private byte[] performXOR(byte[] one, byte[] two) {
         byte[] result = new byte[one.length];
-        for (int i = 0 ; i < one.length ; i++) {
+        for (int i = 0; i < one.length; i++) {
             result[i] = (byte) (one[i] ^ two[i]);
         }
         return result;
@@ -139,7 +139,7 @@ class scratch_24 {
         byte[] output = new byte[byteCount];
         int pos;
 
-        for (int i = 0 ; i < mapping.length ; i++) {
+        for (int i = 0; i < mapping.length; i++) {
             pos = mapping[i] - 1;
             int value = getBitFromArray(input, pos);
             setBitInArray(output, i, value);
@@ -169,9 +169,9 @@ class scratch_24 {
 
     private byte[] hexStringToByteArray(String string) {
         int length = string.length();
-        int n = (int)Math.ceil((length + 1) / 2);
+        int n = (int) Math.ceil((length + 1) / 2);
         byte[] result = new byte[n];
-        for (int i = length - 1; i >= 0 ; i -= 2) {
+        for (int i = length - 1; i >= 0; i -= 2) {
             if (i == 0) {
                 result[i / 2] = (byte) ((Character.digit('0', 16) << 4)
                         + Character.digit(string.charAt(i), 16));
@@ -184,7 +184,7 @@ class scratch_24 {
     }
 
     private void printBytes(byte[] input) {
-        for (int i = 0 ; i < input.length; i++) {
+        for (int i = 0; i < input.length; i++) {
             System.out.print(byteToBits(input[i]) + " ");
         }
         System.out.println();
@@ -192,15 +192,15 @@ class scratch_24 {
 
     private String byteToBits(byte b) {
         StringBuffer buffer = new StringBuffer();
-        for (int i = 0 ; i < 8 ; i++)
-            buffer.append((int)(b >> (8-(i+1)) & 0x0001));
+        for (int i = 0; i < 8; i++)
+            buffer.append((int) (b >> (8 - (i + 1)) & 0x0001));
         return buffer.toString();
     }
 
     private byte[] getBits(byte[] input, int startPos, int length) {
-        int noOfBytes = (length-1)/8 + 1;
+        int noOfBytes = (length - 1) / 8 + 1;
         byte[] output = new byte[noOfBytes];
-        for (int i = 0 ; i < length ; i++) {
+        for (int i = 0; i < length; i++) {
             int value = getBitFromArray(input, startPos + i);
             setBitInArray(output, i, value);
         }
@@ -210,7 +210,7 @@ class scratch_24 {
     private byte[] rotateLeft(byte[] input, int step, int length) {
         int noOfBytes = (length - 1) / 8 + 1;
         byte[] output = new byte[noOfBytes];
-        for (int i = 0 ; i < length ; i++) {
+        for (int i = 0; i < length; i++) {
             int value = getBitFromArray(input, (i + step) % length);
             setBitInArray(output, i, value);
         }
@@ -222,12 +222,12 @@ class scratch_24 {
         int noOfBytes = (oneLength + twoLength - 1) / 8 + 1;
         byte[] output = new byte[noOfBytes];
         int i = 0, j = 0;
-        for (; i < oneLength ; i++) {
+        for (; i < oneLength; i++) {
             int value = getBitFromArray(one, i);
             setBitInArray(output, j, value);
             j++;
         }
-        for (i = 0 ; i < twoLength ; i++) {
+        for (i = 0; i < twoLength; i++) {
             int value = getBitFromArray(two, i);
             setBitInArray(output, j, value);
             j++;
@@ -240,12 +240,12 @@ class scratch_24 {
         int keySize = PC1.length;
         byte[] key = permute(masterKey, PC1);
         byte[][] subKeys = new byte[noOfSubKeys][keySize];
-        byte[] leftHalf = getBits(key, 0, keySize/2);
-        byte[] rightHalf = getBits(key, keySize/2, keySize/2);
-        for (int i = 0 ; i < noOfSubKeys ; i++) {
-            leftHalf = rotateLeft(leftHalf, SHIFTS[i], keySize/2);
-            rightHalf = rotateLeft(rightHalf, SHIFTS[i], keySize/2);
-            byte[] subKey = concatBits(leftHalf, keySize/2, rightHalf, keySize/2);
+        byte[] leftHalf = getBits(key, 0, keySize / 2);
+        byte[] rightHalf = getBits(key, keySize / 2, keySize / 2);
+        for (int i = 0; i < noOfSubKeys; i++) {
+            leftHalf = rotateLeft(leftHalf, SHIFTS[i], keySize / 2);
+            rightHalf = rotateLeft(rightHalf, SHIFTS[i], keySize / 2);
+            byte[] subKey = concatBits(leftHalf, keySize / 2, rightHalf, keySize / 2);
             subKeys[i] = permute(subKey, PC2);
         }
         return subKeys;
@@ -261,7 +261,7 @@ class scratch_24 {
             System.exit(1);
         }
         int length = message.length;
-        int n = (length + 7)/8 * 8;
+        int n = (length + 7) / 8 * 8;
         byte[] cipher = new byte[n];
         if (length == 8) {
             return cryptText(message, key, operation);
@@ -283,7 +283,7 @@ class scratch_24 {
             result = cryptText(block, key, operation);
             System.out.println("RESULT: ");
             printBytes(result);
-            for (j = 0 ; j < 8 && k < cipher.length; j++, k++) {
+            for (j = 0; j < 8 && k < cipher.length; j++, k++) {
                 cipher[k] = result[j];
             }
         }
@@ -310,9 +310,9 @@ class scratch_24 {
         /**
          * Split message into two halves
          */
-        byte[] leftHalf = getBits(message, 0, blockSize/2);
-        byte[] rightHalf = getBits(message, blockSize/2, blockSize/2);
-        for (int i = 0 ; i < noOfRounds ; i++) {
+        byte[] leftHalf = getBits(message, 0, blockSize / 2);
+        byte[] rightHalf = getBits(message, blockSize / 2, blockSize / 2);
+        for (int i = 0; i < noOfRounds; i++) {
             byte[] temp = rightHalf;
             /**
              * Expansion
@@ -351,7 +351,7 @@ class scratch_24 {
         /**
          * 32 bit swap
          */
-        byte[] concatHalves = concatBits(rightHalf, blockSize/2, leftHalf, blockSize/2);
+        byte[] concatHalves = concatBits(rightHalf, blockSize / 2, leftHalf, blockSize / 2);
         /**
          * Inverse Initial Permutation
          */
@@ -363,10 +363,10 @@ class scratch_24 {
         /**
          * Split input to 6-bit blocks
          */
-        input = split(input,6);
-        byte[] output = new byte[input.length/2];
+        input = split(input, 6);
+        byte[] output = new byte[input.length / 2];
         int leftHalf = 0;
-        for (int i = 0; i < input.length ; i++) {
+        for (int i = 0; i < input.length; i++) {
             byte block = input[i];
             /**
              * row - first and last bits
@@ -379,7 +379,7 @@ class scratch_24 {
             if (i % 2 == 0) {
                 leftHalf = rightHalf;
             } else {
-                output[i/2] = (byte) (16 * leftHalf + rightHalf);
+                output[i / 2] = (byte) (16 * leftHalf + rightHalf);
                 leftHalf = 0;
             }
         }
@@ -388,23 +388,32 @@ class scratch_24 {
 
     private int[] getSBox(int i) {
         switch (i) {
-            case 0: return S1;
-            case 1: return S2;
-            case 2: return S3;
-            case 3: return S4;
-            case 4: return S5;
-            case 5: return S6;
-            case 6: return S7;
-            case 7: return S8;
-            default: return null;
+            case 0:
+                return S1;
+            case 1:
+                return S2;
+            case 2:
+                return S3;
+            case 3:
+                return S4;
+            case 4:
+                return S5;
+            case 5:
+                return S6;
+            case 6:
+                return S7;
+            case 7:
+                return S8;
+            default:
+                return null;
         }
     }
 
     private byte[] split(byte[] input, int length) {
         int noOfBytes = (8 * input.length - 1) / length + 1;
         byte[] output = new byte[noOfBytes];
-        for (int i = 0 ; i < noOfBytes ; i++) {
-            for (int j = 0; j < length ; j++) {
+        for (int i = 0; i < noOfBytes; i++) {
+            for (int j = 0; j < length; j++) {
                 int value = getBitFromArray(input, length * i + j);
                 setBitInArray(output, 8 * i + j, value);
             }
@@ -417,7 +426,7 @@ class scratch_24 {
         byte[] message = hexStrToBytes("017E210207062112");
         System.out.println("PLAIN TEXT:");
         System.out.println(bytesToHexStr(message));
-        byte[] key =  "00000000".getBytes();
+        byte[] key = "00000000".getBytes();
         System.out.println("KEY:");
         System.out.println(bytesToHexStr(key));
         byte[] cipher = des.crypt(message, key, "encrypt");

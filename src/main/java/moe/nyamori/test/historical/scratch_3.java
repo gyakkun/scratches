@@ -10,7 +10,7 @@ class scratch_3 {
         System.out.println(monotoneIncreasingDigits(1234));
     }
 
-    public static int[] toIntArr(int N){
+    public static int[] toIntArr(int N) {
         int numOfDigit = 0;
         int nCopy = N;
         while (N != 0) {
@@ -26,9 +26,10 @@ class scratch_3 {
         }
         return digitArr;
     }
-    public static boolean judgeLegal(int[] digitArr){
-        for(int i = 1;i<digitArr.length;i++){
-            if(digitArr[i-1]<digitArr[i]){
+
+    public static boolean judgeLegal(int[] digitArr) {
+        for (int i = 1; i < digitArr.length; i++) {
+            if (digitArr[i - 1] < digitArr[i]) {
                 return false;
             }
         }

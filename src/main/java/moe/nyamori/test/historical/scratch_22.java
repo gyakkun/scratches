@@ -1,6 +1,7 @@
 package moe.nyamori.test.historical;
 
 // MyDes
+
 import javax.crypto.Cipher;
 
 class scratch_22 {
