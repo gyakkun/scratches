@@ -1,7 +1,11 @@
 package moe.nyamori.test;
 
-import java.beans.FeatureDescriptor;
-import java.util.*;
+import moe.nyamori.test.ordered._1300.LC1334;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -10,7 +14,7 @@ public class Solution {
     public static void main(String[] args) {
         long timing = System.currentTimeMillis();
         Solution s = new Solution();
-        System.err.println(s.numberOfWays(new int[]{0, 1, 2, 2, 2, 1, 2}));
+        System.err.println(LC1334.INSTANCE.findTheCity(4, new int[][]{{0, 1, 3}, {1, 2, 1}, {1, 3, 4}, {2, 3, 1}}, 4));
         timing = System.currentTimeMillis() - timing;
         System.err.println("Timing: " + timing + "ms.");
     }
