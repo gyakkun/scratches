@@ -1,6 +1,6 @@
 package moe.nyamori.test;
 
-import moe.nyamori.test.ordered._1300.LC1334;
+import moe.nyamori.test.ordered._2700.LC2760;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,7 +14,7 @@ public class Solution {
     public static void main(String[] args) {
         long timing = System.currentTimeMillis();
         Solution s = new Solution();
-        System.err.println(LC1334.INSTANCE.findTheCity(4, new int[][]{{0, 1, 3}, {1, 2, 1}, {1, 3, 4}, {2, 3, 1}}, 4));
+        System.err.println(LC2760.INSTANCE.longestAlternatingSubarray(new int[]{4}, 1));
         timing = System.currentTimeMillis() - timing;
         System.err.println("Timing: " + timing + "ms.");
     }
