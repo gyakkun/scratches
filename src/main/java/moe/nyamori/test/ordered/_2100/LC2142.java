@@ -1,10 +1,5 @@
 package moe.nyamori.test.ordered._2100;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-
 // Hard
 class LC2142 {
     public static void main(String[] args) {
@@ -20,8 +15,10 @@ class LC2142 {
 
     public long maxRunTime(int n, int[] batteries) {
         if (n > batteries.length) return 0L;
-        var lo = 1;
-        var hi = Arrays.stream(batteries).sum();
+        var sum = 0L;
+        for (var i : batteries) sum += i;
+        var lo = 1L;
+        var hi = sum / (long) n + 1L;
         while (lo < hi) {
             var mid = lo + (hi - lo + 1) / 2;
             if (determine(mid, n, batteries)) {
@@ -41,31 +38,9 @@ class LC2142 {
      * @param batteries battery life array
      * @return true if it can, otherwise false
      */
-    private boolean determine(int hours, int n, int[] batteries) {
-        // Greedy strategy: we need to use those long-lived batteries first
-        // otherwise we may run out of batteries first, while the big batteries
-        // still can supply power
-        var pq = new PriorityQueue<Integer>(batteries.length, Comparator.reverseOrder()); // larger first
-        for (var i : batteries) pq.offer(i);
-        outer:
-        while (pq.size() >= n && hours > 0) {
-            var list = new ArrayList<Integer>(n);
-
-            inner:
-            for (var i = 0; i < n; i++) {
-                var batteryLife = pq.poll();
-                if (batteryLife == null) {
-                    return false;
-                }
-                if (batteryLife >= 2L) {
-                    list.add(batteryLife - 1); // take one hour of each
-                } else {
-                    // continue
-                }
-            }
-            list.forEach(pq::offer);
-            hours--;
-        }
-        return hours == 0;
+    private boolean determine(long hours, int n, int[] batteries) {
+        var total = 0L;
+        for (var life : batteries) total += Math.min(hours, life);
+        return total >= n * hours;
     }
 }
