@@ -23,7 +23,8 @@ public class LC3623 {
     public static void main(String[] args) {
         var sol = new LC3623();
         // var input = new int[][]{{0, 0}, {1, 0}, {0, 1}, {2, 1}};
-        var input = new int[][]{{1, 0}, {2, 0}, {3, 0}, {2, 2}, {3, 2}};
+        // var input = new int[][]{{1, 0}, {2, 0}, {3, 0}, {2, 2}, {3, 2}};
+        var input = new int[][]{{-17, -75}, {49, -75}, {-81, -75}, {-75, -65}, {-63, -65}, {68, -75}};
         System.err.println(sol.countTrapezoids(input));
     }
 
@@ -45,13 +46,13 @@ public class LC3623 {
         for (var i = 0; i < ys.size(); i++) {
             var n1 = (long) map.get(ys.get(i));
             if (n1 <= 1) continue;
-            var c1 = n1 * (n1 - 1) * (n1 - 2) / 2L;
+            var c1 = n1 * (n1 - 1) / 2L;
             c1 %= mod;
             if (n1 == 2L) c1 = 1L;
             for (var j = i + 1; j < ys.size(); j++) {
                 var n2 = (long) map.get(ys.get(j));
                 if (n2 <= 1L) continue;
-                var c2 = n2 * (n2 - 1) * (n2 - 2) / 2L;
+                var c2 = n2 * (n2 - 1) / 2L;
                 c2 %= mod;
                 if (n2 == 2L) c2 = 1L;
                 // Combination formula: C(m,n) = n!/m!(n-m!)
