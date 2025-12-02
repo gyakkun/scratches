@@ -41,28 +41,12 @@ public class LC3623 {
             map.compute(y, (key, val) -> val == null ? 1 : val + 1);
         }
         var sum = 0L;
+        var acc = 0L;
         // one cycle match? 单循环赛
-        var ys = map.keySet().stream().sorted().toList();
-        for (var i = 0; i < ys.size(); i++) {
-            var n1 = (long) map.get(ys.get(i));
-            if (n1 <= 1) continue;
-            var c1 = n1 * (n1 - 1) / 2L;
-            c1 %= mod;
-            if (n1 == 2L) c1 = 1L;
-            for (var j = i + 1; j < ys.size(); j++) {
-                var n2 = (long) map.get(ys.get(j));
-                if (n2 <= 1L) continue;
-                var c2 = n2 * (n2 - 1) / 2L;
-                c2 %= mod;
-                if (n2 == 2L) c2 = 1L;
-                // Combination formula: C(m,n) = n!/m!(n-m!)
-                // since m is always 2
-                // then it will be C(2,n) = n!/2*(n-2)! = n*(n-1)*(n-2)/2
-                // n is not that big (10^5), we can store it in long (10^18)
-                // but c1*c2 is too big then
-                sum += c1 * c2;
-                sum %= mod;
-            }
+        for (long n : map.values()) {
+            var numEdge = n * (n - 1) / 2L;
+            sum = (sum + acc * numEdge) % mod;
+            acc = (acc + numEdge) % mod;
         }
         return (int) sum;
     }
