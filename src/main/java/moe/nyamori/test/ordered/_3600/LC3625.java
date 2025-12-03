@@ -50,7 +50,7 @@ public class LC3625 {
                     // y = kx+b
                     // b = y1 - kx1
                     // FIXME: Here is tricky about the  precision
-                    b = (double) y1 - (((double) dy) / ((double) dx)) * x1;
+                    b = 1.0 * (y1 * dx - x1 * dy) / dx;
                 }
                 if (k == -0.0d) k = 0.0d; // float point handling
                 if (b == -0.0d) b = 0.0d;
