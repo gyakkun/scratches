@@ -44,7 +44,7 @@ public class LC3623 {
         var acc = 0L;
         // one cycle match? 单循环赛
         for (long n : map.values()) {
-            var numEdge = n * (n - 1) / 2L;
+            var numEdge = n * (n - 1) / 2L; // C(2,n)
             sum = (sum + acc * numEdge) % mod;
             acc = (acc + numEdge) % mod;
         }
