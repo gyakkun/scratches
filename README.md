@@ -1,3 +1,3 @@
 # README
 
-Basically here's leetcode scratches during slack days.
+Fear of being dull.
